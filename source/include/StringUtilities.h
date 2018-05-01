@@ -395,72 +395,98 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 };
 
 //------------------------------------------------------------
-//! A class for making temporary %-code decoded SubStrings
-class DecodedSubString {
+// Helper abstract class for storing a temporary copy a SubString to later be converted
+// to another format or encoding.
+class PercentCodecSubString {
  public:
-    DecodedSubString() : _decodedStr(null) { }
-    explicit DecodedSubString(const SubString &s, bool decode = true, bool alwaysAlloc = false);
+    PercentCodecSubString() : _convertedStr(null) { }
+    explicit PercentCodecSubString(const SubString &s, bool convert = true, bool alwaysAlloc = false);
 
-    void Init(const SubString &s, bool decode, bool alwaysAlloc = false);
+    void Init(const SubString &s, bool convert, bool alwaysAlloc = false);
+
     SubString GetSubString() {
         SubString s;
-        s.AliasAssignLen(_decodedStr, IntIndex(strlen(ConstCStr(_decodedStr))));
+        s.AliasAssignLen(_convertedStr, IntIndex(strlen(ConstCStr(_convertedStr))));
         return s;
     }
+
     Utf8Char *DetachValue() {
-        if (_decodedStr != _buffer) {
-            Utf8Char *ret = _decodedStr;
-            _decodedStr = null;
+        if (_convertedStr != _buffer) {
+            Utf8Char *ret = _convertedStr;
+            _convertedStr = null;
             return ret;
         }
         return null;
     }
-    ~DecodedSubString() {
-        if (_decodedStr && _decodedStr != _buffer)
-            delete[] _decodedStr;
+
+    ~PercentCodecSubString() {
+        if (_convertedStr && _convertedStr != _buffer)
+            delete[] _convertedStr;
     }
+
+ protected:
+    Utf8Char *_convertedStr;
 
  private:
     enum { kMaxInlineDecodedSize = 1024 };
-
     Utf8Char _buffer[kMaxInlineDecodedSize];
-    Utf8Char *_decodedStr;
+
+ private:
+    virtual Int32 ComputeConvertedLength(const SubString &s) { return s.Length(); }
+    virtual void Convert(const SubString &s)                 { }
+};
+
+//------------------------------------------------------------
+//! A class for making temporary %-code decoded SubStrings
+// Examples:
+// "MyVI%2egvi" => "MyVI.gvi"
+// "_%54estVI_ToLowercase%2Egvi" => "_TestVI_ToLowercase.gvi"
+class PercentDecodedSubString : public PercentCodecSubString {
+ public:
+    PercentDecodedSubString() : PercentCodecSubString() { }
+    explicit PercentDecodedSubString(const SubString &encodedSubstring, bool decode = true, bool alwaysAlloc = false)
+        : PercentCodecSubString(encodedSubstring, decode, alwaysAlloc) {
+        Init(encodedSubstring, decode, alwaysAlloc);
+    }
+
+ private:
+    Int32 ComputeConvertedLength(const SubString &s) {
+        return GetDecodedLength(s);
+    }
+    void Convert(const SubString &s) {
+        Decode(s);
+    }
+    Int32 GetDecodedLength(const SubString &s);
+    void Decode(const SubString &s);
 };
 
 //------------------------------------------------------------
 //! A class for making temporary %-code encoded SubStrings
-class EncodedSubString {
+// Examples:
+// ":WebVi:" => "%2EWebVi%2E"
+// "The answer is 42" => "The%20answer%20is%2042"
+// "2018" => "%32018"
+class PercentEncodedSubString : public PercentCodecSubString {
  public:
-    EncodedSubString() : _encodedStr(null) { }
-    explicit EncodedSubString(const SubString &s, bool encode = true, bool alwaysAlloc = false);
+    PercentEncodedSubString() : PercentCodecSubString() { }
+    explicit PercentEncodedSubString(const SubString &decodedSubstring, bool encode = true, bool alwaysAlloc = false) :
+        PercentCodecSubString(decodedSubstring, encode, alwaysAlloc) {
+        Init(decodedSubstring, encode, alwaysAlloc);
+    }
 
-    void Init(const SubString &s, bool encode, bool alwaysAlloc = false);
-    SubString GetSubString() {
-        SubString s;
-        s.AliasAssignLen(_encodedStr, IntIndex(strlen(ConstCStr(_encodedStr))));
-        return s;
-    }
-    Boolean NeedsEncoding(Utf8Char c) {
-        return !SubString::IsNumberChar(c) && !SubString::IsLetterChar(c) && (c != '+' || c != '*' || c != '_' || c != '-' || c != '$');
-    }
-    Utf8Char *DetachValue() {
-        if (_encodedStr != _buffer) {
-            Utf8Char *ret = _encodedStr;
-            _encodedStr = null;
-            return ret;
-        }
-        return null;
-    }
-    ~EncodedSubString() {
-        if (_encodedStr && _encodedStr != _buffer)
-            delete[] _encodedStr;
-    }
+    Boolean NeedsEncoding(Utf8Char c);
+    void PercentEncodeUtf8Char(Utf8Char c, Utf8Char **pDest);
 
  private:
-    enum { kMaxInlineEncodedSize = 1024 };
-
-    Utf8Char _buffer[kMaxInlineEncodedSize];
-    Utf8Char *_encodedStr;
+     Boolean IsReservedChar(Utf8Char c);
+     Int32 ComputeConvertedLength(const SubString &s) {
+         return GetEncodedLength(s);
+     }
+     void Convert(const SubString &s) {
+         Encode(s);
+     }
+     Int32 GetEncodedLength(const SubString &s);
+     void Encode(const SubString &s);
 };
 
 }  // namespace Vireo

@@ -131,7 +131,7 @@ void VirtualInstrument::GoIsDone()
 }
 //------------------------------------------------------------
 void VirtualInstrument::SetVIName(const SubString &s, bool decode)   {
-    DecodedSubString decodedStr(s, decode, true);
+    PercentDecodedSubString decodedStr(s, decode, true);
     _viName = decodedStr.DetachValue();
 }
 
