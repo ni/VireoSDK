@@ -83,12 +83,14 @@ Your branch is up to date with 'origin/master'.
 ```
 
 Then make a branch from the current branch named `awesome_branch`:
+
 ```console
 > git checkout -b awesome_branch
 Switched to a new branch 'awesome_branch'
 ```
 
 And push the branch to your fork (**first-time**):
+
 ```console
 > git push -u origin awesome_branch
 Total 0 (delta 0), reused 0 (delta 0)
@@ -116,15 +118,37 @@ Based on the recommended workflow the master branch of your local clone should n
 To do this first verify you are on master with `git status` or change to master with `git checkout master`.
 
 Then bring your local master up to date by running:
+
 ```console
 git merge --ff-only upstream/master
 ```
 
 If you get an error that means you have unexpected commits on your master branch that should be removed.
 
-### Rebasing your changes on master
+If everything succeeds then you can go ahead and push your updated local master to your fork:
 
-Now that our local object pull
+```console
+git push
+```
+
+### Rebasing your branch on top of latest changes
+If you have a branch that was previously created from master you may want to bring the latest changes from master into your branch. If you performed a simple `git pull` you will end up with merge commits in your history. To avoid the merge commits, the recommended workflow is to instead rebase your local commits in your branch on top of master.
+
+Conceptually, the rebase operation will remove your current commits, bring your branch up to date with master, and then replay your commits one at a time on top of the latest changes. You will have the chance to resolve merge conflicts that may occur or safely cancel the rebase operation if desired.
+
+To rebase your current branch on the upstream master branch run:
+```console
+git rebase -p upstream/master
+```
+
+**NOTICE**: Be aware that performing the rebase will cause your local clone of a your branch and the fork version of your branch to diverge. In order to push the branch to your clone you have to rewrite the history of the branch in your clone:
+```console
+git push --force-with-lease
+```
+
+The `--force-with-lease` option will make sure that your clone's branch does not have any changes that are missing locally. This can happen if for instance you perform development on a different machine, pushed them to your clone, and have not synced those changes locally.
+
+**DO NOT REWRITE HISTORY IN SHARED BRANCHES**: Your fork is your playground for development and as long as you are the only developer contributing to a branch it is safe to rewrite the history of the branch. It is encouraged before submission to rebase your changes on top of master and to remove extraneous commits to improve the commit history. However, if multiple developers are doing development in a branch it requires coordination before rewriting history using rebase.
 
 ## Adding a Feature or Fixing a Bug
 1. Make your changes
