@@ -159,6 +159,18 @@
     <None Include="..\source\io\library_propertyNode.js">
       <Filter>VireoSource\IO</Filter>
     </None>
+    <None Include="..\source\core\library_coreHelpers.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\core\module_coreHelpers.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\core\vireo.loader.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\core\vireo.wrapper.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\BuildConfig.h">
