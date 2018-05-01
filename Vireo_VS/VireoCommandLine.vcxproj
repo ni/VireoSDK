@@ -52,6 +52,10 @@
     <ClCompile Include="..\source\io\WebSocketClient.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\source\core\library_coreHelpers.js" />
+    <None Include="..\source\core\module_coreHelpers.js" />
+    <None Include="..\source\core\vireo.loader.js" />
+    <None Include="..\source\core\vireo.wrapper.js" />
     <None Include="..\source\include\ConversionTable.def" />
     <None Include="..\source\io\library_canvas2d.js" />
     <None Include="..\source\io\library_httpClient.js" />
