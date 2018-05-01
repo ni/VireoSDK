@@ -162,7 +162,6 @@ describe('A JavaScript function invoke', function () {
 
     it('with call to completion callback after the function errors', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'CallCompletionCallbackAfterFunctionErrors');
         vireo.eggShell.loadVia('enqueue(CallCompletionCallbackAfterFunctionErrors)');
         runSlicesAsync(function () {
             expect(javaScriptInvokeFixtures.NI_CallCompletionCallbackAfterFunctionErrors_Callback)
