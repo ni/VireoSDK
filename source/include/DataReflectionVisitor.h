@@ -5,6 +5,7 @@ SDG
 */
 
 /*! \file
+    \brief Visitor that tries to find the path of a given DataPointer and TypeRef
 */
 
 #ifndef DataReflectionVisitor_H
@@ -23,7 +24,6 @@ namespace Vireo
 * initially the hay stack is null, but when a type is visited that owns a value ( constant or var)
 * it will establish a haystack then as the type is visited the stack is narrowed.
 */
-
 class DataReflectionVisitor : public TypeVisitor
 {
  public:
