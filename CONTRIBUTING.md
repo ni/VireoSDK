@@ -88,7 +88,7 @@ Then make a branch from the current branch named `awesome_branch`:
 Switched to a new branch 'awesome_branch'
 ```
 
-And push the branch to your fork:
+And push the branch to your fork (**first-time**):
 ```console
 > git push -u origin awesome_branch
 Total 0 (delta 0), reused 0 (delta 0)
