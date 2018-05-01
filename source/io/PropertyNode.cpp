@@ -30,9 +30,9 @@ enum { kNIError_ObjectReferenceIsInvalid = 1055 };  // TODO(spathiwa) move to co
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    // Parameters: viName, dataItemId, propertyName, propertyType, propertyVIName, propertyPath, errorStatus*, errorCode*, errorSource*
+    // Parameters: controlRefVIName, dataItemName, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
     extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
-    // Parameters: viName, dataItemId, propertyName, propertyType, propertyVIName, propertyPath, errorStatus*, errorCode*, errorSource*
+    // Parameters: controlRefVIName, dataItemName, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
     extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
 }
 #endif
@@ -119,26 +119,26 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, controlRefDataItemId, propNodeWriteName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
-    STACK_VAR(String, propertyVINameVar);
-    STACK_VAR(String, propertyPathVar);
-    StringRef propertyVarVIName = propertyVINameVar.Value;
-    StringRef propertyVarPath = propertyPathVar.Value;
-    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, propertyVarVIName, propertyVarPath, propNodeWriteName))
+    STACK_VAR(String, tempVariableVINameStackVar);
+    STACK_VAR(String, tempVariablePathStackVar);
+    StringRef tempVariableVIName = tempVariableVINameStackVar.Value;
+    StringRef tempVariablePath = tempVariablePathStackVar.Value;
+    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, tempVariableVIName, tempVariablePath, propNodeWriteName))
         return _NextInstruction();
 
-    STACK_VAR(String, typeVar);
-    StringRef propertyVarTypeName = typeVar.Value;
+    STACK_VAR(String, typeNameStackVar);
+    StringRef propertyTypeName = typeNameStackVar.Value;
     SubString typeNameSubStr = value->_paramType->Name();
-    propertyVarTypeName->AppendSubString(&typeNameSubStr);
+    propertyTypeName->AppendSubString(&typeNameSubStr);
 
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
             controlRefVIName,
             controlRefDataItemId,
             propertyName,
-            propertyVarTypeName,
-            propertyVarVIName,
-            propertyVarPath,
+            propertyTypeName,
+            tempVariableVIName,
+            tempVariablePath,
             &errorClusterPtr->status,
             &errorClusterPtr->code,
             errorClusterPtr->source);
@@ -178,26 +178,26 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, controlRefDataItemId, propNodeReadName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
-    STACK_VAR(String, propertyVINameVar);
-    STACK_VAR(String, propertyPathVar);
-    StringRef propertyVarVIName = propertyVINameVar.Value;
-    StringRef propertyVarPath = propertyPathVar.Value;
-    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, propertyVarVIName, propertyVarPath, propNodeReadName))
+    STACK_VAR(String, tempVariableVINameStackVar);
+    STACK_VAR(String, tempVariablePathStackVar);
+    StringRef tempVariableVIName = tempVariableVINameStackVar.Value;
+    StringRef tempVariablePath = tempVariablePathStackVar.Value;
+    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, tempVariableVIName, tempVariablePath, propNodeReadName))
         return _NextInstruction();
 
-    STACK_VAR(String, typeVar);
-    StringRef propertyVarTypeName = typeVar.Value;
+    STACK_VAR(String, typeNameStackVar);
+    StringRef propertyTypeName = typeNameStackVar.Value;
     SubString typeNameSubStr = value->_paramType->Name();
-    propertyVarTypeName->AppendSubString(&typeNameSubStr);
+    propertyTypeName->AppendSubString(&typeNameSubStr);
 
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
             controlRefVIName,
             controlRefDataItemId,
             propertyName,
-            propertyVarTypeName,
-            propertyVarVIName,
-            propertyVarPath,
+            propertyTypeName,
+            tempVariableVIName,
+            tempVariablePath,
             &errorClusterPtr->status,
             &errorClusterPtr->code,
             errorClusterPtr->source);
