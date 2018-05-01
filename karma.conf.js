@@ -16,7 +16,8 @@
             'test-it/karma/vtrsuite/*.Test.js',
             'test-it/karma/http/*.Test.js',
             'test-it/karma/javascriptinvoke/*.Test.js',
-            'test-it/karma/propertynode/*.Test.js'
+            'test-it/karma/propertynode/*.Test.js',
+            'test-it/karma/static/*.Test.js'
         ]);
 
         // level of logging
