@@ -1985,7 +1985,7 @@ ViaFormatChars TDViaFormatter::formatC =         { kCEncoding,    '{', '}', '{',
 
 //------------------------------------------------------------
 TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth,
-    SubString* format, Boolean jsonLVExt/*= false*/, Boolean quoteInfNaN/*= false*/)
+    SubString* format, JSONEncodingEnum encoding)
 {
     // Might move all options to format string.
     _string = str;
@@ -2002,8 +2002,18 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._precision = 17;
         _options._bEscapeStrings = true;
-        _options._bQuote64BitNumbers = jsonLVExt;
-        _options._fmt = jsonLVExt ? (quoteInfNaN ? formatJSONEggShell : formatJSONLVExt) : formatJSON;
+        _options._bQuote64BitNumbers = encoding == kJSONEncodingEggShell;
+        switch (encoding) {
+            case kJSONEncodingRegular:
+                _options._fmt = formatJSON;
+                break;
+            case kJSONEncodingLVExtensions:
+                _options._fmt = formatJSONLVExt;
+                break;
+            case kJSONEncodingEggShell:
+                _options._fmt = formatJSONEggShell;
+                break;
+        }
     } else if (format->ComparePrefixCStr(formatC._name)) {
         _options._fmt = formatC;
     }
@@ -2395,7 +2405,10 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
         return _NextInstruction();
 
     SubString json(kJSONEncoding);
-    TDViaFormatter formatter(_Param(stringOut), true, 0, &json, _Param(lvExtensions));
+
+    JSONEncodingEnum encoding = _Param(lvExtensions) ? kJSONEncodingLVExtensions : kJSONEncodingRegular;
+
+    TDViaFormatter formatter(_Param(stringOut), true, 0, &json, encoding);
     if (arg[0]._paramType->IsCluster()) {
         formatter.FormatClusterData(arg[0]._paramType, arg[0]._pData);
     } else {
