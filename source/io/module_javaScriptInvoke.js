@@ -359,7 +359,7 @@
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
                     throw new Error('The completion callback was retrieved more than once for ' + functionName + '.');
                 }
-                if(completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
+                if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
                     throw new Error('The context being accessed for ' + functionName + ' is not valid anymore.');
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
@@ -414,7 +414,7 @@
             if (returnTypeName === 'Array') {
                 returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
-            
+
             var completionCallbackStatus = {
                 retrievalState: completionCallbackRetrievalEnum.AVAILABLE,
                 invocationState: completionCallbackInvocationEnum.PENDING

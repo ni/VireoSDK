@@ -1,4 +1,4 @@
-fdescribe('A JavaScript function invoke', function () {
+describe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -120,7 +120,7 @@ fdescribe('A JavaScript function invoke', function () {
     afterAll(function () {
         Object.keys(javaScriptInvokeFixtures).forEach((functionName) => (window[functionName] = undefined));
         javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = undefined;
-        javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = undefined;        
+        javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = undefined;
     });
 
     it('with async callback successfully works', function (done) {
