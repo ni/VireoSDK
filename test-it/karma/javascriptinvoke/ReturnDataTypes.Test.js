@@ -222,10 +222,6 @@ describe('A JavaScript function invoke', function () {
         window.NI_ExceptionInUpdateReturnValue = function () {
             var notReallyAnArray = {};
             Object.setPrototypeOf(notReallyAnArray, Int16Array.prototype);
-            notReallyAnArray.valueOf = function () {
-                throw new Error('This is wrong');
-            };
-
             expect(notReallyAnArray instanceof Int16Array).toBeTrue();
             return notReallyAnArray;
         };
