@@ -434,9 +434,20 @@
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
-            // assume synchronous invocation since the completion callback was never retrieved
-            if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
-                updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+
+            try {
+                // assume synchronous invocation since the completion callback was never retrieved
+                if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
+                    updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                    completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+                    Module.eggShell.setOccurrence(occurrencePointer);
+                }
+            } catch (ex) {
+                newErrorStatus = true;
+                newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
+                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
+                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
                 Module.eggShell.setOccurrence(occurrencePointer);

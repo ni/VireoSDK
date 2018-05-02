@@ -218,6 +218,17 @@ describe('A JavaScript function invoke', function () {
         window.NI_MismatchDoubleArrayFunction = function () {
             return 'myString';
         };
+
+        window.NI_ExceptionInUpdateReturnValue = function () {
+            var notReallyAnArray = {};
+            Object.setPrototypeOf(notReallyAnArray, Int16Array.prototype);
+            notReallyAnArray.valueOf = function () {
+                throw new Error('This is wrong');
+            };
+
+            expect(notReallyAnArray instanceof Int16Array).toBeTrue();
+            return notReallyAnArray;
+        };
     });
 
     afterEach(function () {
@@ -268,6 +279,7 @@ describe('A JavaScript function invoke', function () {
         window.NI_MismatchUInt32ArrayFunction = undefined;
         window.NI_MismatchSingleArrayFunction = undefined;
         window.NI_MismatchDoubleArrayFunction = undefined;
+        window.NI_ExceptionInUpdateReturnValue = undefined;
     });
 
     it('succesfully returns different data types', function (done) {
@@ -401,6 +413,18 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('errorDoubleArray.status')).toBeTrue();
             expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorDoubleArray.code'));
             expect(viPathParser('errorDoubleArray.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            done();
+        });
+    });
+
+    it('Exception thrown in UpdateReturnValue is handled and reported', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsReturnDataTypesViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'ExceptionInUpdateReturnValue');
+        vireo.eggShell.loadVia('enqueue(ExceptionInUpdateReturnValue)');
+        runSlicesAsync(function () {
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(44303);
+            expect(viPathParser('error.source')).toMatch(/Unable to set return value/);
             done();
         });
     });
