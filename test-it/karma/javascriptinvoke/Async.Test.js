@@ -192,7 +192,7 @@ describe('A JavaScript function invoke', function () {
         vireo.eggShell.loadVia('enqueue(RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution)');
         runSlicesAsync(function () {
             expect(javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution.getCompletionCallback)
-                .toThrowError(/The context that is being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution is not valid anymore/);
+                .toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution is not valid anymore/);
             expect(viPathParser('return')).toBe(36);
             done();
         });
@@ -203,7 +203,7 @@ describe('A JavaScript function invoke', function () {
         vireo.eggShell.loadVia('enqueue(RetrieveCompletionCallbackAfterContextIsStaleFromError)');
         runSlicesAsync(function () {
             expect(javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError.getCompletionCallback)
-                .toThrowError(/The context that is being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromError is not valid anymore/);
+                .toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromError is not valid anymore/);
             done();
         });
     });
