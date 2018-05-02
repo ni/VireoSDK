@@ -1,9 +1,9 @@
 # Contributing to Vireo
 
-This guide will walkthrough the different workflows recommended for developing Vireo.
+This guide will walk through the different workflows recommended for developing Vireo.
 It covers setting up your own fork with continuous integration (CI) server connections as well as commands for developing locally, keeping up to date, and submitting changes.
 
-# Getting Started
+# Getting started
 
 ## Create a fork
 Vireo relies on the [fork-pull model](https://help.github.com/articles/about-collaborative-development-models/) for developer contributions.
@@ -16,7 +16,7 @@ Vireo uses Travis and AppVeyor to build and test the Vireo source code automatic
 You are encouraged to push changes to your fork when you have changes and to make branches for experiments.
 The fork is your playground for development and experimentation.
 
-By default when you create a new fork the Travis and AppVeyor services are not enabled until you give them permission to build.
+By default, when you create a new fork the Travis and AppVeyor services are not enabled until you give them permission to build.
 The following describes how to enable the services for your fork:
 
 ### Travis CI
@@ -25,7 +25,7 @@ The following describes how to enable the services for your fork:
 3. On the page that appears, click on the repository switch by your fork to enable it
 
 ### AppVeyor CI
-1. Go to the [AppVeyor](https://www.appveyor.com/) website and login with the github account associated with your Vireo fork
+1. Go to the [AppVeyor](https://www.appveyor.com/) website and log in with the github account associated with your Vireo fork
 2. At the top of the page, click on "add a new project".
 3. On the page that appears, select your fork.
 
@@ -55,7 +55,7 @@ upstream https://github.com/ni/VireoSDK.git (push)
 
 If you used GitHub Desktop to clone the fork you should see both the remotes listed above.
 
-If you used the git commandline tool to clone the fork you may need to [add the upstream remote](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository) to your local clone:
+If you used the git command-line tool to clone the fork you may need to [add the upstream remote](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository) to your local clone:
 
 ```console
 git remote add upstream https://github.com/ni/VireoSDK.git
@@ -63,10 +63,10 @@ git remote add upstream https://github.com/ni/VireoSDK.git
 
 # Development workflow
 In the fork-pull workflow new development is performed in small short-lived branches in your fork and a pull request is submitted to have those changes pulled in upstream.
-Generally you should not work directly in master of your fork but instead create a branch from master for development.
+Generally, you should not work directly in the master branch of your fork but instead create a branch from master for development.
 
-When changes are pulled in to upstream from your branch they can be either merged directly or modified (squashed or rebased).
-The ability for pull request merges to modify commits is one reason for long-lived branches to be undesireable as maintenance is required to avoid diverging from master.
+When changes are pulled into upstream from your branch they can be either merged directly or modified (squashed or rebased).
+The ability of pull request merges to modify commits is one reason long-lived branches are undesireable as maintenance is required to avoid diverging from master.
 
 ## Creating a branch
 To create a branch first check the branch you are currently on by running:
@@ -112,9 +112,9 @@ git push
 
 You are encouraged to push changes frequently (at least once a day if not more often) to your fork.
 This allows other developers to see your code as well as backs up the code on the GitHub servers.
-In addition, pushing code to a fork allows the CI servers to run tests on your code potentially helping find breaking changes sooner.
+In addition, pushing code to a fork allows the CI servers to run tests on your code, potentially helping find breaking changes sooner.
 
-Feel free to create branches for new features, fixing issues, experiments, etc and have them in your fork.
+Feel free to create branches for new features, fixing issues, experiments, etc. and have them in your fork.
 Your fork is your workspace to develop freely and experiment.
 Just make sure to use **descriptive and concise** names for your branches so others can identify them.
 
@@ -131,7 +131,7 @@ git remote update -p
 
 ### Bringing master up to date
 Based on the recommended workflow the master branch of your local clone should not have any commits that diverge from upstream.
-Because there are not commits that diverge from upstream it is possible to fast forward merge your local master.
+Because there are no commits that diverge from upstream it is possible to fast forward merge your local master.
 
 To do this first verify you are on master with `git status` or change to master with `git checkout master`.
 
@@ -163,19 +163,19 @@ git rebase -p upstream/master
 ```
 
 **NOTICE**: Be aware that performing the rebase will cause your local clone of a your branch and the fork version of your branch to diverge.
-In order to push the branch to your clone you have to rewrite the history of the branch in your clone:
+In order to push the local branch to your fork you have to rewrite the history of the branch in your fork:
 ```console
 git push --force-with-lease
 ```
 
-The `--force-with-lease` option will make sure that your clone's branch does not have any changes that are missing locally.
-This can happen if for instance you perform development on a different machine, pushed them to your clone, and have not synced those changes locally.
+The `--force-with-lease` option will make sure that your fork's branch does not have any changes that are missing locally.
+This can happen if you perform development on a different machine, pushed them to your fork, and have not synced those changes locally.
 
 **DO NOT REWRITE HISTORY IN SHARED BRANCHES**: Your fork is your playground for development and as long as you are the only developer contributing to a branch it is safe to rewrite the history of the branch.
 It is encouraged before submission to rebase your changes on top of master and to remove extraneous commits to improve the commit history.
 However, if multiple developers are doing development in a branch it requires coordination before rewriting history using rebase.
 
-# Testing Local Vireo Changes
+# Testing local Vireo changes
 The [README.md](README.md) describes how to test your Vireo changes locally on your development machine with the tests in VireoSDK.
 This section will instead focus on testing your local Vireo changes in other applications that consume Vireo.
 
@@ -191,7 +191,7 @@ If you have a JavaScript application on your local machine that relies on vireo 
   npm install <PATH_TO_VIREO_SDK_DIRECTORY>
   ```
 This will modify your package.json and package-lock.json to resolve the "vireo" dependency to a local path on disk instead of to a version number published in the npm repository.
-The VireoSDK directory will be symlinked to the node_modules folder of your application.
+The VireoSDK directory will be symlinked to the `node_modules` folder of your application.
 This allows you to make changes to your local vireo and have them be instantly available to the consuming application.
 
 **WARNING** Since the local VireoSDK is symlinked to the JavaScript application be aware of tooling that could accidently delete or modify your local development files unexpectedly.
