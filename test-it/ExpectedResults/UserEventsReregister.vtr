@@ -9,9 +9,13 @@ Waiting on events
 Event skipped
 Waiting on events
 (Generating User Events [B,A] in background)
-Event skipped
-Waiting on events
 Event case 1, User Event A Fired, EventType:1000 Index:0 data:<('Goodbye' 2)>
 Waiting on events
-Event case 2, Timeout case (300ms), EventType:1 Index:0
+Event case 2, Timeout case (100ms), EventType:1 Index:0 - Count 1
+Registering for UserEvent B2
+Generating User Events B2
+Waiting on events
+Event case 3, User Event B Fired, EventType:1000 Index:0 data:<('Howdy' 'Yo' 456)>
+Waiting on events
+Event case 2, Timeout case (100ms), EventType:1 Index:0 - Count 2
 Done

@@ -25,6 +25,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     Locals:c(
         e(UserEventRefNum<MyEventDataA> userEventRefA)
         e(UserEventRefNum<MyEventDataB> userEventRefB)
+        e(UserEventRefNum<MyEventDataB> userEventRefB2)
         e(EventRegRefNum<c(
 	        e(c(e(Int32 eventType)e(UserEventRefNum<MyEventDataA>)))
 	        e(c(e(Int32 eventType)e(UserEventRefNum<MyEventDataB>)))
@@ -33,8 +34,10 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	e(dv(MyEventDataA ("Hello" 1.0)) myDataA1)
 	e(dv(MyEventDataA ("Goodbye" 2.0)) myDataA2)
 	e(dv(MyEventDataB ("Bonjour" "Aloha" 123)) myDataB)
+	e(dv(MyEventDataB ("Howdy" "Yo" 456)) myDataB2)
         e(.ErrorCluster errorIO)
-        e(dv(Int32 300) timeOut)
+        e(dv(Int32 100) timeOut)
+        e(dv(Int32 0) timeOutCount)
 
 	e(c(  // Storage for event data node on left border of event case 1 (user event A)
 	    e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 eventTime) e(UInt32 eventIndex)
@@ -55,6 +58,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     clump (1 // top level
 	CreateUserEvent(userEventRefA errorIO)
 	CreateUserEvent(userEventRefB errorIO)
+	CreateUserEvent(userEventRefB2 errorIO)
 
 	// Generate 1 of each before registration (should be discarded and not leak)
 	GenerateUserEvent(userEventRefA myDataA1 false errorIO)
@@ -89,11 +93,20 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 	Branch(5)  // User Event A waits again
 
 	Perch(20) // Event case 2
-	Printf ("Event case 2, Timeout case (%dms), EventType:%u Index:%u\n" timeOut localEventDataTO.eventType localEventDataTO.eventIndex)
-	Branch(100) // Timeout event finishes
+	Add(1 timeOutCount timeOutCount)
+	Printf ("Event case 2, Timeout case (%dms), EventType:%u Index:%u - Count %d\n" timeOut localEventDataTO.eventType localEventDataTO.eventIndex timeOutCount)
+	BranchIfNE(50 timeOutCount 1)
+	Printf ("Registering for UserEvent B2\n")
+	RegisterForEvents(eventRegRef errorIO * * 1000 userEventRefB2)
+	Printf("Generating User Events B2\n")
+	GenerateUserEvent(userEventRefB2 myDataB2 false errorIO)
+	Perch(50)
+	BranchIfGE(100 timeOutCount 2) // Timeout event finishes
+	Branch(5)
 
 	Perch(30) // Event case 3
 	Printf ("Event case 3, User Event B Fired, EventType:%u Index:%u data:<%z>\n" localEventDataB.eventType localEventDataB.eventIndex localEventDataB.data)
+	BranchIfGT(5 timeOutCount 0)
 	Printf ("Unregistering for UserEvent B\n")
 	RegisterForEvents(eventRegRef errorIO * * 1000 0)
 	Branch(5)  // User Event B waits again

@@ -624,6 +624,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
                                            regInfo->_entry.size());
         }
         isRereg = true;
+        qID = regInfo->_qID;
     } else {
         EventOracle::TheEventOracle().GetNewQueueObject(&qID, NULL);
         regInfo = new DynamicEventRegInfo(qID, regCount);
