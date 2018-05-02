@@ -1,4 +1,4 @@
-describe('A JavaScript function invoke', function () {
+fdescribe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -13,7 +13,7 @@ describe('A JavaScript function invoke', function () {
             var completionCallback = this.getCompletionCallback();
             setTimeout(function () {
                 completionCallback(inputInteger * inputInteger);
-            }, 4);
+            }, 0);
         },
         NI_CallCompletionCallbackSynchronously: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
@@ -24,7 +24,7 @@ describe('A JavaScript function invoke', function () {
                 var myPromise = new Promise(function (resolve) {
                     setTimeout(function () {
                         resolve(input * input);
-                    }, 4);
+                    }, 0);
                 });
                 return myPromise;
             };
@@ -59,10 +59,6 @@ describe('A JavaScript function invoke', function () {
             expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
         },
-        NI_CallCompletionCallbackAfterFunctionErrors: function () {
-            javaScriptInvokeFixtures.NI_CallCompletionCallbackAfterFunctionErrors_Callback = this.getCompletionCallback();
-            throw new Error('Your function call just failed!');
-        },
         NI_CompletionCallbackReturnsUndefined: function () {
             var completionCallback = this.getCompletionCallback();
             var testCompletion = function () {
@@ -95,6 +91,18 @@ describe('A JavaScript function invoke', function () {
             };
             secondClumpCompletionCallback();
         },
+        NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution: function (inputInteger) {
+            javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = this;
+            return inputInteger * inputInteger;
+        },
+        NI_RetrieveCompletionCallbackAfterContextIsStaleFromError: function () {
+            javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = this;
+            throw new Error('This function is a failure!');
+        },
+        NI_CallCompletionCallbackAfterFunctionErrors: function () {
+            javaScriptInvokeFixtures.NI_CallCompletionCallbackAfterFunctionErrors_Callback = this.getCompletionCallback();
+            throw new Error('Your function call just failed!');
+        },
         running: 0
     };
 
@@ -111,6 +119,8 @@ describe('A JavaScript function invoke', function () {
 
     afterAll(function () {
         Object.keys(javaScriptInvokeFixtures).forEach((functionName) => (window[functionName] = undefined));
+        javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = undefined;
+        javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = undefined;        
     });
 
     it('with async callback successfully works', function (done) {
@@ -160,16 +170,6 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('with call to completion callback after the function errors', function (done) {
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        vireo.eggShell.loadVia('enqueue(CallCompletionCallbackAfterFunctionErrors)');
-        runSlicesAsync(function () {
-            expect(javaScriptInvokeFixtures.NI_CallCompletionCallbackAfterFunctionErrors_Callback)
-                .toThrowError(/NI_CallCompletionCallbackAfterFunctionErrors threw an error, so this callback cannot be invoked/);
-            done();
-        });
-    });
-
     it('with completion callbacks called out of order', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'CallCompletionCallbackAcrossClumps');
@@ -182,6 +182,38 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error.source')).toBeEmptyString();
             expect(viPathParser('acrossClumpsReturn1')).toBe(6);
             expect(viPathParser('acrossClumpsReturn2')).toBe(25);
+            done();
+        });
+    });
+
+    it('with completion callback retrieval when context is stale after to synchronous execution throws error', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution');
+        vireo.eggShell.loadVia('enqueue(RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution)');
+        runSlicesAsync(function () {
+            expect(javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution.getCompletionCallback)
+                .toThrowError(/The context that is being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution is not valid anymore/);
+            expect(viPathParser('return')).toBe(36);
+            done();
+        });
+    });
+
+    it('with completion callback retrieval when context is stale after function errors throws error', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+        vireo.eggShell.loadVia('enqueue(RetrieveCompletionCallbackAfterContextIsStaleFromError)');
+        runSlicesAsync(function () {
+            expect(javaScriptInvokeFixtures.CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError.getCompletionCallback)
+                .toThrowError(/The context that is being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromError is not valid anymore/);
+            done();
+        });
+    });
+
+    it('with call to completion callback when context is stale after the function errors', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+        vireo.eggShell.loadVia('enqueue(CallCompletionCallbackAfterFunctionErrors)');
+        runSlicesAsync(function () {
+            expect(javaScriptInvokeFixtures.NI_CallCompletionCallbackAfterFunctionErrors_Callback)
+                .toThrowError(/NI_CallCompletionCallbackAfterFunctionErrors threw an error, so this callback cannot be invoked/);
             done();
         });
     });

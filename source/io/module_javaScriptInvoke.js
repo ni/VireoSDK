@@ -320,12 +320,23 @@
             typeConfig.writer(returnValuePointer, returnUserValue);
         };
 
-        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState) {
+        var completionCallbackRetrievalEnum = {
+            AVAILABLE: 'AVAILABLE',
+            RETRIEVED: 'RETRIEVED',
+            UNRETRIEVABLE: 'UNRETRIEVABLE'
+        };
+        var completionCallbackInvocationEnum = {
+            PENDING: 'PENDING',
+            FULFILLED: 'FULFILLED',
+            REJECTED: 'REJECTED'
+        };
+
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
             var completionCallback = function (returnValue) {
-                if (currentInvocationState.completionCallbackResolved === 'resolved') {
+                if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
                     throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
                 }
-                if (currentInvocationState.completionCallbackResolved === 'rejected') {
+                if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
                 if (!(returnValue instanceof Error)) {
@@ -336,20 +347,23 @@
                     var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
                     Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 }
-                currentInvocationState.completionCallbackResolved = 'resolved';
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
             return completionCallback;
         };
 
-        var generateContext = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState) {
+        var generateContext = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
             var context = {};
             context.getCompletionCallback = function () {
-                if (currentInvocationState.completionCallbackRetrieved === true) {
-                    throw new Error('The completion callback was retrieved more than once.');
+                if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
+                    throw new Error('The completion callback was retrieved more than once for ' + functionName + '.');
                 }
-                currentInvocationState.completionCallbackRetrieved = true;
-                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState);
+                if(completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
+                    throw new Error('The context being accessed for ' + functionName + ' is not valid anymore.');
+                }
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
+                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
             };
             return context;
         };
@@ -377,7 +391,7 @@
                 newErrorCode = ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
@@ -387,7 +401,7 @@
                 newErrorCode = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.CODE;
                 newErrorSource = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
@@ -400,14 +414,14 @@
             if (returnTypeName === 'Array') {
                 returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
-
-            var currentInvocationState = {
-                completionCallbackRetrieved: false,
-                completionCallbackResolved: 'unresolved'
+            
+            var completionCallbackStatus = {
+                retrievalState: completionCallbackRetrievalEnum.AVAILABLE,
+                invocationState: completionCallbackInvocationEnum.PENDING
             };
 
             var returnValue = undefined;
-            var context = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, currentInvocationState);
+            var context = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
@@ -415,13 +429,16 @@
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                currentInvocationState.completionCallbackResolved = 'rejected';
-                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+                Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
-
-            if (!currentInvocationState.completionCallbackRetrieved) {
+            // assume synchronous invocation since the completion callback was never retrieved
+            if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
                 updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
                 Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;
