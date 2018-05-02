@@ -39,7 +39,7 @@ describe('A JavaScript function invoke', function () {
         NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
             completionCallback(inputInteger * inputInteger);
-            expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
+            expect(this.getCompletionCallback).toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback is not valid anymore./);
         },
         NI_CallCompletionCallbackMoreThanOnce: function (inputInteger) {
             var completionCallback = this.getCompletionCallback();
@@ -56,7 +56,7 @@ describe('A JavaScript function invoke', function () {
             };
             expect(testCompletion).not.toThrowError();
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
-            expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
+            expect(this.getCompletionCallback).toThrowError(/The context being accessed for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval is not valid anymore./);
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
         },
         NI_CompletionCallbackReturnsUndefined: function () {
