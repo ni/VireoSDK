@@ -139,10 +139,10 @@ describe('The Vireo PropertyNode', function () {
                 imaginary: -10
             };
             var expectedTimestamp = {
-                seconds: 0,
-                fraction: 0
+                seconds: '0',
+                fraction: '0'
             };
-            var valuesToRead = [true, -123, -4321, -987654321, -9876543210, 123, 4321, 987654321, 9876543210,
+            var valuesToRead = [true, -123, -4321, -987654321, '-9876543210', 123, 4321, 987654321, '9876543210',
                 3.5, 6.28, complexToRead, complexToRead, 'Lorem ipsum', '0:0', 1.618, 3.236, true];
 
             var readFunction = generateReadFunction(valuesToRead);
@@ -275,11 +275,11 @@ describe('The Vireo PropertyNode', function () {
                 local_Int8: -123,
                 local_Int16: -4321,
                 local_Int32: -987654321,
-                local_Int64: -9876543210,
+                local_Int64: '-9876543210',
                 local_UInt8: 123,
                 local_UInt16: 4321,
                 local_UInt32: 987654321,
-                local_UInt64: 9876543210,
+                local_UInt64: '9876543210',
                 local_Single: 3.5,
                 local_Double: 1234.5678,
                 local_ComplexSingle: {
@@ -292,8 +292,8 @@ describe('The Vireo PropertyNode', function () {
                 },
                 local_String: 'Dolor amet sit amet',
                 local_Timestamp: {
-                    seconds: 3564057536,
-                    fraction: 7811758927381449000
+                    seconds: '3564057536',
+                    fraction: '7811758927381448193'
                 }
             };
             var writeFunction = generateWriteVerifier(expectedValues);
