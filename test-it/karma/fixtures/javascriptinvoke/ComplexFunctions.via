@@ -8,9 +8,10 @@ define(MyVI dv(VirtualInstrument (
         e(dv(.Int32 10) value)
         e(dv(.String "") returnString)
         e(dv(.String "Gravity: ") fieldName)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(false error 'NI_ConcatenateValue' returnString fieldName value)
+        JavaScriptInvoke(occurrence false error 'NI_ConcatenateValue' returnString fieldName value)
     )
 ) ) )
 

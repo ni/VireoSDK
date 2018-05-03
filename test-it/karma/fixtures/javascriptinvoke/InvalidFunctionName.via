@@ -5,9 +5,10 @@ define(MyVI dv(VirtualInstrument (
             e(.Int32 code)
             e(.String source)
         ) error)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(false error 'My function name' *)
+        JavaScriptInvoke(occurrence false error 'My function name' *)
     )
 ) ) )
 

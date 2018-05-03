@@ -5,9 +5,10 @@ define(MyVI dv(VirtualInstrument (
             e(.Int32 code)
             e(.String source)
         ) error)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(false error 'NI_Scoped.NI_FunctionNotFound' *)
+        JavaScriptInvoke(occurrence false error 'NI_Scoped.NI_FunctionNotFound' *)
     )
 ) ) )
 

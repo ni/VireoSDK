@@ -283,31 +283,35 @@
             (isTypedArray(returnValue));
         };
 
+        var completionCallbackRetrievalEnum = {
+            AVAILABLE: 'AVAILABLE',
+            RETRIEVED: 'RETRIEVED',
+            UNRETRIEVABLE: 'UNRETRIEVABLE'
+        };
+        var completionCallbackInvocationEnum = {
+            PENDING: 'PENDING',
+            FULFILLED: 'FULFILLED',
+            REJECTED: 'REJECTED'
+        };
+
         var updateReturnValue = function (
             functionName,
-            returnPointer,
-            returnValue,
+            returnTypeName,
+            returnValuePointer,
+            returnUserValue,
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
-            if (!isValidJavaScriptReturnType(returnValue)) {
+            if (!isValidJavaScriptReturnType(returnUserValue)) {
                 var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
                 var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
-            var returnValueIndex = 0;
-            var returnTypeName = getParameterTypeString(returnPointer, returnValueIndex);
-
             if (returnTypeName === 'StaticTypeAndData') {
                 // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
                 return;
-            }
-
-            var returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
-            if (returnTypeName === 'Array') {
-                returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
 
             var typeConfig = typeFunctions[returnTypeName];
@@ -317,17 +321,77 @@
                 var code2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
                 Module.coreHelpers.mergeErrors(true, code2, source2, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
-            } else if (!typeConfig.isValidReturnType(returnValue)) {
+            } else if (!typeConfig.isValidReturnType(returnUserValue)) {
                 var source3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE;
                 var code3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
                 Module.coreHelpers.mergeErrors(true, code3, source3, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
-            typeConfig.writer(returnValuePointer, returnValue);
+            typeConfig.writer(returnValuePointer, returnUserValue);
+        };
+
+        var tryUpdateReturnValue = function (
+            functionName,
+            returnTypeName,
+            returnValuePointer,
+            returnValue,
+            errorStatusPointer,
+            errorCodePointer,
+            errorSourcePointer,
+            completionCallbackStatus) {
+            try {
+                updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
+            } catch (ex) {
+                var newErrorStatus = true;
+                var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
+                var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
+                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+            }
+        };
+
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+            var completionCallback = function (returnValue) {
+                if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
+                    throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
+                }
+                if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
+                    throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
+                }
+                if (!(returnValue instanceof Error)) {
+                    tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                } else {
+                    var newErrorStatus = true;
+                    var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
+                    var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
+                    Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                }
+                Module.eggShell.setOccurrenceAsync(occurrencePointer);
+            };
+            return completionCallback;
+        };
+
+        var generateContext = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+            var context = {};
+            context.getCompletionCallback = function () {
+                if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
+                    throw new Error('The completion callback was retrieved more than once for ' + functionName + '.');
+                }
+                if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
+                    throw new Error('The context being accessed for ' + functionName + ' is not valid anymore.');
+                }
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
+                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+            };
+            return context;
         };
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
+            occurrencePointer,
             functionNamePointer,
             returnPointer,
             parametersPointer,
@@ -349,6 +413,7 @@
                 newErrorCode = ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
@@ -358,11 +423,27 @@
                 newErrorCode = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.CODE;
                 newErrorSource = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
-            var context = undefined;
+            var returnTypeName = getParameterTypeString(returnPointer, 0);
+            var returnValuePointer = undefined;
+            if (returnTypeName !== 'StaticTypeAndData') {
+                // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
+                returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
+            }
+            if (returnTypeName === 'Array') {
+                returnTypeName += getArrayElementTypeString(returnValuePointer);
+            }
+
+            var completionCallbackStatus = {
+                retrievalState: completionCallbackRetrievalEnum.AVAILABLE,
+                invocationState: completionCallbackInvocationEnum.PENDING
+            };
+
             var returnValue = undefined;
+            var context = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
@@ -370,18 +451,17 @@
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+                Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
-            try {
-                updateReturnValue(functionName, returnPointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer);
-            } catch (ex) {
-                newErrorStatus = true;
-                newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            // assume synchronous invocation since the completion callback was never retrieved
+            if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
+                tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                Module.eggShell.setOccurrence(occurrencePointer);
             }
-
             return;
         };
     };

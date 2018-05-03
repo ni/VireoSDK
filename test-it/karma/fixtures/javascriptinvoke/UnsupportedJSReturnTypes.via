@@ -11,10 +11,11 @@ define(MyVI dv(VirtualInstrument (
             e(.String source)
         ) error2)
         e(dv(.String "") returnString)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(false error 'NI_ReturnObject' returnString)
-        JavaScriptInvoke(false error2 'NI_ReturnFunction' returnString)
+        JavaScriptInvoke(occurrence false error 'NI_ReturnObject' returnString)
+        JavaScriptInvoke(occurrence false error2 'NI_ReturnFunction' returnString)
     )
 ) ) )
 
