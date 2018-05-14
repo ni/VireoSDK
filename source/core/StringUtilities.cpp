@@ -1147,7 +1147,6 @@ Int32 PercentEncodedSubString::GetEncodedLength(const SubString &s) {
 void PercentEncodedSubString::Encode(const SubString &s) {
     SubString ss = s;
     Utf8Char c;
-    Int32 value;
     Utf8Char *pDest = _convertedStr;
 
     // Custom encoder percent-encodes if first char
