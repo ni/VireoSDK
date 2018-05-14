@@ -390,17 +390,17 @@ class DynamicEventRegInfo {
         _entry.reserve(nEntries);
     }
     size_t NumEntries() const { return _entry.size(); }
-    Int32 DynamicEventMatchCore(TypeRef regRefType, void *pData, RefNum refnum, Int32 &dynIndexBase) {
+    Int32 DynamicEventMatchCore(TypeRef regRefType, void *pData, RefNum refnum, Int32 *dynIndexBase) {
         Int32 dynIndex = 0;
         if (regRefType->IsRefnum() && pData && ((RefNumVal*)pData)->GetRefNum() == refnum) {
-            dynIndex = dynIndexBase;
+            dynIndex = *dynIndexBase;
             return dynIndex;
         } else if (regRefType->IsArray() && regRefType->Rank() == 1 && regRefType->GetSubElement(0)->IsRefnum()) {
             TypedArray1D<RefNumVal> *aRef = *(TypedArray1D<RefNumVal>**)pData;
             RefNumVal *aPtr = aRef->BeginAt(0);
             for (Int32 i = 0; i < aRef->Length(); ++i) {
                 if (aPtr->GetRefNum() == refnum) {
-                    dynIndex = dynIndexBase;
+                    dynIndex = *dynIndexBase;
                     return dynIndex;
                 }
                 ++aPtr;
@@ -409,13 +409,13 @@ class DynamicEventRegInfo {
             AQBlock1 *refClustPtr = (AQBlock1*)pData;
             AQBlock1 *eltPtr = refClustPtr;
             Int32 numElts = regRefType->SubElementCount();
-            ++dynIndexBase;  // the whole cluster counts as one, matching the rules for unbundler recursive indexes
+            ++*dynIndexBase;  // the whole cluster counts as one, matching the rules for unbundler recursive indexes
             for (Int32 j = 0; j < numElts; ++j) {
                 TypeRef eltType = regRefType->GetSubElement(j);
                 eltPtr += eltType->ElementOffset();
                 if ((dynIndex = DynamicEventMatchCore(eltType, eltPtr, refnum, dynIndexBase)))
                     break;
-                ++dynIndexBase;
+                ++*dynIndexBase;
             }
         }
         return dynIndex;
@@ -431,7 +431,7 @@ class DynamicEventRegInfo {
                     if (entry.refnumEntry.GetRefNum() == eData.eventRef.GetRefNum())
                         return dynIndexBase;
                 } else {
-                    if ((dynIndex = DynamicEventMatchCore(regRefType, entry.refDataEntry, eData.eventRef.GetRefNum(), dynIndexBase)))
+                    if ((dynIndex = DynamicEventMatchCore(regRefType, entry.refDataEntry, eData.eventRef.GetRefNum(), &dynIndexBase)))
                         break;
                 }
             }
@@ -642,7 +642,8 @@ static inline InstructionCore *ReturnRegForEventsFatalError(const char *errorMes
     return THREAD_EXEC()->Stop();
 }
 
-LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, Int32 refInput, TypeRef refType, EventSource eSource, EventType eventType, void *pData, void *pOldData) {
+LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, Int32 refInput, TypeRef refType, EventSource eSource,
+                              EventType eventType, void *pData, void *pOldData) {
     LVError err = kLVError_NoError;
     RefNumVal *refData = (RefNumVal*)pData;
     if (refType->IsRefnum()) {  // scalar refnum
@@ -658,7 +659,7 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
     } else if (refType->IsArray() && refType->Rank() == 1 && refType->GetSubElement(0)->IsRefnum()) {
         // Array of scalar refnums
         TypedArray1D<RefNumVal> *refArrayPtr = pData ? *(TypedArray1D<RefNumVal>**)pData : null;
-        if (pOldData) { // re-registration
+        if (pOldData) {  // re-registration
             TypedArray1D<RefNumVal> *oldRefArrayPtr = (TypedArray1D<RefNumVal>*)pOldData;
             RefNumVal *aOldRefPtr = oldRefArrayPtr->BeginAt(0);
             for (Int32 j = 0; j < oldRefArrayPtr->Length(); ++j) {
@@ -780,7 +781,6 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
                 return ReturnRegForEventsFatalError("RegisterForEvents: Input %d type doesn't match event reg ref element type", refInput);
             }
         }
-#if 1
         void *oldRef = isRereg ? &regInfo->_entry[refInput].refnumEntry : null;
         void *pDataCopy = pData;
         if (!isRereg) {
@@ -802,50 +802,6 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
             }
             return ReturnRegForEventsFatalError("RegisterForEvents: Input %d type not supported", refInput);
         }
-#else
-        RefNumVal *refData = (RefNumVal*)pData;
-        // TODO(spathiwa) for control events, make sure ref is valid and return error if not
-
-        if (isRereg) {
-            DynamicEventRegEntry &regEntry =  regInfo->_entry[refInput];
-            if (refData && regEntry.refnumEntry.GetRefNum() == refData->GetRefNum())
-                continue;  // refnum is same as last time, no reason to unreg and rereg.
-            EventOracle::TheEventOracle().UnregisterForEvent(qID, regEntry.eventSource, regEntry.eventType, 0,
-                                                             regEntry.refnumEntry.GetRefNum());
-            if (refData)
-                regEntry.refnumEntry = *refData;
-            else
-                regEntry.refnumEntry.SetRefNum(kNotARefNum);
-        } else {
-            if (refType->IsRefnum()) {
-                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, *refData));
-            } else if (refType->IsArray() && refType->Rank() == 1 && refType->GetSubElement(0)->IsRefnum()) {
-                TypedArrayCore *refArrayPtr = *(TypedArrayCore**)pData;
-                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, refArrayPtr));
-            } else if (refType->IsCluster()) {
-                AQBlock1 *refClustPtr = *(AQBlock1**)pData;
-                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, 0, refClustPtr));
-                Int32 numElts = refType->SubElementCount();
-                for (Int32 j = 0; j < numElts; ++j) {
-                    
-                }
-            } else {
-                return ReturnRegForEventsFatalError("RegisterForEvents: Input %d type not supported", refInput);
-            }
-        }
-        if (refType->IsRefnum()) {
-            if (refData && refData->GetRefNum())
-                EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, refData->GetRefNum());
-        } else if (refType->IsArray()) {
-            TypedArray1D<RefNumVal> *aRef = *(TypedArray1D<RefNumVal>**)pData;
-            RefNumVal *aPtr = aRef->BeginAt(0);
-            for (Int32 j = 0; j < aRef->Length(); ++j) {
-                EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, aPtr->GetRefNum());
-                ++aPtr;
-            }
-        }
-        // gPlatform.IO.Printf("RegisterForEvents event %d, ref 0x%x\n", eventType, refData->GetRefNum());
-#endif
     }
     return _NextInstruction();
 }
@@ -973,7 +929,8 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     //                   should go back to sleep w/o running timeout case)
     const EventData &eventData = EventOracle::TheEventOracle().GetEventData(eventQID);
 
-    dynIndex += regInfo ? regInfo->DynamicEventMatch(eventData.common, eventRegRefnumPtr ? eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : NULL) : 0;
+    dynIndex += regInfo ? regInfo->DynamicEventMatch(eventData.common, eventRegRefnumPtr ?
+                            eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : NULL) : 0;
 
     for (Int32 inputTuple = 0; inputTuple < numTuples; ++inputTuple) {
         UInt32 eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
