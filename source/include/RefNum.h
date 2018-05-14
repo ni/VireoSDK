@@ -23,7 +23,6 @@
 namespace Vireo {
 
 /* Manage storage of refnum-associated typed data */
-typedef UInt32 RefNum;
 typedef intptr_t RefNumDataBase;
 typedef void* RefNumData;
 

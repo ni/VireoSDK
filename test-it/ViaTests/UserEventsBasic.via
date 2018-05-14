@@ -29,6 +29,8 @@ define(UserEventTestProgram dv(.VirtualInstrument (
     )
     Locals:c(
         e(UserEventRefNum<MyEventData> userEventRef)
+        e(UserEventRefNum<MyEventData> userEventRefCopy)
+        e(UserEventRefNum<MyEventData> userEventRefNull)
         e(EventRegRefNum<c(
 	    // Each level in top level cluster is one registration entry, corresponding to
 	    // inputs to the RegisterForEvents node which created the registration.
@@ -62,7 +64,9 @@ define(UserEventTestProgram dv(.VirtualInstrument (
 
     clump (1 // top level
 	CreateUserEvent(userEventRef errorIO)
-	RegisterForEvents(eventRegRef errorIO 1000 userEventRef)
+	Copy(userEventRef userEventRefCopy)
+	RegisterForEvents(eventRegRef errorIO 1000 userEventRefCopy)
+	Copy(userEventRefNull userEventRefCopy)  // make sure clearing the value used after registration doesn't affect reg
 
 	Trigger(3)  // start bg clump
 

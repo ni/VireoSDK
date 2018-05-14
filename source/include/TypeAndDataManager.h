@@ -929,17 +929,19 @@ class PointerType : public WrappedType
     // TODO(PaulAustin): Add GetSubElementAddressFromPath
 };
 
+typedef UInt32 RefNum;
+
 class RefNumVal {
  public:
     RefNumVal() : _refnum(0), _typeRef(NULL)  { }
     explicit RefNumVal(TypeRef typeRef) : _refnum(0), _typeRef(typeRef) { }
     //! Array's type.
     TypeRef Type()                  { return _typeRef; }
-    UInt32 GetRefNum() const { return _refnum; }
-    void SetRefNum(UInt32 refNum) { _refnum = refNum; }
+    RefNum GetRefNum() const { return _refnum; }
+    void SetRefNum(RefNum refNum) { _refnum = refNum; }
  private:
     void SetType(const TypeRef typeRef) {  _typeRef = typeRef; }
-    UInt32   _refnum;
+    RefNum   _refnum;
     TypeRef _typeRef;
 
     friend class RefNumValType;  // Allowed to call SetType
