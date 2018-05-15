@@ -19,7 +19,6 @@ SDG
 #include "ControlRef.h"
 #include <stdio.h>
 
-
 #define VIREO_MODULE_PropertyNode 1
 
 #if defined (VIREO_MODULE_PropertyNode)
@@ -131,6 +130,10 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     SubString typeNameSubStr = value->_paramType->Name();
     propertyTypeName->AppendSubString(&typeNameSubStr);
 
+    if (!errorClusterPtr) {
+        errorClusterPtr = new ErrorCluster();
+    }
+
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
             controlRefVIName,
@@ -189,6 +192,10 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     StringRef propertyTypeName = typeNameStackVar.Value;
     SubString typeNameSubStr = value->_paramType->Name();
     propertyTypeName->AppendSubString(&typeNameSubStr);
+
+    if (!errorClusterPtr) {
+        errorClusterPtr = new ErrorCluster();
+    }
 
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
