@@ -360,7 +360,7 @@ enum EventRegFlags {
     kEventRegFlagsLocksUI = 1,         // not yet implemented
     kEventRegFlagsCallback = 2,        // not yet implemented
     kEventRegFlagsHasLossyLimit = 4,   // not yet implemented
-    kEventRegFlagsPolyData = 8
+    kEventRegFlagsPolyData = 8         // indicates reg entry is polymorphic data (allocated copy)
 };
 
 class DynamicEventRegEntry {
@@ -370,15 +370,15 @@ class DynamicEventRegEntry {
     EventRegFlags regFlags;
     union {
         struct {
-            void *refDataEntry;
+            void *refDataEntry;  // Allocated storage, used when entry is an array or cluster: (regFlags & kEventRegFlagsPolyData)!=0
             TypeRef refPolyType;
         };
-        RefNumVal refnumEntry;
+        RefNumVal refnumEntry;   // Inline storage, used when entry is a scalar refnum
     };
-    DynamicEventRegEntry(EventSource eSource, EventType eType, EventRegFlags rFlags, RefNumVal &refv) : eventSource(eSource), eventType(eType),
-        regFlags(rFlags), refnumEntry(refv) { }
-    DynamicEventRegEntry(EventSource eSource, EventType eType, EventRegFlags rFlags, void *pData, TypeRef refType) : eventSource(eSource),
-        eventType(eType), regFlags(rFlags), refDataEntry(pData), refPolyType(refType) { }
+    DynamicEventRegEntry(EventSource eSource, EventType eType, const RefNumVal &refv, EventRegFlags rFlags = kEventRegFlagsNone) :
+        eventSource(eSource), eventType(eType), regFlags(rFlags), refnumEntry(refv) { }
+    DynamicEventRegEntry(EventSource eSource, EventType eType, void *pData, TypeRef refType, EventRegFlags rFlags = kEventRegFlagsPolyData) :
+        eventSource(eSource), eventType(eType), regFlags(EventRegFlags(rFlags | kEventRegFlagsPolyData)), refDataEntry(pData), refPolyType(refType) { }
 };
 
 class DynamicEventRegInfo {
@@ -390,6 +390,11 @@ class DynamicEventRegInfo {
         _entry.reserve(nEntries);
     }
     size_t NumEntries() const { return _entry.size(); }
+
+    // Recursive function to match a registered dynamic event with polymorphic data (clusters/arrays of refs)
+    // If the registered data is a cluster or nested cluster updated *dynIndexBase with the nested element
+    // index as it traverses, and returns a non-zero index if a match occcurs.  (The dynIndex value is
+    // the same one storied in the EventSpec in the event structure configuration data.)
     Int32 DynamicEventMatchCore(TypeRef regRefType, void *pData, RefNum refnum, Int32 *dynIndexBase) {
         Int32 dynIndex = 0;
         if (regRefType->IsRefnum() && pData && ((RefNumVal*)pData)->GetRefNum() == refnum) {
@@ -420,6 +425,7 @@ class DynamicEventRegInfo {
         }
         return dynIndex;
     }
+    // Return if the given Event data matches dynamically registered events; returns nonzero dynIndex of match if so.
     Int32 DynamicEventMatch(const EventCommonData &eData, TypeRef regRefClusterType) {
         Int32 dynIndex = 0, dynIndexBase = 1;
         for (Int32 i = 0; i < Int32(_entry.size()); i++) {
@@ -439,8 +445,10 @@ class DynamicEventRegInfo {
         }
         return dynIndex;
     }
+
     ~DynamicEventRegInfo() {
          for (size_t i = 0; i < _entry.size(); i++) {
+             // Free any allocated polymorphic event reg. data
              DynamicEventRegEntry &entry = _entry[i];
              if ((entry.regFlags & kEventRegFlagsPolyData)) {
                  entry.refPolyType->ClearData(entry.refDataEntry);
@@ -642,6 +650,7 @@ static inline InstructionCore *ReturnRegForEventsFatalError(const char *errorMes
     return THREAD_EXEC()->Stop();
 }
 
+// Recursive helper function to handle event registration (or re-registration) of polymorphic inputs (clusters/arrays of refnums)
 LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, Int32 refInput, TypeRef refType, EventSource eSource,
                               EventType eventType, void *pData, void *pOldData) {
     LVError err = kLVError_NoError;
@@ -686,6 +695,7 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
             eltPtr += eltType->ElementOffset();
             if (oldEltPtr)
                 oldEltPtr += eltType->ElementOffset();
+            // Recurse to handle subelements
             if ((err = RegisterForEventsCore(qID, regInfo, refInput, eltType, eSource, eventType, eltPtr, oldEltPtr)))
                 break;
         }
@@ -785,13 +795,13 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
         void *pDataCopy = pData;
         if (!isRereg) {
             if (regRefType->IsRefnum()) {
-                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, kEventRegFlagsNone, *(RefNumVal*)pData));
+                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, *(RefNumVal*)pData));
             } else {  // clusters and arrays make a deep copy of the data in case it changes
                 Int32 topSize = regRefType->TopAQSize();
                 pDataCopy = THREAD_TADM()->Malloc(topSize);
                 regRefType->InitData(pDataCopy, (TypeRef)NULL);
                 regRefType->CopyData(pData, pDataCopy);
-                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, kEventRegFlagsPolyData, pDataCopy, regRefType));
+                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, pDataCopy, regRefType));
             }
         }
         LVError err = RegisterForEventsCore(qID, regInfo, refInput, regRefType, eSource, eventType,
