@@ -130,8 +130,10 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     SubString typeNameSubStr = value->_paramType->Name();
     propertyTypeName->AppendSubString(&typeNameSubStr);
 
+    ErrorCluster internalErrorCluster;
     if (!errorClusterPtr) {
-        errorClusterPtr = new ErrorCluster();
+        internalErrorCluster = ErrorCluster();
+        errorClusterPtr = &internalErrorCluster;
     }
 
     if (!errorClusterPtr->status) {
@@ -193,8 +195,10 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     SubString typeNameSubStr = value->_paramType->Name();
     propertyTypeName->AppendSubString(&typeNameSubStr);
 
+    ErrorCluster internalErrorCluster;
     if (!errorClusterPtr) {
-        errorClusterPtr = new ErrorCluster();
+        internalErrorCluster = ErrorCluster();
+        errorClusterPtr = &internalErrorCluster;
     }
 
     if (!errorClusterPtr->status) {
