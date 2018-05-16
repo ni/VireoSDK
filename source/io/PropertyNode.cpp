@@ -131,10 +131,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     propertyTypeName->AppendSubString(&typeNameSubStr);
 
     ErrorCluster internalErrorCluster;
-    if (!errorClusterPtr) {
-        internalErrorCluster = ErrorCluster();
+    if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
-    }
 
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
@@ -196,10 +194,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     propertyTypeName->AppendSubString(&typeNameSubStr);
 
     ErrorCluster internalErrorCluster;
-    if (!errorClusterPtr) {
-        internalErrorCluster = ErrorCluster();
+    if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
-    }
 
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
