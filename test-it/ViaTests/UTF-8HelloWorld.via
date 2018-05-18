@@ -6,24 +6,47 @@
 // they are never 7bit ASCII characters. This means a simple scanner looking
 // for a ascii characters does not need to be UTF-8 aware. It can still look
 // byte by byte which is generally faster.
- 
+
 define(PrintLengths  dv(.VirtualInstrument (
+Params:
  c(
     i(.String string)
   )
+ Locals:
  c(
     e(.Int32 sLen)
     e(.Int32 aLen)
+    e(dv(a(.UInt8 *)) byteArray)
+    e(.ErrorCluster err)
+    e(dv(c(
+        e(.Boolean status)
+        e(.Int32 code)
+        e(.String source)
+    ) (false 0 '')) noError)
+    e(.String stringOut)
+    e(.Boolean isError)
   )
-  clump(1 
+  clump(1
     ArrayLength(string aLen)
     StringLength(string sLen)
     // In mono space fonts this template can be used
-    // to see if the String Length looks correct, but not always. 
+    // to see if the String Length looks correct, but not always.
     // some fonts will use two spaces per character or fractional amounts
-    
+
     Printf("------------------------------------123456789.123456789.123456789.123456789-.\n")
     Printf("ArrayLength (%2d) StringLength (%2z) -%z-\n" aLen sLen string)
+    StringToByteArray(string 0 byteArray err)
+    IsEQ(err noError isError)
+    BranchIfTrue(2 isError)
+    ByteArrayToString(byteArray 0 stringOut err)
+    IsEQ(err noError isError)
+    BranchIfTrue(2 isError)
+    BranchIfEQString(2 string stringOut)
+    // We are printing variables only if StringToByteArray or ByteArrayToString
+    // fail so that we don't need to update the .vtr for every input.
+    Println(stringOut)
+    Println(err)
+    Perch(2)
    )
  )))
 
@@ -54,7 +77,7 @@ define(HelloBiggerWorld dv(.VirtualInstrument (
     )
     clump (
 //       Println("Greet a bigger world, still just s small subset")
-       PrintLengths(vEnglish) 
+       PrintLengths(vEnglish)
        PrintLengths(vGerman)
        PrintLengths(vJapanese)
        PrintLengths(vSpanish)

@@ -19,6 +19,7 @@ SDG
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+#include "../../ThirdParty/utfcpp/source/utf8.h"
 
 #if !kVireoOS_windows
     #include <math.h>
@@ -1953,6 +1954,115 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
     elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
     return _NextInstruction();
 }
+
+struct ByteArrayToStringParamBlock : InstructionCore
+{
+    _ParamDef(TypedArrayCoreRef, ByteArrayIn);
+    _ParamDef(UInt16, StringEncodingIn);  // 0 = UTF-8 (only supported)
+    _ParamDef(StringRef, StringOut);
+    _ParamDef(ErrorCluster, ErrorInOut);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 stringEncoding, TypedArrayCoreRef outputArray) {
+    if (stringEncoding != 0) {
+        if (errorCluster != nullptr) {
+            errorCluster->SetError(true, 1, "Encoding type not supported", true);
+        }
+        if (outputArray != nullptr)
+            outputArray->Resize1D(0);
+        return false;
+    }
+    return true;
+}
+
+static bool CheckValidUTF8Error(UInt8* begin, UInt8* end, ErrorCluster* errorCluster)
+{
+    if (!utf8::is_valid(begin, end)) {
+        if (errorCluster != nullptr) {
+            errorCluster->SetError(true, 1, "Invalid UTF-8 characters found");
+        }
+        return false;
+    }
+    return true;
+}
+
+VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
+{
+    StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : nullptr;
+    ErrorCluster *errorCluster = _ParamPointer(ErrorInOut);
+    if ((stringOut == nullptr && errorCluster == nullptr) || (errorCluster != nullptr && errorCluster->hasError()))
+        return _NextInstruction();
+    TypedArrayCoreRef byteArray = _Param(ByteArrayIn);
+    TypeRef eltType = byteArray->ElementType();
+    if (!eltType->IsA(&TypeCommon::TypeInt8) && !eltType->IsA(&TypeCommon::TypeUInt8)) {
+        if (errorCluster != nullptr) {
+            errorCluster->SetError(true, 1, "Byte Array must be of type Int8 or UInt8", true);
+        }
+        return _NextInstruction();
+    }
+    IntIndex rank = byteArray->Rank();
+    VIREO_ASSERT(rank == 1);
+    UInt16 stringEncoding = _ParamPointer(StringEncodingIn) ? _Param(StringEncodingIn) : 0;
+    Int32 arrayLength = byteArray->DimensionLengths()[0];
+    if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, stringOut)) {
+        return _NextInstruction();
+    }
+    if (!CheckValidUTF8Error(byteArray->RawBegin(), byteArray->RawBegin() + arrayLength, errorCluster)) {
+        if (stringOut != nullptr)
+            stringOut->Resize1D(0);
+        return _NextInstruction();
+    }
+    stringOut->Replace1D(0, arrayLength, byteArray->RawBegin(), true);
+    return _NextInstruction();
+}
+
+struct StringToByteArrayParamBlock : InstructionCore
+{
+    _ParamDef(StringRef, StringIn);
+    _ParamDef(UInt16, StringEncodingIn);  // 0 = UTF-8 (only supported)
+    _ParamDef(TypedArrayCoreRef, ByteArrayOut);
+    _ParamDef(ErrorCluster, ErrorInOut);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
+{
+    StringRef stringIn = _Param(StringIn);
+    TypedArrayCoreRef byteArrayOut = _ParamPointer(ByteArrayOut) ? _Param(ByteArrayOut) : null;
+    ErrorCluster *errorCluster = _ParamPointer(ErrorInOut);
+    if ((byteArrayOut == nullptr && errorCluster == nullptr) || (errorCluster != nullptr && errorCluster->hasError()))
+        return _NextInstruction();
+    UInt16 stringEncoding = _ParamPointer(StringEncodingIn) ? _Param(StringEncodingIn) : 0;
+    if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, byteArrayOut)) {
+        // If LV got string from an external source, it is possible the string may have
+        // invalid characters for the chosen encoding. Unless and until we are sure that the LV string
+        // is guaranteed to have only valid characters of chosen encoding, this is a useful debugging tool
+        // to test LV strings with invalid characters by checking error cluster.
+        return _NextInstruction();
+    }
+    const Int32 stringLength = stringIn->Length();
+    if (errorCluster != nullptr) {
+        // If the user did not pass errorCluster, no need to validate the string, as we are copying
+        // to byteArrayOut unconditionally
+        CheckValidUTF8Error(stringIn->RawBegin(), stringIn->RawBegin() + stringLength, errorCluster);
+    }
+    if (byteArrayOut != nullptr) {
+        IntIndex rank = byteArrayOut->Rank();
+        VIREO_ASSERT(rank == 1);
+        TypeRef eltType = byteArrayOut->ElementType();
+        if (!eltType->IsA(&TypeCommon::TypeUInt8)) {
+            if (errorCluster != nullptr) {
+                errorCluster->SetError(true, 1, "Byte Array must be of type UInt8", true);
+            }
+        } else {
+            // Even if invalid UTF-8 characters are found, we want to copy to byteArrayOut to allow users to examine
+            byteArrayOut->Replace1D(0, stringLength, stringIn->RawBegin(), true);
+        }
+    }
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 #if defined(VIREO_TIME_FORMATTING)
 //------------------------------------------------------------
@@ -2715,6 +2825,8 @@ DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String)   i(String) io(ErrorCluster err) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorCluster err) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ByteArrayToString, "p(i(Array) i(UInt16) o(String) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION(StringToByteArray, "p(i(String) i(UInt16) o(Array) io(ErrorCluster err))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")
