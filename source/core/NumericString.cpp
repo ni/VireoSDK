@@ -19,6 +19,7 @@ SDG
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
+#include "utf8/utf8.h"
 
 #if !kVireoOS_windows
     #include <math.h>
@@ -1953,6 +1954,97 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
     elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
     return _NextInstruction();
 }
+
+struct ByteArrayToStringParamBlock : InstructionCore
+{
+    _ParamDef(StringRef, StringOut);
+    _ParamDef(TypedArrayCoreRef, ByteArrayIn);
+    _ParamDef(Int32, StringEncodingIn);  // 0 = UTF-8 (only supported)
+    _ParamDef(ErrorCluster, ErrorInOut);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+static bool IsSupportedEncodingAndUpdateErrorAndMakeOutputArrayEmpty(ErrorCluster* errorCluster, Int32 stringEncoding, TypedArrayCoreRef outputArray) {
+    if (stringEncoding != 0) {
+        if (errorCluster != nullptr) {
+            errorCluster->SetError(true, -1, "Encoding type not supported", true);  // TODO(sanmut): Update error code.
+        }
+        if (outputArray != nullptr)
+            outputArray->Resize1D(0);
+        return false;
+    }
+    return true;
+}
+
+static bool IsValidUTF8AndUpdateErrorAndMakeOutputArrayEmpty(UInt8* begin, UInt8* end, ErrorCluster* errorCluster, TypedArrayCoreRef outputArray)
+{
+    if (!utf8::is_valid(begin, end)) {
+        if (errorCluster != nullptr) {
+            errorCluster->SetError(true, 1, "Invalid UTF-8 characters found");  // TODO(sanmut): Update error code.
+        }
+        if (outputArray != nullptr)
+            outputArray->Resize1D(0);
+        return false;
+    }
+    return true;
+}
+
+VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
+{
+    StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : nullptr;
+    ErrorCluster *errorCluster = _ParamPointer(ErrorInOut);
+    if ((stringOut == nullptr && errorCluster == nullptr) || (errorCluster != nullptr && errorCluster->hasError()))
+        return _NextInstruction();
+    TypedArrayCoreRef byteArray = _Param(ByteArrayIn);
+    TypeRef eltType = byteArray->ElementType();
+    VIREO_ASSERT(eltType->IsA(&TypeCommon::TypeInt8) || eltType->IsA(&TypeCommon::TypeUInt8));
+    IntIndex rank = byteArray->Rank();
+    VIREO_ASSERT(rank == 1);
+    Int32 stringEncoding = _Param(StringEncodingIn);
+    Int32 arrayLength = byteArray->DimensionLengths()[0];
+    InstructionCore* value;
+    if (!IsSupportedEncodingAndUpdateErrorAndMakeOutputArrayEmpty(errorCluster, stringEncoding, stringOut)) {
+        return _NextInstruction();
+    }
+    if (!IsValidUTF8AndUpdateErrorAndMakeOutputArrayEmpty(byteArray->RawBegin(), byteArray->RawBegin() + arrayLength, errorCluster, stringOut)) {
+        return _NextInstruction();
+    }
+    stringOut->Replace1D(0, arrayLength, byteArray->RawBegin(), true);
+    return _NextInstruction();
+}
+
+struct StringToByteArrayParamBlock : InstructionCore
+{
+    _ParamDef(TypedArrayCoreRef, ByteArrayOut);
+    _ParamDef(StringRef, StringIn);
+    _ParamDef(Int32, StringEncodingIn);  // 0 = UTF-8 (only supported)
+    _ParamDef(ErrorCluster, ErrorInOut);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
+{
+    StringRef stringIn = _Param(StringIn);
+    TypedArrayCoreRef byteArrayOut = _ParamPointer(ByteArrayOut) ? _Param(ByteArrayOut) : null;
+    ErrorCluster *errorCluster = _ParamPointer(ErrorInOut);
+    if (byteArrayOut == nullptr || (errorCluster != nullptr && errorCluster->hasError()))
+        return _NextInstruction();
+    TypeRef eltType = byteArrayOut->ElementType();
+    VIREO_ASSERT(eltType->IsA(&TypeCommon::TypeUInt8));
+    IntIndex rank = byteArrayOut->Rank();
+    VIREO_ASSERT(rank == 1);
+    Int32 stringEncoding = _Param(StringEncodingIn);
+    if (!IsSupportedEncodingAndUpdateErrorAndMakeOutputArrayEmpty(errorCluster, stringEncoding, byteArrayOut)) {
+        return _NextInstruction();
+    }
+    if (!IsValidUTF8AndUpdateErrorAndMakeOutputArrayEmpty(stringIn->RawBegin(), stringIn->RawBegin() + stringIn->Length(), errorCluster, byteArrayOut)) {
+        return _NextInstruction();
+    }
+    Int32 arrayLength = stringIn->Length();
+    byteArrayOut->Replace1D(0, arrayLength, stringIn->RawBegin(), true);
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 #if defined(VIREO_TIME_FORMATTING)
 //------------------------------------------------------------
@@ -2715,6 +2807,8 @@ DEFINE_VIREO_BEGIN(NumericString)
     DEFINE_VIREO_FUNCTION(StringFormat, "p(i(VarArgCount) o(String)   i(String) io(ErrorCluster err) i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScanValue, "p(i(String) o(String) i(String) o(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(StringScan, "p(i(VarArgCount) i(String) o(String) i(String) i(UInt32) o(UInt32) io(ErrorCluster err) o(StaticTypeAndData))")
+    DEFINE_VIREO_FUNCTION(ByteArrayToString, "p(o(String) i(Array) i(Int32) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION(StringToByteArray, "p(o(Array) i(String) i(Int32) io(ErrorCluster err))")
 
 #if defined(VIREO_SPREADSHEET_FORMATTING)
     DEFINE_VIREO_FUNCTION(ArraySpreadsheet, "p(o(String) i(String) i(String) i(Array))")

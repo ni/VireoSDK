@@ -20,6 +20,9 @@
     <Filter Include="VireoSource\IO">
       <UniqueIdentifier>{87749a21-6183-4f92-8a31-22b58f67cee7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VireoSource\Include\utf8">
+      <UniqueIdentifier>{c3804ff3-2045-4348-80f1-9cee303be6e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\CommandLine\main.cpp">
@@ -246,6 +249,15 @@
     </ClInclude>
     <ClInclude Include="..\source\include\DataReflectionVisitor.h">
       <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\utf8\core.h">
+      <Filter>VireoSource\Include\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\utf8\unchecked.h">
+      <Filter>VireoSource\Include\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\utf8\utf8.h">
+      <Filter>VireoSource\Include\utf8</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

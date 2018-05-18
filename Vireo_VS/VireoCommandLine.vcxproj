@@ -90,6 +90,9 @@
     <ClInclude Include="..\source\include\TypeAndDataManager.h" />
     <ClInclude Include="..\source\include\TypeDefiner.h" />
     <ClInclude Include="..\source\include\UnitTest.h" />
+    <ClInclude Include="..\source\include\utf8\core.h" />
+    <ClInclude Include="..\source\include\utf8\unchecked.h" />
+    <ClInclude Include="..\source\include\utf8\utf8.h" />
     <ClInclude Include="..\source\include\VirtualInstrument.h" />
     <ClInclude Include="..\source\include\Waveform.h" />
   </ItemGroup>
@@ -142,6 +145,7 @@
       <PreprocessorDefinitions>VIREO_USING_ASSERTS;VIREO_STDIO;VIREO_FILESYSTEM;VIREO_FILESYSTEM_DIRLIST;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)/../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
