@@ -1,0 +1,87 @@
+
+define(HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        ce(dv(a(.UInt8 *) ()) ba0)
+        ce(dv(a(.UInt8 *) (65 66 67 97 98 99)) ba1)
+        e(dv(.UInt16 0) encoding)
+        e(dv(.String) s1)
+        ce(dv(.String "ABCabc") s2)
+        e(dv(a(.UInt8 *)) ba2)
+        e(.ErrorCluster err)
+        e(dv(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) (false 0 '')) noError)
+
+        e(dv(a(.UInt8 *) (192)) babad_in1)
+        e(dv(a(.UInt8 *) (193)) babad_in2)
+        e(dv(a(.UInt8 *) (245)) babad_in3)
+        e(dv(a(.UInt8 *) (246)) babad_in4)
+        e(dv(a(.UInt8 *) (255)) babad_in5)
+        e(dv(.String) s1)
+        e(dv(.String) stringOut)
+        e(dv(.Boolean) isSame)
+    )
+    clump (
+        Copy(noError err)
+        Copy("" stringOut)
+        ByteArrayToString(babad_in1 * stringOut err)
+        Printf("1: array = <%z>, string = <%s>, err = <%z>\n" babad_in1 stringOut err)
+
+        Copy(noError err)
+        Copy("" stringOut)
+        ByteArrayToString(babad_in2 0 stringOut err)
+        Printf("2: array = <%z>, string = <%s>, err = <%z>\n" babad_in2 stringOut err)
+
+        Copy("" stringOut)
+        ByteArrayToString(babad_in3 0 stringOut *)
+        Printf("3: array = <%z>, string = <%s>\n" babad_in3 stringOut)
+
+        Copy(noError err)
+        ByteArrayToString(babad_in4 0 * err)
+        Printf("4: array = <%z>, err = <%z>\n" babad_in4 err)
+
+        ByteArrayToString(babad_in5 0 * *)
+        Printf("5: array = <%z>\n" babad_in5)
+
+        Copy(noError err)
+        Copy("" s1)
+        ByteArrayToString(ba1 encoding s1 err)
+        Printf("6: array = <%z>, string = <%s>, err = <%z>\n" ba1 s1 err)
+        Copy(noError err)
+        Copy(ba0 ba2)
+        StringToByteArray(s1 encoding ba2 err)
+        IsEQ(ba1 ba2 isSame)
+        Printf("7: array = <%z>, string = <%s>, err = <%z>, isSame=<%z>\n" ba2 s1 err isSame)
+
+        Copy(noError err)
+        Copy("" s1)
+        ByteArrayToString(ba1 1 s1 err)
+        Printf("8: array = <%z>, string = <%s>, err = <%z>\n" ba1 s1 err)
+
+        Copy(noError err)
+        ByteArrayToString(ba1 2 * err)
+        Printf("9: array = <%z>, err = <%z>\n" ba1 err)
+
+        Copy(noError err)
+        Copy(ba0 ba2)
+        StringToByteArray(s2 1 ba2 err)
+        Printf("10: array = <%z>, string = <%s>, err = <%z>\n" ba2 s2 err)
+
+        Copy(noError err)
+        StringToByteArray(s2 2 * err)
+        Printf("11: string = <%s>, err = <%z>\n" s2 err)
+
+        StringToByteArray(s2 2 * *)
+        Printf("12: string = <%s>\n" s2)
+
+        Copy(noError err)
+        Copy(ba0 ba2)
+        StringToByteArray(s2 * ba2 *)
+        Printf("13: array = <%z>, string = <%s>\n" ba2 s2)
+    )
+) ) )
+
+enqueue(HelloWorld)

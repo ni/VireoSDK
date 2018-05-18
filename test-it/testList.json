@@ -116,6 +116,7 @@
                 "BooleanBitwiseFunctions.via",
                 "BranchErrors.via",
                 "BranchInstructions.via",
+                "ByteArrayString.via",
                 "Bug_Capcity.via",
                 "BuildArrayComparisonBug.via",
                 "BuildArraySubVI.via",
