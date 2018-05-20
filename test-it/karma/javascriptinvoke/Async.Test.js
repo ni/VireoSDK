@@ -14,17 +14,17 @@ describe('A JavaScript function invoke', function () {
     var NI_CallCompletionCallbackAfterFunctionErrors_Callback;
 
     var javaScriptInvokeFixtures = Object.freeze({
-        NI_AsyncSquareFunction: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_AsyncSquareFunction: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             setTimeout(function () {
                 completionCallback(inputInteger * inputInteger);
             }, 0);
         },
-        NI_CallCompletionCallbackSynchronously: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_CallCompletionCallbackSynchronously: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             completionCallback(inputInteger * inputInteger);
         },
-        NI_PromiseBasedAsyncSquareFunction: function (inputInteger) {
+        NI_PromiseBasedAsyncSquareFunction: function (inputInteger, jsAPI) {
             var createTimerPromise = function (input) {
                 var myPromise = new Promise(function (resolve) {
                     setTimeout(function () {
@@ -33,46 +33,46 @@ describe('A JavaScript function invoke', function () {
                 });
                 return myPromise;
             };
-            var completionCallback = this.getCompletionCallback();
+            var completionCallback = jsAPI.getCompletionCallback();
             createTimerPromise(inputInteger).then(completionCallback);
         },
-        NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
-            expect(this.getCompletionCallback).toThrowError(/retrieved more than once/);
+        NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
+            expect(jsAPI.getCompletionCallback).toThrowError(/retrieved more than once/);
             completionCallback(inputInteger + inputInteger);
         },
-        NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             completionCallback(inputInteger * inputInteger);
-            expect(this.getCompletionCallback).toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback is not valid anymore./);
+            expect(jsAPI.getCompletionCallback).toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback is not valid anymore./);
         },
-        NI_CallCompletionCallbackMoreThanOnce: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_CallCompletionCallbackMoreThanOnce: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             var testCompletion = function () {
                 completionCallback(inputInteger * inputInteger);
             };
             expect(testCompletion).not.toThrowError();
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnce/);
         },
-        NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             var testCompletion = function () {
                 completionCallback(inputInteger * inputInteger);
             };
             expect(testCompletion).not.toThrowError();
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
-            expect(this.getCompletionCallback).toThrowError(/The context being accessed for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval is not valid anymore./);
+            expect(jsAPI.getCompletionCallback).toThrowError(/The context being accessed for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval is not valid anymore./);
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
         },
-        NI_CompletionCallbackReturnsUndefined: function () {
-            var completionCallback = this.getCompletionCallback();
+        NI_CompletionCallbackReturnsUndefined: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             var testCompletion = function () {
                 completionCallback(undefined);
             };
             expect(testCompletion).not.toThrowError();
         },
-        NI_CallCompletionCallbackAcrossClumps_DoubleFunction: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_CallCompletionCallbackAcrossClumps_DoubleFunction: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             running = 1;
             var firstClumpCompletionCallback = function () {
                 if (running === 2) {
@@ -84,8 +84,8 @@ describe('A JavaScript function invoke', function () {
             };
             firstClumpCompletionCallback();
         },
-        NI_CallCompletionCallbackAcrossClumps_SquareFunction: function (inputInteger) {
-            var completionCallback = this.getCompletionCallback();
+        NI_CallCompletionCallbackAcrossClumps_SquareFunction: function (inputInteger, jsAPI) {
+            var completionCallback = jsAPI.getCompletionCallback();
             var secondClumpCompletionCallback = function () {
                 if (running === 1) {
                     completionCallback(inputInteger * inputInteger);
@@ -96,18 +96,16 @@ describe('A JavaScript function invoke', function () {
             };
             secondClumpCompletionCallback();
         },
-        NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution: function (inputInteger) {
-            // eslint-disable-next-line consistent-this
-            CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = this;
+        NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution: function (inputInteger, jsAPI) {
+            CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = jsAPI;
             return inputInteger * inputInteger;
         },
-        NI_RetrieveCompletionCallbackAfterContextIsStaleFromError: function () {
-            // eslint-disable-next-line consistent-this
-            CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = this;
+        NI_RetrieveCompletionCallbackAfterContextIsStaleFromError: function (inputInteger, jsAPI) {
+            CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = jsAPI;
             throw new Error('This function is a failure!');
         },
-        NI_CallCompletionCallbackAfterFunctionErrors: function () {
-            NI_CallCompletionCallbackAfterFunctionErrors_Callback = this.getCompletionCallback();
+        NI_CallCompletionCallbackAfterFunctionErrors: function (inputInteger, jsAPI) {
+            NI_CallCompletionCallbackAfterFunctionErrors_Callback = jsAPI.getCompletionCallback();
             throw new Error('Your function call just failed!');
         }
     });

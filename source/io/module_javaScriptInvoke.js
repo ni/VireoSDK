@@ -243,18 +243,25 @@
             var names = functionName.split('.');
             var jsSelfScope = typeof self !== 'undefined' ? self : {};
             var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
-            var jsWindowScope = typeof window !== 'undefined' ? window : jsGlobalScope;
-            var functionToCall = jsWindowScope[names[0]];
-            for (var namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
+            var context = typeof window !== 'undefined' ? window : jsGlobalScope;
+            var functionToCall = context[names[0]];
+            var namesIndex;
+            for (namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
                 if (functionToCall === undefined) {
                     break;
                 }
-                functionToCall = functionToCall[names[namesIndex]];
+
+                context = functionToCall;
+                functionToCall = context[names[namesIndex]];
             }
             if (typeof functionToCall !== 'function') {
                 functionToCall = undefined;
+                context = undefined;
             }
-            return functionToCall;
+            return {
+                functionToCall: functionToCall,
+                context: context
+            };
         };
 
         var isTypedArray = function (
@@ -417,7 +424,9 @@
                 return;
             }
 
-            var functionToCall = findJavaScriptFunctionToCall(functionName);
+            var functionAndContext = findJavaScriptFunctionToCall(functionName);
+            var functionToCall = functionAndContext.functionToCall;
+            var context = functionAndContext.context;
             if (functionToCall === undefined) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.CODE;
@@ -443,7 +452,12 @@
             };
 
             var returnValue = undefined;
-            var context = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+            var jsAPI;
+            if (functionToCall.length === parameters.length + 1) {
+                jsAPI = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                parameters.push(jsAPI);
+            }
+
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
