@@ -8,3 +8,4 @@ emscripten-sdk/*
 emsdk/*
 coverage/*
 objs/*
+gh-pages/*
