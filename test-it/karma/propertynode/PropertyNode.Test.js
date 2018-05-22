@@ -4,6 +4,7 @@ describe('The Vireo PropertyNode', function () {
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
+    var spyHelpers = window.testHelpers.spyHelpers;
 
     var vireo;
 
@@ -13,14 +14,6 @@ describe('The Vireo PropertyNode', function () {
     var topVIControlRefWriteViaUrl = fixtures.convertToAbsoluteFromFixturesDir('propertynode/TopVIControlRefSubVIWrite.via');
     var propertyReadVIName = '%3AWeb%20Server%3AInteractive%3AWebApp%3AMain%2Egviweb';
     var propertyWriteVIName = 'MyVI';
-
-    var verifySpyArgumentsForCalls = function (spy, expectedCallArgs) {
-        var i = 0;
-        var callsCount = spy.calls.count();
-        for (;i < callsCount; i += 1) {
-            expect(spy.calls.argsFor(i)).toEqual(expectedCallArgs[i]);
-        }
-    };
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -92,7 +85,7 @@ describe('The Vireo PropertyNode', function () {
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    verifySpyArgumentsForCalls(spy, expectedCallArgs);
+                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
                     done();
                 });
             });
@@ -109,7 +102,7 @@ describe('The Vireo PropertyNode', function () {
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    verifySpyArgumentsForCalls(spy, expectedCallArgs);
+                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
                     done();
                 });
             });
@@ -228,7 +221,7 @@ describe('The Vireo PropertyNode', function () {
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    verifySpyArgumentsForCalls(spy, expectedCallArgs);
+                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
                     done();
                 });
             });
@@ -245,7 +238,7 @@ describe('The Vireo PropertyNode', function () {
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    verifySpyArgumentsForCalls(spy, expectedCallArgs);
+                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
                     done();
                 });
             });
