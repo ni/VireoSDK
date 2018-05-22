@@ -193,7 +193,7 @@ Options:
 ## Running Karma Tests
 The karma test suite is a web browser only test suite used to test the JS public API for Vireo along with the portion of Vireo features which are JS specific (i.e. the actual HTTP communication layer of the HTTP Client feature). The karma test suite also runs the VTR test suite as part of its execution.
 
-To run the full karma test suite:
+To run the full karma test suite (you will need [Firefox](https://www.mozilla.org/en-US/firefox/new/) installed on your machine):
 ```console
 npm run test
 ```
