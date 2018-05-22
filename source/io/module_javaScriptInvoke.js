@@ -382,19 +382,19 @@
             return completionCallback;
         };
 
-        var generateContext = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
-            var context = {};
-            context.getCompletionCallback = function () {
+        var generateAPI = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+            var api = {};
+            api.getCompletionCallback = function () {
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
                     throw new Error('The completion callback was retrieved more than once for ' + functionName + '.');
                 }
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
-                    throw new Error('The context being accessed for ' + functionName + ' is not valid anymore.');
+                    throw new Error('The API being accessed for ' + functionName + ' is not valid anymore.');
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
                 return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
             };
-            return context;
+            return api;
         };
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
@@ -452,10 +452,10 @@
             };
 
             var returnValue = undefined;
-            var jsAPI;
+            var api;
             if (functionToCall.length === parameters.length + 1) {
-                jsAPI = generateContext(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
-                parameters.push(jsAPI);
+                api = generateAPI(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                parameters.push(api);
             }
 
             try {
