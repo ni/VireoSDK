@@ -203,8 +203,8 @@ npm run test
 Vireo tests rely on a locally running instance of the [httpbin](https://httpbin.org/) server for testing the HTTP Client functionality. If the httpbin server is not running locally, the test suite will **skip** tests which rely on it. If you would like to run the HTTP client tests locally these instructions show you how.
 
 ### Software requirements
-- Python 2.7.9 or later (primarily for pip availability)
-- Pip package manager
+- [Python](https://www.python.org/) (>= 2.7.9)
+- pip package manager
 
 ### Setup
 1. Ensure python (correct version) and pip are available on the path.
@@ -274,7 +274,7 @@ It will find and use the Doxyfile file in the source directory to generate the d
 
 *`gh-pages`*
 	
-The main html file in the `gh-pages` is called index.html.
+The main html file in the `gh-pages` directory is called index.html.
 
 # Legal
-Features beyond that core set that can be accessed directly from VIA source written by hand should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt.
+Features beyond the core set that can be accessed directly from VIA source written by hand should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt.
