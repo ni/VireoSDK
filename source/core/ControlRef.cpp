@@ -23,10 +23,10 @@ namespace Vireo {
 // ControlRefInfo -- Storage for static control references.
 struct ControlRefInfo {
     VirtualInstrument *vi;  // VI containing control
-    SubString controlTag;  // Unique identifying tag (data item name) for control
+    StringRef controlTag;   // Unique identifying tag (data item name) for control
 
-    ControlRefInfo() : vi(NULL), controlTag() { }
-    ControlRefInfo(VirtualInstrument *aVi, SubString aControlTag) : vi(aVi), controlTag(aControlTag) { }
+    ControlRefInfo() : vi(NULL), controlTag(NULL) { }
+    ControlRefInfo(VirtualInstrument *aVi, StringRef aControlTag) : vi(aVi), controlTag(aControlTag) { }
 };
 
 // ControlRefNumManager -- Allocation, deallocation, and lookup of control references
@@ -54,26 +54,34 @@ NIError ControlReferenceDestroy(ControlRefNum refnum) {
 // Clean-up Proc, run when top level VI finishes, disposing control reference.
 static void CleanUpControlReference(intptr_t arg) {
     ControlRefNum refnum = ControlRefNum(arg);
+    ControlRefInfo controlRefInfo;
+    NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
+    if (err == kNIError_Success) {
+        controlRefInfo.controlTag->Delete(controlRefInfo.controlTag);
+    }
     ControlReferenceDestroy(refnum);
 }
 
 // ControlReferenceCreate -- create a control ref linked to control associated with controlTag on given VI.
-ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const SubString &controlTag) {
+ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const StringRef &controlTag) {
     ControlRefInfo controlRefInfo(vi, controlTag);
     ControlRefNum refnum = ControlRefNumManager::RefNumStorage().NewRefNum(&controlRefInfo);
-
     ControlRefNumManager::AddCleanupProc(null, CleanUpControlReference, refnum);
     return refnum;
 }
 
 // ControlReferenceCreate -- RefNumVal version
 ControlRefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, const SubString &controlTag) {
-    ControlRefNum refnum = ControlReferenceCreate(vi, controlTag);
+    STACK_VAR(String, controlTagStrVar);
+    StringRef controlTagStr = controlTagStrVar.DetachValue();
+    SubString ss(controlTag);
+    controlTagStr->AppendSubString(&ss);
+    ControlRefNum refnum = ControlReferenceCreate(vi, controlTagStr);
     pRefNumVal->SetRefNum(refnum);
     return refnum;
 }
 
-NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, SubString *pControlTag) {
+NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, StringRef *pControlTag) {
     ControlRefInfo controlRefInfo;
     NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
     if (err == kNIError_Success) {
@@ -81,7 +89,7 @@ NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, Su
         *pControlTag = controlRefInfo.controlTag;
     } else {
         *pVI = NULL;
-        *pControlTag = SubString();
+        *pControlTag = NULL;
     }
     return err;
 }
@@ -97,7 +105,7 @@ NIError ControlReferenceAppendDescription(StringRef str, ControlRefNum refnum) {
         str->Append('<');
         str->AppendSubString(&viName);
         str->Append(',');
-        str->AppendSubString(&controlRefInfo.controlTag);
+        str->AppendStringRef(controlRefInfo.controlTag);
         str->Append('>');
     }
     return err;
