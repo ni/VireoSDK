@@ -51,10 +51,9 @@ struct PropertyNodeWriteParamBlock : public VarArgInstruction
 
 #if kVireoOS_emscripten
 static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *errorClusterPtr,
-                                           StringRef viName, StringRef dataItemId, ConstCStr propNodeName) {
+                                           StringRef viName, StringRef *dataItemId, ConstCStr propNodeName) {
     VirtualInstrument *vi;
-    SubString dataItemIdSubString;
-    if (ControlReferenceLookup(refNumPtr->GetRefNum(), &vi, &dataItemIdSubString) != kNIError_Success) {
+    if (ControlReferenceLookup(refNumPtr->GetRefNum(), &vi, dataItemId) != kNIError_Success) {
         errorClusterPtr->SetError(true, kNIError_ObjectReferenceIsInvalid, propNodeName);
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeName);
         return false;
@@ -62,7 +61,6 @@ static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *
     PercentEncodedSubString encodedStr(vi->VIName(), true, false);
     SubString encodedSubstr = encodedStr.GetSubString();
     viName->AppendSubString(&encodedSubstr);
-    dataItemId->AppendSubString(&dataItemIdSubString);
     return true;
 }
 
@@ -84,16 +82,16 @@ static bool FindVINameAndPropertyPathForValue(StaticTypeAndData *value, ErrorClu
     }
 
     if (foundInVI) {
-        SubString pathHead;
-        SubString pathTail;
-        symbolPathSubStr.SplitString(&pathHead, &pathTail, '.');
-        viName->AppendSubString(&pathHead);
-        SubString localsTail;
-        pathTail.SplitString(&pathHead, &localsTail, '.');
-        path->AppendSubString(&localsTail);
+       SubString pathHead;
+       SubString pathTail;
+       symbolPathSubStr.SplitString(&pathHead, &pathTail, '.');
+       viName->AppendSubString(&pathHead);
+       SubString localsTail;
+       pathTail.SplitString(&pathHead, &localsTail, '.');
+       path->AppendSubString(&localsTail);
     } else {
-        viName->AppendCStr("");
-        path->AppendStringRef(pathRef.Value);
+       viName->AppendCStr("");
+       path->AppendStringRef(pathRef.Value);
     }
 
     return true;
@@ -114,8 +112,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     STACK_VAR(String, controlRefVINameVar);
     STACK_VAR(String, controlRefDataItemIdVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
-    StringRef controlRefDataItemId = controlRefDataItemIdVar.Value;
-    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, controlRefDataItemId, propNodeWriteName))
+    StringRef controlRefDataItemId = null;
+    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeWriteName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
     STACK_VAR(String, tempVariableVINameStackVar);
@@ -177,8 +175,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     STACK_VAR(String, controlRefVINameVar);
     STACK_VAR(String, controlRefDataItemIdVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
-    StringRef controlRefDataItemId = controlRefDataItemIdVar.Value;
-    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, controlRefDataItemId, propNodeReadName))
+    StringRef controlRefDataItemId = null;
+    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeReadName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
     STACK_VAR(String, tempVariableVINameStackVar);

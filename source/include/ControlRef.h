@@ -46,10 +46,10 @@ namespace Vireo
 typedef RefNum ControlRefNum;  // RefNum to be used with Control Ref Num API (or underlying RefNumManager class)
 
 // Control RefNum API: create, lookup, and destroy control refnums
-ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const SubString &controlTag);
+ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const StringRef &controlTag);
 ControlRefNum ControlReferenceCreate(RefNumVal *pRefNumVal, VirtualInstrument *vi, const SubString &controlTag);
 
-NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, SubString *pControlTag);
+NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, StringRef *pControlTag);
 
 NIError ControlReferenceDestroy(ControlRefNum refnum);
 NIError ControlReferenceAppendDescription(StringRef str, ControlRefNum refnum);
