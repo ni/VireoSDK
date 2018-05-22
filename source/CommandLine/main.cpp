@@ -54,10 +54,11 @@ int VIREO_MAIN(int argc, const char * argv[])
             }
             gShells._pUserShell = TypeManager::New(gShells._pRootShell);
             TypeManagerScope scope(gShells._pUserShell);
-            {   // Nested scope so that buffer is cleaned up before userShell
-                STACK_VAR(String, buffer);
-                fileName.AliasAssignCStr(argv[arg]);
-                if (fileName.Length() && argv[arg][0] != '-') {
+            fileName.AliasAssignCStr(argv[arg]);
+            if (fileName.Length() && argv[arg][0] != '-') {
+                // Nested scope so that buffer is cleaned up before userShell continue running.
+                {
+                    STACK_VAR(String, buffer);
                     gPlatform.IO.ReadFile(&fileName, buffer.Value);
                     if (buffer.Value->Length() == 0) {
                         gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
@@ -69,15 +70,19 @@ int VIREO_MAIN(int argc, const char * argv[])
                         gShells._keepRunning = false;
                     }
 
-                    LOG_PLATFORM_MEM("Mem after load")
-    #if defined(kVireoOS_emscripten)
-                    emscripten_set_main_loop(RunExec, 40, null);
-    #else
-                    while (gShells._keepRunning) {
-                        RunExec();  // deletes TypeManagers on exit
-                    }
-    #endif
+                    // Destructor will clear out the data, but just in case let's fill it out
+                    // with something that looks like stale data.
+                    memset(buffer.Value->Begin(), 0xFE, buffer.Value->Length());
                 }
+
+                LOG_PLATFORM_MEM("Mem after load")
+#if defined(kVireoOS_emscripten)
+                emscripten_set_main_loop(RunExec, 40, null);
+#else
+                while (gShells._keepRunning) {
+                    RunExec();  // deletes TypeManagers on exit
+                }
+#endif
             }
             LOG_PLATFORM_MEM("Mem after execution")
             gShells._pUserShell->Delete();
