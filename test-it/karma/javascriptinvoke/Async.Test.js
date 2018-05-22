@@ -44,7 +44,7 @@ describe('A JavaScript function invoke', function () {
         NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback: function (inputInteger, jsAPI) {
             var completionCallback = jsAPI.getCompletionCallback();
             completionCallback(inputInteger * inputInteger);
-            expect(jsAPI.getCompletionCallback).toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback is not valid anymore./);
+            expect(jsAPI.getCompletionCallback).toThrowError(/The API being accessed for NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback is not valid anymore./);
         },
         NI_CallCompletionCallbackMoreThanOnce: function (inputInteger, jsAPI) {
             var completionCallback = jsAPI.getCompletionCallback();
@@ -61,7 +61,7 @@ describe('A JavaScript function invoke', function () {
             };
             expect(testCompletion).not.toThrowError();
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
-            expect(jsAPI.getCompletionCallback).toThrowError(/The context being accessed for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval is not valid anymore./);
+            expect(jsAPI.getCompletionCallback).toThrowError(/The API being accessed for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval is not valid anymore./);
             expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
         },
         NI_CompletionCallbackReturnsUndefined: function (inputInteger, jsAPI) {
@@ -198,7 +198,7 @@ describe('A JavaScript function invoke', function () {
         vireo.eggShell.loadVia('enqueue(RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution)');
         runSlicesAsync(function () {
             expect(CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution.getCompletionCallback)
-                .toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution is not valid anymore/);
+                .toThrowError(/The API being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution is not valid anymore/);
             expect(viPathParser('return')).toBe(36);
             done();
         });
@@ -209,7 +209,7 @@ describe('A JavaScript function invoke', function () {
         vireo.eggShell.loadVia('enqueue(RetrieveCompletionCallbackAfterContextIsStaleFromError)');
         runSlicesAsync(function () {
             expect(CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError.getCompletionCallback)
-                .toThrowError(/The context being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromError is not valid anymore/);
+                .toThrowError(/The API being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromError is not valid anymore/);
             done();
         });
     });
