@@ -43,13 +43,21 @@ define(HelloWorld dv(.VirtualInstrument (
         ByteArrayToString(stringOut babad_in5 0 err)
         Printf("5: array = <%z>, string = <%s>, err = <%z>\n" babad_in5 stringOut err)
 
+		Copy(noError err)
+        ByteArrayToString(stringOut ba1 1 err)
+        Printf("6: array = <%z>, string = <%s>, err = <%z>\n" ba1 stringOut err)		
+		
+		Copy(noError err)
+        ByteArrayToString(stringOut ba1 2 err)
+        Printf("7: array = <%z>, string = <%s>, err = <%z>\n" ba1 stringOut err)	
+		
         Copy(noError err)
         Copy("" s1)
         ByteArrayToString(s1 ba1 encoding err)
-        Printf("6: array = <%z>, string = <%s>, err = <%z>\n" ba1 s1 err)
+        Printf("8: array = <%z>, string = <%s>, err = <%z>\n" ba1 s1 err)
         StringToByteArray(ba2 s1 encoding err)
         IsEQ(ba1 ba2 isSame)
-        Printf("7: array = <%z>, string = <%s>, err = <%z>, isSame=<%z>\n" ba2 s1 err isSame)
+        Printf("9: array = <%z>, string = <%s>, err = <%z>, isSame=<%z>\n" ba2 s1 err isSame)
 
     )
 ) ) )
