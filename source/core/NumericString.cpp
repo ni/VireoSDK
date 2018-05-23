@@ -19,7 +19,7 @@ SDG
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
-#include "utf8/utf8.h"
+#include "thirdparty/utf8/source/utf8/core.h"
 
 #if !kVireoOS_windows
     #include <math.h>

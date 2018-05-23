@@ -20,8 +20,17 @@
     <Filter Include="VireoSource\IO">
       <UniqueIdentifier>{87749a21-6183-4f92-8a31-22b58f67cee7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="VireoSource\Include\utf8">
-      <UniqueIdentifier>{c3804ff3-2045-4348-80f1-9cee303be6e3}</UniqueIdentifier>
+    <Filter Include="VireoSource\Include\thirdparty">
+      <UniqueIdentifier>{259567ee-ba72-4845-b14e-4c865440989a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\Include\thirdparty\utf8">
+      <UniqueIdentifier>{15a8cc03-0e6e-4d09-9384-fc7b93133032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\Include\thirdparty\utf8\source">
+      <UniqueIdentifier>{4d4d8682-7553-46b7-aa9c-3a9afb92b2b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VireoSource\Include\thirdparty\utf8\source\utf8">
+      <UniqueIdentifier>{cf806003-45f4-4826-9c86-7452726decf3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +183,9 @@
     <None Include="..\source\core\vireo.wrapper.js">
       <Filter>VireoSource\Core</Filter>
     </None>
+    <None Include="..\source\include\thirdparty\utf8\doc\utf8cpp.html">
+      <Filter>VireoSource\Include</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\BuildConfig.h">
@@ -250,14 +262,17 @@
     <ClInclude Include="..\source\include\DataReflectionVisitor.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\utf8\core.h">
-      <Filter>VireoSource\Include\utf8</Filter>
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8.h">
+      <Filter>VireoSource\Include\thirdparty\utf8\source</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\utf8\unchecked.h">
-      <Filter>VireoSource\Include\utf8</Filter>
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8\checked.h">
+      <Filter>VireoSource\Include\thirdparty\utf8\source\utf8</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\utf8\utf8.h">
-      <Filter>VireoSource\Include\utf8</Filter>
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8\core.h">
+      <Filter>VireoSource\Include\thirdparty\utf8\source\utf8</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8\unchecked.h">
+      <Filter>VireoSource\Include\thirdparty\utf8\source\utf8</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
