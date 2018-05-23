@@ -1993,7 +1993,7 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
 {
     StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : nullptr;
     ErrorCluster *errorCluster = _ParamPointer(ErrorInOut);
-    if ((stringOut == nullptr && errorCluster == nullptr) || (errorCluster != nullptr && errorCluster->hasError()))
+    if (stringOut == nullptr || (errorCluster != nullptr && errorCluster->hasError()))
         return _NextInstruction();
     TypedArrayCoreRef byteArray = _Param(ByteArrayIn);
     TypeRef eltType = byteArray->ElementType();
@@ -2002,7 +2002,6 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
     VIREO_ASSERT(rank == 1);
     Int32 stringEncoding = _Param(StringEncodingIn);
     Int32 arrayLength = byteArray->DimensionLengths()[0];
-    InstructionCore* value;
     if (!IsSupportedEncodingAndUpdateErrorAndMakeOutputArrayEmpty(errorCluster, stringEncoding, stringOut)) {
         return _NextInstruction();
     }
@@ -2034,12 +2033,6 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
     IntIndex rank = byteArrayOut->Rank();
     VIREO_ASSERT(rank == 1);
     Int32 stringEncoding = _Param(StringEncodingIn);
-    if (!IsSupportedEncodingAndUpdateErrorAndMakeOutputArrayEmpty(errorCluster, stringEncoding, byteArrayOut)) {
-        return _NextInstruction();
-    }
-    if (!IsValidUTF8AndUpdateErrorAndMakeOutputArrayEmpty(stringIn->RawBegin(), stringIn->RawBegin() + stringIn->Length(), errorCluster, byteArrayOut)) {
-        return _NextInstruction();
-    }
     Int32 arrayLength = stringIn->Length();
     byteArrayOut->Replace1D(0, arrayLength, stringIn->RawBegin(), true);
     return _NextInstruction();
