@@ -1,0 +1,65 @@
+define(HelloWorld dv(.VirtualInstrument (
+    Locals:
+    c(
+        e(dv(a(.UInt8 *) (65 66 67 97 98 99)) ba1)
+        e(dv(.Int32 0) encoding)
+        e(dv(.String) s1)
+        e(dv(a(.UInt8 *)) ba2)
+        e(.ErrorCluster err)
+        e(dv(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) (false 0 '')) noError)
+
+        e(dv(a(.UInt8 *) (192)) babad_in1)
+        e(dv(a(.UInt8 *) (193)) babad_in2)
+        e(dv(a(.UInt8 *) (245)) babad_in3)
+        e(dv(a(.UInt8 *) (246)) babad_in4)
+        e(dv(a(.UInt8 *) (255)) babad_in5)
+        e(dv(.String) s1)
+        e(dv(.String) stringOut)
+        e(dv(.Boolean) isSame)
+    )
+    clump (
+        Copy(noError err)
+        ByteArrayToString(stringOut babad_in1 0 err)
+        Printf("1: array = <%z>, string = <%s>, err = <%z>\n" babad_in1 stringOut err)
+
+        Copy(noError err)
+        ByteArrayToString(stringOut babad_in2 0 err)
+        Printf("2: array = <%z>, string = <%s>, err = <%z>\n" babad_in2 stringOut err)
+
+        Copy(noError err)
+        ByteArrayToString(stringOut babad_in3 0 err)
+        Printf("3: array = <%z>, string = <%s>, err = <%z>\n" babad_in3 stringOut err)
+
+        Copy(noError err)
+        ByteArrayToString(stringOut babad_in4 0 err)
+        Printf("4: array = <%z>, string = <%s>, err = <%z>\n" babad_in4 stringOut err)
+
+        Copy("" stringOut)
+        Copy(noError err)
+        ByteArrayToString(stringOut babad_in5 0 err)
+        Printf("5: array = <%z>, string = <%s>, err = <%z>\n" babad_in5 stringOut err)
+
+		Copy(noError err)
+        ByteArrayToString(stringOut ba1 1 err)
+        Printf("6: array = <%z>, string = <%s>, err = <%z>\n" ba1 stringOut err)		
+		
+		Copy(noError err)
+        ByteArrayToString(stringOut ba1 2 err)
+        Printf("7: array = <%z>, string = <%s>, err = <%z>\n" ba1 stringOut err)	
+		
+        Copy(noError err)
+        Copy("" s1)
+        ByteArrayToString(s1 ba1 encoding err)
+        Printf("8: array = <%z>, string = <%s>, err = <%z>\n" ba1 s1 err)
+        StringToByteArray(ba2 s1 encoding err)
+        IsEQ(ba1 ba2 isSame)
+        Printf("9: array = <%z>, string = <%s>, err = <%z>, isSame=<%z>\n" ba2 s1 err isSame)
+
+    )
+) ) )
+
+enqueue(HelloWorld)

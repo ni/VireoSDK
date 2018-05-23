@@ -57,6 +57,7 @@
     <None Include="..\source\core\vireo.loader.js" />
     <None Include="..\source\core\vireo.wrapper.js" />
     <None Include="..\source\include\ConversionTable.def" />
+    <None Include="..\source\include\thirdparty\utf8\doc\utf8cpp.html" />
     <None Include="..\source\io\library_canvas2d.js" />
     <None Include="..\source\io\library_httpClient.js" />
     <None Include="..\source\io\library_javaScriptInvoke.js" />
@@ -85,6 +86,10 @@
     <ClInclude Include="..\source\include\TDCodecLVFlat.h" />
     <ClInclude Include="..\source\include\TDCodecVia.h" />
     <ClInclude Include="..\source\include\TDCodecVib.h" />
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8.h" />
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8\checked.h" />
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8\core.h" />
+    <ClInclude Include="..\source\include\thirdparty\utf8\source\utf8\unchecked.h" />
     <ClInclude Include="..\source\include\Thread.h" />
     <ClInclude Include="..\source\include\Timestamp.h" />
     <ClInclude Include="..\source\include\TypeAndDataManager.h" />
@@ -142,6 +147,7 @@
       <PreprocessorDefinitions>VIREO_USING_ASSERTS;VIREO_STDIO;VIREO_FILESYSTEM;VIREO_FILESYSTEM_DIRLIST;WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)/../source/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++14 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
