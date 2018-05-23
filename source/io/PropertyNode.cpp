@@ -110,7 +110,6 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     StaticTypeAndData *value = _ParamImmediate(value);
 
     STACK_VAR(String, controlRefVINameVar);
-    STACK_VAR(String, controlRefDataItemIdVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
     StringRef controlRefDataItemId = null;
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeWriteName))
@@ -173,7 +172,6 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     StaticTypeAndData *value = _ParamImmediate(value);
 
     STACK_VAR(String, controlRefVINameVar);
-    STACK_VAR(String, controlRefDataItemIdVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
     StringRef controlRefDataItemId = null;
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeReadName))

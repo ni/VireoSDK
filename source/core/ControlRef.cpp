@@ -46,19 +46,19 @@ class ControlRefNumManager : public RefNumManager {
 ControlRefNumManager ControlRefNumManager::_s_singleton;
 
 // ControlReferenceDestroy -- deallocate control ref
-// (The VI and string tag are weak references into the owning VI, so do not have to be deallocated.)
+// ControlRefInfo owns controlTag string, so it needs to be deallocated before disposing the refnum.
 NIError ControlReferenceDestroy(ControlRefNum refnum) {
+    ControlRefInfo controlRefInfo;
+    NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
+    if (err == kNIError_Success) {
+        controlRefInfo.controlTag->Delete(controlRefInfo.controlTag);
+    }
     return ControlRefNumManager::RefNumStorage().DisposeRefNum(refnum, NULL);
 }
 
 // Clean-up Proc, run when top level VI finishes, disposing control reference.
 static void CleanUpControlReference(intptr_t arg) {
     ControlRefNum refnum = ControlRefNum(arg);
-    ControlRefInfo controlRefInfo;
-    NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
-    if (err == kNIError_Success) {
-        controlRefInfo.controlTag->Delete(controlRefInfo.controlTag);
-    }
     ControlReferenceDestroy(refnum);
 }
 
