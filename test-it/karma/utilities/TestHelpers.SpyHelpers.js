@@ -4,9 +4,9 @@
     window.testHelpers = window.testHelpers || {};
 
     var verifySpyArgumentsForCalls = function (spy, expectedCallArgs) {
-        var i = 0;
+        var i;
         var callsCount = spy.calls.count();
-        for (;i < callsCount; i += 1) {
+        for (i = 0; i < callsCount; i += 1) {
             expect(spy.calls.argsFor(i)).toEqual(expectedCallArgs[i]);
         }
     };
