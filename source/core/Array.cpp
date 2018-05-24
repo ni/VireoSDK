@@ -1123,56 +1123,56 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         maxIndex = minIndex = -1;
     for (IntIndex i = 0; i < len; i++) {
         Boolean shouldUpdateMaxOrMin;
-		AQBlock1* currentElement = arrayIn->BeginAt(i);
-		snippet->_p0 = currentElement;
+        AQBlock1* currentElement = arrayIn->BeginAt(i);
+        snippet->_p0 = currentElement;
         snippet->_p1 = minValue;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
         if (shouldUpdateMaxOrMin && !::isnan(*((double*)currentElement))) {
-			minValue = currentElement;
+            minValue = currentElement;
             minIndex = i;
         }
         snippet->_p0 = maxValue;
-		snippet->_p1 = currentElement;
+        snippet->_p1 = currentElement;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
         if (shouldUpdateMaxOrMin && !::isnan(*((double*)currentElement))) {
-			maxValue = currentElement;
+            maxValue = currentElement;
             maxIndex = i;
         }
     }
 
-	// figure out how to check the value of minValue and maxValue against NaN.
-	Boolean minIsNaN = false;
-	if (::isnan(*((double*)minValue))) {
-		minIsNaN = true;
-	}
+    // figure out how to check the value of minValue and maxValue against NaN.
+    Boolean minIsNaN = false;
+    if (::isnan(*((double*)minValue))) {
+        minIsNaN = true;
+    }
 
-	Boolean maxIsNaN = false;
-	if (::isnan(*((double*)maxValue))) {
-		maxIsNaN = true;
-	}
+    Boolean maxIsNaN = false;
+    if (::isnan(*((double*)maxValue))) {
+        maxIsNaN = true;
+    }
 
-	if (minIsNaN) {
-		minIndex = -1;
-	}
+    if (minIsNaN) {
+        minIndex = -1;
+    }
 
-	if (maxIsNaN) {
-		maxIndex = -1;
-	}
+    if (maxIsNaN) {
+        maxIndex = -1;
+    }
 
     if (len) {
-		if (minIsNaN) {
-			arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
-		} else {
-			arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
-		}
+        if (minIsNaN) {
+            arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
+        } else {
+            arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
+        }
 
-		if (maxIsNaN) {
-			arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
-		} else {
-			arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
-		}
+        if (maxIsNaN) {
+            arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
+        } else {
+            arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+        }
     } else {
         arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
         arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
