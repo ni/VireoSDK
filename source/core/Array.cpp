@@ -1093,7 +1093,7 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
     InstructionCore* pInstruction = null;
     TypeRef elementType  = arrayArg->ElementType();
-    SubString LTName("IsLT");
+    SubString LTName("IsLTMaxMin");
     // Add param slot to hold the snippet
     Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
     FindArrayMaxMinInstruction* findOp = (FindArrayMaxMinInstruction*) pInstructionBuilder->EmitInstruction();
@@ -1122,31 +1122,62 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
     if (len == 0)
         maxIndex = minIndex = -1;
     for (IntIndex i = 0; i < len; i++) {
-        Boolean less;
-        snippet->_p0 = arrayIn->BeginAt(i);
+        Boolean shouldUpdateMaxOrMin;
+		AQBlock1* currentElement = arrayIn->BeginAt(i);
+		snippet->_p0 = currentElement;
         snippet->_p1 = minValue;
-        snippet->_p2 = &less;
+        snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if (less) {
-            minValue = arrayIn->BeginAt(i);
+        if (shouldUpdateMaxOrMin && !::isnan(*((double*)currentElement))) {
+			minValue = currentElement;
             minIndex = i;
         }
         snippet->_p0 = maxValue;
-        snippet->_p1 = arrayIn->BeginAt(i);
-        snippet->_p2 = &less;
+		snippet->_p1 = currentElement;
+        snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if (less) {
-           maxValue = arrayIn->BeginAt(i);
-           maxIndex = i;
+        if (shouldUpdateMaxOrMin && !::isnan(*((double*)currentElement))) {
+			maxValue = currentElement;
+            maxIndex = i;
         }
     }
+
+	// figure out how to check the value of minValue and maxValue against NaN.
+	Boolean minIsNaN = false;
+	if (::isnan(*((double*)minValue))) {
+		minIsNaN = true;
+	}
+
+	Boolean maxIsNaN = false;
+	if (::isnan(*((double*)maxValue))) {
+		maxIsNaN = true;
+	}
+
+	if (minIsNaN) {
+		minIndex = -1;
+	}
+
+	if (maxIsNaN) {
+		maxIndex = -1;
+	}
+
     if (len) {
-        arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
-        arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+		if (minIsNaN) {
+			arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
+		} else {
+			arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
+		}
+
+		if (maxIsNaN) {
+			arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
+		} else {
+			arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
+		}
     } else {
         arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
         arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
     }
+
     if (numDims == 1) {
         _Param(MinIndex) = minIndex;
         _Param(MaxIndex) = maxIndex;
@@ -1159,12 +1190,14 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
             IntIndex curDimSize = (i == numDims - 1) ? 1 : arrayIn->GetLength(numDims-1-i-1);
             IntIndex *minIndexPtr = (IntIndex*)_Param(MinIndexArr)->BeginAt(i);
             IntIndex *maxIndexPtr = (IntIndex*)_Param(MaxIndexArr)->BeginAt(i);
+
             if (minIndex >= 0) {
                 *minIndexPtr = minIndex / curDimSize;
                 minIndex -= *minIndexPtr * curDimSize;
             } else {
                 *minIndexPtr = minIndex;
             }
+
             if (maxIndex >= 0) {
                 *maxIndexPtr = maxIndex / curDimSize;
                 maxIndex -= *maxIndexPtr * curDimSize;
