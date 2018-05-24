@@ -80,10 +80,12 @@
 
         // Aliases for launchers that provide custom settings
         // No Sandbox mode needed to run in Travis container https://docs.travis-ci.com/user/chrome#Sandboxing
+        // Launching chrome has been timing out, some forums suggest disabling proxy settings:
+        // https://github.com/karma-runner/karma-chrome-launcher/issues/175#issuecomment-378247457
         customLaunchers: {
             ChromeHeadlessNoSandbox: {
                 base: 'ChromeHeadless',
-                flags: ['--no-sandbox']
+                flags: ['--no-sandbox', '--no-proxy-server']
             }
         },
 
