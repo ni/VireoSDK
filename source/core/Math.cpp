@@ -303,7 +303,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 // NOTE: IsLTSort is only used in Sort1DArray to handle NaNs
 //       IsEQSearch is only used in Search1DArray to handle NaNs
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE) \
-    DECLARE_VIREO_PRIMITIVE3(IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <  _Param(1))) \
+    DECLARE_VIREO_PRIMITIVE3(IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) < _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsLTSort##TYPE, TYPE, TYPE, Boolean, \
         if (::isnan((double)_Param(1))) { \
             _Param(2) = true; \
