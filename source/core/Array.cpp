@@ -1093,7 +1093,7 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
     InstructionCore* pInstruction = null;
     TypeRef elementType  = arrayArg->ElementType();
-    SubString LTName("IsLTSort");
+    SubString LTName("IsLT");
     // Add param slot to hold the snippet
     Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
     FindArrayMaxMinInstruction* findOp = (FindArrayMaxMinInstruction*)pInstructionBuilder->EmitInstruction();
@@ -1124,11 +1124,15 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
     for (IntIndex i = 0; i < len; i++) {
         Boolean shouldUpdateMaxOrMin = false;
         AQBlock1* currentElement = arrayIn->BeginAt(i);
+        Boolean isANumber = !::isnan(*((double*)currentElement));
+        Boolean isPositiveInfinity = (::isinf(*((double*)currentElement)) && *((double*)currentElement) > 0);
+        Boolean isNegativeInfinity = (::isinf(*((double*)currentElement)) && *((double*)currentElement) < 0);
         snippet->_p0 = currentElement;
         snippet->_p1 = minValue;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if (shouldUpdateMaxOrMin && !::isnan(*((double*)currentElement))) {
+        // These additional checks are necessary because IsLT does not handle NaN and Infinity the way we want it to.
+        if ((shouldUpdateMaxOrMin && isANumber) || isNegativeInfinity) {
             minValue = currentElement;
             minIndex = i;
         }
@@ -1136,8 +1140,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         snippet->_p1 = currentElement;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        // check for positive infinity
-        if ((shouldUpdateMaxOrMin && !::isnan(*((double*)currentElement))) || (::isinf(*((double*)currentElement)) && *((double*)currentElement) > 0)) {
+        if ((shouldUpdateMaxOrMin && isANumber) || isPositiveInfinity) {
             maxValue = currentElement;
             maxIndex = i;
         }
