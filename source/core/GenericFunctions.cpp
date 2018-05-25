@@ -2728,7 +2728,6 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(IsNE, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsLT, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsLTSort, "GenericBinOp", EmitGenericBinOpInstruction);
-    DEFINE_VIREO_GENERIC(IsLTMaxMin, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsGT, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsLE, "GenericBinOp", EmitGenericBinOpInstruction);
     DEFINE_VIREO_GENERIC(IsGE, "GenericBinOp", EmitGenericBinOpInstruction);
