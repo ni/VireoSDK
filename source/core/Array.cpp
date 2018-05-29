@@ -1155,14 +1155,14 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
     }
 
     if (len) {
-        if (::isnan(*((double*)minValue))) {
+        if (::isnan(*((Double*)minValue))) {
             minIndex = -1;
             arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
         } else {
             arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
         }
 
-        if (::isnan(*((double*)maxValue))) {
+        if (::isnan(*((Double*)maxValue))) {
             maxIndex = -1;
             arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
         } else {
