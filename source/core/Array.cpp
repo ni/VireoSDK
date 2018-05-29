@@ -1121,57 +1121,49 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
     AQBlock1* maxValue = minValue;
     if (len == 0)
         maxIndex = minIndex = -1;
+
+    Boolean haveSeenPositiveInfinity = false;
+    Boolean haveSeenNegativeInfinity = false;
     for (IntIndex i = 0; i < len; i++) {
         Boolean shouldUpdateMaxOrMin = false;
         AQBlock1* currentElement = arrayIn->BeginAt(i);
-        Boolean isANumber = !::isnan(*((double*)currentElement));
-        Boolean isPositiveInfinity = (::isinf(*((double*)currentElement)) && *((double*)currentElement) > 0);
-        Boolean isNegativeInfinity = (::isinf(*((double*)currentElement)) && *((double*)currentElement) < 0);
+        Double currentElementValue = *((Double*)currentElement);
+        Boolean isANumber = !::isnan(currentElementValue);
+        Boolean isPositiveInfinity = ::isinf(currentElementValue) && currentElementValue > 0;
+        Boolean isNegativeInfinity = ::isinf(currentElementValue) && currentElementValue < 0;
         snippet->_p0 = currentElement;
         snippet->_p1 = minValue;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
         // These additional checks are necessary because IsLT does not handle NaN and Infinity the way we want it to.
-        if ((shouldUpdateMaxOrMin && isANumber) || isNegativeInfinity) {
+        if ((shouldUpdateMaxOrMin && isANumber) || (isNegativeInfinity && !haveSeenNegativeInfinity)) {
             minValue = currentElement;
             minIndex = i;
         }
+
         snippet->_p0 = maxValue;
         snippet->_p1 = currentElement;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if ((shouldUpdateMaxOrMin && isANumber) || isPositiveInfinity) {
+        if ((shouldUpdateMaxOrMin && isANumber) || (isPositiveInfinity && !haveSeenPositiveInfinity)) {
             maxValue = currentElement;
             maxIndex = i;
         }
+
+        haveSeenPositiveInfinity = haveSeenPositiveInfinity || isPositiveInfinity;
+        haveSeenNegativeInfinity = haveSeenNegativeInfinity || isNegativeInfinity;
     }
 
     if (len) {
-        Boolean minIsNaN = false;
         if (::isnan(*((double*)minValue))) {
-            minIsNaN = true;
-        }
-
-        Boolean maxIsNaN = false;
-        if (::isnan(*((double*)maxValue))) {
-            maxIsNaN = true;
-        }
-
-        if (minIsNaN) {
             minIndex = -1;
-        }
-
-        if (maxIsNaN) {
-            maxIndex = -1;
-        }
-
-        if (minIsNaN) {
             arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
         } else {
             arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
         }
 
-        if (maxIsNaN) {
+        if (::isnan(*((double*)maxValue))) {
+            maxIndex = -1;
             arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
         } else {
             arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
