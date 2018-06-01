@@ -1121,8 +1121,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
     AQBlock1* maxValue = minValue;
     if (len == 0) {
         maxIndex = minIndex = -1;
-    }
-    else {
+    } else {
         if (arrayIn->ElementType()->IsFloat()) {
             maxIndex = minIndex = -1;
             if (arrayIn->ElementType()->TopAQSize() == sizeof(Double)) {
@@ -1134,8 +1133,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
                         break;
                     }
                 }
-            }
-            else {
+            } else {
                 for (IntIndex i = 0; i < len; ++i) {
                     minValue = arrayIn->BeginAt(i);
                     if (!::isnan(*(Single*)minValue)) {
