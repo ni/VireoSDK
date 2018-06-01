@@ -1119,24 +1119,43 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
     IntIndex maxIndex = 0, minIndex = 0;
     AQBlock1* minValue = arrayIn->BeginAt(0);
     AQBlock1* maxValue = minValue;
-    if (len == 0)
+    if (len == 0) {
         maxIndex = minIndex = -1;
+    }
+    else {
+        if (arrayIn->ElementType()->IsFloat()) {
+            maxIndex = minIndex = -1;
+            if (arrayIn->ElementType()->TopAQSize() == sizeof(Double)) {
+                for (IntIndex i = 0; i < len; ++i) {
+                    minValue = arrayIn->BeginAt(i);
+                    if (!::isnan(*(Double*)minValue)) {
+                        maxIndex = minIndex = i;
+                        maxValue = minValue;
+                        break;
+                    }
+                }
+            }
+            else {
+                for (IntIndex i = 0; i < len; ++i) {
+                    minValue = arrayIn->BeginAt(i);
+                    if (!::isnan(*(Single*)minValue)) {
+                        maxIndex = minIndex = i;
+                        maxValue = minValue;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
-    Boolean haveSeenPositiveInfinity = false;
-    Boolean haveSeenNegativeInfinity = false;
     for (IntIndex i = 0; i < len; i++) {
         Boolean shouldUpdateMaxOrMin = false;
         AQBlock1* currentElement = arrayIn->BeginAt(i);
-        Double currentElementValue = *((Double*)currentElement);
-        Boolean isANumber = !::isnan(currentElementValue);
-        Boolean isPositiveInfinity = ::isinf(currentElementValue) && currentElementValue > 0;
-        Boolean isNegativeInfinity = ::isinf(currentElementValue) && currentElementValue < 0;
         snippet->_p0 = currentElement;
         snippet->_p1 = minValue;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        // These additional checks are necessary because IsLT does not handle NaN and Infinity the way we want it to.
-        if ((shouldUpdateMaxOrMin && isANumber) || (isNegativeInfinity && !haveSeenNegativeInfinity)) {
+        if (shouldUpdateMaxOrMin) {
             minValue = currentElement;
             minIndex = i;
         }
@@ -1145,29 +1164,15 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
         snippet->_p1 = currentElement;
         snippet->_p2 = &shouldUpdateMaxOrMin;
         _PROGMEM_PTR(snippet, _function)(snippet);
-        if ((shouldUpdateMaxOrMin && isANumber) || (isPositiveInfinity && !haveSeenPositiveInfinity)) {
+        if (shouldUpdateMaxOrMin) {
             maxValue = currentElement;
             maxIndex = i;
         }
-
-        haveSeenPositiveInfinity = haveSeenPositiveInfinity || isPositiveInfinity;
-        haveSeenNegativeInfinity = haveSeenNegativeInfinity || isNegativeInfinity;
     }
 
-    if (len) {
-        if (::isnan(*((Double*)minValue))) {
-            minIndex = -1;
-            arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
-        } else {
-            arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
-        }
-
-        if (::isnan(*((Double*)maxValue))) {
-            maxIndex = -1;
-            arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
-        } else {
-            arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
-        }
+    if (len && maxIndex != -1) {
+        arrayIn->ElementType()->CopyData(minValue, _ParamPointer(MinValue));
+        arrayIn->ElementType()->CopyData(maxValue, _ParamPointer(MaxValue));
     } else {
         arrayIn->ElementType()->InitData(_ParamPointer(MinValue));
         arrayIn->ElementType()->InitData(_ParamPointer(MaxValue));
