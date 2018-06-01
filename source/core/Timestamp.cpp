@@ -90,7 +90,7 @@ namespace Vireo
 
         stdTime -= 11644473600000000Ui64;    // DELTA_EPOCH_IN_MICROSECS
         stdTime /= 10;                        // Convert to microseconds
-        *t = Timestamp(stdTime/(Double)1000000UL);
+        *t = Timestamp(stdTime / 1E6);
 
     #elif defined(VIREO_DATE_TIME_STDLIB)
         struct timeval tv;
@@ -100,7 +100,7 @@ namespace Vireo
         if (retval == -1) {
             *t = Timestamp(0, 0);
         } else {
-            *t = Timestamp((((tv.tv_sec * 1E6) + (kStdDT1970re1904 * 1E6)) + tv.tv_usec) / (Double)1E6);
+            *t = Timestamp(tv.tv_sec + kStdDT1970re1904 + (tv.tv_usec / 1E6));
         }
     #elif defined(VIREO_DATE_TIME_VXWORKS)
         struct timespec ts;
@@ -112,7 +112,7 @@ namespace Vireo
         } else {
             uInt32 tempTime = static_cast<uInt32>(ts.tv_sec);
             TToStd(&tempTime);
-            *t = Timestamp(static_cast<Double>(tempTime) + (ts.tv_nsec / (Double)1E9));
+            *t = Timestamp(static_cast<Double>(tempTime) + (ts.tv_nsec / 1E9));
         }
     #endif
     }
