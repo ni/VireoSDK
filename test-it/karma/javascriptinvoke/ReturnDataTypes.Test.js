@@ -220,8 +220,13 @@ describe('A JavaScript function invoke', function () {
         };
 
         window.NI_ExceptionInUpdateReturnValue = function () {
-            var notReallyAnArray = {};
-            Object.setPrototypeOf(notReallyAnArray, Int16Array.prototype);
+            var notReallyAnArrayPrototype = Object.create(Int16Array.prototype);
+            Object.defineProperty(notReallyAnArrayPrototype, 'length', {
+                get: function () {
+                    throw new Error('Not really a typed array length');
+                }
+            });
+            var notReallyAnArray = Object.create(notReallyAnArrayPrototype);
             expect(notReallyAnArray instanceof Int16Array).toBeTrue();
             return notReallyAnArray;
         };
