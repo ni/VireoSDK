@@ -122,7 +122,9 @@ describe('A JavaScript function invoke', function () {
     });
 
     afterAll(function () {
-        Object.keys(javaScriptInvokeFixtures).forEach((functionName) => (window[functionName] = undefined));
+        Object.keys(javaScriptInvokeFixtures).forEach(function (functionName) {
+            window[functionName] = undefined;
+        });
         CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = undefined;
         CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = undefined;
         NI_CallCompletionCallbackAfterFunctionErrors_Callback = undefined;
