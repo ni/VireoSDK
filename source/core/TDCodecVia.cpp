@@ -50,7 +50,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _lineNumberBase = lineNumberBase;
     _loadVIsImmediately = false;
     _options._allowNulls = allowJSONNulls;
-    _virtualInstrumentScope = null;
+    _virtualInstrumentScope = nullptr;
 
     if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
         _options._bEscapeStrings = false;
@@ -118,7 +118,7 @@ TypeRef TDViaParser::ParseEnqueue()
         return type;
     }
 
-    VirtualInstrumentObjectRef vio = null;
+    VirtualInstrumentObjectRef vio = nullptr;
     if (vit && /*vit->IsA() && */ vit->IsZDA()) {
         vio = *(VirtualInstrumentObjectRef*) vit->Begin(kPARead);
     }
@@ -281,7 +281,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
 {
     TypeManagerScope scope(_typeManager);
 
-    TypeRef type = null;
+    TypeRef type = nullptr;
     SubString save = _string;
     SubString typeFunction;
     TokenTraits tt = _string.ReadToken(&typeFunction);
@@ -364,14 +364,14 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
 {
-    TypeRef type = null;
+    TypeRef type = nullptr;
     SubString expressionToken;
     _string.ReadSubexpressionToken(&expressionToken);
 
     // See if the token fits the rules for a literal.
     TokenTraits tt = expressionToken.ClassifyNextToken();
-    ConstCStr tName = null;
-    TypeRef literalsType = null;
+    ConstCStr tName = nullptr;
+    TypeRef literalsType = nullptr;
 
     if (tt == TokenTraits_WildCard) {
         // The wild card has no value to parse so just return it.
@@ -389,7 +389,7 @@ TypeRef TDViaParser::ParseLiteral(TypeRef patternType)
         }
     }
 
-    if (literalsType == null) {
+    if (literalsType == nullptr) {
         if (tt == TokenTraits_Integer) {
             tName = tsInt32Type;
         } else if (tt == TokenTraits_IEEE754) {
@@ -492,7 +492,7 @@ TypeRef TDViaParser::ParseParamBlock()
 //------------------------------------------------------------
 void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVector, AggregateAlignmentCalculator* calculator)
 {
-    VIREO_ASSERT(elementTypesVector != null)
+    VIREO_ASSERT(elementTypesVector != nullptr)
 
     SubString  token;
     SubString  fieldName;
@@ -532,7 +532,7 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
         // If not found put BadType from this TypeManger in its place
         // Null's can be returned from type functions but should not be
         // embedded in the data structures.
-        if (subType == null)
+        if (subType == nullptr)
             subType = BadType();
 
         _string.ReadToken(&token);
@@ -540,7 +540,7 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
         // See if there is a field name.
         if (token.CompareCStr(")")) {
             // no field name
-            fieldName.AliasAssign(null, null);
+            fieldName.AliasAssign(nullptr, nullptr);
         } else {
             fieldName.AliasAssign(&token);
             _string.ReadToken(&token);
@@ -652,7 +652,7 @@ TypeRef TDViaParser::ParseRefNumType()
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseControlReference(void *pData) {
     SubString controlTagToken;
-    TypeRef ctrlRefType = null;
+    TypeRef ctrlRefType = nullptr;
 
     if (_string.EatChar('(')) {
         TokenTraits tt = _string.ReadToken(&controlTagToken);
@@ -872,7 +872,7 @@ TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boole
 //------------------------------------------------------------
 Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
 {
-    VIREO_ASSERT(pArray != null);
+    VIREO_ASSERT(pArray != nullptr);
     TypeRef type = pArray->Type();
     TypeRef arrayElementType = pArray->ElementType();
     Int32 rank = type->Rank();
@@ -931,7 +931,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 // any changes, but logical dims can change.
                 pArray->ResizeDimensions(rank, initializerDimensionLengths, false);
 
-                VIREO_ASSERT(pFirstEltInSlice == null);
+                VIREO_ASSERT(pFirstEltInSlice == nullptr);
                 pFirstEltInSlice = pArray->RawBegin();
             }
             // Get the dim lengths and slabs for the actual array, not its
@@ -955,9 +955,9 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 // ignore extra ones.
                 _string.EatLeadingSpaces();
                 _string.EatChar(Fmt()._itemSeparator);
-                void* pElement = elementCount < length ? pEltData : null;
+                void* pElement = elementCount < length ? pEltData : nullptr;
                 Int32 subErr;
-                if (pElement == null) {
+                if (pElement == nullptr) {
                     bExtraInitializersFound = true;
                 }
                 if (dimIndex == 0) {
@@ -1053,7 +1053,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
         case kEncoding_Array:
             if (!pData)
                 return kLVError_NoError;
-            return ParseArrayData(*(TypedArrayCoreRef*) pData, null, 0);
+            return ParseArrayData(*(TypedArrayCoreRef*) pData, nullptr, 0);
             break;
         case kEncoding_Enum:
         case kEncoding_UInt:
@@ -1254,7 +1254,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         _string.EatWhiteSpaces();
                         _string.EatChar(*tsNameSuffix);
                         Boolean found = false;
-                        TypeRef elementType = null;
+                        TypeRef elementType = nullptr;
                         for (elmIndex = 0; !found && elmIndex < elemCount; elmIndex++) {
                             elementType = type->GetSubElement(elmIndex);
                             SubString name = elementType->ElementName();
@@ -1264,12 +1264,12 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                         if (found) {
                             Int32 subErr;
                             --elmIndex;
-                            if (baseOffset == null) {
+                            if (baseOffset == nullptr) {
                                 elementData = baseOffset;
                                 return kLVError_NoError;
                             }
                             if (handledElems[elmIndex]) {  // already seen, ignore
-                                subErr = ParseData(elementType, null);
+                                subErr = ParseData(elementType, nullptr);
                             } else {
                                 handledElems[elmIndex] = found;
                                 subErr = ParseData(elementType, elementData);
@@ -1305,7 +1305,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                             // This code is shared by parsing clusters and complex numbers
                             TypeRef elementType = type->GetSubElement(i);
                             void* elementData = baseOffset;
-                            if (elementData != null)
+                            if (elementData != nullptr)
                                 elementData = baseOffset + elementType->ElementOffset();
                             if (isComplex && !matchOpenParen) {  // complex a+bi format
                                 if (i == 1)  // complex part
@@ -1370,7 +1370,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
 //! Find the location in JSON string based on an indexing path.
 Boolean TDViaParser::EatJSONPath(SubString* path)
 {
-    if (path == null) {
+    if (path == nullptr) {
         return true;
     }
     SubString  token;
@@ -1385,7 +1385,7 @@ Boolean TDViaParser::EatJSONPath(SubString* path)
             _string.EatWhiteSpaces();
             _string.EatChar(*tsNameSuffix);
             Boolean found = false;
-            if (path != null) {
+            if (path != nullptr) {
                 // attention: not compare the encoded string.
                 found = fieldName.Compare(path);
             }
@@ -1504,8 +1504,8 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
             localsType = type1;
         }
     }
-    VIREO_ASSERT(paramsType != null)
-    VIREO_ASSERT(localsType != null)
+    VIREO_ASSERT(paramsType != nullptr)
+    VIREO_ASSERT(localsType != nullptr)
 
     _string.EatLeadingSpaces();
     if (!_string.ComparePrefixCStr("clump")) {
@@ -1518,10 +1518,10 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     Int32 actualClumpCount = 0;
     Int32 lineNumberBase = CalcCurrentLine();
     const Utf8Char* beginClumpSource = _string.Begin();
-    const Utf8Char* endClumpSource = null;
+    const Utf8Char* endClumpSource = nullptr;
 
     while (true) {
-        PreParseClump(null);
+        PreParseClump(nullptr);
         actualClumpCount++;
         if (_pLog->HardErrorCount() > 0)
             return;
@@ -1552,7 +1552,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
     VIClump *pClump = vi->Clumps()->Begin();
     VIClump *pClumpEnd = vi->Clumps()->End();
 
-    if (pClump && pClump->_codeStart == null) {
+    if (pClump && pClump->_codeStart == nullptr) {
         InstructionAllocator cia;
 
         {
@@ -1690,7 +1690,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             state.MarkPerch(&perchName);
         } else {
             instructionNameToken.TrimQuotedString(tt);
-            Boolean keepTrying = state.StartInstruction(&instructionNameToken) != null;
+            Boolean keepTrying = state.StartInstruction(&instructionNameToken) != nullptr;
 
             // Start reading actual parameters
             if (!_string.EatChar('('))
@@ -1773,7 +1773,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                     keepTrying = false;
                 } else {
                     // See if there is another overload to try.
-                    keepTrying = state.StartNextOverload() != null;
+                    keepTrying = state.StartNextOverload() != nullptr;
                 }
             }
             InstructionCore* instruction = state.EmitInstruction();
@@ -1801,7 +1801,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
     // no types have been added. In the worse case this happens when the context runs
     // out of memory and can't allocate any more types.
 
-    TypeRef typeEnd = null;
+    TypeRef typeEnd = nullptr;
     TypeRef typeList = tm->TypeList();
 
     while (true) {
@@ -2021,7 +2021,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
 //------------------------------------------------------------
 void TDViaFormatter::FormatEncoding(EncodingEnum value)
 {
-    ConstCStr str = null;
+    ConstCStr str = nullptr;
     switch (value) {
         case kEncoding_Boolean:         str = tsBoolean;        break;
         case kEncoding_UInt:            str = tsUInt;           break;
@@ -2037,7 +2037,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
 //------------------------------------------------------------
 void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
 {
-    ConstCStr str = null;
+    ConstCStr str = nullptr;
     switch (value) {
         case kUsageTypeSimple:          str = tsElementToken;           break;
         case kUsageTypeConst:           str = tsConstElementToken;      break;
@@ -2055,7 +2055,7 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
 void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit /*= false*/)
 {
     char buffer[kTempFormattingBufferSize];
-    ConstCStr format = null;
+    ConstCStr format = nullptr;
 
     if (encoding == kEncoding_S2CInt) {
         if (is64Bit && _options._bQuote64BitNumbers) {
@@ -2151,7 +2151,7 @@ void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
         // serialize the pointer type and whether it is null or not
         _string->Append('^');
         _string->Append(name.Length(), (Utf8Char*)name.Begin());
-        if ((*(void**)pData) == null) {
+        if ((*(void**)pData) == nullptr) {
             _string->Append(5, (Utf8Char*)"_null");
         }
     }
@@ -2169,7 +2169,7 @@ void TDViaFormatter::FormatType(TypeRef type)
 //------------------------------------------------------------
 void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank)
 {
-    if (null == pArray) {
+    if (nullptr == pArray) {
         _string->AppendCStr("null");
         return;
     }
@@ -2573,7 +2573,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         }
         length2 = parser.TheString()->Length();
     } else {  // Otherwise, just read the string to find the end offset.
-        success = substring.ReadInt(null);
+        success = substring.ReadInt(nullptr);
         length2 = substring.Length();
     }
 
@@ -2632,7 +2632,7 @@ static void BaseStringToNumber(Int32 base, StringRef str, Int32 beginOffset, Int
         }
         length2 = substring.Length();  // ??? parser.TheString()->Length();
     } else {  // Otherwise, just read the string to find the end offset.
-        success = substring.ReadInt(null);
+        success = substring.ReadInt(nullptr);
         length2 = substring.Length();
     }
 
@@ -2708,7 +2708,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
 
         length2 = parser.TheString()->Length();
     } else {     // Otherwise, just read the string to find the end offset.
-        success = substring.ParseDouble(null);
+        success = substring.ParseDouble(nullptr);
         length2 = substring.Length();
     }
 
@@ -2728,7 +2728,7 @@ void NumberToFloatStringInternal(TypeRef type, void *pData, Int32 minWidth, Int3
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dF", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str)
 {
@@ -2737,7 +2737,7 @@ void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dE", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str)
 {
@@ -2746,7 +2746,7 @@ void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%^%d.%dE", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2758,7 +2758,7 @@ void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, In
     else
         snprintf(formatBuffer, sizeof(formatBuffer), "%%%dd", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2767,7 +2767,7 @@ void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32,
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%dX", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2776,7 +2776,7 @@ void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int3
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%do", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2785,7 +2785,7 @@ void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%db", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, null);
+    Format(&format, 1, arguments, str, nullptr);
 }
 
 Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, Int32 precision,
