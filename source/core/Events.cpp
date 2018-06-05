@@ -160,7 +160,7 @@ class EventQueueObject {
 
 typedef std::vector<EventQueueObject> EventQueueObjectVector;
 
-typedef Int32 EventOracleIndex;
+typedef IntIndex EventOracleIndex;
 enum { kNotAnEventOracleIdx = -1, kAppEventOracleIdx = 0 };
 
 // Event Oracle -- manage all event registration and delivery
@@ -326,7 +326,7 @@ bool EventOracle::UnregisterForEvent(EventQueueID qID, EventSource eSource, Even
     if (controlUID) {
         // TODO(spathiwa) -- look up index for given control
     }
-    if (qID >= _qObject.size()) {
+    if (static_cast<size_t>(qID) >= _qObject.size()) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "UnregisterForEvents with invalid QueueiD");
         return false;
     }
@@ -830,7 +830,7 @@ VIREO_FUNCTION_SIGNATURE2(UnregisterForEvents, RefNumVal, ErrorCluster)
 
 //------------------------------------------------------------
 struct WaitForEventArgs {
-    UInt32 *eventSpecIndex;
+    IntIndex *eventSpecIndex;
     StaticTypeAndData data;
     InstructionCore *branchTarget;
 };
@@ -943,7 +943,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                             eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : nullptr) : 0;
 
     for (Int32 inputTuple = 0; inputTuple < numTuples; ++inputTuple) {
-        UInt32 eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
+        IntIndex eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
         if (eventSpecIndex >= esCount) {
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Invalid Event Spec Index");
             return THREAD_EXEC()->Stop();
