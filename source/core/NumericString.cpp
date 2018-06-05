@@ -488,7 +488,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (tempDouble < 0) {
                             absDouble = 0.0 - tempDouble;
                             }
-                            exponent = floor(log10(absDouble));
+                            exponent = static_cast<Int32>(floor(log10(absDouble)));
                         }
                         if (fOptions.Significant >= 0) {
                             precision = fOptions.Significant-1;
@@ -1305,7 +1305,7 @@ void S2CIntScanString(StaticTypeAndData* argument, TypeRef argumentType, char fo
 void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
                       char formatChar, char decimalSeparator, char* beginPointer, char** endPointer, IntIndex offset = 0)
 {
-    double doubleValue;
+    Double doubleValue;
     IntMax intValue = 0;
     switch (formatChar) {
         case 'x':
@@ -1315,7 +1315,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
         case 'B':
         case 'o': {
                 intValue = ScanIntBaseValues(formatChar, beginPointer, endPointer);
-                doubleValue = intValue;
+                doubleValue = static_cast<Double>(intValue);
             }
             break;
         case 'f':
@@ -1349,7 +1349,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
             break;
         default: {
                 intValue = strtoll(beginPointer, endPointer, 10);
-                doubleValue = intValue;
+                doubleValue = static_cast<Double>(intValue);
             }
             break;
     }

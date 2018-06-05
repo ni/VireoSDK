@@ -730,7 +730,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     IntMax perchIndex;
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
-            _perches.resize(perchIndex+kClumpStateIncrementSize);
+            _perches.resize(perchIndex + kClumpStateIncrementSize);
         if (_perches[perchIndex] < kPerchUndefined) {
             LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
         }
@@ -1177,7 +1177,7 @@ void ClumpParseState::CommitClump()
     if (_cia->IsCalculatePass())
         return;
 
-    for (Int32 i = 0; i < _patchInfoCount; i++) {
+    for (IntIndex i = 0; i < _patchInfoCount; i++) {
         VIREO_ASSERT(_patchInfos[i]._patchType == PatchInfo::Perch);
         *_patchInfos[i]._whereToPatch = _perches[_patchInfos[i]._whereToPeek];
     }

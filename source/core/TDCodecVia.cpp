@@ -1626,7 +1626,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
             break;
         } else {
             // Read its arguments.
-            tokenFound = _string.ReadSubexpressionToken(&token);
+            tokenFound = _string.ReadSubexpressionToken(&token) != TokenTraits_Unrecognized;
         }
     } while (tokenFound);
 }
@@ -2557,7 +2557,7 @@ VIREO_FUNCTION_SIGNATURE6(DecimalStringToNumber, StringRef, Int32, void, Int32, 
         success = (parser.ErrorCount() == 0);
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
-                WriteDoubleToMemory(type, pData, parsedValue);
+                WriteDoubleToMemory(type, pData, static_cast<Double>(parsedValue));
             } else {
                 SaturateValue(type, &parsedValue, true);
                 WriteIntToMemory(type, pData, parsedValue);
@@ -2600,7 +2600,7 @@ static void BaseStringToNumber(Int32 base, StringRef str, Int32 beginOffset, Int
         if (success) {
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
                 parsedValue *= sign;
-                WriteDoubleToMemory(type, pData, parsedValue);
+                WriteDoubleToMemory(type, pData, static_cast<Double>(parsedValue));
             } else {
                 if (sign < 0) {
                     switch (type->TopAQSize()) {  // sign-extend

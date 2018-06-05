@@ -2657,7 +2657,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
                 case 1:  value = *(Int8*)pData;             break;
                 case 2:  value = *(Int16*)pData;            break;
                 case 4:  value = *(Int32*)pData;            break;
-                case 8:  value = *(Int64*)pData;            break;
+                case 8:  value = static_cast<Double>(*(Int64*)pData);            break;
                 default: isErr = true;                      break;
             }
             break;
@@ -2667,7 +2667,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
                 case 1:  value = *(UInt8*)pData;            break;
                 case 2:  value = *(UInt16*)pData;           break;
                 case 4:  value = *(UInt32*)pData;           break;
-                case 8:  value = *(UInt64*)pData;           break;
+                case 8:  value = static_cast<Double>(*(UInt64*)pData);           break;
                 default: isErr = true;                      break;
             }
             break;
@@ -2684,7 +2684,7 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
             }
             break;
         default:
-            isErr = kNIError_kCantDecode;
+            isErr = true;
             break;
     }
 
