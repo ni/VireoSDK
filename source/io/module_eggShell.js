@@ -50,6 +50,7 @@
             'Data_ReadUInt32',
             'Data_ReadSingle',
             'Data_ReadDouble',
+			'Data_ReadObjectRefNum',
             'Data_GetArrayMetadata',
             'Data_GetArrayDimLength',
             'Data_WriteBoolean',
@@ -98,6 +99,7 @@
         var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
         var Data_ReadSingle = Module.cwrap('Data_ReadSingle', 'number', ['number']);
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
+		var Data_ReadObjectRefNum = Module.cwrap('Data_ReadObjectRefNum', 'number', ['number']);
         var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
         var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
         var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number', 'number']);
@@ -320,6 +322,8 @@
         var arrayRankPointer = Module._malloc(4);
         var vireoObjectPointer = Module._malloc(4);
         var vireoTypePointer = Module._malloc(4);
+		
+		var objectRefNumToJsObjectMap = {};
 
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
             var eggShellResult = EggShell_GetPointer(v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
@@ -451,6 +455,12 @@
             var numericValue = Data_ReadDouble(doublePointer);
             return numericValue;
         };
+		
+		Module.eggShell.dataReadObjectRefNum = function (objectRefNumPointer) {
+            var refNumValue = Data_ReadObjectRefNum(objectRefNumPointer);
+            var objectValue = objectRefNumToJsObjectMap[refNumValue];
+            return objectValue;
+        };
 
         Module.eggShell.dataReadTypedArray = function (arrayPointer) {
             return Module.eggShell.dataReadNumericArrayAsTypedArray(arrayPointer).array;
@@ -544,6 +554,13 @@
             Data_WriteDouble(destination, value);
         };
 
+		Module.eggShell.dataWriteObjectRefNum = function (destination, value) {
+			// value = js object
+			// destination = refnum*
+			var refNumValue = Data_ReadObjectRefNum(destination);
+			objectRefNumToJsObjectMap[refNumValue] = value;
+        };
+		
         Module.eggShell.dataWriteTypedArray = function (destination, value) {
             var int32Byte = 4;
             var rank = 1;

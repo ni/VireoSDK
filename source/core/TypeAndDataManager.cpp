@@ -612,6 +612,7 @@ const SubString TypeCommon::TypeString = SubString(tsStringType);
 const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
 const SubString TypeCommon::TypeComplexSingle = SubString("ComplexSingle");
 const SubString TypeCommon::TypeComplexDouble = SubString("ComplexDouble");
+const SubString TypeCommon::TypeObjectRefNum = SubString(tsObjectRefNumToken);
 const SubString TypeCommon::TypeStaticTypeAndData = SubString("StaticTypeAndData");
 
 TypeCommon::TypeCommon(TypeManagerRef typeManager)
@@ -956,7 +957,18 @@ Boolean TypeCommon::IsComplex()
     }
     return false;
 }
-
+//------------------------------------------------------------
+Boolean TypeCommon::IsObjectRefNum()
+{
+	TypeRef t = this;
+	while (t) {
+		if (t->Name().Compare(&TypeObjectRefNum)) {
+			return true;
+		}
+		t = t->BaseType();
+	}
+	return false;
+}
 //------------------------------------------------------------
 Boolean TypeCommon::IsIntrinsicClusterDataType(SubString *foundTypeName) {
     TypeRef t = this;

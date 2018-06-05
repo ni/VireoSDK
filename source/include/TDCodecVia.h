@@ -152,6 +152,7 @@ class TDViaParser
     TypeRef ParsePointerType(Boolean shortNotation);
     TypeRef ParseRefNumType();
     TypeRef ParseControlReference(void *pData = null);
+	TypeRef ParseObjectReference(void *pData = null);
     TypeRef ParseEnumType(SubString *token);
     EncodingEnum ParseEncoding(SubString* str);
 };
@@ -254,6 +255,9 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
 #define tsControlReferenceToken "ControlReference"
 #define tsControlRefNumToken    "ControlRefNum"
+
+#define tsObjectReferenceToken  "ObjectReference"
+#define tsObjectRefNumToken     "ObjectRefNum"
 
 #define tsEnumTypeToken         "Enum"
 #define tsEnumTypeTokenLen      4     // strlen of above

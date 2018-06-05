@@ -125,6 +125,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_ReadUInt32',\
     '_Data_ReadSingle',\
     '_Data_ReadDouble',\
+	'_Data_ReadObjectRefNum',\
     '_Data_WriteString',\
     '_Data_WriteBoolean',\
     '_Data_WriteInt8',\
@@ -167,6 +168,7 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/MatchPat.bc\
 	$(OBJS)/Math.bc\
 	$(OBJS)/NumericString.bc\
+	$(OBJS)/ObjectRef.bc\
 	$(OBJS)/Platform.bc\
 	$(OBJS)/RefNum.bc\
 	$(OBJS)/Queue.bc\

@@ -213,7 +213,14 @@
                 isValidReturnType: function (value) {
                     return value instanceof Float64Array;
                 }
-            }
+            },
+			ObjectRefNum: {
+                reader: Module.eggShell.dataReadObjectRefNum,
+                writer: Module.eggShell.dataWriteObjectRefNum,
+                isValidReturnType: function (value) {
+                    return typeof value === 'object';
+                }
+            },
         };
 
         var createJavaScriptParametersArray = function (parametersPointer, parametersCount) {
@@ -227,7 +234,7 @@
 
                 var parameterValue = undefined;
                 var readFunction = typeFunctions[typeName].reader;
-                if (readFunction === undefined) {
+                if (readFunction === undefined) {					
                     throw new Error(' Unsupported type for parameter with index = ' + index);
                 } else {
                     parameterValue = readFunction(parameterPointer);
@@ -287,6 +294,7 @@
             (returnTypeName === 'boolean') ||
             (returnTypeName === 'string') ||
             (returnTypeName === 'undefined') ||
+			(returnTypeName === 'object') ||
             (isTypedArray(returnValue));
         };
 

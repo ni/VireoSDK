@@ -4,17 +4,11 @@ define(MyVI dv(VirtualInstrument (
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
-        ) error)
-        e(c(
-            e(.Boolean status)
-            e(.Int32 code)
-            e(.String source)
         ) error2)
         e(dv(.String "") returnString)
         e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence false error 'NI_ReturnObject' returnString)
         JavaScriptInvoke(occurrence false error2 'NI_ReturnFunction' returnString)
     )
 ) ) )

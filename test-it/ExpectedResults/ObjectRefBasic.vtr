@@ -1,0 +1,20 @@
+Ref ref1: ObjectRefNum<ObjectRefTestProgram,dataItem1>
+Ref ref2: ObjectRefNum<ObjectRefTestProgram,dataItem2>
+IsEQ ref1 ref2: false
+IsNE ref1 ref2: true
+Ref ref4: ObjectRefNum
+IsNotARefNum: true
+Ref ref4: ObjectRefNum<ObjectRefTestProgram,dataItem1>
+IsNotARefNum: false
+IsEQ ref1 ref2: true
+Ref ref3 : ObjectRefNum<ObjectRefTestProgram,dataItem3>
+In SubVI:
+Ref refarg: ObjectRefNum<ObjectRefTestProgram,dataItem1>
+Ref subref: ObjectRefNum<subVI,myItem>
+In SubSubVI:
+Ref subsubref: ObjectRefNum<subSubVI,nestedRef>
+In SubVI:
+Ref refarg: ObjectRefNum<ObjectRefTestProgram,dataItem2>
+Ref subref: ObjectRefNum<subVI,myItem>
+In SubSubVI:
+Ref subsubref: ObjectRefNum<subSubVI,nestedRef>

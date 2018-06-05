@@ -8,10 +8,12 @@ describe('A JavaScript function invoke', function () {
     var vireo;
 
     var jsDataTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/DataTypes.via');
+	var jsObjectTypeViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ObjectType.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
-            jsDataTypesViaUrl
+            jsDataTypesViaUrl,
+			jsObjectTypeViaUrl
         ], done);
     });
 
@@ -106,6 +108,19 @@ describe('A JavaScript function invoke', function () {
             expect(value instanceof Float64Array).toBeTrue();
             return value;
         };
+		
+		 window.NI_ObjectFunction = function (value) {
+              var myObject = {};
+			  myObject.name = value;
+			  myObject.LengthOfName = function () {
+				  return this.name.length;
+			  }
+              return myObject;
+         };
+		
+		 window.NI_UseObjectFunction = function (myObject) {
+			 return myObject.LengthOfName();
+		 };
     });
 
     afterEach(function () {
@@ -128,6 +143,8 @@ describe('A JavaScript function invoke', function () {
         window.NI_UInt32ArrayFunction = undefined;
         window.NI_SingleArrayFunction = undefined;
         window.NI_DoubleArrayFunction = undefined;
+		window.NI_ObjectFunction = undefined;
+		window.NI_UseObjectFunction = undefined;
     });
 
     it('succesfully pass different data types', function (done) {
@@ -180,4 +197,24 @@ describe('A JavaScript function invoke', function () {
             done();
         });
     });
+	
+	 it('succesfully create and use an object type', function (done) {
+		 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsObjectTypeViaUrl);
+         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+		 runSlicesAsync(function (rawPrint, rawPrintError) {
+			 expect(rawPrint).toBeEmptyString();
+             expect(rawPrintError).toBeEmptyString();
+             expect(viPathParser('error.status')).toBeFalse();
+             expect(viPathParser('error.code')).toBe(0);
+             expect(viPathParser('error.source')).toBeEmptyString();
+			 expect(viPathParser('error2.status')).toBeFalse();
+             expect(viPathParser('error2.code')).toBe(0);
+             expect(viPathParser('error2.source')).toBeEmptyString();
+			
+			 expect(viPathParser('length')).toBe(3);
+			 done();
+		 });
+	 });
+	
 });

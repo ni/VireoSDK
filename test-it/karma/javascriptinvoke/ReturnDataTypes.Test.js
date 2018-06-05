@@ -130,12 +130,6 @@ describe('A JavaScript function invoke', function () {
             return Float64Array.from([-1.0, 0.0, 1.0]);
         };
 
-        window.NI_ReturnObject = function () {
-            var myObject = {};
-            myObject.value = 'value';
-            return myObject;
-        };
-
         window.NI_ReturnFunction = function () {
             var myFunction = function () {
                 return;
@@ -246,7 +240,6 @@ describe('A JavaScript function invoke', function () {
         window.NI_SingleFunction = undefined;
         window.NI_DoubleFunction = undefined;
         window.NI_StringFunction = undefined;
-        window.NI_ReturnObject = undefined;
         window.NI_ReturnFunction = undefined;
         window.NI_ReturnString = undefined;
         window.NI_Int8ArrayFunction = undefined;
@@ -324,9 +317,6 @@ describe('A JavaScript function invoke', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect([kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke]).toContain(viPathParser('error.code'));
-            expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
             expect(viPathParser('error2.status')).toBeTrue();
             expect([kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke]).toContain(viPathParser('error2.code'));
             expect(viPathParser('error2.source')).toMatch(/JavaScriptInvoke in MyVI/);

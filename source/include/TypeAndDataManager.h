@@ -454,6 +454,7 @@ class TypeCommon
     static const SubString TypeTimestamp;
     static const SubString TypeComplexSingle;
     static const SubString TypeComplexDouble;
+	static const SubString TypeObjectRefNum;
     static const SubString TypeStaticTypeAndData;
 
     explicit TypeCommon(TypeManagerRef typeManager);
@@ -607,6 +608,7 @@ class TypeCommon
     Boolean IsString();
     Boolean IsTimestamp();
     Boolean IsComplex();
+	Boolean IsObjectRefNum();
     Boolean IsIntrinsicClusterDataType(SubString *foundTypeName);  // Returns true for builtin data types such as Timestamp, Complex, etc
 
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.

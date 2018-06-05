@@ -25,6 +25,7 @@
     <ClCompile Include="..\source\core\MatchPat.cpp" />
     <ClCompile Include="..\source\core\Math.cpp" />
     <ClCompile Include="..\source\core\NumericString.cpp" />
+    <ClCompile Include="..\source\core\ObjectRef.cpp" />
     <ClCompile Include="..\source\core\Platform.cpp" />
     <ClCompile Include="..\source\core\Queue.cpp" />
     <ClCompile Include="..\source\core\RefNum.cpp" />
@@ -78,6 +79,7 @@
     <ClInclude Include="..\source\include\ExecutionContext.h" />
     <ClInclude Include="..\source\include\Instruction.h" />
     <ClInclude Include="..\source\include\LVDateTimeRecord.h" />
+    <ClInclude Include="..\source\include\ObjectRef.h" />
     <ClInclude Include="..\source\include\Platform.h" />
     <ClInclude Include="..\source\include\RefNum.h" />
     <ClInclude Include="..\source\include\StringUtilities.h" />

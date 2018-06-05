@@ -1,0 +1,76 @@
+
+define(PrintObjectRef dv(.VirtualInstrument (
+    Params:c(
+        i(String refName)
+        i(ObjectRefNum ref)
+    )
+    Locals:c(
+        e(String out)
+        e(String refString)
+        e(String refvalString)
+    )
+    clump (1 // top level
+        // Strip the refnum cookie value (which varies per run) from ref output and put it on
+        // its own line after a // comment, so test runners will ignore it
+        StringFormat(refString "%z" * ref)
+	MatchPattern(refString "(0x.*" * out refvalString * *)
+        Printf("Ref %s: %s\n// %s\n" refName out refvalString)
+    )
+)))
+
+define(subVI dv(.VirtualInstrument (
+    Params:c(
+        i(ObjectRefNum refarg)  // parameter object ref, passed from caller
+    )
+    Locals: c(
+        e(ObjectReference("myItem") subref) // object ref in subVI (we won't support this in WebVIs initially, but Vireo already supports it)
+
+        // Define a nested local VI with a object ref, to make sure binding works
+	e(define(subSubVI dv(.VirtualInstrument (
+             Locals:c(e(ObjectReference("nestedRef") subsubref))
+             clump(1 Printf("In SubSubVI:\n") PrintObjectRef("subsubref" subsubref))) ) ) foo)
+    )
+    clump (1 // top level
+        Println("In SubVI:")
+        PrintObjectRef("refarg" refarg)
+        PrintObjectRef("subref" subref)
+	subSubVI()
+    )
+)))
+
+define(ObjectRefTestProgram dv(.VirtualInstrument (
+    // Unreferenced Event spec with static object reference.  This test doesn't test event
+    // usage of object refs, it just makes sure it parses.
+
+    Locals:c(
+		e(ObjectReference("dataItem1") ref1)  // static object ref linked to dataItem1
+        e(dv(ObjectReference("dataItem2")) ref2)  // static object ref linked to dataItem2
+        e(dv(ObjectRefNum ObjectReference("dataItem3")) ref3)  // more verbose with explicit type and dv definition
+	e(ObjectRefNum ref4)  // variable object refnum wire
+	e(Boolean bool)
+    )
+
+    clump (1 // top level
+        PrintObjectRef("ref1" ref1)
+        PrintObjectRef("ref2" ref2)
+        IsEQ(ref1 ref2 bool)
+        Printf("IsEQ ref1 ref2: %z\n" bool)
+        IsNE(ref1 ref2 bool)
+        Printf("IsNE ref1 ref2: %z\n" bool)
+        PrintObjectRef("ref4" ref4)
+        IsNotANumPathRefnum(ref4 bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        Copy(ref1 ref4)
+        PrintObjectRef("ref4" ref4)
+        IsNotANumPathRefnum(ref4 bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        IsEQ(ref1 ref4 bool)
+        Printf("IsEQ ref1 ref2: %z\n" bool)
+        PrintObjectRef("ref3 "ref3)
+        subVI(ref4)
+        subVI(ref2)
+    )
+
+) ) )
+
+enqueue(ObjectRefTestProgram)

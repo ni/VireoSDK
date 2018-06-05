@@ -1,0 +1,24 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+		e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error2)
+		e(dv(ObjectReference("foo")) ref1)  
+		e(dv(.String "Foo") name)
+		e(dv(.Int32 0) length)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        JavaScriptInvoke(occurrence false error 'NI_ObjectFunction' ref1 name)
+		JavaScriptInvoke(occurrence false error2 'NI_UseObjectFunction' length ref1)        
+    )
+) ) )
+
+enqueue(MyVI)

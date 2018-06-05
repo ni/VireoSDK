@@ -22,6 +22,7 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 #include "ControlRef.h"
+#include "ObjectRef.h"
 #include <vector>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
@@ -334,6 +335,8 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         type = ParseEnqueue();
     } else if (typeFunction.CompareCStr(tsControlReferenceToken)) {
         type = ParseControlReference();
+	} else if (typeFunction.CompareCStr(tsObjectReferenceToken)) {
+		type = ParseObjectReference();
     } else {
         _string = save;
         type = ParseLiteral(patternType);
@@ -676,6 +679,35 @@ TypeRef TDViaParser::ParseControlReference(void *pData) {
 
     cdt = cdt->FinalizeDVT();
     return cdt;
+}
+//------------------------------------------------------------
+TypeRef TDViaParser::ParseObjectReference(void *pData)
+{
+	SubString objectTagToken;
+	TypeRef objRefType = null;
+
+	if (_string.EatChar('(')) {
+		TokenTraits tt = _string.ReadToken(&objectTagToken);
+		if (tt == TokenTraits_String) {
+			objectTagToken.TrimQuotedString(tt);
+			if (_string.EatChar(')'))
+				objRefType = _typeManager->FindType(tsObjectRefNumToken);
+		}
+	}
+	if (!objRefType)
+		return BadType();
+	if (pData) {
+		ObjectReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, objectTagToken);
+		return ((RefNumVal*)pData)->Type();
+	}
+
+	DefaultValueType *cdt = DefaultValueType::New(_typeManager, objRefType, true);
+	pData = cdt->Begin(kPAInit);
+
+	ObjectReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, objectTagToken);
+
+	cdt = cdt->FinalizeDVT();
+	return cdt;
 }
 //------------------------------------------------------------
 TypeRef TDViaParser::ParseEnumType(SubString *token)
@@ -1354,9 +1386,13 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
             break;
         case kEncoding_RefNum: {
             TokenTraits tt = _string.ReadToken(&token);
-            if (tt == TokenTraits_SymbolName && token.CompareCStr(tsControlReferenceToken))
-                ParseControlReference(pData);
-            }
+			if (tt == TokenTraits_SymbolName) {
+				if (token.CompareCStr(tsControlReferenceToken))
+					ParseControlReference(pData);
+				else if (token.CompareCStr(tsObjectReferenceToken))
+					ParseObjectReference(pData);
+			}
+			}
             break;
         default:
             LOG_EVENT(kHardDataError, "No parser for data type's encoding");
@@ -2338,8 +2374,10 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
                     _string->Append(name.Length(), (Utf8Char*)name.Begin());
                 else
                     _string->AppendCStr(tsRefNumTypeToken);
-                if (name.CompareCStr(tsControlRefNumToken))
-                    ControlReferenceAppendDescription(_string, refnum);
+				if (name.CompareCStr(tsControlRefNumToken))
+					ControlReferenceAppendDescription(_string, refnum);
+				else if (name.CompareCStr(tsObjectRefNumToken))
+					ObjectReferenceAppendDescription(_string, refnum);
                 _string->Append('(');
                 FormatInt(kEncoding_RefNum, refnum);
                 _string->Append(')');

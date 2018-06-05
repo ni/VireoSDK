@@ -17,6 +17,7 @@ SDG
 #include "TDCodecLVFlat.h"
 #include "TDCodecVia.h"
 #include "CEntryPoints.h"
+#include "ObjectRef.h"
 
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
@@ -392,6 +393,11 @@ VIREO_EXPORT Double Data_ReadSingle(Single* singlePointer)
 VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
 {
     return *doublePointer;
+}
+//------------------------------------------------------------
+VIREO_EXPORT Double Data_ReadObjectRefNum(ObjectRefNum* refNum)
+{
+	return *refNum;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
