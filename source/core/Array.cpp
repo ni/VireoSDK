@@ -106,7 +106,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
         return THREAD_EXEC()->Stop();
     }
     for (i = 0; i < rank; ++i)
-        if (ppDimensions[i] != null)
+        if (ppDimensions[i] != nullptr)
             --subRank;
     bool noneWired = false;
     if (subRank == rank) {
@@ -114,7 +114,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
         --subRank;
     }
     for (i = 0; i < rank; ++i) {
-        bool wired = (ppDimensions[i] != null);
+        bool wired = (ppDimensions[i] != nullptr);
         IntIndex idx = 0;
         if (wired || (i == 0 && noneWired)) {
             idx = wired ? *ppDimensions[i] : 0;
@@ -395,7 +395,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetParamBlock)
             idx >= 0? idx++ : idx = 0;
         }
         i++;
-        TypedArrayCoreRef subArray = null;
+        TypedArrayCoreRef subArray = nullptr;
         void* element = arguments[i]._pData;
         argType = arguments[i]._paramType;
         // whether the input is single element or not. The argType needn't to be flat to specify single element
@@ -410,7 +410,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetParamBlock)
         }
 
         if (idx >= 0 && idx < arrayOut->Length()) {
-            if (subArray != null) {
+            if (subArray != nullptr) {
                 IntIndex length = Min(subArray->Length(), arrayOut->Length() - idx);
                 arrayIn->ElementType()->CopyData(subArray->BeginAt(0), arrayOut->BeginAt(idx), length);
             } else {
@@ -501,7 +501,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetParamBlock)
         }
 
         i++;
-        TypedArrayCoreRef subArray = null;
+        TypedArrayCoreRef subArray = nullptr;
         void* element = arguments[i]._pData;
         argType = arguments[i]._paramType;
 
@@ -626,7 +626,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(1);
 
-    IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : 0;
+    IntIndex idx = (_ParamPointer(2) != nullptr) ? _Param(2) : 0;
     // Coerce index to non-negative integer
     idx = Max(idx, 0);
 
@@ -639,7 +639,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySubset, TypedArrayCoreRef, TypedArrayCoreRef, Int
     IntIndex maxLen = arrayIn->Length() - idx;
     maxLen = Max(maxLen, 0);
 
-    IntIndex len = (_ParamPointer(3) != null) ? _Param(3) : maxLen;
+    IntIndex len = (_ParamPointer(3) != nullptr) ? _Param(3) : maxLen;
     len = Max(len, 0);
     len = Min(len, maxLen);
     arrayOut->Resize1D(len);
@@ -678,7 +678,7 @@ VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDParamBlock)
         return THREAD_EXEC()->Stop();
     }
     for (i = 0; i < rank; ++i) {
-        IntIndex idx = (_ParamImmediate(arg[i].idx) != null) ? *_ParamImmediate(arg[i].idx) : 0;
+        IntIndex idx = (_ParamImmediate(arg[i].idx) != nullptr) ? *_ParamImmediate(arg[i].idx) : 0;
 
         // Coerce index to non-negative integer
         idx = Max(idx, 0);
@@ -691,7 +691,7 @@ VIREO_FUNCTION_SIGNATUREV(ArraySubsetND, ArraySubsetNDParamBlock)
         IntIndex maxLen = arrayIn->DimensionLengths()[rank-1-i] - idx;
         maxLen = Max(maxLen, 0);
 
-        IntIndex len = (_ParamImmediate(arg[i].len) != null) ? *_ParamImmediate(arg[i].len) : maxLen;
+        IntIndex len = (_ParamImmediate(arg[i].len) != nullptr) ? *_ParamImmediate(arg[i].len) : maxLen;
         len = Max(len, 0);
         len = Min(len, maxLen);
 
@@ -715,7 +715,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertElt, TypedArrayCoreRef, TypedArrayCoreRef, 
     TypedArrayCoreRef arrayIn = _Param(1);
 
     IntIndex length = arrayIn->Length();
-    IntIndex index = (_ParamPointer(2) != null) ? _Param(2) : length;
+    IntIndex index = (_ParamPointer(2) != nullptr) ? _Param(2) : length;
 
     if (arrayOut != arrayIn)
         arrayOut->Type()->CopyData(_ParamPointer(1), _ParamPointer(0));
@@ -732,8 +732,8 @@ VIREO_FUNCTION_SIGNATURE5(ArrayInsertSubsetND, TypedArrayCoreRef, TypedArrayCore
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(1);
 
-    IntIndex rankIdx = (_ParamPointer(3) != null) ? _Param(3) : 0;
-    IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : arrayIn->DimensionLengths()[arrayIn->Rank()-1-rankIdx];
+    IntIndex rankIdx = (_ParamPointer(3) != nullptr) ? _Param(3) : 0;
+    IntIndex idx = (_ParamPointer(2) != nullptr) ? _Param(2) : arrayIn->DimensionLengths()[arrayIn->Rank()-1-rankIdx];
 
     TypedArrayCoreRef subArray = _Param(4);
 
@@ -872,7 +872,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayInsertSubset, TypedArrayCoreRef, TypedArrayCoreRe
     TypedArrayCoreRef arrayIn = _Param(1);
     IntIndex arrayInLength = arrayIn->Length();
 
-    IntIndex idx = (_ParamPointer(2) != null) ? _Param(2) : arrayInLength;
+    IntIndex idx = (_ParamPointer(2) != nullptr) ? _Param(2) : arrayInLength;
 
     TypedArrayCoreRef subArray = _Param(3);
     IntIndex subArrayLength = subArray->Length();
@@ -1002,7 +1002,7 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
     SubString sortOpToken(pSortOpName);
 
     pInstructionBuilder->ReresolveInstruction(&sortOpToken, false);
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
     TypeRef elementType  = arrayArg->ElementType();
     SubString LTName("IsLTSort");
@@ -1014,8 +1014,8 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, sortOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType,
-                                   (void*)null, booleanType, (void*)null);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)nullptr, elementType,
+                                   (void*)nullptr, booleanType, (void*)nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&sortOp->_piNext);
@@ -1091,7 +1091,7 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
     SubString findMaxMinOpToken(pMaxMinOpName);
 
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef elementType  = arrayArg->ElementType();
     SubString LTName("IsLT");
     // Add param slot to hold the snippet
@@ -1102,8 +1102,8 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, findOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)null, elementType,
-                                   (void*)null, booleanType, (void*)null);
+    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)nullptr, elementType,
+                                   (void*)nullptr, booleanType, (void*)nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&findOp->_piNext);

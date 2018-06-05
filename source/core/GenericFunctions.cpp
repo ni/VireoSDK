@@ -25,12 +25,12 @@ ConstCStr CopyProcName(void *pSource, void *pDest, TypeRef elemType)
 {
     Int32 aqSize = elemType->TopAQSize();
     // If the source or dest are not aligned to the alignment required by the Copy proc
-    // for this size, return null.
+    // for this size, return nullptr.
     // (Just because an object is 4 bytes doesn't mean it's an integer and appropriately aligned;
     // it could be an unaligned cluster of 4 Booleans).
     Int32 alignment = elemType->TheTypeManager()->AQAlignment(aqSize);
     if (((uintptr_t)pSource % alignment != 0) || ((uintptr_t)pDest % alignment != 0))
-        return null;
+        return nullptr;
     switch (aqSize) {  // copy sizes go to 32 bytes just for efficiency
         case 1:     return "Copy1";   break;
         case 2:     return "Copy2";   break;
@@ -38,7 +38,7 @@ ConstCStr CopyProcName(void *pSource, void *pDest, TypeRef elemType)
         case 8:     return "Copy8";   break;
         case 16:    return "Copy16";  break;
         case 32:    return "Copy32";  break;
-        default:    return null;      break;
+        default:    return nullptr;      break;
     }
 }
 //------------------------------------------------------------
@@ -49,7 +49,7 @@ ConstCStr CopyEnumProcName(Int32 aqSize)
         case 2:     return "CopyEnum2";   break;
         case 4:     return "CopyEnum4";   break;
         case 8:     return "CopyEnum8";   break;
-        default:    return null;      break;
+        default:    return nullptr;      break;
     }
 }
 //------------------------------------------------------------
@@ -58,9 +58,9 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
     // TODO(PaulAustin): security. user code should only be allowed to use the "Copy" operation,
     // not the more type-specific ones this function references.
     // those should be marked as kernel access. (can user name spaces over load the same names?)
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     if (pInstructionBuilder->_argCount != 2)
-        return null;
+        return nullptr;
     TypeRef sourceType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString originalCopyOp = pInstructionBuilder->_instructionPointerType->Name();
@@ -70,8 +70,8 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
     if (sourceType->IsA(destType, true) || destType->IsA(sourceType, true)) {
         void* pSource = pInstructionBuilder->_argPointers[0];
         void* pDest = pInstructionBuilder->_argPointers[1];
-        void* extraParam = null;
-        ConstCStr copyOpName = null;
+        void* extraParam = nullptr;
+        ConstCStr copyOpName = nullptr;
         if (sourceType->IsFlat() || originalCopyOp.CompareCStr("CopyTop")) {
             if (destType->IsEnum()) {
                 copyOpName = CopyEnumProcName(sourceType->TopAQSize());
@@ -109,7 +109,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         SubString copyOpToken(copyOpName);
         if (extraParam) {
             // Some copy operations take an additional parameter, pass it at the end.
-            pInstructionBuilder->InternalAddArg(null, extraParam);
+            pInstructionBuilder->InternalAddArg(nullptr, extraParam);
         }
         pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
         pInstruction = pInstructionBuilder->EmitInstruction();
@@ -230,7 +230,7 @@ struct AggregateBinOpInstruction : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef sourceYType = pInstructionBuilder->_argTypes[1];
     TypeRef destType = pInstructionBuilder->_argTypes[2];
@@ -260,7 +260,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
     if (argCount > 4 || (argCount == 4 &&
         (pInstructionBuilder->_argTypes[3]->BitEncoding() != destType->BitEncoding() ||
          pInstructionBuilder->_argTypes[3]->BitLength() != destType->BitLength())))
-        return null;
+        return nullptr;
 
     switch (goalType->BitEncoding()) {
         default:
@@ -271,7 +271,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             ConstCStr pConvertOpName = "Convert";
             SubString convertOpToken(pConvertOpName);
             bool useSnippet = false;
-            pInstruction = null;
+            pInstruction = nullptr;
             if (destEncoding == kEncoding_S2CInt || destEncoding == kEncoding_IEEE754Binary) {
                 // If the output type is numeric scalar, and exactly one of the inputs is not the same type as the output, automatically convert
                 // using the destination as a temporary.  (If the destination is inplace to the other input, use an op with a snippet instead
@@ -324,7 +324,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
             savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-            ConstCStr pVectorBinOpName = null;
+            ConstCStr pVectorBinOpName = nullptr;
             // TODO(PaulAustin): Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
                 if (savedOperation.CompareCStr("Split"))
@@ -360,9 +360,9 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
             TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
-            if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, xEltType, (void*)null, yEltType,
-                (void*)null, destEltType, (void*)null, destEltType, (void*)null))
-                pInstruction = null;
+            if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, xEltType, (void*)nullptr, yEltType,
+                (void*)nullptr, destEltType, (void*)nullptr, destEltType, (void*)nullptr))
+                pInstruction = nullptr;
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
 
             // Create the accumulator snippet
@@ -374,8 +374,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
                 pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, accumulatorOpArgId);
                 snippetBuilder.StartInstruction(&accumulatorToken);
-                snippetBuilder.InternalAddArg(null, vectorBinOp == kFakedInstruction ?
-                                        null : vectorBinOp->_piSnippet);  // TODO(PaulAustin): this seems redundant
+                snippetBuilder.InternalAddArg(nullptr, vectorBinOp == kFakedInstruction ?
+                                        nullptr : vectorBinOp->_piSnippet);  // TODO(PaulAustin): this seems redundant
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             }
@@ -414,27 +414,27 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                     arg1Data = (void*)(size_t)arg1Type->ElementOffset();
                 } else {
                     arg1Type = sourceXType;
-                    arg1Data = null;
+                    arg1Data = nullptr;
                 }
                 if (sourceYType->IsCluster()) {
                     arg2Type = sourceYType->GetSubElement(i);
                     arg2Data = (void*)(size_t)arg2Type->ElementOffset();
                 } else {
                     arg2Type = sourceYType;
-                    arg2Data = null;
+                    arg2Data = nullptr;
                 }
                 if (destType->IsCluster()) {
                     arg3Type = destType->GetSubElement(i);
                     arg3Data = (void*)(size_t)arg3Type->ElementOffset();
                 } else {
                     arg3Type = destType;
-                    arg3Data = null;
+                    arg3Data = nullptr;
                 }
 
                 if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, arg1Type, arg1Data,
                         arg2Type, arg2Data, arg3Type, arg3Data, arg3Type, arg3Data))
                     // 2-output prims must have identical output types
-                    pInstruction = null;
+                    pInstruction = nullptr;
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
 
@@ -447,7 +447,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
                 pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, clusterOp, accumulatorOpArgId);
                 snippetBuilder.StartInstruction(&accumulatorToken);
-                snippetBuilder.InternalAddArg(null, clusterOp == kFakedInstruction ? null : clusterOp->_piSnippet);
+                snippetBuilder.InternalAddArg(nullptr, clusterOp == kFakedInstruction ? nullptr : clusterOp->_piSnippet);
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             }
@@ -494,7 +494,7 @@ struct AggregateUnOp2OutputInstruction : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
@@ -504,7 +504,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         isTwoOutput = true;
         if (argCount != 3 || (pInstructionBuilder->_argTypes[2]->BitEncoding() != destType->BitEncoding() ||
                                                     pInstructionBuilder->_argTypes[2]->BitLength() != destType->BitLength()))
-            return null;
+            return nullptr;
     }
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficient copy
@@ -532,8 +532,8 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
 
             if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceXType->GetSubElement(0),
-                (void*)null, destType->GetSubElement(0), (void*)null, destType->GetSubElement(0), (void*)null))
-               pInstruction = null;
+                (void*)nullptr, destType->GetSubElement(0), (void*)nullptr, destType->GetSubElement(0), (void*)nullptr))
+               pInstruction = nullptr;
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             if (isTwoOutput)
@@ -558,14 +558,14 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             for (Int32 i = 0; i < destType->SubElementCount(); i++) {
                 TypeRef destSub = destType->GetSubElement(i);
                 TypeRef sourceSub = sourceXType;
-                void* sourceData = null;
+                void* sourceData = nullptr;
                 if (sourceXType->BitEncoding() == kEncoding_Cluster) {
                     sourceSub = sourceXType->GetSubElement(i);
                     sourceData =  (void*)(size_t)sourceSub->ElementOffset();
                 }
                 if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceSub, sourceData,
                     destSub, (void*)(size_t)destSub->ElementOffset(), destSub, (void*)(size_t)destSub->ElementOffset()))
-                    pInstruction = null;
+                    pInstruction = nullptr;
             }
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -577,7 +577,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
         default:
         {
-            // Leave pInstruction null. Error reported by caller.
+            // Leave pInstruction nullptr. Error reported by caller.
             break;
         }
     }
@@ -611,7 +611,7 @@ struct AggregateMaxAndMinInstruction : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef sourceYType = pInstructionBuilder->_argTypes[1];
     TypeRef maxType = pInstructionBuilder->_argTypes[2];
@@ -624,7 +624,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
             savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-            ConstCStr pVectorUnOpName = null;
+            ConstCStr pVectorUnOpName = nullptr;
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
                 pVectorUnOpName = "VectorMaxMinOp";
             } else if (sourceXType->IsArray()) {
@@ -645,10 +645,10 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
             snippetBuilder.EmitInstruction(&savedOperation, 4,
-                xEltType, (void*)null,
-                yEltType, (void*)null,
-                maxType->GetSubElement(0), (void*)null,
-                minType->GetSubElement(0), (void*)null);
+                xEltType, (void*)nullptr,
+                yEltType, (void*)nullptr,
+                maxType->GetSubElement(0), (void*)nullptr,
+                minType->GetSubElement(0), (void*)nullptr);
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
@@ -670,7 +670,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
             for (Int32 i = 0; i < maxType->SubElementCount(); i++) {
                 TypeRef maxSub = maxType->GetSubElement(i), minSub = minType->GetSubElement(i);
                 TypeRef sourceXSub = sourceXType, sourceYSub = sourceYType;
-                void *sourceXData = null, *sourceYData = null;
+                void *sourceXData = nullptr, *sourceYData = nullptr;
                 if (sourceXType->BitEncoding() == kEncoding_Cluster) {
                     sourceXSub = sourceXType->GetSubElement(i);
                     sourceXData =  (void*)(size_t)sourceXSub->ElementOffset();
@@ -689,7 +689,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
         }
         default:
         {
-            // Leave pInstruction null. Error reported by caller.
+            // Leave pInstruction nullptr. Error reported by caller.
             break;
         }
     }
@@ -704,10 +704,10 @@ static bool GetMinimumArrayDimensions(std::vector<TypedArrayCoreRef> arrays,
     IntIndex array0Rank = arrays[0]->Rank();
 #ifdef VIREO_USING_ASSERTS
     for (size_t i = 0; i < arrayCount; i++) {
-        VIREO_ASSERT(arrays[i] != null);
+        VIREO_ASSERT(arrays[i] != nullptr);
     }
-    VIREO_ASSERT(newDimensionLengths != null);
-    VIREO_ASSERT(newRank != null);
+    VIREO_ASSERT(newDimensionLengths != nullptr);
+    VIREO_ASSERT(newRank != nullptr);
     for (size_t i = 1; i < arrayCount; i++) {
         IntIndex rank = arrays[i]->Rank();
         VIREO_ASSERT(rank == array0Rank && rank <= kArrayMaxRank);
@@ -955,7 +955,7 @@ struct InRangeAndCoerceInstructionAggregate : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef sourceLoType = pInstructionBuilder->_argTypes[1];
@@ -977,22 +977,22 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 
         pInstructionBuilder->ReresolveInstruction(&findInRangeOpAggregateToken, false);
         if (!sourceXType->CompareType(sourceLoType) || !sourceLoType->CompareType(sourceHiType)) {
-            return null;
+            return nullptr;
         }
         if (!coercedType->CompareType(sourceXType) || !destType->CompareType(booleanType)) {
-            return null;
+            return nullptr;
         }
         SubString LTName("IsLT");
 
         // Add param slot to hold the snippet
-        pInstructionBuilder->InternalAddArg(null, coercedType);
+        pInstructionBuilder->InternalAddArg(nullptr, coercedType);
         Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
 
         InRangeAndCoerceInstructionAggregate* ircOp = (InRangeAndCoerceInstructionAggregate*)pInstructionBuilder->EmitInstruction();
 
         ClumpParseState snippetBuilder(pInstructionBuilder);
         pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, ircOp, snippetArgId);
-        snippetBuilder.EmitInstruction(&LTName, 3, sourceXType, (void*)null, sourceXType, (void*)null, booleanType, (void*)null);
+        snippetBuilder.EmitInstruction(&LTName, 3, sourceXType, (void*)nullptr, sourceXType, (void*)nullptr, booleanType, (void*)nullptr);
 
         pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
         pInstructionBuilder->RecordNextHere(&ircOp->_piNext);
@@ -1005,7 +1005,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
             savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-            ConstCStr pVectorBinOpName = null;
+            ConstCStr pVectorBinOpName = nullptr;
             // TODO(PaulAustin): Validating runtime will require  type checking
             pVectorBinOpName = "VectorOrScalarInRangeOp";
             SubString vectorBinOpToken(pVectorBinOpName);
@@ -1017,13 +1017,13 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
             TypeRef coercedEltType = coercedType->IsArray() ? coercedType->GetSubElement(0) : coercedType;
             TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
             if (!coercedEltType->CompareType(xEltType)) {
-                return null;
+                return nullptr;
             }
             if (!loEltType->CompareType(xEltType)) {
-                return null;
+                return nullptr;
             }
             if (!loEltType->CompareType(hiEltType)) {
-                return null;
+                return nullptr;
             }
             UInt32 flags = 0;
             if (!sourceXType->IsArray())
@@ -1048,9 +1048,9 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
 
-            snippetBuilder.EmitInstruction(&savedOperation, 7, xEltType, (void*)null, loEltType, (void*)null, hiEltType, (void*)null,
-                                           booleanType, (void*)null, booleanType, (void*)null,
-                                           coercedEltType, (void*)null, destEltType, (void*)null);
+            snippetBuilder.EmitInstruction(&savedOperation, 7, xEltType, (void*)nullptr, loEltType, (void*)nullptr, hiEltType, (void*)nullptr,
+                                           booleanType, (void*)nullptr, booleanType, (void*)nullptr,
+                                           coercedEltType, (void*)nullptr, destEltType, (void*)nullptr);
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
             break;
@@ -1064,16 +1064,16 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
             pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
 
             if (sourceXType->IsCluster() && sourceLoType->IsCluster() && sourceXType->SubElementCount() != sourceLoType->SubElementCount())
-                return null;
+                return nullptr;
             if (sourceXType->IsCluster() && sourceHiType->IsCluster() && sourceXType->SubElementCount() != sourceHiType->SubElementCount())
-                return null;
+                return nullptr;
             if (sourceLoType->IsCluster() && sourceHiType->IsCluster() && sourceLoType->SubElementCount() != sourceHiType->SubElementCount())
-                return null;
+                return nullptr;
             if (!coercedType->IsCluster() || !destType->IsCluster() || coercedType->SubElementCount() != destType->SubElementCount()
                 || (sourceXType->IsCluster() && coercedType->SubElementCount() != sourceXType->SubElementCount())
                 || (sourceLoType->IsCluster() && coercedType->SubElementCount() != sourceLoType->SubElementCount())
                 || (sourceHiType->IsCluster() && coercedType->SubElementCount() != sourceHiType->SubElementCount()))
-                return null;
+                return nullptr;
 
             pInstructionBuilder->InternalAddArg(Int32Type, (void*)(size_t)0);  // flags only used in array case
 
@@ -1097,40 +1097,40 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
                     arg1Data = (void*)(size_t)arg1Type->ElementOffset();
                 } else {
                     arg1Type = sourceXType;
-                    arg1Data = null;
+                    arg1Data = nullptr;
                 }
                 if (sourceLoType->IsCluster()) {
                     arg2Type = sourceLoType->GetSubElement(i);
                     arg2Data = (void*)(size_t)arg2Type->ElementOffset();
                 } else {
                     arg2Type = sourceLoType;
-                    arg2Data = null;
+                    arg2Data = nullptr;
                 }
                 if (sourceHiType->IsCluster()) {
                     arg3Type = sourceHiType->GetSubElement(i);
                     arg3Data = (void*)(size_t)arg3Type->ElementOffset();
                 } else {
                     arg3Type = sourceHiType;
-                    arg3Data = null;
+                    arg3Data = nullptr;
                 }
                 if (coercedType->IsCluster()) {
                     arg6Type = coercedType->GetSubElement(i);
                     arg6Data = (void*)(size_t)arg6Type->ElementOffset();
                 } else {
                     arg6Type = coercedType;
-                    arg6Data = null;
+                    arg6Data = nullptr;
                 }
                 if (destType->IsCluster()) {
                     arg7Type = destType->GetSubElement(i);
                     arg7Data = (void*)(size_t)arg7Type->ElementOffset();
                 } else {
                     arg7Type = destType;
-                    arg7Data = null;
+                    arg7Data = nullptr;
                 }
                 if (!arg1Type->CompareType(arg2Type) || !arg2Type->CompareType((arg3Type)) || !arg1Type->CompareType(arg6Type))
-                    return null;
+                    return nullptr;
                 snippetBuilder.EmitInstruction(&savedOperation, 7, arg1Type, arg1Data, arg2Type, arg2Data, arg3Type, arg3Data,
-                                               booleanType, (void*)null, booleanType, (void*)null, arg6Type, arg6Data, arg7Type, arg7Data);
+                                               booleanType, (void*)nullptr, booleanType, (void*)nullptr, arg6Type, arg6Data, arg7Type, arg7Data);
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&clusterOp->_piNext);
@@ -1138,7 +1138,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
         }
         default:
         {
-            pInstruction = null;
+            pInstruction = nullptr;
             break;
         }
     }
@@ -1250,7 +1250,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
 }
 InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef sourceStrType = pInstructionBuilder->_argTypes[0];
     TypeRef outputType = pInstructionBuilder->_argTypes[5];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
@@ -1262,20 +1262,20 @@ InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
         case kEncoding_Cluster:
         {
             savedOperation = pInstructionBuilder->_instructionPointerType->Name();
-            ConstCStr pVectorBinOpName = null;
+            ConstCStr pVectorBinOpName = nullptr;
             pVectorBinOpName = "VectorOrClusterStrToNumOp";
             SubString vectorBinOpToken(pVectorBinOpName);
             pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false);  // build a vector op
             if (sourceStrType->BitEncoding() != outputType->BitEncoding())
-                return null;
+                return nullptr;
             TypeRef srcEltType = sourceStrType->GetSubElement(0);
             if (!srcEltType->CompareType(stringType))
-                return null;
+                return nullptr;
             if (!pInstructionBuilder->_argTypes[1]->CompareType(Int32Type) || !pInstructionBuilder->_argTypes[3]->CompareType(Int32Type))
-                return null;
+                return nullptr;
             TypeRef outEltType = outputType->GetSubElement(0);
             if (!pInstructionBuilder->_argTypes[2]->CompareType(outEltType))
-                return null;
+                return nullptr;
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
 
             // Emit the vector op
@@ -1286,8 +1286,8 @@ InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
             ClumpParseState snippetBuilder(pInstructionBuilder);
 
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
-            snippetBuilder.EmitInstruction(&savedOperation, 5, srcEltType, (void*)null, Int32Type, (void*)null, outEltType, (void*)null,
-                                           Int32Type, (void*)null, staticTypeAndDataType, (void*)null);
+            snippetBuilder.EmitInstruction(&savedOperation, 5, srcEltType, (void*)nullptr, Int32Type, (void*)nullptr, outEltType, (void*)nullptr,
+                                           Int32Type, (void*)nullptr, staticTypeAndDataType, (void*)nullptr);
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
             break;
@@ -1316,19 +1316,19 @@ InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder
     SubString findMaxMinOpToken(pMaxMinOpName);
 
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef argType =  pInstructionBuilder->_argTypes[0];
     TypeRef argType2 = pInstructionBuilder->_argTypes[1];
     if (!argType->CompareType(argType2)) {
-        return null;
+        return nullptr;
     }
     TypeRef outputType = pInstructionBuilder->_argTypes[3];
     TypeRef outputType2 = pInstructionBuilder->_argTypes[5];
     if (!outputType->CompareType(outputType2)) {
-        return null;
+        return nullptr;
     }
     if (!argType2->CompareType(outputType2)) {
-        return null;
+        return nullptr;
     }
     SubString LTName("IsLT");
     // Add param slot to hold the snippet
@@ -1340,7 +1340,7 @@ InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, argType, (void*)null, argType, (void*)null, booleanType, (void*)null);
+    snippetBuilder.EmitInstruction(&LTName, 3, argType, (void*)nullptr, argType, (void*)nullptr, booleanType, (void*)nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
@@ -1385,7 +1385,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
     SubString searchOpToken(pSearchOpName);
 
     pInstructionBuilder->ReresolveInstruction(&searchOpToken, false);
-    InstructionCore* pInstruction = null;
+    InstructionCore* pInstruction = nullptr;
     TypeRef elementType = pInstructionBuilder->_argTypes[1];
 
     VIREO_ASSERT(pInstructionBuilder->_argTypes[0]->BitEncoding() == kEncoding_Array);
@@ -1399,7 +1399,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, searchOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&EQName, 3, elementType, (void*)null, elementType, pInstructionBuilder->_argPointers[1], booleanType, (void*)null);
+    snippetBuilder.EmitInstruction(&EQName, 3, elementType, (void*)nullptr, elementType, pInstructionBuilder->_argPointers[1], booleanType, (void*)nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&searchOp->_piNext);
@@ -1410,7 +1410,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 VIREO_FUNCTION_SIGNATURET(Search1DArrayInternal, Search1DArrayInstruction)
 {
     TypedArrayCoreRef array = _Param(Array);
-    Int32 startIndex = (_ParamPointer(StartIndex) != null) ? _Param(StartIndex) : 0;
+    Int32 startIndex = (_ParamPointer(StartIndex) != nullptr) ? _Param(StartIndex) : 0;
     if (startIndex < 0)
         startIndex = 0;
     Instruction3<AQBlock1, void, Boolean>* snippet = (Instruction3<AQBlock1, void, Boolean>*)_ParamMethod(Snippet());
@@ -1453,7 +1453,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
 
-    ConstCStr scalarOpName = null;
+    ConstCStr scalarOpName = nullptr;
     Boolean isIdentityOne = false;
     if (savedOperation.CompareCStr("AddElements")) {
         scalarOpName = "Add";
@@ -1476,7 +1476,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ConstCStr vectorOpName = "VectorOpInternal";
     SubString vectorOpToken(vectorOpName);
     pInstructionBuilder->ReresolveInstruction(&vectorOpToken, false);
-    pInstructionBuilder->InternalAddArg(null, (void *) (size_t)isIdentityOne);
+    pInstructionBuilder->InternalAddArg(nullptr, (void *) (size_t)isIdentityOne);
     Int32 scalarOpSnippetArgId = pInstructionBuilder->AddSubSnippet();
     VectorOpInstruction* vectorOp = (VectorOpInstruction*) pInstructionBuilder->EmitInstruction();
 
@@ -1484,7 +1484,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorOp, scalarOpSnippetArgId);
 
-    snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), (void*)null,
+    snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), (void*)nullptr,
         destType, pInstructionBuilder->_argPointers[1], destType, pInstructionBuilder->_argPointers[1]);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -1559,13 +1559,13 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
     // indicates whether input's type is the same as ArrayOut's type or ArrayOut's element type.
     for (Int32 i = 2; i < argCount; i++) {
         if (pDestType->CompareType(pInstructionBuilder->_argTypes[i]))  // input is an array
-            pInstructionBuilder->InternalAddArg(null, pInstructionBuilder->_argPointers[i]);
+            pInstructionBuilder->InternalAddArg(nullptr, pInstructionBuilder->_argPointers[i]);
         else if (destEncoding == kEncoding_Array && pDestType->Rank() == 1
             && pDestType->GetSubElement(0)->CompareType(pInstructionBuilder->_argTypes[i]))  // input is a single element
-            pInstructionBuilder->InternalAddArg(null, null);
+            pInstructionBuilder->InternalAddArg(nullptr, nullptr);
         else if (destEncoding == kEncoding_Array && pInstructionBuilder->_argTypes[i]->BitEncoding() == kEncoding_Array
             && pDestType->Rank() == pInstructionBuilder->_argTypes[i]->Rank()+1)  // input is array one rank less than output
-            pInstructionBuilder->InternalAddArg(null, pInstructionBuilder->_argPointers[i]);
+            pInstructionBuilder->InternalAddArg(nullptr, pInstructionBuilder->_argPointers[i]);
         else  // type mismatch
             VIREO_ASSERT(false);
     }
@@ -1761,7 +1761,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterAggBinaryOp, AggregateBinOpInstruction)
     Instruction3<AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction3<AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());  // pointer to snippet.
     Instruction1<void>* accumulator = (Instruction1<void>*)_ParamMethod(Accumulator());
 
-    if (accumulator != null) {
+    if (accumulator != nullptr) {
         // If there is an accumulator call it instead.
         // It will loop through the snippets setting the boolean result
         // In the third parameter. All boolean results point to the same location.
@@ -1834,7 +1834,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
                 snippet->_p1 = convertSnippet->_p0 - (size_t)_ParamPointer(SY);
             }
             snippet->_p2 -= (size_t)_ParamPointer(SDest);
-            convertSnippet->_p0 = null;
+            convertSnippet->_p0 = nullptr;
             convertSnippet->_p1 = (AQBlock1*)(intptr_t(whichConvertArg) << 24);
             snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
         } else {
@@ -1896,13 +1896,13 @@ VIREO_FUNCTION_SIGNATURE1(IsEQAccumulator, void)
     BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
     InstructionCore* pInstruction = binop;
-    if ((binop->_p0 == null) || (binop->_p1 == null)) {
+    if ((binop->_p0 == nullptr) || (binop->_p1 == nullptr)) {
         *dest = binop->_p0 == binop->_p1;
     } else {
         while (ExecutionContext::IsNotCulDeSac(pInstruction)) {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if (!*dest)
-                return null;
+                return nullptr;
         }
     }
     return _this;
@@ -1914,13 +1914,13 @@ VIREO_FUNCTION_SIGNATURE1(IsNEAccumulator, void)
     BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
     InstructionCore* pInstruction = binop;
-    if ((binop->_p0 == null) || (binop->_p1 == null)) {
+    if ((binop->_p0 == nullptr) || (binop->_p1 == nullptr)) {
         *dest = binop->_p0 != binop->_p1;
     } else {
         while (ExecutionContext::IsNotCulDeSac(pInstruction)) {
             pInstruction = _PROGMEM_PTR(pInstruction, _function)(pInstruction);
             if (*dest)
-                return null;
+                return nullptr;
         }
     }
     return _this;
@@ -1931,17 +1931,17 @@ VIREO_FUNCTION_SIGNATURE1(IsLTAccumulator, void)
 {
     BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
-    if (binop->_p1 == null) {
+    if (binop->_p1 == nullptr) {
         *dest = false;
-        return null;
-    } else if (binop->_p0 == null) {
+        return nullptr;
+    } else if (binop->_p0 == nullptr) {
         *dest = true;
-        return null;
+        return nullptr;
     } else {
         while (ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (*dest) {
-                return null;
+                return nullptr;
             } else {  // commute the args
                 AQBlock1* temp = binop->_p0;
                 binop->_p0 = binop->_p1;
@@ -1951,7 +1951,7 @@ VIREO_FUNCTION_SIGNATURE1(IsLTAccumulator, void)
                 binop->_p0 = temp;
                 if (*dest) {
                     *dest = false;  // flip the result and return
-                    return null;
+                    return nullptr;
                 }
             }
             binop = (BinaryCompareInstruction*)next;
@@ -1965,17 +1965,17 @@ VIREO_FUNCTION_SIGNATURE1(IsGTAccumulator, void)
 {
     BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
-    if (binop->_p0 == null) {
+    if (binop->_p0 == nullptr) {
         *dest = false;
-        return null;
-    } else if (binop->_p1 == null) {
+        return nullptr;
+    } else if (binop->_p1 == nullptr) {
         *dest = true;
-        return null;
+        return nullptr;
     } else {
         while (ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (*dest) {
-                return null;
+                return nullptr;
             } else {  // commute the args
                 AQBlock1* temp = binop->_p0;
                 binop->_p0 = binop->_p1;
@@ -1985,7 +1985,7 @@ VIREO_FUNCTION_SIGNATURE1(IsGTAccumulator, void)
                 binop->_p0 = temp;
                 if (*dest) {
                     *dest = false;  // flip the result and return
-                    return null;
+                    return nullptr;
                 }
             }
             binop = (BinaryCompareInstruction*) next;
@@ -1999,17 +1999,17 @@ VIREO_FUNCTION_SIGNATURE1(IsLEAccumulator, void)
 {
     BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
-    if (binop->_p0 == null) {
+    if (binop->_p0 == nullptr) {
         *dest = true;
-        return null;
-    } else if (binop->_p1 == null) {
+        return nullptr;
+    } else if (binop->_p1 == nullptr) {
         *dest = false;
-        return null;
+        return nullptr;
     } else {
         while (ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (!*dest) {
-                return null;
+                return nullptr;
             } else {  // commute the args
                 AQBlock1* temp = binop->_p0;
                 binop->_p0 = binop->_p1;
@@ -2019,7 +2019,7 @@ VIREO_FUNCTION_SIGNATURE1(IsLEAccumulator, void)
                 binop->_p0 = temp;
                 if (!*dest) {
                     *dest = true;  // flip the result and return
-                    return null;
+                    return nullptr;
                 }
             }
             binop = (BinaryCompareInstruction*) next;
@@ -2033,17 +2033,17 @@ VIREO_FUNCTION_SIGNATURE1(IsGEAccumulator, void)
 {
     BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
     Boolean* dest = binop->_p2;
-    if (binop->_p1 == null) {
+    if (binop->_p1 == nullptr) {
         *dest = true;
-        return null;
-    } else if (binop->_p0 == null) {
+        return nullptr;
+    } else if (binop->_p0 == nullptr) {
         *dest = false;
-        return null;
+        return nullptr;
     } else {
         while (ExecutionContext::IsNotCulDeSac(binop)) {
             InstructionCore* next = _PROGMEM_PTR(binop, _function)(binop);
             if (!*dest) {
-                return null;
+                return nullptr;
             } else {  // commute the args
                 AQBlock1* temp = binop->_p0;
                 binop->_p0 = binop->_p1;
@@ -2053,7 +2053,7 @@ VIREO_FUNCTION_SIGNATURE1(IsGEAccumulator, void)
                 binop->_p0 = temp;
                 if (!*dest) {
                     *dest = true;  // flip the result and return
-                    return null;
+                    return nullptr;
                 }
             }
             binop = (BinaryCompareInstruction*) next;
@@ -2100,8 +2100,8 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     TypedArrayCoreRef srcArray1 = _Param(VX);
     TypedArrayCoreRef srcArray2 = _Param(VY);
     TypedArrayCoreRef destArray = _Param(VDest);
-    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : null;
-    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-null
+    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : nullptr;
+    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-nullptr
     Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
 
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
@@ -2170,7 +2170,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
         }
     }
 
-    snippet->_p1 = null;
+    snippet->_p1 = nullptr;
     return _NextInstruction();
 }
 
@@ -2290,27 +2290,27 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryAccumulatorOp, AggregateBinOpInstruc
     snippet->_p1 = begin2;
     snippet->_p2 = dest;
 
-    // If both vectors are empty, pass null for the argument pointers and compare.
+    // If both vectors are empty, pass nullptr for the argument pointers and compare.
     if ((lengthA1 == 0) && (lengthA2 == 0)) {
-        snippet->_p0 = null;
-        snippet->_p1 = null;
+        snippet->_p0 = nullptr;
+        snippet->_p1 = nullptr;
         _PROGMEM_PTR(accumulator, _function)(accumulator);
     } else {
         // Iterate over minLength elements of the vectors using the accumulator to compare and possibly short-circuit.
         while (minLength-- > 0) {
-            if (_PROGMEM_PTR(accumulator, _function)(accumulator) == null) {
+            if (_PROGMEM_PTR(accumulator, _function)(accumulator) == nullptr) {
                 return _NextInstruction();
             }
             snippet->_p0 += elementSize1;
             snippet->_p1 += elementSize2;
         }
 
-        // If the vectors have different lengths, pass null as the argument pointer for the array that ran out of elements.
+        // If the vectors have different lengths, pass nullptr as the argument pointer for the array that ran out of elements.
         if (lengthA1 != lengthA2) {
             if (lengthA1 < lengthA2) {
-                snippet->_p0 = null;
+                snippet->_p0 = nullptr;
             } else {
-                snippet->_p1 = null;
+                snippet->_p1 = nullptr;
             }
             _PROGMEM_PTR(accumulator, _function)(accumulator);
         }
@@ -2355,13 +2355,13 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorSplitOp, AggregateBinOpInstruction)
 
 //------------------------------------------------------------
 // This function is used by primitives like "Add" when one of the inputs is an scalar and the other is an array
-// Cases in which destArray2 is not null is with "Real and Imaginary to Polar" and "Polar to Real and Imaginary"
+// Cases in which destArray2 is not nullptr is with "Real and Imaginary to Polar" and "Polar to Real and Imaginary"
 VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
 {
     TypedArrayCoreRef srcArray1 = _Param(VY);
     TypedArrayCoreRef destArray = _Param(VDest);
-    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : null;
-    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-null
+    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : nullptr;
+    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-nullptr
     Instruction4<void, AQBlock1, AQBlock1, AQBlock1>* snippet = (Instruction4<void, AQBlock1, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
 
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
@@ -2376,7 +2376,7 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
         destArray2->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
-    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
+    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : nullptr;
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
     if (snippet->_p1) {  // we need to call a conversion snippet for one of the args
         AQBlock1 *saveArg = snippet->_p1;
@@ -2397,18 +2397,18 @@ VIREO_FUNCTION_SIGNATURET(ScalarVectorBinaryOp, AggregateBinOpInstruction)
         if (beginDest2)
             snippet->_p3 += elementSizeDest;
     }
-    snippet->_p1 = null;
+    snippet->_p1 = nullptr;
     return _NextInstruction();
 }
 //------------------------------------------------------------
 // This function is used by primitives like "Add" when one of the inputs is an scalar and the other is an array
-// Cases in which destArray2 is not null is with "Real and Imaginary to Polar" and "Polar to Real and Imaginary"
+// Cases in which destArray2 is not nullptr is with "Real and Imaginary to Polar" and "Polar to Real and Imaginary"
 VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
 {
     TypedArrayCoreRef srcArray1 = _Param(VX);
     TypedArrayCoreRef destArray = _Param(VDest);
-    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : null;
-    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-null
+    TypedArrayCoreRef destArray2 = _ParamPointer(VDest2) ? _Param(VDest2) : nullptr;
+    // snippet is either 3 or 4 args; only access _p3 if destArray2 is non-nullptr
     Instruction4<AQBlock1, void, AQBlock1, AQBlock1>* snippet = (Instruction4<AQBlock1, void, AQBlock1, AQBlock1>*)_ParamMethod(Snippet());
 
     IntIndex elementSize1 = srcArray1->ElementType()->TopAQSize();
@@ -2423,7 +2423,7 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
         destArray2->ResizeDimensions(rank, newDimensionLengths, true);
     AQBlock1 *begin1 = srcArray1->RawBegin();
     AQBlock1 *beginDest = destArray->RawBegin();  // might be in-place to one of the input arrays.
-    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : null;
+    AQBlock1 *beginDest2 = destArray2 ? destArray2->RawBegin() : nullptr;
     AQBlock1 *endDest = beginDest + (count * elementSizeDest);
     if (snippet->_p1) {  // we need to call a conversion snippet for one of the args
         void *saveArg = snippet->_p1;
@@ -2444,7 +2444,7 @@ VIREO_FUNCTION_SIGNATURET(VectorScalarBinaryOp, AggregateBinOpInstruction)
         if (beginDest2)
             snippet->_p3 += elementSizeDest;
     }
-    snippet->_p1 = null;
+    snippet->_p1 = nullptr;
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2465,7 +2465,7 @@ VIREO_FUNCTION_SIGNATURET(ScalarScalarConvertBinaryOp, AggregateBinOpInstruction
     snippet->_p1 = _ParamPointer(SY);
     snippet->_p2 = beginDest;
     _PROGMEM_PTR(snippet, _function)(snippet);
-    snippet->_p1 = null;
+    snippet->_p1 = nullptr;
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -2584,7 +2584,7 @@ VIREO_FUNCTION_SIGNATURE2(ConvertErrorClusterToBoolean, ErrorCluster, Boolean) {
 }
 
 //------------------------------------------------------------
-// arguments: output cluster, then variable number of inputs that can be null, error cluster or a 1D array of error clusters
+// arguments: output cluster, then variable number of inputs that can be nullptr, error cluster or a 1D array of error clusters
 struct MergeErrorsParamBlock : public VarArgInstruction
 {
     _ParamDef(ErrorCluster, ErrorClusterOut);

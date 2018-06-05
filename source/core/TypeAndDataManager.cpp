@@ -102,9 +102,9 @@ TypeManager::TypeManager(TypeManagerRef parentTm)
     _maxAllocated = 0;
     _allocationLimit = 16777216;  // 16 meg for starters
 
-    _typeList = null;
+    _typeList = nullptr;
     _baseTypeManager = parentTm;
-    _executionContext = parentTm ? parentTm->TheExecutionContext() : null;
+    _executionContext = parentTm ? parentTm->TheExecutionContext() : nullptr;
     _aqBitLength = 8;
 
     // Once the object is constructed set up the source temporarily
@@ -132,7 +132,7 @@ void* TypeManager::Malloc(size_t countAQ)
         _totalAllocationFailures++;
         THREAD_EXEC()->ClearBreakout();
         gPlatform.IO.Print("Exceeded allocation limit\n");
-        return null;
+        return nullptr;
     }
 
     size_t allocationCount = 1;
@@ -165,7 +165,7 @@ void* TypeManager::Malloc(size_t countAQ)
 void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
 {
     VIREO_ASSERT(countAQ != 0);
-    VIREO_ASSERT(pBuffer != null);
+    VIREO_ASSERT(pBuffer != nullptr);
 
 #ifdef VIREO_TRACK_MEMORY_QUANTITY
     pBuffer = (MallocInfo*)pBuffer - 1;
@@ -180,7 +180,7 @@ void* TypeManager::Realloc(void* pBuffer, size_t countAQ, size_t preserveAQ)
 
     void* pNewBuffer = gPlatform.Mem.Realloc(pBuffer, countAQ);
 
-    if (pNewBuffer != null) {
+    if (pNewBuffer != nullptr) {
         if (preserveAQ < countAQ) {
             memset((AQBlock1*)pNewBuffer + preserveAQ, 0, countAQ - preserveAQ);
         }
@@ -254,7 +254,7 @@ void TypeManager::DeleteTypes(Boolean finalTime)
         type = nextType;
     }
 
-    _typeList = null;
+    _typeList = nullptr;
     _typeNameDictionary.clear();
     _typeInstanceDictionary.clear();
 
@@ -264,7 +264,7 @@ void TypeManager::DeleteTypes(Boolean finalTime)
     } else {
         if (!_baseTypeManager) {
             Free(_executionContext);
-            _executionContext = null;
+            _executionContext = nullptr;
         }
     }
 }
@@ -276,8 +276,8 @@ TypeRef TypeManager::GetObjectElementAddressFromPath(SubString* objectName, SubS
         void* pData = type->Begin(kPARead);
         return type->GetSubElementAddressFromPath(path, pData, ppData, allowDynamic);
     } else {
-        *ppData = null;
-        return null;
+        *ppData = nullptr;
+        return nullptr;
     }
 }
 //------------------------------------------------------------
@@ -302,7 +302,7 @@ TypeRef TypeManager::DefineCustomPointerTypeWithValue(ConstCStr name, void* poin
 #endif
         return type;
     } else {
-        return null;
+        return nullptr;
     }
 }
 //------------------------------------------------------------
@@ -314,14 +314,14 @@ TypeRef TypeManager::DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProc
         SubString typeName(name);
         return Define(&typeName, allocTypeNode);
     } else {
-        return null;
+        return nullptr;
     }
 }
 //------------------------------------------------------------
 //! Add a newly created type to the TM list of types it owns.
 void TypeManager::TrackType(TypeRef type)
 {
-    VIREO_ASSERT(null != type)
+    VIREO_ASSERT(nullptr != type)
     type->_next = _typeList;
     _typeList = type;
 }
@@ -332,7 +332,7 @@ void TypeManager::UntrackLastType(TypeRef type)
     // Used when the last type created is determined to already exist.
     VIREO_ASSERT(_typeList == type)
     _typeList = type->_next;
-    type->_next = null;
+    type->_next = nullptr;
 }
 //------------------------------------------------------------
 //! Debit or credit an allocation against a TM's quota.
@@ -413,7 +413,7 @@ NamedTypeRef TypeManager::NewNamedType(const SubString* typeName, TypeRef type, 
     return namedType;
 }
 //------------------------------------------------------------
-//! Find a type by is symbol name in null terminated C string form.
+//! Find a type by is symbol name in nullptr terminated C string form.
 TypeRef TypeManager::FindType(ConstCStr name)
 {
     SubString ssName(name);
@@ -433,7 +433,7 @@ TypeRef TypeManager::FindType(const SubString* name, Boolean decode /*= false*/)
 
     if (type && pathTail.Length()) {
         void* temp;
-        TypeRef subType = type->GetSubElementAddressFromPath(&pathTail, &temp, null, false);
+        TypeRef subType = type->GetSubElementAddressFromPath(&pathTail, &temp, nullptr, false);
         type = subType;
     }
 
@@ -446,7 +446,7 @@ TypeRef TypeManager::FindType(const SubString* name, Boolean decode /*= false*/)
         // have a stricter IsA relationship with a designated base type.
 
         TypeRef genericType = FindType(tsWildCard);
-        type = NewNamedType(name, genericType, null);
+        type = NewNamedType(name, genericType, nullptr);
     }
 
     return type;
@@ -471,9 +471,9 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name, Boolean decode /*=
     }
     TypeDictionaryIterator iter;
     iter = _typeNameDictionary.find(*name);
-    NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : null;
+    NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : nullptr;
 
-    if (type == null && _baseTypeManager) {
+    if (type == nullptr && _baseTypeManager) {
         type = _baseTypeManager->FindTypeCore(name);
     }
 
@@ -546,9 +546,9 @@ Int32 TypeManager::BitLengthToAQSize(IntIndex length)
 //------------------------------------------------------------
 NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *pValue)
 {
-    void *pData = null;
+    void *pData = nullptr;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if (actualType == null) {
+    if (actualType == nullptr) {
         *pValue = 0;
         return kNIError_kResourceNotFound;
     }
@@ -559,9 +559,9 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, Double *p
 //------------------------------------------------------------
 NIError TypeManager::WriteValue(SubString* objectName, SubString* path, Double value)
 {
-    void *pData = null;
+    void *pData = nullptr;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if (actualType == null) {
+    if (actualType == nullptr) {
         return kNIError_kResourceNotFound;
     }
 
@@ -571,9 +571,9 @@ NIError TypeManager::WriteValue(SubString* objectName, SubString* path, Double v
 //------------------------------------------------------------
 NIError TypeManager::ReadValue(SubString* objectName, SubString* path, StringRef)
 {
-    void *pData = null;
+    void *pData = nullptr;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if (actualType == null) {
+    if (actualType == nullptr) {
 //        *pValue = 0;
         return kNIError_kResourceNotFound;
     }
@@ -584,9 +584,9 @@ NIError TypeManager::ReadValue(SubString* objectName, SubString* path, StringRef
 //------------------------------------------------------------
 NIError TypeManager::WriteValue(SubString* objectName, SubString* path, SubString* value)
 {
-    void *pData = null;
+    void *pData = nullptr;
     TypeRef actualType = this->GetObjectElementAddressFromPath(objectName, path, &pData, true);
-    if (actualType == null) {
+    if (actualType == nullptr) {
         return kNIError_kResourceNotFound;
     }
 
@@ -992,7 +992,7 @@ TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, v
         return this;
     }
 
-    TypeRef subType = null;
+    TypeRef subType = nullptr;
     if (path->ComparePrefix(*tsMetaIdPrefix)) {
         SubString pathHead;
         SubString pathTail;
@@ -1031,7 +1031,7 @@ TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, v
             *end = cdt->Begin(kPARead);
         } else if (pathHead.CompareCStr("$BaseType")) {
             // Where is the storage allocated?
-            subType = this->BaseType()->GetSubElementAddressFromPath(&pathTail, null, end, allowDynamic);
+            subType = this->BaseType()->GetSubElementAddressFromPath(&pathTail, nullptr, end, allowDynamic);
             /*
              subType = THREAD_TADM()->FindType(tsTypeType);
              DefaultValueType *cdt = DefaultValueType::New(THREAD_TADM(), subType, false);
@@ -1061,7 +1061,7 @@ TypeRef TypeCommon::GetSubElementAddressFromPath(SubString* path, void *start, v
         }
 
         if (subType && pathTail.Length()) {
-            subType = subType->GetSubElementAddressFromPath(&pathTail, null, end, allowDynamic);
+            subType = subType->GetSubElementAddressFromPath(&pathTail, nullptr, end, allowDynamic);
         }
     }
 
@@ -1167,7 +1167,7 @@ Int32 AggregateType::SubElementCount()
 //------------------------------------------------------------
 TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
-    *end = null;
+    *end = nullptr;
 
     // Check for structural attributes
     TypeRef type = TypeCommon::GetSubElementAddressFromPath(path, start, end, allowDynamic);
@@ -1197,13 +1197,13 @@ TypeRef AggregateType::GetSubElementAddressFromPath(SubString* path, void *start
         }
     }
 
-    return null;
+    return nullptr;
 }
 //------------------------------------------------------------
 TypeRef AggregateType::GetSubElement(Int32 index)
 {
     if (index < 0 || index >= _elements.Length())
-        return null;  // element does not exist
+        return nullptr;  // element does not exist
     return _elements[index];
 }
 //------------------------------------------------------------
@@ -1529,7 +1529,7 @@ void* ClusterType::Begin(PointerAccessEnum mode)
         return _pDefault;
     } else {
         // This includes mode == kPAWrite mode == kPAReadWrite, not allowed
-        return null;
+        return nullptr;
     }
 }
 //------------------------------------------------------------
@@ -1539,7 +1539,7 @@ ClusterType::~ClusterType()
         // Any non flat elements should have been cleared by this point,
         // however the underlying block still needs to be released.
         TheTypeManager()->Free(_pDefault);
-        _pDefault = null;
+        _pDefault = nullptr;
     }
 }
 //------------------------------------------------------------
@@ -1586,7 +1586,7 @@ void* EquivalenceType::Begin(PointerAccessEnum mode)
     if (_elements.Length() > 0) {
         return _elements[0]->Begin(mode);
     }
-    return null;
+    return nullptr;
 }
 //------------------------------------------------------------
 NIError EquivalenceType::InitData(void* pData, TypeRef pattern)
@@ -1653,11 +1653,11 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
     // Initialize the handle at pData to be a valid handle to an empty array
     // Note that if the type being inited was a named type the name will have been  peeled off
     // When it gets to this point.
-    if (*pArray != null) {
+    if (*pArray != nullptr) {
         // TODO(PaulAustin): for fixed arrays and ZDAs this not correct
         err = (*pArray)->Resize1D(0) ? kNIError_Success : kNIError_kInsufficientResources;
     } else {
-        if (pattern == null) {
+        if (pattern == nullptr) {
             pattern = this;
         }
         TypedArrayCoreRef newArray = TypedArrayCore::New(pattern);
@@ -1673,15 +1673,15 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
 }
 //------------------------------------------------------------
 // Copy the elements from the handle at pData to the one at pDataCopy
-// if target is null, allocate handle.
+// if target is nullptr, allocate handle.
 NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
 {
     NIError err = kNIError_Success;
     TypedArrayCoreRef pSource = *((TypedArrayCoreRef*)pData);
     TypedArrayCoreRef pDest = *((TypedArrayCoreRef*)pDataCopy);
 
-    if (pSource == null) {
-        if (pDest == null) {
+    if (pSource == nullptr) {
+        if (pDest == nullptr) {
             return kNIError_Success;
         }
     }
@@ -1724,8 +1724,8 @@ NIError ArrayType::ClearData(void* pData)
 {
     // Free up the elements and delete the array handle at pData
     TypedArrayCoreRef array = *(TypedArrayCoreRef*) pData;
-    if (array != null) {
-        *((TypedArrayCoreRef*)pData) = null;
+    if (array != nullptr) {
+        *((TypedArrayCoreRef*)pData) = nullptr;
         TypedArrayCore::Delete(array);
     }
     return kNIError_Success;
@@ -1736,7 +1736,7 @@ void* ArrayType::Begin(PointerAccessEnum mode)
     if (mode == kPARead) {
         // Default-Defaults are generated as needed on demand and should
         // only be accessed in read mode
-        if (_pDefault == null) {
+        if (_pDefault == nullptr) {
             TypeManagerScope scope(TheTypeManager());
             // On demand allocations for defdef data belong
             // to the TM that the type is owned by
@@ -1752,17 +1752,17 @@ void* ArrayType::Begin(PointerAccessEnum mode)
         return &_pDefault;
     } else if (mode == kPASoftRead) {
         // Soft reads just use what currently exists, they never allocate
-        return _pDefault ? &_pDefault : null;
+        return _pDefault ? &_pDefault : nullptr;
     } else {
-        return null;
+        return nullptr;
     }
 }
 //------------------------------------------------------------
 TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic)
 {
     TypedArrayCoreRef array = *(TypedArrayCoreRef*)start;
-    TypeRef subType = null;
-    *end = null;
+    TypeRef subType = nullptr;
+    *end = nullptr;
 
     if (Rank() == 0) {
         // ZDAs automatically hop into the object. That means an empty path will
@@ -1786,7 +1786,7 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
         SubString pathHead;
         SubString pathTail;
         path->SplitString(&pathHead, &pathTail, '.');
-        *end = null;
+        *end = nullptr;
 
         // may allow end point relative as well ???
         if (allowDynamic) {  // Variable sized arrays can only be indexed if allowDynamic is true.
@@ -1927,7 +1927,7 @@ DefaultValueType::DefaultValueType(TypeManagerRef typeManager, TypeRef type, Boo
 void* DefaultValueType::Begin(PointerAccessEnum mode)
 {
     if (!IsMutableValue() && (mode == kPAWrite || mode == kPAReadWrite)) {
-        return null;
+        return nullptr;
     }
 
     // If pointer is needed for initialization, reading, or
@@ -2063,19 +2063,19 @@ TypedArrayCoreRef TypedArrayCore::New(TypeRef type)
 //------------------------------------------------------------
 TypedArrayCore::TypedArrayCore(TypeRef type)
 {
-    VIREO_ASSERT(_pRawBufferBegin == null);
+    VIREO_ASSERT(_pRawBufferBegin == nullptr);
     VIREO_ASSERT(_capacity == 0);
 
     this->_typeRef = type;
     this->_eltTypeRef = type->GetSubElement(0);
 
     // Resize it to 0, This will trigger any allocations necessary for fixed or bounded arrays
-    ResizeDimensions(0, null, false);
+    ResizeDimensions(0, nullptr, false);
 }
 //------------------------------------------------------------
 void TypedArrayCore::Delete(TypedArrayCoreRef pArray)
 {
-    VIREO_ASSERT(pArray->_eltTypeRef != null);
+    VIREO_ASSERT(pArray->_eltTypeRef != nullptr);
 
     pArray->_eltTypeRef->ClearData(pArray->RawBegin(), pArray->Length());
     pArray->AQFree();
@@ -2085,7 +2085,7 @@ void TypedArrayCore::Delete(TypedArrayCoreRef pArray)
 Boolean TypedArrayCore::AQAlloc(IntIndex countBytes)
 {
     VIREO_ASSERT(countBytes >= 0)
-    VIREO_ASSERT(_pRawBufferBegin == null);
+    VIREO_ASSERT(_pRawBufferBegin == nullptr);
 
     if (countBytes) {
         _pRawBufferBegin = (AQBlock1*) THREAD_TADM()->Malloc(countBytes);
@@ -2093,7 +2093,7 @@ Boolean TypedArrayCore::AQAlloc(IntIndex countBytes)
             return false;
         }
     } else {
-        _pRawBufferBegin = null;
+        _pRawBufferBegin = nullptr;
     }
     return true;
 }
@@ -2101,7 +2101,7 @@ Boolean TypedArrayCore::AQAlloc(IntIndex countBytes)
 Boolean TypedArrayCore::AQRealloc(IntIndex countBytes, IntIndex preserveBytes)
 {
     VIREO_ASSERT(countBytes >= 0)
-    if (_pRawBufferBegin == null) {
+    if (_pRawBufferBegin == nullptr) {
         // Going from empty to possibly non empty, AQAlloc will
         // test for empty-to-empty no-ops
         return AQAlloc(countBytes);
@@ -2115,7 +2115,7 @@ Boolean TypedArrayCore::AQRealloc(IntIndex countBytes, IntIndex preserveBytes)
                 return false;
             }
         } else {
-            // nonempty-to-empty, free and null out pointers.
+            // nonempty-to-empty, free and nullptr out pointers.
             AQFree();
         }
     }
@@ -2126,7 +2126,7 @@ void TypedArrayCore::AQFree()
 {
     if (_pRawBufferBegin) {
         THREAD_TADM()->Free(_pRawBufferBegin);
-        _pRawBufferBegin = null;
+        _pRawBufferBegin = nullptr;
     }
 }
 //------------------------------------------------------------
@@ -2181,7 +2181,7 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
     // Ignore extra outer dimension if supplied.
     if (rank > Rank()) {
         // Check extra dims to see if they are 0, if not then it's out of bounds.
-        return null;
+        return nullptr;
     }
 
     AQBlock1 *pElt = RawBegin();
@@ -2194,7 +2194,7 @@ AQBlock1* TypedArrayCore::BeginAtND(Int32 rank, IntIndex* pDimIndexes)
     while (iSlab.HasNext()) {
         IntIndex dim = *pDimIndexes;
         if ((dim < 0) || (dim >= *pDimLength)) {
-            return null;
+            return nullptr;
         }
         pElt += dim * iSlab.Read();
         pDimIndexes++;
@@ -2210,7 +2210,7 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]
     if (rank > Rank()) {
         // Possibly check extra dims to see if they are 0,
         // if not then it's out of bounds.
-        return null;
+        return nullptr;
     }
 
     AQBlock1 *pElt = RawBegin();
@@ -2224,7 +2224,7 @@ AQBlock1* TypedArrayCore::BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]
         IntIndex *pDim = *ppDimIndexes;
         IntIndex dim = pDim ? *pDim : 0;
         if ((dim < 0) || (dim >= *pDimLength)) {
-            return null;
+            return nullptr;
         }
         pElt += dim * iSlab.Read();
         ppDimIndexes++;
@@ -2353,7 +2353,7 @@ Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapacti
     Boolean bOK = true;
     if (newCapacity < currentCapactiy) {
         // Shrinking
-        VIREO_ASSERT(_pRawBufferBegin!= null);
+        VIREO_ASSERT(_pRawBufferBegin!= nullptr);
         bOK = AQRealloc(countAQ, countAQ);
     } else if (newCapacity > currentCapactiy) {
         // Growing
@@ -2443,7 +2443,7 @@ NIError TypedArrayCore::Insert1D(IntIndex position, IntIndex count, const void* 
         memset(pPosition, 0, AQBlockLength(count));
         ElementType()->InitData(pPosition, count);
     }
-    if (pSource != null) {
+    if (pSource != nullptr) {
         // Copy in new elements
         ElementType()->CopyData(pSource, pPosition, count);
     }
@@ -2763,7 +2763,7 @@ VIREO_FUNCTION_SIGNATURE2(TypeManagerBaseTypeManager, TypeManagerRef, TypeManage
     if (_Param(0)) {
         _Param(1) = _Param(0)->BaseTypeManager();
     } else {
-        _Param(1) = null;
+        _Param(1) = nullptr;
     }
     return _NextInstruction();
 }
@@ -2956,7 +2956,7 @@ VIREO_FUNCTION_SIGNATURE5(TypeManagerObtainValueType, TypeManagerRef, StringRef,
     TypeRef type = _Param(2);
     Boolean bCreateIfNotFound = _ParamPointer(3) ? _Param(3) : false;
 
-    TypeRef valueType = null;
+    TypeRef valueType = nullptr;
     if (valueName.Length()) {
         // If there is a name try to find one.
         valueType = tm->FindType(&valueName);
@@ -3135,7 +3135,7 @@ VIREO_FUNCTION_SIGNATURE2(InstructionNext, const InstructionRef, InstructionRef)
     SubString cName;
 
     if (ExecutionContext::IsDone(pInstruction)) {
-        _Param(1) = null;
+        _Param(1) = nullptr;
     } else {
         TypeRef t = THREAD_TADM()->FindCustomPointerTypeFromValue((void*)pInstruction->_function, &cName);
         t = t->GetSubElement(0);
