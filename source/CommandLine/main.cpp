@@ -45,7 +45,7 @@ int VIREO_MAIN(int argc, const char * argv[])
     }
 
     if (argc >= 2) {
-        gShells._pRootShell = TypeManager::New(null);
+        gShells._pRootShell = TypeManager::New(nullptr);
 
         for (Int32 arg = 1; arg < argc; ++arg) {
             if (strcmp(argv[arg], "-D") == 0) {
@@ -77,7 +77,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 
                 LOG_PLATFORM_MEM("Mem after load")
 #if defined(kVireoOS_emscripten)
-                emscripten_set_main_loop(RunExec, 40, null);
+                emscripten_set_main_loop(RunExec, 40, nullptr);
 #else
                 while (gShells._keepRunning) {
                     RunExec();  // deletes TypeManagers on exit
@@ -93,7 +93,7 @@ int VIREO_MAIN(int argc, const char * argv[])
         // Interactive mode is experimental.
         // the core loop should be processed by by a vireo program
         // once IO primitives are all there.
-        gShells._pRootShell = TypeManager::New(null);
+        gShells._pRootShell = TypeManager::New(nullptr);
         gShells._pUserShell = TypeManager::New(gShells._pRootShell);
         while (gShells._keepRunning) {
             gPlatform.IO.Print(">");

@@ -120,7 +120,7 @@ class TypeDefiner
       static TypeDefiner TOKENPASTE2(TheTypeDefiner, _module_, __LINE__) ( \
         TOKENPASTE2(DefineTypes, _module_, __LINE__), #_module_, kVireoABIVersion); \
       static ConstCStr TOKENPASTE2(DefineTypes, _module_, __LINE__) (TypeDefiner* _this, TypeManagerRef tm) {
-    #define DEFINE_VIREO_END()  return null; }
+    #define DEFINE_VIREO_END()  return nullptr; }
 
     // Used immediately after the BEGIN
     #define DEFINE_VIREO_REQUIRE(_module_) \

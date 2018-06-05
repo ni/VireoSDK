@@ -24,7 +24,7 @@ namespace Vireo {
 // into the gpTypeDefinerList. The order can not be guaranteed.
 // but all global constructors will be called before the apps
 // main entry point is called.
-TypeDefiner* TypeDefiner::_gpTypeDefinerList = null;
+TypeDefiner* TypeDefiner::_gpTypeDefinerList = nullptr;
 
 //------------------------------------------------------------
 //! Constructor used by DEFINE_VIREO_BEGIN blocks
@@ -32,7 +32,7 @@ TypeDefiner::TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, In
 {
     VIREO_ASSERT(version == kVireoABIVersion)
 
-    _pNext = null;
+    _pNext = nullptr;
     _pCallback = callback;
     _pModuleName = pModuleName;
 
@@ -53,11 +53,11 @@ void TypeDefiner::DefineTypes(TypeManagerRef tm)
         TypeDefiner *pCurrent = *ppNext;
         ConstCStr missingModule = (pCurrent)->_pCallback(pCurrent, tm);
 
-        // The function returns a pointer to what it was missing, null if nothing.
-        if (missingModule != null) {
+        // The function returns a pointer to what it was missing, nullptr if nothing.
+        if (missingModule != nullptr) {
             // 1. Pull the current item out of the list.
             *ppNext = pCurrent->_pNext;
-            pCurrent->_pNext = null;
+            pCurrent->_pNext = nullptr;
 
             // 2. Find the right place to insert it.
             InsertPastRequirement(ppNext, pCurrent, missingModule);
@@ -158,7 +158,7 @@ void TypeDefiner::DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 val
 {
     SubString str(typeString);
 
-    TDViaParser parser(tm, &str, null, 1);
+    TDViaParser parser(tm, &str, nullptr, 1);
     TypeRef t = parser.ParseType();
 
     DefaultValueType *cdt = DefaultValueType::New(tm, t, false);

@@ -35,7 +35,7 @@ TypeRef TypeManager::PointerToSymbolPath(TypeRef tNeedle, DataPointer pNeedle, S
        *foundInVI = drv.FoundInVI();
     }
 
-    return null;
+    return nullptr;
 }
 //------------------------------------------------------------
 Boolean TypeManager::PointerToTypeConstRefName(TypeRef* pNeedle, SubString* name)
@@ -57,7 +57,7 @@ DataReflectionVisitor::DataReflectionVisitor(TypeRef tHaystack, DataPointer pNee
 {
     _tNeedle = tHaystack;
     _pNeedle = pNeedle;
-    _pHayStack = null;
+    _pHayStack = nullptr;
     _found = false;
     _foundInVI = false;
     _path = path;
@@ -130,7 +130,7 @@ void DataReflectionVisitor::Accept(TypeRef tHayStack, DataPointer pHayStack)
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitCluster(ClusterType* type)
 {
-    if (_pHayStack == null)
+    if (_pHayStack == nullptr)
         return;
 
     IntIndex count = type->SubElementCount();
@@ -150,7 +150,7 @@ void DataReflectionVisitor::VisitCluster(ClusterType* type)
 //------------------------------------------------------------
 void DataReflectionVisitor::VisitArray(ArrayType* type)
 {
-    if (_pHayStack == null)
+    if (_pHayStack == nullptr)
         return;
 
     TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)_pHayStack;

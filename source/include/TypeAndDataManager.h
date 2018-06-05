@@ -203,11 +203,11 @@ class SimpleDictionary
 {
  public:
     void clear() { }
-    DictionaryElt* begin() { return null; }
-    DictionaryElt* end() { return null; }
-    DictionaryElt* find(const SubString& value) { return null; }
+    DictionaryElt* begin() { return nullptr; }
+    DictionaryElt* end() { return nullptr; }
+    DictionaryElt* find(const SubString& value) { return nullptr; }
     TypeRef& operator[] (const SubString& k) { return _t; }
-    Int32 size() { return null; }
+    Int32 size() { return nullptr; }
 
  private:
     TypeRef _t;
@@ -227,7 +227,7 @@ class TypeManager
     void Delete();
 
  private:
-    TypeManagerRef      _baseTypeManager;   // Base is null when the instance is a root.
+    TypeManagerRef      _baseTypeManager;   // Base is nullptr when the instance is a root.
     ExecutionContextRef _executionContext;
 #ifdef STL_MAP
     typedef std::map<SubString, NamedTypeRef, CompareSubString>::iterator  TypeDictionaryIterator;
@@ -293,7 +293,7 @@ class TypeManager
     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type,
                                              PointerTypeEnum pointerType, ConstCStr cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
-    TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path, Boolean* foundInVI = null);
+    TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path, Boolean* foundInVI = nullptr);
     Boolean PointerToTypeConstRefName(TypeRef*, SubString* name);
     void DumpPrimitiveDictionary();
 #else
@@ -377,7 +377,7 @@ class TypeManagerScope
         TypeManagerScope::ThreadsTypeManager = _saveTypeManager;
     }
     static TypeManagerRef Current() {
-        VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != null);
+        VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != nullptr);
         return TypeManagerScope::ThreadsTypeManager;
     }
 #else
@@ -476,7 +476,7 @@ class TypeCommon
     UInt16  _isValid:1;         // (1) Contains no invalid types
     UInt16  _isBitLevel:1;      // (2) Is a bitblock or bitcluster
 
-    UInt16  _hasCustomDefault:1;  // (3) A non 0 non null value
+    UInt16  _hasCustomDefault:1;  // (3) A non 0 non nullptr value
     UInt16  _isMutableValue:1;    // (4) "default" value can be changed after creation.
     UInt16  _isTemplate:1;        // (5) The type contains some generic types
     UInt16  _hasPadding:1;        // (6) To satisfy alignment req. for elements TopAQSize() includes some padding
@@ -542,7 +542,7 @@ class TypeCommon
     Boolean IsStaticParam()         { return _elementUsageType == kUsageTypeStatic; }
     //! True is the parameter is only visible to the callee, but may be cleared between calls.
     Boolean IsTempParam()           { return _elementUsageType == kUsageTypeTemp; }
-    //! True if the parameter is not required. For non flat values null may be passed in.
+    //! True if the parameter is not required. For non flat values nullptr may be passed in.
     Boolean IsOptionalParam()       { return true; }  // TODO(PaulAustin): {return _elementUsageType == kUsageTypeOptionalInput ;}
     UsageTypeEnum ElementUsageType() { return (UsageTypeEnum)_elementUsageType; }
  private:
@@ -553,35 +553,35 @@ class TypeCommon
     PointerTypeEnum PointerType()   { return (PointerTypeEnum)_pointerType; }
     //! Accept a TypeVisitor algorithm.
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitBad(this); }
-    //! For a wrapped type, return the type that was wrapped, null otherwise.
-    virtual TypeRef BaseType()                          { return null; }
+    //! For a wrapped type, return the type that was wrapped, nullptr otherwise.
+    virtual TypeRef BaseType()                          { return nullptr; }
     //! How many element in an Aggregate, 0 if the type is not an Aggregate.
     virtual Int32   SubElementCount()                   { return 0; }
     //! Get an element of an Aggregate using it index.
-    virtual TypeRef GetSubElement(Int32 index)          { return null; }
+    virtual TypeRef GetSubElement(Int32 index)          { return nullptr; }
     //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
     virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
 
     //! Set the SubString to the name if the type is not anonymous.
-    virtual SubString Name()                            { return SubString(null, null); }
+    virtual SubString Name()                            { return SubString(nullptr, nullptr); }
     //! Set the SubString to the aggregates elements field name.
-    virtual SubString ElementName()                     { return SubString(null, null); }
+    virtual SubString ElementName()                     { return SubString(nullptr, nullptr); }
     //! Return a pointer to the raw vector of dimension lengths.
-    virtual IntIndex* DimensionLengths()                { return null; }
+    virtual IntIndex* DimensionLengths()                { return nullptr; }
 
     //! Offset in AQs in the containing aggregate
     virtual IntIndex ElementOffset()                    { return 0; }
 
     // Methods for working with individual elements
-    virtual void*    Begin(PointerAccessEnum mode)      { return null; }
+    virtual void*    Begin(PointerAccessEnum mode)      { return nullptr; }
 
     //! Zero out a buffer that will hold a value of the type without consideration for the existing bits.
     void ZeroOutTop(void* pData);
     //! Initialize (re)initialize a value to the default value for the Type. Buffer must be well formed.
-    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
     //! May a deep copy fom the source to the copy.
     virtual NIError CopyData(const void* pData, void* pDataCopy);
-    //! Free up any storage and put value to null/zero state.
+    //! Free up any storage and put value to nullptr/zero state.
     virtual NIError ClearData(void* pData);
     virtual StringRef GetEnumItemName(IntIndex index) { return nullptr; }
     virtual IntIndex GetEnumItemCount()              { return 0; }
@@ -590,7 +590,7 @@ class TypeCommon
     NIError InitData(void* pData, IntIndex count);
     //! Deep copy a linear block of values from one locatio to another.
     NIError CopyData(const void* pData, void* pDataCopy, IntIndex count);
-    //! Deallocate and null out a linear block of value of the type.
+    //! Deallocate and nullptr out a linear block of value of the type.
     NIError ClearData(void* pData, IntIndex count);
     //! Make multiple copies of a single instance to a linear block.
     NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
@@ -641,7 +641,7 @@ class WrappedType : public TypeCommon
 
     // Data operations
     virtual void*   Begin(PointerAccessEnum mode)       { return _wrapped->Begin(mode); }
-    virtual NIError InitData(void* pData, TypeRef pattern = null)
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr)
         { return _wrapped->InitData(pData, pattern ? pattern : this); }
     virtual NIError CopyData(const void* pData, void* pDataCopy)  { return _wrapped->CopyData(pData, pDataCopy); }
     virtual NIError ClearData(void* pData)              { return _wrapped->ClearData(pData); }
@@ -678,7 +678,7 @@ class NamedType : public WrappedType
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitNamed(this); }
     virtual SubString Name()                        { return SubString(_name.Begin(), _name.End()); }
-    virtual SubString ElementName()                 { return SubString(null, null); }
+    virtual SubString ElementName()                 { return SubString(nullptr, nullptr); }
 };
 //------------------------------------------------------------
 //! Give a type a field name and offset properties. Used inside an aggregateType
@@ -738,7 +738,7 @@ class AggregateType : public TypeCommon
 
     AggregateType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : TypeCommon(typeManager), _elements(count) {
-        _pDefault = null;
+        _pDefault = nullptr;
         _elements.Assign((ElementTypeRef*)elements, count);
     }
     static size_t   StructSize(Int32 count) {
@@ -761,7 +761,7 @@ class BitClusterType : public AggregateType
  public:
     static BitClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitBitCluster(this); }
-    virtual NIError InitData(void* pData, TypeRef pattern = null)   { return kNIError_Success; }
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr)   { return kNIError_Success; }
     virtual IntIndex BitLength()            { return _blockLength; }
 };
 //------------------------------------------------------------
@@ -775,7 +775,7 @@ class EquivalenceType : public AggregateType
     static EquivalenceType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitEquivalence(this); }
     virtual void*   Begin(PointerAccessEnum mode);
-    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     virtual NIError ClearData(void* pData);
 };
@@ -791,7 +791,7 @@ class ClusterType : public AggregateType
     static ClusterType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitCluster(this); }
     virtual void*   Begin(PointerAccessEnum mode);
-    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     virtual NIError ClearData(void* pData);
 };
@@ -851,7 +851,7 @@ class ParamBlockType : public AggregateType
  public:
     static ParamBlockType* New(TypeManagerRef typeManager, TypeRef elements[], Int32 count);
     virtual void    Accept(TypeVisitor *tv) { tv->VisitParamBlock(this); }
-    virtual NIError InitData(void* pData, TypeRef pattern = null) {
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr) {
             return kNIError_Success;
     }
     virtual NIError CopyData(const void* pData, void* pDataCopy) {
@@ -884,16 +884,16 @@ class ArrayType : public WrappedType
     IntDim    _dimensionLengths[1];
 
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitArray(this); }
-    virtual TypeRef BaseType()                          { return null; }  // arrays are a more advanced
+    virtual TypeRef BaseType()                          { return nullptr; }  // arrays are a more advanced
                                                                         // wrapping of a type.
     virtual Int32   SubElementCount()                   { return 1; }
-    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual SubString Name()                            { return SubString("Array"); }
     virtual IntDim* DimensionLengths()                  { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);
-    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     virtual NIError ClearData(void* pData);
 };
@@ -913,10 +913,10 @@ class DefaultValueType : public WrappedType
  public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
     virtual void*   Begin(PointerAccessEnum mode);
-    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
 };
 //------------------------------------------------------------
-//! A type describes a pointer to another type. Initial value will be null.
+//! A type describes a pointer to another type. Initial value will be nullptr.
 class PointerType : public WrappedType
 {
  protected:
@@ -924,7 +924,7 @@ class PointerType : public WrappedType
  public:
     static PointerType* New(TypeManagerRef typeManager, TypeRef type);
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitPointer(this); }
-    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     virtual Int32   SubElementCount()                   { return 1; }
     // TODO(PaulAustin): Add GetSubElementAddressFromPath
 };
@@ -955,14 +955,14 @@ class RefNumValType : public WrappedType
  public:
     static RefNumValType* New(TypeManagerRef typeManager, TypeRef type);
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitRefNumVal(this); }
-    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     virtual Int32   SubElementCount()                  { return 1; }
-    virtual NIError InitData(void* pData, TypeRef pattern = null);
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     virtual NIError ClearData(void* pData);
 };
 //------------------------------------------------------------
-//! A type describes a pointer to another type. Initial value will be null.
+//! A type describes a pointer to another type. Initial value will be nullptr.
 class EnumType : public WrappedType
 {
  private:
@@ -972,7 +972,7 @@ class EnumType : public WrappedType
  public:
     static EnumType* New(TypeManagerRef typeManager, TypeRef type);
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitEnum(this); }
-    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : null; }
+    virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     void AddEnumItem(SubString *name);
     virtual Int32   SubElementCount()                   { return 1; }
     virtual StringRef GetEnumItemName(IntIndex index);
@@ -994,7 +994,7 @@ class DefaultPointerType : public PointerType
     static DefaultPointerType* New(TypeManagerRef typeManager, TypeRef type, void* pointer,
                                    PointerTypeEnum pointerType);
 
-    virtual NIError InitData(void* pData, TypeRef pattern = null) {
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr) {
         *(void**)pData = _defaultPointerValue;
         return kNIError_Success;
     }
@@ -1004,7 +1004,7 @@ class DefaultPointerType : public PointerType
 //! An interface used a CustomDataProcType instance.
 class IDataProcs {
  public:
-    virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern = null)  {
+    virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern = nullptr)  {
         return type->InitData(pData, pattern);
     }
     virtual NIError CopyData(TypeRef type, const void* pData, void* pDataCopy) {
@@ -1026,7 +1026,7 @@ class CustomDataProcType : public WrappedType
     static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs *pIAlloc);
     virtual void    Accept(TypeVisitor *tv)
         { tv->VisitCustomDataProc(this); }
-    virtual NIError InitData(void* pData, TypeRef pattern = null)
+    virtual NIError InitData(void* pData, TypeRef pattern = nullptr)
         { return _pDataProcs->InitData(_wrapped, pData, pattern); }
     virtual NIError CopyData(const void* pData, void* pDataCopy)
         { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
@@ -1074,7 +1074,7 @@ class TypedArrayCore
  public:
     AQBlock1* BeginAt(IntIndex index) {
         VIREO_ASSERT(index >= 0)
-        VIREO_ASSERT(ElementType() != null)
+        VIREO_ASSERT(ElementType() != nullptr)
         AQBlock1* begin = (RawBegin() + (index * ElementType()->TopAQSize()));
         return begin;
     }
@@ -1103,7 +1103,7 @@ class TypedArrayCore
  public:
     //! A minimal sanity check, it could do more.
     static Boolean ValidateHandle(TypedArrayCoreRef block) {
-        return (block != null);
+        return (block != nullptr);
     }
 
     IntIndex GetLength(IntIndex i);
@@ -1147,7 +1147,7 @@ class TypedArrayCore
 
  public:
     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);
-    NIError Insert1D(IntIndex position, IntIndex count, const void* pSource = null);
+    NIError Insert1D(IntIndex position, IntIndex count, const void* pSource = nullptr);
     NIError Remove1D(IntIndex position, IntIndex count);
 };
 
@@ -1272,7 +1272,7 @@ class StackVar
     explicit StackVar(ConstCStr name) {
         TypeRef type = TypeManagerScope::Current()->FindType(name);
         VIREO_ASSERT(type->IsArray() && !type->IsFlat());
-        Value = null;
+        Value = nullptr;
         if (type) {
             type->InitData(&Value);
         }
@@ -1280,7 +1280,7 @@ class StackVar
     //! Remove ownership of the managed value.
     T* DetachValue() {
         T* temp = Value;
-        Value = null;
+        Value = nullptr;
         return temp;
     }
     //! Free any storage used by the value if it is still managed.

@@ -62,7 +62,7 @@ TypeRef TypeTemplateVisitor::Accept(TypeRef type)
 {
     type->Accept(this);
     TypeRef newType = _newType;
-    _newType = null;
+    _newType = nullptr;
     return newType;
 }
 //------------------------------------------------------------
@@ -70,8 +70,8 @@ TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* 
 {
     _typeManager = tm;
     _parameters = parameters;
-    _newType = null;
-    _alignmentCalculator = null;
+    _newType = nullptr;
+    _alignmentCalculator = nullptr;
 }
 //------------------------------------------------------------
 TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
@@ -81,7 +81,7 @@ TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
     } else {
         // unsupplied parameters become new named types?
         // or permanently left open.
-        return null;
+        return nullptr;
     }
 }
 //------------------------------------------------------------

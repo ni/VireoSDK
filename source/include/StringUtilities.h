@@ -292,13 +292,13 @@ class SubString : public SubVector<Utf8Char>
     Boolean ReadLine(SubString* line);
 
     //! Read the next sequence of digits and parse them as an integer.
-    Boolean ReadInt(IntMax* value, Boolean *overflow = null);
+    Boolean ReadInt(IntMax* value, Boolean *overflow = nullptr);
 
     //! Read the next sequence of digits and parse them as an IntDim. Like Int but adds '*' and '$n'
     Boolean ReadIntDim(IntIndex* value);
 
     //! Read the next sequence of digits and parse them as a Double.
-    Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false, Int32 *errCodePtr = null);
+    Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false, Int32 *errCodePtr = nullptr);
 
     //! Read a simple token name, value, punctuation, etc.
     TokenTraits ReadToken(SubString* token, Boolean suppressInfNaN = false);
@@ -364,7 +364,7 @@ class CompareSubString
 };
 
 //------------------------------------------------------------
-//! A class for making temporary null terminated strings for calling OS APIs
+//! A class for making temporary nullptr terminated strings for calling OS APIs
 #define kTempCStringLength 255
 
 class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
@@ -373,10 +373,10 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
     //! Construct a empty string.
     TempStackCString() { }
 
-    //! Construct a null terminated from an existing SubString.
+    //! Construct a nullptr terminated from an existing SubString.
     explicit TempStackCString(SubString* str) : FixedCArray(str) { }
 
-    //! Construct a null terminated from rwa block of UTF-8 characters.
+    //! Construct a nullptr terminated from rwa block of UTF-8 characters.
     TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) { }
 
     //! Append a SubString.
@@ -384,10 +384,10 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
         return FixedCArray::Append(str->Begin(), (size_t)str->Length());
     }
 
-    //! Append a null terminated String.
+    //! Append a nullptr terminated String.
     Boolean AppendCStr(ConstCStr cstr) { return FixedCArray::Append((Utf8Char*)cstr, (IntIndex)strlen(cstr)); }
 
-    //! Get the standard char* pointer to the null terminated string.
+    //! Get the standard char* pointer to the nullptr terminated string.
     //! The pointer is only valid during the scope of the TempStackCString instance
     char* BeginCStr() {
         return (char*) _buffer;
@@ -399,7 +399,7 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
 // to another format or encoding.
 class PercentCodecSubString {
  public:
-    PercentCodecSubString() : _convertedStr(null) { }
+    PercentCodecSubString() : _convertedStr(nullptr) { }
     explicit PercentCodecSubString(const SubString &s, bool convert = true, bool alwaysAlloc = false);
 
     void Init(const SubString &s, bool convert, bool alwaysAlloc = false);
@@ -413,10 +413,10 @@ class PercentCodecSubString {
     Utf8Char *DetachValue() {
         if (_convertedStr != _buffer) {
             Utf8Char *ret = _convertedStr;
-            _convertedStr = null;
+            _convertedStr = nullptr;
             return ret;
         }
-        return null;
+        return nullptr;
     }
 
     ~PercentCodecSubString() {

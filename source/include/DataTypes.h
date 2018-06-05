@@ -55,7 +55,7 @@ typedef void*          DataPointer;
 //! Pointer to native executable code.
 typedef void*          CodePointer;
 
-//! Pointer to read only null terminated strings
+//! Pointer to read only nullptr terminated strings
 typedef const char*    ConstCStr;
 
 //! Structure that should have the largest required alignment.
@@ -70,11 +70,10 @@ typedef union {
     void*   _align_Pointer;
 } MaxAlignedType;
 
-//------------------------------------------------------------
-//! Using the classic C++ definition of null. Avoiding nullptr
+//! Using the classic C++ definition of nullptr. Avoiding nullptr
 //  Since it may not be treated as POD and constructor initialization
 //  is much less predictable.
-#define null  0
+#define null 0
 
 #include "Platform.h"
 
@@ -191,7 +190,7 @@ class SubVector
  public:
     //! Construct a wrapper from an existing wrapper.
     SubVector() {
-        _begin = _end = null;
+        _begin = _end = nullptr;
     }
     //! Construct a wrapper for a raw block of elements.
     SubVector(const T* begin, const T* end) {
@@ -212,7 +211,7 @@ class SubVector
 
     //! Construct a wrapper for a raw block of elements.
     IntIndex CopyToBoundedBuffer(IntIndex bufferLength, T* destinationBuffer) {
-        bufferLength--;  // Make room for null
+        bufferLength--;  // Make room for nullptr
         IntIndex length = Length();
         if (bufferLength < length) {
             length = bufferLength;
@@ -295,7 +294,7 @@ class FixedCArray : public SubVector<T>
 {
  protected:
     // The buffer has a an extra element for cases where the C array
-    // contains a null element at the end.
+    // contains a nullptr element at the end.
     T    _buffer[COUNT+1];
     // Since this class owns the buffer and it knows what is going on,
     // in certain cases it is OK to write and the end pointer.

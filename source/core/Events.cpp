@@ -24,7 +24,7 @@
 namespace Vireo {
 
 // Manage UserEvent refnums.
-// The refnum storage stores only a placeholder null value because we only actually need to lookup whether a refnum is valid or not;
+// The refnum storage stores only a placeholder nullptr value because we only actually need to lookup whether a refnum is valid or not;
 // the data is stored in the Event Oracle's event queues, not in the refnum, and the User Event's type is available in any context
 // where it's needed by the datatype of other inputs.
 class UserEventRefNumManager : public RefNumManager {
@@ -474,7 +474,7 @@ class EventRegistrationRefNumManager : public RefNumManager {
 EventRegistrationRefNumManager EventRegistrationRefNumManager::_s_singleton;
 
 // GetPendingEventInfo -- given a static queue and a set of dynamic event queues (passed via refnum), return the queue with the earliest event
-// based on sequence number.  Returns 0 if the earliest event is in the static queue (if non-null), or a 1-based index into the dynamic queue
+// based on sequence number.  Returns 0 if the earliest event is in the static queue (if non-nullptr), or a 1-based index into the dynamic queue
 // list if the earliest event is in one of the dynamic queues.
 // Also returns the base dynamic index of the returned queueID (e.g. event reg. refnum; if this event reg. refnum has multiple registered items
 // the dynIndex will be further incremented by the caller to indicate which item actually matches the event).
@@ -667,7 +667,7 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
             EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, refData->GetRefNum());
     } else if (refType->IsArray() && refType->Rank() == 1 && refType->GetSubElement(0)->IsRefnum()) {
         // Array of scalar refnums
-        TypedArray1D<RefNumVal> *refArrayPtr = pData ? *(TypedArray1D<RefNumVal>**)pData : null;
+        TypedArray1D<RefNumVal> *refArrayPtr = pData ? *(TypedArray1D<RefNumVal>**)pData : nullptr;
         if (pOldData) {  // re-registration
             TypedArray1D<RefNumVal> *oldRefArrayPtr = (TypedArray1D<RefNumVal>*)pOldData;
             RefNumVal *aOldRefPtr = oldRefArrayPtr->BeginAt(0);
@@ -785,13 +785,13 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
                 if (*(Int32*)pData == kNotARefNum) {  // special case: constant 0 allowed, treated as not-a-refnum
                     // TODO(spathiwa) - figure out what DFIR does/should generate for the generic not-a-refnum constant.
                     // Should there be a special refnum type for this in Vireo?  For now, allow '0' in via.
-                    pData = null;
+                    pData = nullptr;
                 }
             } else {
                 return ReturnRegForEventsFatalError("RegisterForEvents: Input %d type doesn't match event reg ref element type", refInput);
             }
         }
-        void *oldRef = isRereg ? &regInfo->_entry[refInput].refnumEntry : null;
+        void *oldRef = isRereg ? &regInfo->_entry[refInput].refnumEntry : nullptr;
         void *pDataCopy = pData;
         if (!isRereg) {
             if (regRefType->IsRefnum()) {
@@ -805,7 +805,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
             }
         }
         LVError err = RegisterForEventsCore(qID, regInfo, refInput, regRefType, eSource, eventType,
-                                            pDataCopy, isRereg ? oldRef : null);
+                                            pDataCopy, isRereg ? oldRef : nullptr);
         if (err) {
             if (!isRereg && !regRefType->IsRefnum()) {
                 regRefType->ClearData(pDataCopy);

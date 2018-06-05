@@ -26,7 +26,7 @@ namespace Vireo {
 void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 {
     // clump should be set up by now.
-    VIREO_ASSERT(pObserver->_clump != null)
+    VIREO_ASSERT(pObserver->_clump != nullptr)
     // in MT, lock object
     if (_observerList) {  // add to end for scheduling fairness
         Observer* pVisitor = _observerList;
@@ -34,7 +34,7 @@ void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
             pVisitor = pVisitor->_next;
         }
         pVisitor->_next = pObserver;
-        pObserver->_next = null;
+        pObserver->_next = nullptr;
     } else {
         pObserver->_next = _observerList;
         _observerList = pObserver;
@@ -46,7 +46,7 @@ void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 //! Remove an observer from the ObservableObject's list
 void ObservableCore::RemoveObserver(Observer* pObserver)
 {
-    VIREO_ASSERT(pObserver != null);
+    VIREO_ASSERT(pObserver != nullptr);
     VIREO_ASSERT(pObserver->_object == this);
 
     Observer* pTemp;
@@ -54,7 +54,7 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
     Observer* pVisitor = *pFix;
 
     while (pVisitor) {
-        VIREO_ASSERT(pVisitor->_clump != null)
+        VIREO_ASSERT(pVisitor->_clump != nullptr)
 
         pTemp = pVisitor;
         if (pTemp == pObserver) {
@@ -66,14 +66,14 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
     }
 
     pObserver->_info = 0;
-    pObserver->_object = null;
-    pObserver->_next = null;
+    pObserver->_object = nullptr;
+    pObserver->_next = nullptr;
 }
 //------------------------------------------------------------
 //! Look in the waiting list for waiters that have a matching info.
 void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
 {
-    Observer *pNext = null;
+    Observer *pNext = nullptr;
     Observer ** ppPrevious = &_observerList;
 
     for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
@@ -81,7 +81,7 @@ void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
         if (info == pObserver->_info) {
             // Remove the waiter from the list and enqueue it.
             *ppPrevious = pNext;
-            pObserver->_next = null;
+            pObserver->_next = nullptr;
             pObserver->_clump->EnqueueRunQueue();
             // Every Observable that can trigger state changes has an associated timer owned by the clump.
             // Cancel it so it doesn't race with this and possibly Enqueue the clump a second time.
@@ -118,7 +118,7 @@ void Timer::CheckTimers(PlatformTickType t)
         if (pTemp->_info <= t) {
             // Remove
             *pFix = pTemp->_next;
-            pTemp->_next = null;
+            pTemp->_next = nullptr;
             pTemp->_info = 0;
             pTemp->_clump->EnqueueRunQueue();
         } else {
@@ -136,11 +136,11 @@ void Timer::CheckTimers(PlatformTickType t)
         while (elt) {
             pClump = elt;
             elt = elt->_next;
-            pClump->_next = null;
+            pClump->_next = nullptr;
             pClump->_wakeUpInfo = 0;    // Put in known state.
             _runQueue.Enqueue(pClump);
         }
-        _triggeredIsrList = null;
+        _triggeredIsrList = nullptr;
         VIREO_ISR_ENABLE
     }
 #endif
@@ -150,8 +150,8 @@ void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickC
 {
     pObserver->_object = this;
     pObserver->_info =  tickCount;
-    if (_observerList == null) {
-        VIREO_ASSERT(pObserver->_next == null)
+    if (_observerList == nullptr) {
+        VIREO_ASSERT(pObserver->_next == nullptr)
         // No list, now there is one.
         _observerList = pObserver;
     } else {
@@ -209,7 +209,7 @@ VIREO_FUNCTION_SIGNATURE WaitTickCountImplementation(UInt32 wait, void *timerVal
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitTickCount, UInt32)
 {
-    return WaitTickCountImplementation(_Param(0), null, kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitTickCountImplementation(_Param(0), nullptr, kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(WaitTickCountUInt32, UInt32, UInt32)
@@ -241,7 +241,7 @@ VIREO_FUNCTION_SIGNATURE WaitMicrosecondsImplementation(UInt32 wait, void *timer
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
-    return WaitMicrosecondsImplementation(_Param(0), null, kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitMicrosecondsImplementation(_Param(0), nullptr, kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(WaitMicrosecondsUInt32, UInt32, UInt32)
@@ -273,7 +273,7 @@ VIREO_FUNCTION_SIGNATURE WaitMillisecondsImplementation(UInt32 wait, void *timer
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
-    return WaitMillisecondsImplementation(_Param(0), null, kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitMillisecondsImplementation(_Param(0), nullptr, kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(WaitMillisecondsUInt32, UInt32, UInt32)

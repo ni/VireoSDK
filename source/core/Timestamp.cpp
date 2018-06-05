@@ -96,7 +96,7 @@ namespace Vireo
         struct timeval tv;
         Int32 retval;
 
-        retval = gettimeofday(&tv, null);
+        retval = gettimeofday(&tv, nullptr);
         if (retval == -1) {
             *t = Timestamp(0, 0);
         } else {

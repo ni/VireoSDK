@@ -32,8 +32,8 @@ extern "C" {
 
 StringRef AllocateReturnBuffer()
 {
-    static StringRef returnBuffer = null;
-    if (returnBuffer == null) {
+    static StringRef returnBuffer = nullptr;
+    if (returnBuffer == nullptr) {
         // Allocate a string the first time it is used.
         // After that it will be resized as needed.
         STACK_VAR(String, tempReturn);
@@ -56,12 +56,12 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetParameterType(StaticTypeAndData *pa
         SubString typeName = parameterType->Name();
         returnBuffer->Append(typeName.Length(), (Utf8Char*)typeName.Begin());
 
-        // Add an explicit null terminator so it looks like a C string.
+        // Add an explicit nullptr terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*)returnBuffer->Begin();
     }
 
-    return null;
+    return nullptr;
 }
 
 VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef arrayObject)
@@ -71,12 +71,12 @@ VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef 
         SubString elementTypeName = arrayObject->ElementType()->Name();
         returnBuffer->Append(elementTypeName.Length(), (Utf8Char*)elementTypeName.Begin());
 
-        // Add an explicit null terminator so it looks like a C string.
+        // Add an explicit nullptr terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*)returnBuffer->Begin();
     }
 
-    return null;
+    return nullptr;
 }
 
 //------------------------------------------------------------
@@ -92,16 +92,16 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *param
     } else if (parameterType->IsArray()) {
         pData = *(TypedArrayCoreRef*)pData;
     } else if (!(parameterType->IsNumeric() || parameterType->IsString() || parameterType->IsFloat() || parameterType->IsBoolean())) {
-        return null;
+        return nullptr;
     } else if (parameterType->IsInteger64()) {
-        return null;
+        return nullptr;
     }
 
     return pData;
 }
 
 //------------------------------------------------------------
-// arguments: occurrence, errorCheckingEnabled, errorCluster, functionName, returnValue, then variable number of inputs that can be null or any type
+// arguments: occurrence, errorCheckingEnabled, errorCluster, functionName, returnValue, then variable number of inputs that can be nullptr or any type
 struct JavaScriptInvokeParamBlock : public VarArgInstruction
 {
     _ParamDef(OccurrenceRef, occurrence);

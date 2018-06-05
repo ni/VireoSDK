@@ -66,7 +66,7 @@ static void CleanUpControlReference(intptr_t arg) {
 ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const StringRef &controlTag) {
     ControlRefInfo controlRefInfo(vi, controlTag);
     ControlRefNum refnum = ControlRefNumManager::RefNumStorage().NewRefNum(&controlRefInfo);
-    ControlRefNumManager::AddCleanupProc(null, CleanUpControlReference, refnum);
+    ControlRefNumManager::AddCleanupProc(nullptr, CleanUpControlReference, refnum);
     return refnum;
 }
 
