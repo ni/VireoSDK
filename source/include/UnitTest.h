@@ -25,7 +25,7 @@ class VireoUnitTest {
     struct TestList {
         VireoUnitTest *_test;
         TestList *_next;
-        explicit TestList(VireoUnitTest *test = NULL) { _test = test; _next = NULL; }
+        explicit TestList(VireoUnitTest *test = nullptr) { _test = test; _next = nullptr; }
 
         TestList *NewTest(VireoUnitTest *test) {
             TestList *testList = new TestList(test);

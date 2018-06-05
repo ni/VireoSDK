@@ -45,7 +45,7 @@ class ArrayIterator
     // than that of the passed in array.
     explicit ArrayIterator(TypedArrayCoreRef array, IntIndex rank, IntIndex* dimensionLengths) {
         _array = array;
-        if (array != NULL) {
+        if (array != nullptr) {
             VIREO_ASSERT(rank == array->Rank());
             for (int i = 0; i < rank; i++) {
                 VIREO_ASSERT(dimensionLengths[i] <= array->DimensionLengths()[i]);
@@ -74,7 +74,7 @@ class ArrayIterator
         }
 
         if (dimensionIndex >= _rank) {
-            return NULL;
+            return nullptr;
         }
 
         return _array->BeginAtND(_rank, _indexes);

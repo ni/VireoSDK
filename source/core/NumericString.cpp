@@ -1333,7 +1333,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
                     *separator = oldSeparator;
                 }
 
-                if (formatChar == 'p' && *endPointer != NULL && *endPointer < ConstCStr(truncateInput->End())) {
+                if (formatChar == 'p' && *endPointer != nullptr && *endPointer < ConstCStr(truncateInput->End())) {
                     char siPrefixesTable[] = { 'y', 'z', 'a', 'f', 'p', 'n', 'u', 'm', '0', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
                     char prefix = **endPointer;
                     size_t i = 0;
@@ -1775,7 +1775,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
     if (format.Length() == 0) {
         DefaultFormatCode(1, &Value, &tempformat);
     } else {
-        Utf8Char* index = NULL;
+        Utf8Char* index = nullptr;
         while (format.ReadRawChar(&c)) {
             index = (Utf8Char*)format.Begin();
             if (c == '%') {
@@ -1870,7 +1870,7 @@ VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, Stat
     StaticTypeAndData Value =  {_ParamPointer(3), _ParamPointer(4)};
     SubString input = inputString->MakeSubStringAlias();
     FormatScan(&input, &format, 1, &Value, null);
-    if (remainingString != NULL) {
+    if (remainingString != nullptr) {
         remainingString->Resize1D(input.Length());
         TypeRef elementType = remainingString->ElementType();
         elementType->CopyData(input.Begin(), remainingString->Begin(), input.Length());
@@ -2138,7 +2138,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
 {
     TempStackCString formatString;
     SubString tempFormat(format);
-    if (format == NULL || format->Length() == 0) {
+    if (format == nullptr || format->Length() == 0) {
         formatString.AppendCStr("%x %X");
         tempFormat.AliasAssign(formatString.Begin(), formatString.End());
     }
@@ -2475,7 +2475,7 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
     StringRef output = _Param(0);
     // clear the buffer
     output->Resize1D(0);
-    if (output != NULL) {
+    if (output != nullptr) {
         DateTimeToString(date, isUTC, &format, output);
     }
     return _NextInstruction();

@@ -583,7 +583,7 @@ class TypeCommon
     virtual NIError CopyData(const void* pData, void* pDataCopy);
     //! Free up any storage and put value to null/zero state.
     virtual NIError ClearData(void* pData);
-    virtual StringRef GetEnumItemName(IntIndex index) { return NULL; }
+    virtual StringRef GetEnumItemName(IntIndex index) { return nullptr; }
     virtual IntIndex GetEnumItemCount()              { return 0; }
 
     //! Initialize a linear block to the default value for the type.
@@ -933,7 +933,7 @@ typedef UInt32 RefNum;
 
 class RefNumVal {
  public:
-    RefNumVal() : _refnum(0), _typeRef(NULL)  { }
+    RefNumVal() : _refnum(0), _typeRef(nullptr)  { }
     explicit RefNumVal(TypeRef typeRef) : _refnum(0), _typeRef(typeRef) { }
     //! Array's type.
     TypeRef Type()                  { return _typeRef; }
@@ -1230,7 +1230,7 @@ struct ErrorCluster {
     Int32 code;
     StringRef source;
 
-    ErrorCluster() : status(false), code(0), source(NULL) { }
+    ErrorCluster() : status(false), code(0), source(nullptr) { }
     void SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain = true);
     void SetError(ErrorCluster error);
     void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }

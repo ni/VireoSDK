@@ -25,7 +25,7 @@ struct ControlRefInfo {
     VirtualInstrument *vi;  // VI containing control
     StringRef controlTag;   // Unique identifying tag (data item name) for control
 
-    ControlRefInfo() : vi(NULL), controlTag(NULL) { }
+    ControlRefInfo() : vi(nullptr), controlTag(nullptr) { }
     ControlRefInfo(VirtualInstrument *aVi, StringRef aControlTag) : vi(aVi), controlTag(aControlTag) { }
 };
 
@@ -53,7 +53,7 @@ NIError ControlReferenceDestroy(ControlRefNum refnum) {
     if (err == kNIError_Success) {
         controlRefInfo.controlTag->Delete(controlRefInfo.controlTag);
     }
-    return ControlRefNumManager::RefNumStorage().DisposeRefNum(refnum, NULL);
+    return ControlRefNumManager::RefNumStorage().DisposeRefNum(refnum, nullptr);
 }
 
 // Clean-up Proc, run when top level VI finishes, disposing control reference.
@@ -88,8 +88,8 @@ NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, St
         *pVI = controlRefInfo.vi;
         *pControlTag = controlRefInfo.controlTag;
     } else {
-        *pVI = NULL;
-        *pControlTag = NULL;
+        *pVI = nullptr;
+        *pControlTag = nullptr;
     }
     return err;
 }
@@ -114,7 +114,7 @@ NIError ControlReferenceAppendDescription(StringRef str, ControlRefNum refnum) {
 VIREO_FUNCTION_SIGNATURE2(IsNotAControlRefnum, RefNumVal, Boolean)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
-    if (!refnumPtr || ControlRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), NULL) != kNIError_Success)
+    if (!refnumPtr || ControlRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), nullptr) != kNIError_Success)
         _Param(1) = true;
     else
         _Param(1) = false;

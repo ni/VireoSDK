@@ -1794,11 +1794,11 @@ TypeRef ArrayType::GetSubElementAddressFromPath(SubString* path, void *start, vo
             if (pathHead.ReadInt(&index) && index >= 0 && index < array->Length()) {
                 ArrayDimensionVector dimIndex;
                 IntIndex rank = array->Rank(), dim = 0;
-                if (pathHead.SplitString(NULL, &pathHead, ',')) {
+                if (pathHead.SplitString(nullptr, &pathHead, ',')) {
                     dimIndex[rank-1 - dim++] = IntIndex(index);
                     while (dim < rank && pathHead.ReadInt(&index)) {
                         dimIndex[rank-1 - dim++] = IntIndex(index);
-                        if (!pathHead.SplitString(NULL, &pathHead, ','))
+                        if (!pathHead.SplitString(nullptr, &pathHead, ','))
                             break;
                     }
                     while (dim < rank)
@@ -2014,7 +2014,7 @@ void EnumType::AddEnumItem(SubString *name) {
 StringRef EnumType::GetEnumItemName(IntIndex i) {
     if (i >= 0 && i < _items->Length())
         return *_items->BeginAt(i);
-    return NULL;
+    return nullptr;
 }
 IntIndex EnumType::GetEnumItemCount() {
     return _items ? _items->Length() : 0;
@@ -3028,7 +3028,7 @@ VIREO_FUNCTION_SIGNATURE5(GetSubElementFromPath, StaticType, void, StringRef, St
     TypeRef type = _ParamPointer(0);
     void* pValue = _ParamPointer(1);
     SubString path = _Param(2)->MakeSubStringAlias();
-    void* pTargetValue = NULL;
+    void* pTargetValue = nullptr;
 
     TypeRef targetType = type->GetSubElementAddressFromPath(&path, pValue, &pTargetValue, true);
     if (pTargetValue && targetType && targetType->CompareType(_ParamPointer(3)))

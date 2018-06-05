@@ -134,7 +134,7 @@ namespace Vireo
     Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year) {
     #ifdef VIREO_DATE_TIME_STDLIB
     #if !kVireoOS_windows
-        struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, NULL };
+        struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, nullptr };
         time_t t = timegm(&timeVal);
     #else
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0};

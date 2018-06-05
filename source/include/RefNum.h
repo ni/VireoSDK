@@ -128,7 +128,7 @@ typename RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T, _isRefCounted>::
     typename RefNumMap::iterator it = _refStorage.find(index);
     if (it != _refStorage.end())
         return reinterpret_cast<RefNumHeaderAndData*>(&it->second);
-    return NULL;
+    return nullptr;
 }
 
 /**

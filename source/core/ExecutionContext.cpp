@@ -433,7 +433,7 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
 //------------------------------------------------------------
 void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 {
-    VIREO_ASSERT((NULL == elt->_next))
+    VIREO_ASSERT((nullptr == elt->_next))
     VIREO_ASSERT((0 == elt->_shortCount))
     _runQueue.Enqueue(elt);
 }

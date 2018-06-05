@@ -49,7 +49,7 @@ class ObservableCore
     Observer* _observerList;
 
  public:
-    ObservableCore() : _observerList(NULL) { }
+    ObservableCore() : _observerList(nullptr) { }
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);
     void ObserveStateChange(IntMax info, Boolean wakeAll);

@@ -786,7 +786,7 @@ VIREO_FUNCTION_SIGNATURET(VectorMaxMinOp, AggregateMaxAndMinInstruction)
             destArrayMinIterPtr += elementSizeMin;
         }
     } else {
-        while (destArrayMaxIterPtr != NULL) {
+        while (destArrayMaxIterPtr != nullptr) {
             snippet->_p0 = srcArrayXIterPtr;
             snippet->_p1 = srcArrayYIterPtr;
             snippet->_p2 = destArrayMaxIterPtr;
@@ -1583,7 +1583,7 @@ AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex*
         Int32 elemSize = elementType->TopAQSize();
         if (elemSize == destSlabLengths[0] && elemSize == sourceSlabLengths[0]) {
             if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
-                return NULL;
+                return nullptr;
             Int32 copiedLength = sourceDimLengths[0] * elemSize;
             if (!preinit && copiedLength < destSlabLengths[1]) {
                 elementType->InitData(pDest + copiedLength, (destSlabLengths[1] - copiedLength)/elemSize);
@@ -1592,7 +1592,7 @@ AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex*
             AQBlock1 *pTemp = pDest;
             for (IntIndex i = 0; i < sourceDimLengths[0]; ++i) {
                 if (elementType->CopyData(pSource, pTemp, 1))
-                    return NULL;
+                    return nullptr;
                 pTemp  += destSlabLengths[0];
                 pSource += sourceSlabLengths[0];
             }
@@ -1602,7 +1602,7 @@ AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex*
         for (IntIndex i = 0; i < sourceDimLengths[sourceRank-1]; ++i) {
             if (!(/*pDest = */ArrayToArrayCopyHelper(elementType, pDest, destSlabLengths, pSource,
                 sourceDimLengths, sourceSlabLengths, destRank-1, sourceRank-1, preinit)))
-                return NULL;
+                return nullptr;
             pDest += destSlabLengths[sourceRank-1];
             pSource += sourceSlabLengths[sourceRank-1];
         }
@@ -1615,7 +1615,7 @@ static AQBlock1* ArrayToArrayCopyHelperRev(TypeRef elementType, AQBlock1* pDest,
     AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
     if (sourceRank == 1) {
         if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
-            return NULL;
+            return nullptr;
         Int32 copiedLength = sourceDimLengths[0] * elementType->TopAQSize();
         if (copiedLength < destSlabLengths[1]) {
             memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
@@ -2131,7 +2131,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
     AQBlock1 *srcArray1IterPtr = (AQBlock1 *)srcArray1Iter.Begin();
     AQBlock1 *srcArray2IterPtr = (AQBlock1 *)srcArray2Iter.Begin();
     AQBlock1 *destArray1IterPtr = (AQBlock1 *)destArray1Iter.Begin();
-    AQBlock1 *destArray2IterPtr = destArray2 ? (AQBlock1 *)destArray2Iter.Begin() : NULL;
+    AQBlock1 *destArray2IterPtr = destArray2 ? (AQBlock1 *)destArray2Iter.Begin() : nullptr;
     AQBlock1 *destArray1EndIterPos = destArray1IterPtr + (count * elementSizeDest);
     if (snippet->_p1) {  // we need to call a conversion snippet for one of the args
         AQBlock1 *saveArg = snippet->_p1;
@@ -2155,7 +2155,7 @@ VIREO_FUNCTION_SIGNATURET(VectorVectorBinaryOp, AggregateBinOpInstruction)
                 destArray2IterPtr = destArray2IterPtr + elementSizeDest;
         }
     } else {
-        while (destArray1IterPtr != NULL) {
+        while (destArray1IterPtr != nullptr) {
             snippet->_p0 = srcArray1IterPtr;
             snippet->_p1 = srcArray2IterPtr;
             snippet->_p2 = destArray1IterPtr;
@@ -2185,9 +2185,9 @@ VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Internal error:At least one of the inputs must be a vector.");
         return THREAD_EXEC()->Stop();
     }
-    TypedArrayCoreRef srcArrayX = !(flags & InRangeAndCoerceInstruction::kXIsScalar) ? _Param(VX) : NULL;
-    TypedArrayCoreRef srcArrayLo = !(flags & InRangeAndCoerceInstruction::kLoIsScalar) ? _Param(VLo) : NULL;
-    TypedArrayCoreRef srcArrayHi = !(flags & InRangeAndCoerceInstruction::kHiIsScalar) ? _Param(VHi) : NULL;
+    TypedArrayCoreRef srcArrayX = !(flags & InRangeAndCoerceInstruction::kXIsScalar) ? _Param(VX) : nullptr;
+    TypedArrayCoreRef srcArrayLo = !(flags & InRangeAndCoerceInstruction::kLoIsScalar) ? _Param(VLo) : nullptr;
+    TypedArrayCoreRef srcArrayHi = !(flags & InRangeAndCoerceInstruction::kHiIsScalar) ? _Param(VHi) : nullptr;
     TypedArrayCoreRef coercedArray = _Param(VCoerced);
     TypedArrayCoreRef destArray = _Param(VDest);
     InRangeCompareInstructionArgs* snippet = (InRangeCompareInstructionArgs*)_ParamMethod(Snippet());
@@ -2219,7 +2219,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrScalarInRangeOp, InRangeAndCoerceInstruction)
     AQBlock1 *beginHi = srcArrayHi ? (AQBlock1 *) srcArrayHiIter.Begin() : _ParamPointer(SHi);
     AQBlock1 *beginCoerced = (AQBlock1 *) coercedArrayIter.Begin();  // might be in-place to one of the input arrays.
     AQBlock1 *beginDest = (AQBlock1 *) destArrayIter.Begin();
-    while (beginDest != NULL) {
+    while (beginDest != nullptr) {
         snippet->_p0 = beginX;
         snippet->_p1 = beginLo;
         snippet->_p2 = beginHi;
@@ -2615,7 +2615,7 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
 
     // Find the first error and return it if there is one, otherwise save the first warning and return it at the end
     for (IntIndex i = 0; i < inputParametersCount; i++) {
-        if (errorClusterInputs[i]._pData == NULL) {  // input parameter was not wired, move to the next one
+        if (errorClusterInputs[i]._pData == nullptr) {  // input parameter was not wired, move to the next one
             continue;
         }
         TypeRef parameterType = errorClusterInputs[i]._paramType;

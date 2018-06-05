@@ -566,7 +566,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
         SubString idToken(initialBegin, _begin);
 
         if (!suppressInfNaN) {
-            ConstCStr specialIEEEVals[] =  {"infinity", "-infinity", "inf", "-inf", "nan", NULL };
+            ConstCStr specialIEEEVals[] =  {"infinity", "-infinity", "inf", "-inf", "nan", nullptr };
             ConstCStr *specValPtr = specialIEEEVals;
             while (*specValPtr) {
                 if (idToken.ComparePrefixCStrIgnoreCase(*specValPtr)) {

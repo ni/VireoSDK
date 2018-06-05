@@ -240,13 +240,13 @@ VIREO_FUNCTION_SIGNATURE4(ArrayIndexElt2DV, TypedArrayCoreRef, void, void, void)
     IntIndex row, col;
     IntIndex rank = 2;
     IntIndex* lengths = arrayIn->DimensionLengths();
-    if (_ParamPointer(1) != NULL) {
+    if (_ParamPointer(1) != nullptr) {
         row = *((IntIndex*)_ParamPointer(1));
         pickRow = true;
     } else {
         row = -1;
     }
-    if (_ParamPointer(2) != NULL) {
+    if (_ParamPointer(2) != nullptr) {
         col = *((IntIndex*)_ParamPointer(2));
         pickCol = true;
     } else {
@@ -389,7 +389,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset, ArrayReplaceSubsetParamBlock)
     IntIndex idx = -1;
     while (i < count) {
         TypeRef argType = arguments[i]._paramType;
-        if (arguments[i]._pData != NULL) {
+        if (arguments[i]._pData != nullptr) {
             idx = (IntIndex) ReadIntFromMemory(argType, arguments[i]._pData);
         } else {
             idx >= 0? idx++ : idx = 0;
@@ -484,7 +484,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetParamBlock)
         Boolean wireRow = false;
         Boolean wireCol = false;
         TypeRef argType = arguments[i]._paramType;
-        if (arguments[i]._pData != NULL) {
+        if (arguments[i]._pData != nullptr) {
             row = *((IntIndex*)arguments[i]._pData);
             wireRow = true;
         } else {
@@ -493,7 +493,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubset2DV, ArrayReplaceSubsetParamBlock)
 
         i++;
         argType = arguments[i]._paramType;
-        if (arguments[i]._pData != NULL) {
+        if (arguments[i]._pData != nullptr) {
             col = *((IntIndex*)arguments[i]._pData);
             wireCol = true;
         } else {
@@ -543,7 +543,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetParamBlock)
     }
     IntIndex expectedElemRank = rank;
     for (i = 0; i < rank; ++i)
-        if (arguments[i]._pData != NULL)
+        if (arguments[i]._pData != nullptr)
             --expectedElemRank;
     bool noneWired = false;
     if (expectedElemRank == rank) {
@@ -551,7 +551,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetParamBlock)
         --expectedElemRank;
     }
     for (i = 0; i < rank; ++i) {
-        bool wired = (arguments[i]._pData != NULL);
+        bool wired = (arguments[i]._pData != nullptr);
         IntIndex idx = 0;
         if (wired || (i == 0 && noneWired)) {
             idx = wired ? *(IntIndex*)arguments[i]._pData : 0;
@@ -588,7 +588,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetParamBlock)
                 AQBlock1 *srcData = subArray->BeginAt(0);
                 j = expectedElemRank-1;
                 for (i = 0; i < rank; ++i) {
-                    bool wired = (arguments[i]._pData != NULL);
+                    bool wired = (arguments[i]._pData != nullptr);
                     if (!(wired || (i == 0 && noneWired))) {
                         subArrayLen[j] = subArray->DimensionLengths()[j];
                         if (subArrayLen[j] > arrayOut->DimensionLengths()[rank-1-i])
@@ -1198,14 +1198,14 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
     TypedArrayCoreRef arrayIn = _Param(3);
     IntIndex numberOfDimensions = arrayOut->Rank();
     TypeRef deletedPartType = _ParamPointer(1);
-    IntIndex deletedPortionLength = (_ParamPointer(4) == NULL)? 1 : _Param(4);
-    IntIndex dimensionToDelete = (_ParamPointer(6) == NULL)? 0 : _Param(6);
+    IntIndex deletedPortionLength = (_ParamPointer(4) == nullptr)? 1 : _Param(4);
+    IntIndex dimensionToDelete = (_ParamPointer(6) == nullptr)? 0 : _Param(6);
     if (dimensionToDelete < 0 || dimensionToDelete >= numberOfDimensions) {
         dimensionToDelete = 0;
         deletedPortionLength = 0;
     }
 
-    IntIndex offset = (_ParamPointer(5) == NULL) ?
+    IntIndex offset = (_ParamPointer(5) == nullptr) ?
         arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);
     if (offset > arrayIn->GetLength(numberOfDimensions - 1 - dimensionToDelete)) {
         offset = arrayIn->GetLength(numberOfDimensions - 1 - dimensionToDelete);
@@ -1316,8 +1316,8 @@ VIREO_FUNCTION_SIGNATURE6(ArrayDelete, TypedArrayCoreRef, StaticType, void, Type
     TypedArrayCoreRef arrayOut = _Param(0);
     TypedArrayCoreRef arrayIn = _Param(3);
     TypeRef deletedPartType = _ParamPointer(1);
-    IntIndex length = (_ParamPointer(4) == NULL)? 1 : _Param(4);
-    IntIndex offset = (_ParamPointer(5) == NULL)? arrayIn->Length() - length : _Param(5);
+    IntIndex length = (_ParamPointer(4) == nullptr)? 1 : _Param(4);
+    IntIndex offset = (_ParamPointer(5) == nullptr)? arrayIn->Length() - length : _Param(5);
     if (offset > arrayIn->Length())
         offset = arrayIn->Length();
 
@@ -1391,7 +1391,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReshape, ArrayReshapeParamBlock)
     ArrayIterator iteratorOut(arrayOut);
     void* input = iteratorIn.Begin();
     void* output = iteratorOut.Begin();
-    while (input != NULL && output != NULL) {
+    while (input != nullptr && output != nullptr) {
         arrayOut->ElementType()->CopyData(input, output);
         input = iteratorIn.Next();
         output = iteratorOut.Next();
@@ -1499,7 +1499,7 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
 {
     TypedArrayCoreRef arrayIn = _Param(1);
     Double thresholdY = _Param(2);
-    IntIndex startIndex = _ParamPointer(3) == NULL ? 0 : _Param(3);
+    IntIndex startIndex = _ParamPointer(3) == nullptr ? 0 : _Param(3);
     if (arrayIn->Length() == 0) {  // Emtpy array returns NaN
         _Param(0) = NAN;
         return _NextInstruction();
