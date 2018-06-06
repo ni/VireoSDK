@@ -55,14 +55,14 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
     ExecutionContextRef exec = THREAD_EXEC();
 
     VIClump* runningQueueElt = exec->_runningQueueElt;
-    VIREO_ASSERT(runningQueueElt != null)
+    VIREO_ASSERT(runningQueueElt != nullptr)
 
     // If there was a caller it was a subVI call, restart the caller. If not, a topVI finished.
     VIClump *callerClump = runningQueueElt->_caller;
     if (callerClump) {
         // The return instruction will be the CallInstruction.
         CallVIInstruction *pCallInstruction = (CallVIInstruction*)callerClump->_savePc;
-        VIREO_ASSERT(pCallInstruction != null)
+        VIREO_ASSERT(pCallInstruction != nullptr)
 
         InstructionCore* pCopyOut = pCallInstruction->_piCopyOutSnippet;
         while (ExecutionContext::IsNotCulDeSac(pCopyOut)) {
@@ -73,7 +73,7 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
         callerClump->_savePc = pCallInstruction->Next();
 
         // Now let the Caller proceed
-        runningQueueElt->_caller = null;
+        runningQueueElt->_caller = nullptr;
         callerClump->EnqueueRunQueue();
     } else {
         // Since there is no caller its a top VI
@@ -91,14 +91,14 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
 
     // Disconnect the list
     VIClump* waitingClump = runningQueueElt->_waitingClumps;
-    runningQueueElt->_waitingClumps = null;
+    runningQueueElt->_waitingClumps = nullptr;
 
-    while (null != waitingClump) {
+    while (nullptr != waitingClump) {
         VIClump* clumpToEnqueue = waitingClump;
         waitingClump = waitingClump->_next;
 
-        // null out next so it doesn't look like it is in a list.
-        clumpToEnqueue->_next = null;
+        // nullptr out next so it doesn't look like it is in a list.
+        clumpToEnqueue->_next = nullptr;
         clumpToEnqueue->EnqueueRunQueue();
         exec->ClearBreakout();
     }
@@ -119,7 +119,7 @@ VIREO_FUNCTION_SIGNATURE1(Stop, Boolean)
 //------------------------------------------------------------
 InstructionCore* ExecutionContext::Stop()
 {
-    _runningQueueElt = null;
+    _runningQueueElt = nullptr;
     _breakoutCount = 0;
 
     return &_culDeSac;
@@ -190,7 +190,7 @@ VIREO_FUNCTION_SIGNATURET(CallVI, CallVIInstruction)
         // Execute copy in code ( might hang from instruction, or from VI)
         // Instruction returned will be first in sub VI.
         VIREO_ASSERT(qe->_shortCount == 1)
-        VIREO_ASSERT(qe->_caller == null)
+        VIREO_ASSERT(qe->_caller == nullptr)
         qe->_caller = THREAD_EXEC()->_runningQueueElt;
 
         // Copy in parameters
@@ -284,8 +284,8 @@ ExecutionContext::ExecutionContext()
         _culDeSac._function = (InstructionFunction) CulDeSac;
     }
     _breakoutCount = 0;
-    _runningQueueElt = (VIClump*) null;
-    _timer._observerList = null;
+    _runningQueueElt = (VIClump*) nullptr;
+    _timer._observerList = nullptr;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
@@ -295,13 +295,13 @@ ExecutionContext::ExecutionContext()
 //------------------------------------------------------------
 InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextInClump)
 {
-    VIREO_ASSERT(null != _runningQueueElt)
+    VIREO_ASSERT(nullptr != _runningQueueElt)
 
     _runningQueueElt->_savePc = nextInClump;
 
     // Is there something else to run?
     _runningQueueElt = _runQueue.Dequeue();
-    if (_runningQueueElt == null) {
+    if (_runningQueueElt == nullptr) {
         // No, quit the exec loop as soon as possible
         _breakoutCount = 0;
         return &_culDeSac;
@@ -318,20 +318,20 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
 // See enum ExecSlicesResult for explanation of return values, or comments below where result is set.
 Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int32 millisecondsToRun)
 {
-    VIREO_ASSERT((_runningQueueElt == null))
+    VIREO_ASSERT((_runningQueueElt == nullptr))
     PlatformTickType currentTime  = gPlatform.Timer.TickCount();
     PlatformTickType breakOutTime = currentTime + gPlatform.Timer.MicrosecondsToTickCount(millisecondsToRun * 1000);
 
     _timer.QuickCheckTimers(currentTime);
 
     _runningQueueElt = _runQueue.Dequeue();
-    InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : null;
+    InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : nullptr;
 
     while (_runningQueueElt) {
         _breakoutCount = numSlices;
 
-        VIREO_ASSERT((currentInstruction != null))
-        VIREO_ASSERT((null == _runningQueueElt->_next))     // Should not be on queue
+        VIREO_ASSERT((currentInstruction != nullptr))
+        VIREO_ASSERT((nullptr == _runningQueueElt->_next))     // Should not be on queue
         VIREO_ASSERT((0 == _runningQueueElt->_shortCount))  // Should not be running if triggers > 0
         do {
 #if VIREO_DEBUG_EXEC_PRINT_INSTRS
@@ -362,24 +362,24 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
             if (_runningQueueElt) {
                 if (!_runQueue.IsEmpty()) {
                     // Time left, still working, something else to do, rotate tasks
-                    VIREO_ASSERT(currentInstruction != null)
-                    VIREO_ASSERT(_runningQueueElt != null)
+                    VIREO_ASSERT(currentInstruction != nullptr)
+                    VIREO_ASSERT(_runningQueueElt != nullptr)
 
                     _runningQueueElt->_savePc = currentInstruction;
                     VIClump *eltToReQueue = _runningQueueElt;
-                    _runningQueueElt = null;
+                    _runningQueueElt = nullptr;
                     _runQueue.Enqueue(eltToReQueue);
                     _runningQueueElt = _runQueue.Dequeue();
                     currentInstruction = _runningQueueElt->_savePc;
                 } else {
                     // Time left, still working, nothing else to do, continue as is.
-                    VIREO_ASSERT(currentInstruction != null)
-                    VIREO_ASSERT(_runningQueueElt != null)
+                    VIREO_ASSERT(currentInstruction != nullptr)
+                    VIREO_ASSERT(_runningQueueElt != nullptr)
                 }
             } else {
                 // Time left, nothing running, see if something woke up.
                 _runningQueueElt = _runQueue.Dequeue();
-                currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : null;
+                currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : nullptr;
                 VIREO_ASSERT(currentInstruction != &_culDeSac)
             }
         } else if (_runningQueueElt) {
@@ -387,7 +387,7 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
             VIREO_ASSERT(currentInstruction != &_culDeSac)
             _runningQueueElt->_savePc = currentInstruction;
             VIClump *eltToReQueue = _runningQueueElt;
-            _runningQueueElt = null;
+            _runningQueueElt = nullptr;
             _runQueue.Enqueue(eltToReQueue);
         } else {
             // No time left, nothing running, fine, loop will exit.
@@ -426,14 +426,14 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
     }
 #endif
     if (reply == kExecSlices_ClumpsFinished)
-        RunCleanupProcs(null);  // Cleans up all control refs when top VI finishes (refs not associated with the completion of the VI they are linked to).
+        RunCleanupProcs(nullptr);  // Cleans up all control refs when top VI finishes (refs not associated with the completion of the VI they are linked to).
 
     return reply;
 }
 //------------------------------------------------------------
 void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 {
-    VIREO_ASSERT((NULL == elt->_next))
+    VIREO_ASSERT((nullptr == elt->_next))
     VIREO_ASSERT((0 == elt->_shortCount))
     _runQueue.Enqueue(elt);
 }
@@ -452,7 +452,7 @@ void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr mess
 // so there is no need to add guards inside.
 void ExecutionContext::IsrEnqueue(QueueElt* elt)
 {
-    VIVM_ASSERT((null == elt->_next))
+    VIVM_ASSERT((nullptr == elt->_next))
     if (elt->_wakeUpInfo == 0) {
         QueueElt* temp = _triggeredIsrList;
         elt->_next = temp;

@@ -275,7 +275,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
 {
 #if kVireoOS_emscripten
     // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-    // Timeout(3) null value is handled by js and occurrence(8) handled by vireo
+    // Timeout(3) nullptr value is handled by js and occurrence(8) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4) || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -292,7 +292,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
                 _Param(0),
                 _Param(1),
                 _Param(2),
-                null,
+                nullptr,
                 _ParamPointer(3),
                 _Param(4),
                 _Param(5),
@@ -326,7 +326,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
 {
 #if kVireoOS_emscripten
     // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-    // Timeout(2) null value is handled by js and occurrence(6) handled by vireo
+    // Timeout(2) nullptr value is handled by js and occurrence(6) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1)|| !_ParamPointer(3) || !_ParamPointer(4) || !_ParamPointer(5)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
         return THREAD_EXEC()->Stop();
@@ -342,11 +342,11 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
                 kHead,
                 _Param(0),
                 _Param(1),
-                null,
-                null,
+                nullptr,
+                nullptr,
                 _ParamPointer(2),
                 _Param(3),
-                null,
+                nullptr,
                 _ParamPointer(4),
                 &_Param(5).status,
                 &_Param(5).code,
@@ -377,7 +377,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
 {
 #if kVireoOS_emscripten
     // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-    // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
+    // Timeout(4) nullptr value is handled by js and occurrence(9) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)
         || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
@@ -429,7 +429,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
 {
 #if kVireoOS_emscripten
     // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-    // Timeout(3) null value is handled by js and occurrence(8) handled by vireo
+    // Timeout(3) nullptr value is handled by js and occurrence(8) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(4)
         || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);
@@ -447,7 +447,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
                 _Param(0),
                 _Param(1),
                 _Param(2),
-                null,
+                nullptr,
                 _ParamPointer(3),
                 _Param(4),
                 _Param(5),
@@ -481,7 +481,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
 {
 #if kVireoOS_emscripten
     // TODO(rajsite): these checks are too aggressive. Should allow unwired values for optional terminals and avoid checking types inserted by Vireo
-    // Timeout(4) null value is handled by js and occurrence(9) handled by vireo
+    // Timeout(4) nullptr value is handled by js and occurrence(9) handled by vireo
     if (!_ParamPointer(0) || !_ParamPointer(1) || !_ParamPointer(2) || !_ParamPointer(3)
         || !_ParamPointer(5) || !_ParamPointer(6) || !_ParamPointer(7) || !_ParamPointer(8)) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, HTTP_REQUIRED_INPUTS_MESSAGE);

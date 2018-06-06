@@ -62,7 +62,7 @@ RefNumStorageBase::RefNumHeaderAndData* RefNumStorageBase::ValidateRefNumIndex(R
     if (rnp) {
         UInt32 x = UInt32(MagicFromRefNum(refnum));
         if (rnp->_refHeader.nextFree >= 0 || !x || (MagicFromRefNum(rnp->_refHeader.magicNum) != x))
-            return NULL;
+            return nullptr;
     }
     return rnp;
 }
@@ -77,7 +77,7 @@ RefNumStorageBase::RefNumHeaderAndData* RefNumStorageBase::CreateRefNumIndex(Ref
     else if (rnp->_refHeader.nextFree >= 0)
         _firstFree = rnp->_refHeader.nextFree;
     else
-        rnp = NULL;
+        rnp = nullptr;
     return rnp;
 }
 
@@ -101,12 +101,12 @@ RefNum RefNumStorageBase::NewRefNum(RefNumDataPtr info) {
 #ifdef VIREO_MULTI_THREAD
     MutexedScope mutexScope(&_mutex);
 #endif
-    RefNumHeaderAndData* rnp = NULL;
+    RefNumHeaderAndData* rnp = nullptr;
     UInt32 newIndex = _firstFree;
     if (newIndex != IndexFromRefNum(newIndex))  // refnum overflow; max 1M refnums
         return kNotARefNum;
     rnp = CreateRefNumIndex(newIndex);
-    if (rnp == NULL)
+    if (rnp == nullptr)
         return kNotARefNum;
 
     UInt32 mn = MagicMask(_nextMagicNum);
@@ -187,7 +187,7 @@ NIError RefNumStorageBase::SetRefNumData(const RefNum &refnum, RefNumDataPtr inf
 }
 
 bool RefNumStorageBase::IsARefNum(const RefNum &refnum) {
-    return ValidateRefNumIndex(refnum) != NULL;
+    return ValidateRefNumIndex(refnum) != nullptr;
 }
 
 Int32 RefNumStorageBase::GetRefNumCount() {
@@ -208,7 +208,7 @@ NIError RefNumStorageBase::GetRefNumList(RefNumList *list) {
 }
 
 bool RefNumStorageBase::AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr info) {
-    RefNumHeaderAndData* rnp = NULL;
+    RefNumHeaderAndData* rnp = nullptr;
     bool rightsWereAcquired = false;
 
     if (_isRefCounted) {
@@ -248,7 +248,7 @@ bool RefNumStorageBase::AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr 
 }
 
 Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
-    RefNumHeaderAndData* rnp = NULL;
+    RefNumHeaderAndData* rnp = nullptr;
     Int32 previousRefCount = 0;
 
     if (_isRefCounted) {
@@ -265,7 +265,7 @@ Int32 RefNumStorageBase::ReleaseRefNumRights(const RefNum &refnum) {
                     if (CompareAndSwapUInt32(&rnp->_refHeader.magicNum, newRefCount, oldRefCount)) {
                         if (1 == refCount) {
                             // we want to delete our object, since the refcount just dropped to zero.
-                            DisposeRefNum(refnum, NULL);
+                            DisposeRefNum(refnum, nullptr);
                         }
                         previousRefCount = refCount;
                         break;
@@ -296,7 +296,7 @@ void RefNumManager::RemoveCleanupProc(VirtualInstrument *vi, CleanupProc proc, i
         std::vector<CleanupRecord>::iterator it = viIter->second.begin(), itEnd = viIter->second.end();
         if ((it = std::find(it, itEnd, cleanupRec)) != itEnd) {
             // don't erase, just leave holes, whole vector will be deallocated when VI finishes
-            it->proc = NULL;
+            it->proc = nullptr;
             it->arg = 0;
         }
     }

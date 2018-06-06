@@ -201,13 +201,13 @@ If it matches return str up to the match point in bef,
 the match string in mat, and the remainder of str in aft.
 Return the index of the character past the match in odx.
 If no match return -1 in odx;
-One or more of bef, mat, and aft may be null.
+One or more of bef, mat, and aft may be nullptr.
 "pat" should not be an empty string.
 */
 static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset, SubString *bef, SubString *mat, SubString *aft, Int32 *offsetPastMatch)
 {
-    const Utf8Char *s = null, *se;
-    const UInt8 *p, *t = null;
+    const Utf8Char *s = nullptr, *se;
+    const UInt8 *p, *t = nullptr;
     Int32 ns, nt;
 
     if (offset < 0)
@@ -239,9 +239,9 @@ static void MatchPat(StringRef pat, Int32 len, const Utf8Char *str, Int32 offset
         if (bef)
             bef->AliasAssignLen(str, len);
         if (mat)
-            mat->AliasAssignLen(null, 0);
+            mat->AliasAssignLen(nullptr, 0);
         if (aft)
-            aft->AliasAssignLen(null, 0);
+            aft->AliasAssignLen(nullptr, 0);
         if (offsetPastMatch)
             *offsetPastMatch = -1;
     } else {  // copy str up to s to bef, from s to t to mat, remainder of str from t to aft
@@ -392,11 +392,11 @@ VIREO_FUNCTION_SIGNATURE7(MatchPattern, StringRef, StringRef, Int32, StringRef, 
     StringRef *afterStr = _ParamPointer(5);
     Int32 *offsetOutPtr = _ParamPointer(6);
     Int32 patLen = pat ? (*pat)->Length() : 0;
-    const Utf8Char *cstr = str ? (*str)->Begin() : null;
+    const Utf8Char *cstr = str ? (*str)->Begin() : nullptr;
     Int32 strLen = str ? (*str)->Length() : 0;
-    StringRef cpat = null;
+    StringRef cpat = nullptr;
     SubString beforeSub, matchSub, afterSub;
-    Int32 err = MakePat(patLen, pat ? (*pat)->Begin() : null, cpat);
+    Int32 err = MakePat(patLen, pat ? (*pat)->Begin() : nullptr, cpat);
     beforeSub.AliasAssignLen(cstr, strLen);
     if (!err) {
         MatchPat(cpat, strLen, cstr, offset, &beforeSub, &matchSub, &afterSub, offsetOutPtr);

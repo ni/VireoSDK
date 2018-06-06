@@ -386,7 +386,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             str[0] = c1;
             str[1] = c2;
             str[2] = 0;
-            char ascii = strtol(str, null, 16);
+            char ascii = strtol(str, nullptr, 16);
             buffer->Append(ascii);
         } else if (c == '\\' && f.ReadRawChar(&c)) {
             switch (c) {
@@ -452,8 +452,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 
             replacementString[0] = '\0';
             while (!parseFinished) {
-                TypeRef argType = null;
-                void *pData = null;
+                TypeRef argType = nullptr;
+                void *pData = nullptr;
                 parseFinished = true;
                 if (fOptions.ConsumeArgument) {
                     argType = arguments[argumentIndex]._paramType;
@@ -1333,7 +1333,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
                     *separator = oldSeparator;
                 }
 
-                if (formatChar == 'p' && *endPointer != NULL && *endPointer < ConstCStr(truncateInput->End())) {
+                if (formatChar == 'p' && *endPointer != nullptr && *endPointer < ConstCStr(truncateInput->End())) {
                     char siPrefixesTable[] = { 'y', 'z', 'a', 'f', 'p', 'n', 'u', 'm', '0', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
                     char prefix = **endPointer;
                     size_t i = 0;
@@ -1419,7 +1419,7 @@ void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSt
 //----------------------------------------------------------------------------------------------------
 Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const FormatOptions* formatOptions, StaticTypeAndData* argument)
 {
-    if (argument == null)
+    if (argument == nullptr)
         return false;
 
     TypeRef argumentType = argument->_paramType;
@@ -1439,7 +1439,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     }
     truncateInput.Append(&in);
     char* inpBegin = truncateInput.BeginCStr();
-    char* endPointer = null;
+    char* endPointer = nullptr;
 
     switch (argumentType->BitEncoding()) {
         case kEncoding_UInt:
@@ -1576,7 +1576,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             return false;
             break;
     }
-    if (endPointer == null || (endPointer == inpBegin)) {
+    if (endPointer == nullptr || (endPointer == inpBegin)) {
         return false;
     }
     *endToken = (IntIndex)(endPointer-inpBegin);
@@ -1619,7 +1619,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
         } else if (c == '%') {
             FormatOptions fOptions;
             Boolean parseFinished = false;
-            if (ReadLocalizedDecimalSeparator(format, argCount, arguments, null, &f, &canScan, &activeDecimalPoint, &parseFinished))
+            if (ReadLocalizedDecimalSeparator(format, argCount, arguments, nullptr, &f, &canScan, &activeDecimalPoint, &parseFinished))
                 continue;
 
             ReadPercentFormatOptions(&f, &fOptions);
@@ -1637,7 +1637,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
             }
             IntIndex endPointer;
             while (!parseFinished) {
-                StaticTypeAndData *pArg = (argumentIndex < argCount) ? &(arguments[argumentIndex]) : null;
+                StaticTypeAndData *pArg = (argumentIndex < argCount) ? &(arguments[argumentIndex]) : nullptr;
                 parseFinished = true;
                 switch (fOptions.FormatChar) {
                 case 'b': case 'B':
@@ -1775,7 +1775,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
     if (format.Length() == 0) {
         DefaultFormatCode(1, &Value, &tempformat);
     } else {
-        Utf8Char* index = NULL;
+        Utf8Char* index = nullptr;
         while (format.ReadRawChar(&c)) {
             index = (Utf8Char*)format.Begin();
             if (c == '%') {
@@ -1798,7 +1798,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
         }
     }
     format.AliasAssign(tempformat.Begin(), tempformat.End());
-    Format(&format, 1, &Value, output, null);
+    Format(&format, 1, &Value, output, nullptr);
     output->AppendSubString(&remainingFormat);
 }
 
@@ -1869,8 +1869,8 @@ VIREO_FUNCTION_SIGNATURE5(StringScanValue, StringRef, StringRef, StringRef, Stat
     SubString format = formatString->MakeSubStringAlias();
     StaticTypeAndData Value =  {_ParamPointer(3), _ParamPointer(4)};
     SubString input = inputString->MakeSubStringAlias();
-    FormatScan(&input, &format, 1, &Value, null);
-    if (remainingString != NULL) {
+    FormatScan(&input, &format, 1, &Value, nullptr);
+    if (remainingString != nullptr) {
         remainingString->Resize1D(input.Length());
         TypeRef elementType = remainingString->ElementType();
         elementType->CopyData(input.Begin(), remainingString->Begin(), input.Length());
@@ -2138,7 +2138,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
 {
     TempStackCString formatString;
     SubString tempFormat(format);
-    if (format == NULL || format->Length() == 0) {
+    if (format == nullptr || format->Length() == 0) {
         formatString.AppendCStr("%x %X");
         tempFormat.AliasAssign(formatString.Begin(), formatString.End());
     }
@@ -2151,7 +2151,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
         if (c == '%') {
             TimeFormatOptions fOption;
             Boolean parseFinished = false;
-            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, null, null, &tempFormat, &validFormatString, &decimalSeparator, &parseFinished))
+            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, nullptr, nullptr, &tempFormat, &validFormatString, &decimalSeparator, &parseFinished))
                 continue;
             ReadTimeFormatOptions(&tempFormat, &fOption);
             parseFinished = !fOption.Valid;
@@ -2475,7 +2475,7 @@ VIREO_FUNCTION_SIGNATURE4(FormatDateTimeString, StringRef, StringRef, Timestamp,
     StringRef output = _Param(0);
     // clear the buffer
     output->Resize1D(0);
-    if (output != NULL) {
+    if (output != nullptr) {
         DateTimeToString(date, isUTC, &format, output);
     }
     return _NextInstruction();
@@ -2598,7 +2598,7 @@ static inline void FormatScanForSpreadsheet(SubString *elemString, SubString *fo
         StringRef *pString = (StringRef*)(Value->_pData);
         (*pString)->Replace1D(0, elemString->Length(), elemString->Begin(), true);
     } else {
-        FormatScan(elemString, format, 1, Value, null);
+        FormatScan(elemString, format, 1, Value, nullptr);
     }
 }
 

@@ -26,7 +26,7 @@ namespace Vireo {
 void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 {
     // clump should be set up by now.
-    VIREO_ASSERT(pObserver->_clump != null)
+    VIREO_ASSERT(pObserver->_clump != nullptr)
     // in MT, lock object
     if (_observerList) {  // add to end for scheduling fairness
         Observer* pVisitor = _observerList;
@@ -34,7 +34,7 @@ void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
             pVisitor = pVisitor->_next;
         }
         pVisitor->_next = pObserver;
-        pObserver->_next = null;
+        pObserver->_next = nullptr;
     } else {
         pObserver->_next = _observerList;
         _observerList = pObserver;
@@ -46,7 +46,7 @@ void ObservableCore::InsertObserver(Observer* pObserver, IntMax info)
 //! Remove an observer from the ObservableObject's list
 void ObservableCore::RemoveObserver(Observer* pObserver)
 {
-    VIREO_ASSERT(pObserver != null);
+    VIREO_ASSERT(pObserver != nullptr);
     VIREO_ASSERT(pObserver->_object == this);
 
     Observer* pTemp;
@@ -54,7 +54,7 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
     Observer* pVisitor = *pFix;
 
     while (pVisitor) {
-        VIREO_ASSERT(pVisitor->_clump != null)
+        VIREO_ASSERT(pVisitor->_clump != nullptr)
 
         pTemp = pVisitor;
         if (pTemp == pObserver) {
@@ -66,14 +66,14 @@ void ObservableCore::RemoveObserver(Observer* pObserver)
     }
 
     pObserver->_info = 0;
-    pObserver->_object = null;
-    pObserver->_next = null;
+    pObserver->_object = nullptr;
+    pObserver->_next = nullptr;
 }
 //------------------------------------------------------------
 //! Look in the waiting list for waiters that have a matching info.
 void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
 {
-    Observer *pNext = null;
+    Observer *pNext = nullptr;
     Observer ** ppPrevious = &_observerList;
 
     for (Observer* pObserver = _observerList; pObserver; pObserver = pNext) {
@@ -81,7 +81,7 @@ void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
         if (info == pObserver->_info) {
             // Remove the waiter from the list and enqueue it.
             *ppPrevious = pNext;
-            pObserver->_next = null;
+            pObserver->_next = nullptr;
             pObserver->_clump->EnqueueRunQueue();
             // Every Observable that can trigger state changes has an associated timer owned by the clump.
             // Cancel it so it doesn't race with this and possibly Enqueue the clump a second time.
@@ -118,7 +118,7 @@ void Timer::CheckTimers(PlatformTickType t)
         if (pTemp->_info <= t) {
             // Remove
             *pFix = pTemp->_next;
-            pTemp->_next = null;
+            pTemp->_next = nullptr;
             pTemp->_info = 0;
             pTemp->_clump->EnqueueRunQueue();
         } else {
@@ -136,11 +136,11 @@ void Timer::CheckTimers(PlatformTickType t)
         while (elt) {
             pClump = elt;
             elt = elt->_next;
-            pClump->_next = null;
+            pClump->_next = nullptr;
             pClump->_wakeUpInfo = 0;    // Put in known state.
             _runQueue.Enqueue(pClump);
         }
-        _triggeredIsrList = null;
+        _triggeredIsrList = nullptr;
         VIREO_ISR_ENABLE
     }
 #endif
@@ -150,8 +150,8 @@ void Timer::InitObservableTimerState(Observer* pObserver, PlatformTickType tickC
 {
     pObserver->_object = this;
     pObserver->_info =  tickCount;
-    if (_observerList == null) {
-        VIREO_ASSERT(pObserver->_next == null)
+    if (_observerList == nullptr) {
+        VIREO_ASSERT(pObserver->_next == nullptr)
         // No list, now there is one.
         _observerList = pObserver;
     } else {
@@ -209,7 +209,7 @@ VIREO_FUNCTION_SIGNATURE WaitTickCountImplementation(UInt32 wait, void *timerVal
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitTickCount, UInt32)
 {
-    return WaitTickCountImplementation(_Param(0), null, kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitTickCountImplementation(_Param(0), nullptr, kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(WaitTickCountUInt32, UInt32, UInt32)
@@ -241,7 +241,7 @@ VIREO_FUNCTION_SIGNATURE WaitMicrosecondsImplementation(UInt32 wait, void *timer
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMicroseconds, UInt32)
 {
-    return WaitMicrosecondsImplementation(_Param(0), null, kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitMicrosecondsImplementation(_Param(0), nullptr, kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(WaitMicrosecondsUInt32, UInt32, UInt32)
@@ -273,7 +273,7 @@ VIREO_FUNCTION_SIGNATURE WaitMillisecondsImplementation(UInt32 wait, void *timer
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE1(WaitMilliseconds, UInt32)
 {
-    return WaitMillisecondsImplementation(_Param(0), null, kTimerValueResolution_UInt32, _NextInstruction());
+    return WaitMillisecondsImplementation(_Param(0), nullptr, kTimerValueResolution_UInt32, _NextInstruction());
 }
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(WaitMillisecondsUInt32, UInt32, UInt32)
@@ -437,7 +437,7 @@ VIREO_FUNCTION_SIGNATURE5(WaitOnOccurrence, OccurrenceRef, Boolean, Int32, Boole
     // If it woke up because of timeout or occurrence..
     *pStaticCount = pOcc->Count();
     if (pTimedOut)
-        *pTimedOut = (pOcc->_observerList != NULL);  // observer has been cleared if occurrence actually went off
+        *pTimedOut = (pOcc->_observerList != nullptr);  // observer has been cleared if occurrence actually went off
     clump->ClearObservationStates();
     return _NextInstruction();
 }
@@ -614,7 +614,7 @@ static void GetQueueRefName(RefNum refnum, StringRef *stringRef, bool deleting);
 
 RefNum QueueRefNumManager::NewRefnumAlias(RefNum refnum)
 {
-    if (_QueueRefNumTypeStorage.AcquireRefNumRights(refnum, NULL)) {  // increase ref count
+    if (_QueueRefNumTypeStorage.AcquireRefNumRights(refnum, nullptr)) {  // increase ref count
         RefNum newRefnum = _QueueRefNumTypeStorage.CloneRefNum(refnum);
         while (_refAliasMap.find(newRefnum) != _refAliasMap.end())  // make sure unique
             newRefnum = _QueueRefNumTypeStorage.CloneRefNum(newRefnum);
@@ -638,7 +638,7 @@ bool QueueRefNumManager::DisposeAlias(RefNum refnum, StringRef *rQueueName)
     if (it != _refAliasMap.end()) {
         RefNum realRefnum = it->second;
         if (_QueueRefNumTypeStorage.ReleaseRefNumRights(realRefnum) <= 2) {  // decrease ref count
-            QueueRef queueRef = NULL;
+            QueueRef queueRef = nullptr;
             GetQueueRefName(refnum, rQueueName, true);
             if (_QueueRefNumTypeStorage.DisposeRefNum(realRefnum, &queueRef) == kNIError_Success) {
                 QueueCore *pQV = queueRef->ObjBegin();
@@ -665,24 +665,24 @@ NIError QueueRefNumManager::LookupQueueRef(RefNum refnum, QueueRef *queueRefPtr)
 // Get the underlying array type from the RefNum Queue template type
 static inline TypeRef GetQueueArrayTypeRef(RefNumVal* refNumPtr) {
     if (!refNumPtr)
-        return NULL;
+        return nullptr;
     TypeRef type = refNumPtr->Type()->GetSubElement(0);
-    TypeRef clustType = type ? type->GetSubElement(0) : NULL;
-    TypeRef queueType = clustType ? clustType->GetSubElement(1) : NULL;
+    TypeRef clustType = type ? type->GetSubElement(0) : nullptr;
+    TypeRef queueType = clustType ? clustType->GetSubElement(1) : nullptr;
     return queueType;
 }
 
 // Get the underlying base element type from the RefNum Queue template type
 static inline TypeRef GetQueueElemTypeRef(RefNumVal* refNumPtr) {
     TypeRef type = GetQueueArrayTypeRef(refNumPtr);
-    return type ? type->GetSubElement(0) : NULL;
+    return type ? type->GetSubElement(0) : nullptr;
 }
 
 // Cleanup Proc for disposing queue refnums when top-level VI finishes
 static void CleanUpQueueRefNum(intptr_t arg) {
     RefNum refnum = RefNum(arg);
-    QueueRef queueRef = NULL;
-    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnum, NULL)) {
+    QueueRef queueRef = nullptr;
+    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnum, nullptr)) {
         // was a named clone
     } else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnum, &queueRef) == kNIError_Success) {
         QueueCore *pQV = queueRef->ObjBegin();
@@ -698,12 +698,12 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
     Int32 errCode = 0;
     Boolean create = _ParamPointer(3) ? _Param(3) : true;
     Boolean *createdPtr = _ParamPointer(4);
-    StringRef name = _ParamPointer(2) ? _Param(2) : NULL;
+    StringRef name = _ParamPointer(2) ? _Param(2) : nullptr;
     RefNumVal* refnumPtr = _ParamPointer(0);
     RefNum refnumVal = 0;
-    QueueRef queueRef = NULL;
+    QueueRef queueRef = nullptr;
     if (name && name->Length() == 0)
-        name = NULL;
+        name = nullptr;
     ErrorCluster *errPtr = _ParamPointer(5);
     if (errPtr && errPtr->status) {
         if (refnumPtr)
@@ -712,8 +712,8 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
             *createdPtr = false;
         return _NextInstruction();
     }
-    TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : NULL;
-    TypeRef queueType = refnumPtr ? GetQueueArrayTypeRef(refnumPtr) : NULL;
+    TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : nullptr;
+    TypeRef queueType = refnumPtr ? GetQueueArrayTypeRef(refnumPtr) : nullptr;
 
     if (!refnumPtr) {
         errCode = kQueueArgErr;
@@ -737,7 +737,7 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
         errCode = kQueueZeroSize;
 
     if (!errCode) {
-        NIError status = type->InitData((void*)&queueRef, (TypeRef)NULL);
+        NIError status = type->InitData((void*)&queueRef, (TypeRef)nullptr);
         if (status == kNIError_Success) {
             if (!refnumVal) {
                 refnumVal = QueueRefNumManager::RefNumStorage().NewRefNum(&queueRef);
@@ -817,9 +817,9 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumVal, StringRef, TypedArrayCore
         return _NextInstruction();
     }
 
-    QueueRef queueRef = NULL;
+    QueueRef queueRef = nullptr;
     TypeRef type = refnumPtr->Type()->GetSubElement(0);
-    QueueCore *pQV = NULL;
+    QueueCore *pQV = nullptr;
     if (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success && queueRef) {
         pQV = queueRef->ObjBegin();
     }
@@ -850,9 +850,9 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumVal, StringRef, TypedArrayCore
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumVal, TypedArrayCoreRef, ErrorCluster) {
     RefNumVal* refnumPtr = _ParamPointer(0);
-    TypedArrayCoreRef remainingElts = _ParamPointer(1) ? _Param(1) : NULL;
+    TypedArrayCoreRef remainingElts = _ParamPointer(1) ? _Param(1) : nullptr;
     ErrorCluster *errPtr = _ParamPointer(2);
-    QueueRef queueRef = NULL;
+    QueueRef queueRef = nullptr;
     if ((errPtr && errPtr->status)
         || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
         if (errPtr && !errPtr->status)
@@ -864,7 +864,7 @@ VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumVal, TypedArrayCoreRef, Err
     QueueCore *pQV = queueRef->ObjBegin();
 
     IntIndex count = pQV->Count();
-    AQBlock1 *pData = NULL;
+    AQBlock1 *pData = nullptr;
     if (remainingElts) {
         remainingElts->Resize1D(count);
         pData = remainingElts->BeginAt(0);
@@ -887,8 +887,8 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumVal, Boolean, Int32, St
     ErrorCluster *errPtr = _ParamPointer(8);
     IntIndex count = 0;
     Int32 maxSize = -1;
-    QueueRef queueRef = NULL;
-    QueueCore *pQV = NULL;
+    QueueRef queueRef = nullptr;
+    QueueCore *pQV = nullptr;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         if (errPtr && !errPtr->status)
@@ -963,8 +963,8 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumVal, void, void,
     ErrorCluster *errPtr = _ParamPointer(4);
     Int32 timeOut = lossy ? 0 : (_ParamPointer(2) ? *(Int32*)_ParamPointer(2) : -1);
     Boolean *boolOut = _ParamPointer(3);
-    void *overflowElem = lossy ? _ParamPointer(2) : NULL;
-    QueueRef queueRef = NULL;
+    void *overflowElem = lossy ? _ParamPointer(2) : nullptr;
+    QueueRef queueRef = nullptr;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
@@ -1022,7 +1022,7 @@ static InstructionCore* QueueRef_DequeueCore(Instruction5<RefNumVal, void, Int32
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
     ErrorCluster *errPtr = _ParamPointer(4);
-    QueueRef queueRef = NULL;
+    QueueRef queueRef = nullptr;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
@@ -1080,7 +1080,7 @@ VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean) {
 VIREO_FUNCTION_SIGNATURE2(IsNotAQueueRefnum, RefNumVal, Boolean)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
-    QueueRef queueRef = NULL;
+    QueueRef queueRef = nullptr;
     if (!refnumPtr || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef)
         _Param(1) = true;
     else

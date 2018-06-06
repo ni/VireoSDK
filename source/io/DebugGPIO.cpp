@@ -16,7 +16,7 @@ SDG
 #define kuZED_Button_PIN 51
 
 static XGpioPs _gGPIO;
-static XGpioPs_Config *_gpGPIOPsConfig = null;
+static XGpioPs_Config *_gpGPIOPsConfig = nullptr;
 
 void InitGPIO()
 {

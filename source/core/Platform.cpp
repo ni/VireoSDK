@@ -394,7 +394,7 @@ PlatformTickType PlatformTimer::TickCount()
     volatile UInt64     scuTickCount;
     static UInt64    lastScuTickCount = 0;
     static XScuTimer    Timer;
-    static XScuTimer     *pTimer = NULL;
+    static XScuTimer     *pTimer = nullptr;
 
     if (!pTimer) {
         pTimer = &Timer;

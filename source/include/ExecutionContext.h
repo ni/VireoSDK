@@ -41,7 +41,7 @@ class ObservableCore;
                 |                        |
                 v                        v
             ----------              ------------
-    Clumps  |   |  * |--->-->------>|     |null|
+    Clumps  |   |  * |--->-->------>|     |nullptr|
             ----------              ------------
 ~~~
 */
@@ -53,7 +53,7 @@ class VIClumpQueue
  public:
     VIClumpQueue();
     //! True when the VIClumpQueue is empty.
-    Boolean IsEmpty() { return (this->_head == null); }
+    Boolean IsEmpty() { return (this->_head == nullptr); }
     VIClump* Dequeue();
     void Enqueue(VIClump* elt);
 };

@@ -132,7 +132,7 @@ class FunctionClump
 //
 // 2. Move the fixed set of buffers to a set that can be dynamically allocated (and arrays)
 //
-// 3. Get Arrays to support null-means-empty, or shared empty instances
+// 3. Get Arrays to support nullptr-means-empty, or shared empty instances
 //
 // 4. Can other users of the _next field use the same mechanism?
 
@@ -142,7 +142,7 @@ class FunctionClump
 class VIClump : public FunctionClump
 {
  public:
-    VIClump*            _next;       //! Next clump if this one is in a list/queue, null otherwise.
+    VIClump*            _next;       //! Next clump if this one is in a list/queue, nullptr otherwise.
     PlatformTickType    _wakeUpInfo;  //! If clump is suspended, used to determine if wake up condition exists
                                      //  (e.g. time)
     VirtualInstrument*  _owningVI;        //! VI that this clump is part of.
@@ -174,7 +174,7 @@ class VIClump : public FunctionClump
         } while (caller->_caller);
         return caller->_owningVI;
     }
-    Observer*          GetObservationStates(Int32) { return _observationCount ? _observationStates : null; }
+    Observer*          GetObservationStates(Int32) { return _observationCount ? _observationStates : nullptr; }
     Observer*          ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
     InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
     void               ClearObservationStates();
@@ -207,8 +207,8 @@ class InstructionAllocator {
     size_t      _size;
     AQBlock1*   _next;
 
-    InstructionAllocator() { _size = 0; _next = null; }
-    Boolean IsCalculatePass() { return _next == null; }
+    InstructionAllocator() { _size = 0; _next = nullptr; }
+    Boolean IsCalculatePass() { return _next == nullptr; }
     void AddRequest(size_t count);
     void Allocate(TypeManagerRef tm);
     void* AllocateSlice(size_t count);
@@ -221,9 +221,9 @@ struct PatchInfo
     };
 
     PatchType   _patchType;
-    intptr_t     _whereToPeek;
+    IntIndex     _whereToPeek;
     void**      _whereToPatch;
-    PatchInfo() : _patchType(Perch), _whereToPeek(null), _whereToPatch(null) { }
+    PatchInfo() : _patchType(Perch), _whereToPeek(0), _whereToPatch(nullptr) { }
 };
 //------------------------------------------------------------
 //! Utility class used by decoders that can decode VIs and Clumps
@@ -282,7 +282,7 @@ class ClumpParseState
  private:    // State for patching owner/next field once next instruction created
     // When an instruction is made remember where its 'next' field is so that it can be
     // when the next instruction is generated. When packed instructions are used
-    // this is most often null since there are no next pointers. However roots
+    // this is most often nullptr since there are no next pointers. However roots
     // still exist like the pointer in the clump that points to the first instruction,
     // or a sub snippet pointer in the CallVI instruction.
     InstructionCore**   _pWhereToPatch;

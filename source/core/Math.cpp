@@ -452,8 +452,8 @@ DECLARE_VIREO_COMPARISON_PRIMITIVES_BOOLEAN()
 // DECLARE_VIREO_CONVERSION_PRIMITIVES(Boolean)
 DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfTrue, Boolean, (_Param(1)))
 DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfFalse, Boolean, (!_Param(1)))
-DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNull, void*, (null == _Param(1)))
-DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNotNull, void*, (null != _Param(1)))
+DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNull, void*, (nullptr == _Param(1)))
+DECLARE_VIREO_CONDITIONAL_BRANCH1(BranchIfNotNull, void*, (nullptr != _Param(1)))
 
 DECLARE_VIREO_PRIMITIVE3(AndBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) & _Param(1))) \
 DECLARE_VIREO_PRIMITIVE3(OrBoolean, Boolean, Boolean, Boolean, (_Param(2) = _Param(0) | _Param(1))) \

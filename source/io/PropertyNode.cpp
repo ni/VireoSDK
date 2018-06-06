@@ -111,7 +111,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 
     STACK_VAR(String, controlRefVINameVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
-    StringRef controlRefDataItemId = null;
+    StringRef controlRefDataItemId = nullptr;
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeWriteName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
@@ -173,7 +173,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
 
     STACK_VAR(String, controlRefVINameVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
-    StringRef controlRefDataItemId = null;
+    StringRef controlRefDataItemId = nullptr;
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeReadName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 

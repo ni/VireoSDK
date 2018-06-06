@@ -100,12 +100,12 @@ struct EventData {
     TypeRef eventDataType;
     void *pEventData;
 
-    EventData() : common(0, 0, RefNumVal()), controlUID(kNotAnEventControlUID), eventDataType(NULL), pEventData(NULL) { }
-    EventData(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) :
+    EventData() : common(0, 0, RefNumVal()), controlUID(kNotAnEventControlUID), eventDataType(nullptr), pEventData(nullptr) { }
+    EventData(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) :
         common(source, type, ref), controlUID(kNotAnEventControlUID), eventDataType(edtype), pEventData(pData) { }
-    EventData(EventSource source, EventType type, EventControlUID uid, TypeRef edtype = NULL, void *pData = NULL) :
+    EventData(EventSource source, EventType type, EventControlUID uid, TypeRef edtype = nullptr, void *pData = nullptr) :
         common(source, type), controlUID(0), eventDataType(edtype), pEventData(pData) { }
-    EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = NULL, void *pData = NULL) {
+    EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) {
         common.eventSource = source;
         common.eventType = type;
         common.eventSeqIndex = 0;

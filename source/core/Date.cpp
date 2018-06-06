@@ -187,14 +187,14 @@ namespace Vireo {
         Int32 firstweekDay = 0;
 
         Int32 year = getYear(timestamp.Integer(), &secondsOfYear, &firstweekDay);
-        if (yearPtr != NULL) {
+        if (yearPtr != nullptr) {
             *yearPtr = year;
         }
-        if (weekOfFirstDay != NULL) {
+        if (weekOfFirstDay != nullptr) {
             // get the first week day for this year
             *weekOfFirstDay = firstweekDay;
         }
-        if (secondsOfYearPtr != NULL) {
+        if (secondsOfYearPtr != nullptr) {
             *secondsOfYearPtr = secondsOfYear;
         }
 
@@ -221,7 +221,7 @@ namespace Vireo {
         time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
         struct tm timeinfo;
         localtime_r(&rawtime, &timeinfo);
-       if (strchr(timeinfo.tm_zone, ' ') == NULL) {
+       if (strchr(timeinfo.tm_zone, ' ') == nullptr) {
           // if timezone name is abbreviated, there won't be space. True on Linux and Mac (native, node.js, and browser)
           snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
        } else {
@@ -231,7 +231,7 @@ namespace Vireo {
 // #elif kVireoOS_emscripten variant deleted (03/2017); localtime_r works correctly
 #elif kVireoOS_windows
         TIME_ZONE_INFORMATION timeZoneInfo;
-        int rc = GetTimeZoneInformationForYear(year, NULL, &timeZoneInfo);
+        int rc = GetTimeZoneInformationForYear(year, nullptr, &timeZoneInfo);
         char timeZoneName[kTempCStringLength] = "UnknownTimeZone";
         if (rc != 0) {
            Int32 timeZoneOffsetMinsStandard = timeZoneInfo.Bias;
@@ -252,29 +252,29 @@ namespace Vireo {
         Int32 secondsOfMinutes = secondsOfHour % kSecondsPerHour;
         Int32 minutes = secondsOfMinutes / kSecondsPerMinute;
         seconds = secondsOfMinutes % kSecondsPerMinute;
-        if (monthPtr != NULL) {
+        if (monthPtr != nullptr) {
             *monthPtr = currentMonth;
         }
-        if (dayPtr != NULL) {
+        if (dayPtr != nullptr) {
             *dayPtr = days+1;
         }
-        if (hourPtr != NULL) {
+        if (hourPtr != nullptr) {
             *hourPtr = hours;
         }
-        if (minutePtr != NULL) {
+        if (minutePtr != nullptr) {
             *minutePtr = minutes;
         }
-        if (secondPtr != NULL) {
+        if (secondPtr != nullptr) {
             *secondPtr = seconds;
         }
-        if (fractionPtr != NULL) {
+        if (fractionPtr != nullptr) {
             *fractionPtr = timestamp.ToDouble() - timestamp.Integer();
         }
-        if (weekDayPtr != NULL) {
+        if (weekDayPtr != nullptr) {
             *weekDayPtr = (secondsOfYear/kSecondsPerDay + firstweekDay) % kDaysInWeek;
         }
-        if (timeZoneString != NULL) {
-            if (*timeZoneString != NULL) {
+        if (timeZoneString != nullptr) {
+            if (*timeZoneString != nullptr) {
                 free(*timeZoneString);
             }
             *timeZoneString = (char *)malloc(strlen(timeZoneAbbr)+1);
@@ -285,7 +285,7 @@ namespace Vireo {
     //------------------------------------------------------------
     Date::Date(Timestamp timestamp, Int32 timeZoneOffset) {
         _timeZoneOffset = timeZoneOffset;
-        _timeZoneString = NULL;
+        _timeZoneString = nullptr;
         Timestamp local = timestamp + _timeZoneOffset;
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
                 &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
@@ -320,11 +320,11 @@ namespace Vireo {
             _timeZoneString = (char *)malloc(strlen(tz)+1);
             strncpy(_timeZoneString, tm.tm_zone, strlen(tz)+1);
         } else {
-            _timeZoneString = NULL;
+            _timeZoneString = nullptr;
         }
 #else
         _timeZoneOffset = isUTC ? 0 : Date::getLocaletimeZone(timestamp.Integer());
-        _timeZoneString = NULL;
+        _timeZoneString = nullptr;
         Timestamp local = timestamp + _timeZoneOffset;
         getDate(local, &_secondsOfYear, &_year, &_month, &_day, &_hour,
                 &_minute, &_second, &_fractionalSecond, &_weekday, &_firstWeekDay, &_timeZoneString);
@@ -336,7 +336,7 @@ namespace Vireo {
     Date::~Date() {
         if (_timeZoneString) {
             free(_timeZoneString);
-            _timeZoneString = NULL;
+            _timeZoneString = nullptr;
         }
     }
 

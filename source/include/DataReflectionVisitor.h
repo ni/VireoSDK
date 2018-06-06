@@ -21,7 +21,7 @@ namespace Vireo
 * that describes what the needle is a pointer to. The visitor will visit
 * all types in the type manager and thus ultimate all values owned by that type manager
 * and if necessary parent type managers as well.
-* initially the hay stack is null, but when a type is visited that owns a value ( constant or var)
+* initially the hay stack is nullptr, but when a type is visited that owns a value ( constant or var)
 * it will establish a haystack then as the type is visited the stack is narrowed.
 */
 class DataReflectionVisitor : public TypeVisitor

@@ -24,7 +24,7 @@
 namespace Vireo {
 
 // Manage UserEvent refnums.
-// The refnum storage stores only a placeholder null value because we only actually need to lookup whether a refnum is valid or not;
+// The refnum storage stores only a placeholder nullptr value because we only actually need to lookup whether a refnum is valid or not;
 // the data is stored in the Event Oracle's event queues, not in the refnum, and the User Event's type is available in any context
 // where it's needed by the datatype of other inputs.
 class UserEventRefNumManager : public RefNumManager {
@@ -80,7 +80,7 @@ typedef std::vector<EventOracleObj> EventOracleObjVector;
 // EventQueueObject -- manage a single event queue (statically or dynamically registered)
 class EventQueueObject {
  public:
-    EventQueueObject() : _wakeUpOccur(NULL), _status(kQIDFree), _eventLock(false) { }
+    EventQueueObject() : _wakeUpOccur(nullptr), _status(kQIDFree), _eventLock(false) { }
     size_t size() const { return _eventQueue.size(); }
     void OccurEvent(const EventData &eData) {
         _eventQueue.push_back(eData);
@@ -88,7 +88,7 @@ class EventQueueObject {
         if (eData.pEventData) {  // make a unique copy of the event data for each event queue
             Int32 topSize = eData.eventDataType->TopAQSize();
             void *pEvent = THREAD_TADM()->Malloc(topSize);
-            eData.eventDataType->InitData(pEvent, (TypeRef)NULL);
+            eData.eventDataType->InitData(pEvent, (TypeRef)nullptr);
             eData.eventDataType->CopyData(eData.pEventData, pEvent);
             _eventQueue.back().pEventData = pEvent;
         }
@@ -130,7 +130,7 @@ class EventQueueObject {
         }
         _wakeUpOccur = occ;
     }
-    void RemoveObserver() { _wakeUpOccur = NULL; }
+    void RemoveObserver() { _wakeUpOccur = nullptr; }
     void DoneProcessingEvent() {
         if (_eventLock) {
             DiscardTopEvent();
@@ -189,7 +189,7 @@ class EventOracle {
     }
     Int32 GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, RefNumVal *dynRegRefs, Int32 *dynIndexBase);
     bool RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID, RefNum ref,
-                          EventOracleIndex *oracleIdxPtr = NULL);
+                          EventOracleIndex *oracleIdxPtr = nullptr);
     bool UnregisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID, RefNum ref);
     bool EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType);
     bool EventListRemove(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType);
@@ -474,7 +474,7 @@ class EventRegistrationRefNumManager : public RefNumManager {
 EventRegistrationRefNumManager EventRegistrationRefNumManager::_s_singleton;
 
 // GetPendingEventInfo -- given a static queue and a set of dynamic event queues (passed via refnum), return the queue with the earliest event
-// based on sequence number.  Returns 0 if the earliest event is in the static queue (if non-null), or a 1-based index into the dynamic queue
+// based on sequence number.  Returns 0 if the earliest event is in the static queue (if non-nullptr), or a 1-based index into the dynamic queue
 // list if the earliest event is in one of the dynamic queues.
 // Also returns the base dynamic index of the returned queueID (e.g. event reg. refnum; if this event reg. refnum has multiple registered items
 // the dynIndex will be further incremented by the caller to indicate which item actually matches the event).
@@ -492,7 +492,7 @@ Int32 EventOracle::GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, 
         }
     }
     while (regIndex < nQueues) {
-        DynamicEventRegInfo *regInfo = NULL;
+        DynamicEventRegInfo *regInfo = nullptr;
         if (dynRegRefs
             && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(dynRegRefs[regIndex].GetRefNum(), &regInfo) == kNIError_Success) {
             // For each valid dynamic reference, find the event with the earliest event sequence number in its queue.
@@ -526,7 +526,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
 // Cleanup Proc for disposing user event refnums when top-level VI finishes
 static void CleanUpUserEventRefNum(intptr_t arg) {
     RefNum refnum = RefNum(arg);
-    void *userEventRef = NULL;
+    void *userEventRef = nullptr;
     UserEventRefNumManager::RefNumStorage().DisposeRefNum(refnum, &userEventRef);
 }
 
@@ -535,7 +535,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Create, RefNumVal, ErrorCluster)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
     Int32 errCode = 0;
-    void* userEventRef = NULL;
+    void* userEventRef = nullptr;
     RefNum refnum = 0;
 
     ErrorCluster *errPtr = _ParamPointer(1);
@@ -568,8 +568,8 @@ VIREO_FUNCTION_SIGNATURE4(UserEventRef_Generate, RefNumVal, void, Boolean, Error
     void *pSourceData = _ParamPointer(1);
     // Boolean highPro = _ParamPointer(2) ? _Param(2) : false;
     ErrorCluster *errPtr = _ParamPointer(3);
-    TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : NULL;
-    void *userEventRef = NULL;
+    TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : nullptr;
+    void *userEventRef = nullptr;
 
     // TODO(spathiwa) implement high-priority User Events
     if (!errPtr || !errPtr->status) {
@@ -591,7 +591,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Destroy, RefNumVal, ErrorCluster)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
     ErrorCluster *errPtr = _ParamPointer(1);
-    void *userEventRef = NULL;
+    void *userEventRef = nullptr;
 
     if (!refnumPtr || UserEventRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success) {
         if (errPtr && !errPtr->status)
@@ -623,7 +623,7 @@ static inline EventSource GetEventSourceForEventType(EventType eType) {
 
 // UnregisterForEventsAux -- helper function to unregister for dynamic events, called from prim and cleanup proc
 static bool UnregisterForEventsAux(RefNum refnum) {
-    DynamicEventRegInfo *regInfo = NULL;
+    DynamicEventRegInfo *regInfo = nullptr;
     if (EventRegistrationRefNumManager::RefNumStorage().DisposeRefNum(refnum, &regInfo) != kNIError_Success || !regInfo)
         return false;
     EventQueueID qID = regInfo->_qID;
@@ -667,7 +667,7 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
             EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, 0, refData->GetRefNum());
     } else if (refType->IsArray() && refType->Rank() == 1 && refType->GetSubElement(0)->IsRefnum()) {
         // Array of scalar refnums
-        TypedArray1D<RefNumVal> *refArrayPtr = pData ? *(TypedArray1D<RefNumVal>**)pData : null;
+        TypedArray1D<RefNumVal> *refArrayPtr = pData ? *(TypedArray1D<RefNumVal>**)pData : nullptr;
         if (pOldData) {  // re-registration
             TypedArray1D<RefNumVal> *oldRefArrayPtr = (TypedArray1D<RefNumVal>*)pOldData;
             RefNumVal *aOldRefPtr = oldRefArrayPtr->BeginAt(0);
@@ -707,7 +707,7 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
 VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
 {
     RefNumVal* eventRegRefnumPtr = _ParamPointer(regRef);
-    DynamicEventRegInfo *regInfo = NULL;
+    DynamicEventRegInfo *regInfo = nullptr;
 
     const Int32 numberOfFixedArgs = 2;  // eventRegRef, errorIO
     const Int32 numArgsPerTuple = 3;    // <eventType, user/control ref (STAD)> pairs
@@ -744,7 +744,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
         isRereg = true;
         qID = regInfo->_qID;
     } else {
-        EventOracle::TheEventOracle().GetNewQueueObject(&qID, NULL);
+        EventOracle::TheEventOracle().GetNewQueueObject(&qID, nullptr);
         regInfo = new DynamicEventRegInfo(qID, regCount);
         erRefNum = EventRegistrationRefNumManager::RefNumStorage().NewRefNum(&regInfo);
         eventRegRefnumPtr->SetRefNum(erRefNum);
@@ -785,13 +785,13 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
                 if (*(Int32*)pData == kNotARefNum) {  // special case: constant 0 allowed, treated as not-a-refnum
                     // TODO(spathiwa) - figure out what DFIR does/should generate for the generic not-a-refnum constant.
                     // Should there be a special refnum type for this in Vireo?  For now, allow '0' in via.
-                    pData = null;
+                    pData = nullptr;
                 }
             } else {
                 return ReturnRegForEventsFatalError("RegisterForEvents: Input %d type doesn't match event reg ref element type", refInput);
             }
         }
-        void *oldRef = isRereg ? &regInfo->_entry[refInput].refnumEntry : null;
+        void *oldRef = isRereg ? &regInfo->_entry[refInput].refnumEntry : nullptr;
         void *pDataCopy = pData;
         if (!isRereg) {
             if (regRefType->IsRefnum()) {
@@ -799,13 +799,13 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
             } else {  // clusters and arrays make a deep copy of the data in case it changes
                 Int32 topSize = regRefType->TopAQSize();
                 pDataCopy = THREAD_TADM()->Malloc(topSize);
-                regRefType->InitData(pDataCopy, (TypeRef)NULL);
+                regRefType->InitData(pDataCopy, (TypeRef)nullptr);
                 regRefType->CopyData(pData, pDataCopy);
                 regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, pDataCopy, regRefType));
             }
         }
         LVError err = RegisterForEventsCore(qID, regInfo, refInput, regRefType, eSource, eventType,
-                                            pDataCopy, isRereg ? oldRef : null);
+                                            pDataCopy, isRereg ? oldRef : nullptr);
         if (err) {
             if (!isRereg && !regRefType->IsRefnum()) {
                 regRefType->ClearData(pDataCopy);
@@ -894,7 +894,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     OccurrenceCore &occ = eventInfo[eventStructIndex].eventOccurrence;
 
     for (Int32 regIndex = 0; regIndex < regRefCount; ++regIndex) {
-        DynamicEventRegInfo *regInfo = NULL;
+        DynamicEventRegInfo *regInfo = nullptr;
         if (eventRegRefnumPtr
             && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(eventRegRefnumPtr[regIndex].GetRefNum(), &regInfo) == kNIError_Success) {
             EventOracle::TheEventOracle().ObserveQueue(regInfo->_qID, &occ);
@@ -929,7 +929,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     // If regRefCount > 0 (cluster of reg refnums passed), find queue with earliest event timestamp
     Int32 dynIndex = 0;
     Int32 regRefIndex = EventOracle::TheEventOracle().GetPendingEventInfo(&eventQID, regRefCount, eventRegRefnumPtr, &dynIndex);
-    DynamicEventRegInfo *regInfo = NULL;
+    DynamicEventRegInfo *regInfo = nullptr;
     if (regRefIndex > 0 && eventRegRefnumPtr
         && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(eventRegRefnumPtr[regRefIndex-1].GetRefNum(), &regInfo) == kNIError_Success) {
         eventQID = regInfo->_qID;
@@ -940,7 +940,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     const EventData &eventData = EventOracle::TheEventOracle().GetEventData(eventQID);
 
     dynIndex += regInfo ? regInfo->DynamicEventMatch(eventData.common, eventRegRefnumPtr ?
-                            eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : NULL) : 0;
+                            eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : nullptr) : 0;
 
     for (Int32 inputTuple = 0; inputTuple < numTuples; ++inputTuple) {
         UInt32 eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
@@ -985,7 +985,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
 VIREO_FUNCTION_SIGNATURE2(IsNotAUserEventRefnum, RefNumVal, Boolean)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
-    void *userEventRef = NULL;
+    void *userEventRef = nullptr;
     if (!refnumPtr || UserEventRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success)
         _Param(1) = true;
     else
@@ -996,7 +996,7 @@ VIREO_FUNCTION_SIGNATURE2(IsNotAUserEventRefnum, RefNumVal, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsNotAnEventRegRefnum, RefNumVal, Boolean)
 {
     RefNumVal* eventRegRefnumPtr = _ParamPointer(0);
-    DynamicEventRegInfo *regInfo = NULL;
+    DynamicEventRegInfo *regInfo = nullptr;
     if (!eventRegRefnumPtr
         || EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(eventRegRefnumPtr->GetRefNum(), &regInfo) != kNIError_Success)
         _Param(1) = true;

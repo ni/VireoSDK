@@ -108,14 +108,14 @@ Boolean SubString::Compare(const Utf8Char* begin2, IntIndex length2, Boolean ign
     return true;
 }
 //------------------------------------------------------------
-// Compare to a null terminated C string
+// Compare to a nullptr terminated C string
 Boolean SubString::CompareCStr(ConstCStr begin2) const
 {
     const Utf8Char* sCompare = _begin;
     const Utf8Char* sEnd = _end;
     const Utf8Char* pBegin2 = (const Utf8Char*) begin2;
-    // The source string cannot have a null before it hit end
-    // So if a null is found in the supplied string first the test bails out false.
+    // The source string cannot have a nullptr before it hit end
+    // So if a nullptr is found in the supplied string first the test bails out false.
     while (sCompare < sEnd) {
         if (*sCompare++ != *pBegin2++)
             return false;
@@ -367,7 +367,7 @@ Boolean SubString::SplitString(SubString* beforeMatch, SubString* afterMatch, ch
             afterMatch->AliasAssign(it + 1, end);
         } else {
             // Definitely an empty string.
-            afterMatch->AliasAssign(null, null);
+            afterMatch->AliasAssign(nullptr, nullptr);
         }
     }
     return it < end;
@@ -417,7 +417,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 TempStackCString escapeTokenCString;
                 escapeTokenCString.Append(&escapeToken);
                 char* escapeCharPtr = escapeTokenCString.BeginCStr();
-                char* escapeCharEnd = null;
+                char* escapeCharEnd = nullptr;
                 int base = 0;
                 if ((*escapeCharPtr >= '0' && *escapeCharPtr <= '3') || *escapeCharPtr == 'o') {
                     base = 8;
@@ -566,7 +566,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
         SubString idToken(initialBegin, _begin);
 
         if (!suppressInfNaN) {
-            ConstCStr specialIEEEVals[] =  {"infinity", "-infinity", "inf", "-inf", "nan", NULL };
+            ConstCStr specialIEEEVals[] =  {"infinity", "-infinity", "inf", "-inf", "nan", nullptr };
             ConstCStr *specValPtr = specialIEEEVals;
             while (*specValPtr) {
                 if (idToken.ComparePrefixCStrIgnoreCase(*specValPtr)) {
@@ -641,7 +641,7 @@ TokenTraits SubString::ReadToken(SubString* token, Boolean suppressInfNaN /*=fal
     if (_begin > initialBegin) {
         token->AliasAssign(initialBegin, _begin);
     } else {
-        token->AliasAssign(null, null);
+        token->AliasAssign(nullptr, nullptr);
     }
     return tokenTraits;
 }
@@ -708,7 +708,7 @@ Boolean SubString::ReadNameToken(SubString* token)
         }
     }
     // Its not a name prefix, leave all as is
-    token->AliasAssign(null, null);
+    token->AliasAssign(nullptr, nullptr);
     return false;
 }
 //---------------------------------------------------
@@ -823,7 +823,7 @@ Boolean SubString::ReadIntDim(IntIndex *pValue)
     return false;
 }
 //------------------------------------------------------------
-Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
+Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=nullptr*/)
 {
     IntMax value = 0;
     IntMax sign = 1;
@@ -871,7 +871,7 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=null*/)
     return bNumberFound;
 }
 //------------------------------------------------------------
-Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/, Int32 *errCodePtr /*= null*/)
+Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/, Int32 *errCodePtr /*= nullptr*/)
 {
     // TODO(PaulAustin): not so pleased with the standard functions for parsing  numbers
     // many are not thread safe, none seem to be bound on how many characters they will read
@@ -879,7 +879,7 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     Double value;
     TempStackCString tempCStr(this);
     ConstCStr current = tempCStr.BeginCStr();
-    char* end = null;
+    char* end = nullptr;
     Int32 errCode = kLVError_NoError;
 
     value = strtod(current, (char**)&end);
@@ -1113,7 +1113,7 @@ void PercentCodecSubString::Init(const SubString &s, bool convert, bool alwaysAl
     _convertedStr[len] = 0;
 }
 //------------------------------------------------------------
-PercentCodecSubString::PercentCodecSubString(const SubString &s, bool convert, bool alwaysAlloc) : _convertedStr(null) {
+PercentCodecSubString::PercentCodecSubString(const SubString &s, bool convert, bool alwaysAlloc) : _convertedStr(nullptr) {
 }
 //------------------------------------------------------------
 Boolean PercentEncodedSubString::NeedsEncoding(Utf8Char c) {

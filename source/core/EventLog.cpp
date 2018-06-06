@@ -17,7 +17,7 @@ SDG
 namespace Vireo {
 
 //------------------------------------------------------------
-StringRef EventLog::DevNull = (StringRef) null;
+StringRef EventLog::DevNull = (StringRef) nullptr;
 StringRef EventLog::StdOut = (StringRef) 1;
 
 //------------------------------------------------------------

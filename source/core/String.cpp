@@ -158,8 +158,8 @@ VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
     StringRef stringIn = _Param(StringIn);
     StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : 0;
     IntIndex replacementStringLength = replacementString ? replacementString->Length() : 0;
-    StringRef resultString = _ParamPointer(ResultString) ? _Param(ResultString) : null;
-    StringRef replacedSubString = _ParamPointer(ReplacedSubString) ? _Param(ReplacedSubString) : null;
+    StringRef resultString = _ParamPointer(ResultString) ? _Param(ResultString) : nullptr;
+    StringRef replacedSubString = _ParamPointer(ReplacedSubString) ? _Param(ReplacedSubString) : nullptr;
     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
     IntIndex length =  _ParamPointer(Length) ? _Param(Length) : replacementStringLength;
     IntIndex stringInLength =  stringIn->Length();
@@ -170,7 +170,7 @@ VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
     // Replace substring only if the offset is not past the end of the string
     if ((offset >= 0) && (offset <= stringInLength)) {
         VIREO_ASSERT(stringIn != resultString && stringIn != replacedSubString);
-        VIREO_ASSERT(replacementString == null || (replacementString != resultString && replacementString != replacedSubString));
+        VIREO_ASSERT(replacementString == nullptr || (replacementString != resultString && replacementString != replacedSubString));
 
         Int32 resultLength = stringInLength + (replacementStringLength - length);
 
@@ -216,10 +216,10 @@ struct SearchAndReplaceStringStruct : public InstructionCore
 
 VIREO_FUNCTION_SIGNATURET(SearchAndReplaceString, SearchAndReplaceStringStruct)
 {
-    StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : null;
+    StringRef stringOut = _ParamPointer(StringOut) ? _Param(StringOut) : nullptr;
     StringRef stringIn = _Param(StringIn);
     StringRef searchString = _Param(SearchString);
-    StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : null;
+    StringRef replacementString = _ParamPointer(ReplacementString) ? _Param(ReplacementString) : nullptr;
     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
     IntIndex numOfReplacements = 0;
     Boolean replaceAll = _ParamPointer(ReplaceAll) ? _Param(ReplaceAll) : false;
@@ -227,7 +227,7 @@ VIREO_FUNCTION_SIGNATURET(SearchAndReplaceString, SearchAndReplaceStringStruct)
 
     VIREO_ASSERT(stringIn != stringOut);
     VIREO_ASSERT(searchString != stringOut);
-    VIREO_ASSERT(replacementString == null || replacementString != stringOut);
+    VIREO_ASSERT(replacementString == nullptr || replacementString != stringOut);
 
     SubString stringInSubString = stringIn->MakeSubStringAlias();
     SubString searchStringSubString = searchString->MakeSubStringAlias();
@@ -302,8 +302,8 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
     StringRef stringIn = _Param(StringIn);
     StringRef searchString = _Param(SearchString);
     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
-    StringRef beforeMatchString = _ParamPointer(BeforeMatchString) ? _Param(BeforeMatchString) : null;
-    StringRef matchPlusRestString = _ParamPointer(MatchPlusRestString) ? _Param(MatchPlusRestString) : null;
+    StringRef beforeMatchString = _ParamPointer(BeforeMatchString) ? _Param(BeforeMatchString) : nullptr;
+    StringRef matchPlusRestString = _ParamPointer(MatchPlusRestString) ? _Param(MatchPlusRestString) : nullptr;
     IntIndex matchOffset;
 
     VIREO_ASSERT(stringIn != matchPlusRestString);
@@ -603,7 +603,7 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
     Boolean found = false;
     IntIndex leading = 0;
     IntIndex trailing = 0;
-    const Utf8Char* spacePos = null;
+    const Utf8Char* spacePos = nullptr;
     Boolean last = false;
     while (pSourceChar < ss.End()) {
         IntIndex bytes = ss.CharLength(pSourceChar);
@@ -614,7 +614,7 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
             } else {
                 found = true;
                 if (ss.IsSpaceChar(c)) {
-                    if (spacePos == null || !last) {
+                    if (spacePos == nullptr || !last) {
                         spacePos = pSourceChar;
                     }
                     last = true;

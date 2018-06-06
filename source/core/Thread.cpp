@@ -48,7 +48,7 @@ Mutex::Mutex()
 #if (kVireoOS_windows)
 
     HANDLE hdl;
-    hdl = ::CreateMutex(NULL, false, NULL);
+    hdl = ::CreateMutex(nullptr, false, nullptr);
     _nativeMutex = reinterpret_cast<void*>(hdl);
 
 #elif (kVireoOS_linuxU || kVireoOS_macosxU)Ï

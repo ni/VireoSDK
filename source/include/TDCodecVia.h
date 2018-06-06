@@ -112,10 +112,10 @@ class TDViaParser
     void    RepinLineNumberBase();
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase,
-                SubString* format = null, Boolean jsonLVExt = false, Boolean strictJSON = false,
+                SubString* format = nullptr, Boolean jsonLVExt = false, Boolean strictJSON = false,
                 Boolean quoteInfNaN = false, Boolean allowJSONNulls = false);
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
-    TypeRef ParseType(TypeRef patternType = null);
+    TypeRef ParseType(TypeRef patternType = nullptr);
     TypeRef ParseLiteral(TypeRef patternType);
     Int32   ParseData(TypeRef type, void* pData);
     Boolean EatJSONPath(SubString* path);
@@ -151,7 +151,7 @@ class TDViaParser
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
     TypeRef ParseRefNumType();
-    TypeRef ParseControlReference(void *pData = null);
+    TypeRef ParseControlReference(void *pData = nullptr);
     TypeRef ParseEnumType(SubString *token);
     EncodingEnum ParseEncoding(SubString* str);
 };
@@ -177,7 +177,7 @@ class TDViaFormatter
 
     static const Int32 kTempFormattingBufferSize = 100;
  public:
-    TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = null,
+    TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth = 0, SubString* format = nullptr,
                    JSONEncodingEnum encoding = kJSONEncodingRegular);
     // Type formatters
     void    FormatType(TypeRef type);

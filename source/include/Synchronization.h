@@ -49,7 +49,7 @@ class ObservableCore
     Observer* _observerList;
 
  public:
-    ObservableCore() : _observerList(NULL) { }
+    ObservableCore() : _observerList(nullptr) { }
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);
     void ObserveStateChange(IntMax info, Boolean wakeAll);
@@ -78,8 +78,8 @@ const Int32 kMaxExecWakeUpTime = 200;  // (milliseconds) TODO spathiwa - increas
 class Timer : public ObservableCore
 {
  public:
-    Boolean AnythingWaiting()                   { return _observerList != null; }
-    IntMax NextWakeUpTime()                     { return _observerList != null ? _observerList->_info : 0; }
+    Boolean AnythingWaiting()                   { return _observerList != nullptr; }
+    IntMax NextWakeUpTime()                     { return _observerList != nullptr ? _observerList->_info : 0; }
     void QuickCheckTimers(PlatformTickType t)   { if (_observerList) { CheckTimers(t); } }
     void CheckTimers(PlatformTickType t);
     void InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount);

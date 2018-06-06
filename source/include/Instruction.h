@@ -47,7 +47,7 @@ struct InstructionCore
     InstructionFunction  _function;
 };
 
-// A non-null faked allocation for two pass packed instruction
+// A non-nullptr faked allocation for two pass packed instruction
 // allocation. Used in pass 1.
 #define kFakedInstruction ((InstructionCore*) 1)
 

@@ -40,7 +40,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
             IntIndex* dimLengths = pArray->DimensionLengths();
             Int32 rank = pArray->Rank();
 
-            if (pArray == null)
+            if (pArray == nullptr)
                 return kNIError_kResourceNotFound;
 
             TypeRef elementType = type->GetSubElement(0);
@@ -117,7 +117,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
     switch (encoding) {
         case kEncoding_Array:
         {
-            TypedArrayCoreRef pArray = pData ? *(TypedArrayCoreRef*) pData : null;
+            TypedArrayCoreRef pArray = pData ? *(TypedArrayCoreRef*) pData : nullptr;
             TypeRef elementType = type->GetSubElement(0);
             Int32 arrayLength;
 
@@ -169,7 +169,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                         return -1;
                 }
             } else {
-                // pData is null, so call UnflattenData recursing on elements of pDefaultData.
+                // pData is nullptr, so call UnflattenData recursing on elements of pDefaultData.
                 // Arrays contained in other data structures always include
                 // length information.
                 TypedArrayCoreRef pDefaultArray = *(TypedArrayCoreRef *) pDefaultData;
@@ -178,7 +178,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 AQBlock1 *pElementData = pDefaultArray->BeginAt(0);
 
                 for (; pElementData < pEnd; pElementData += elementLength) {
-                    stringIndex = UnflattenData(pBuffer, true, stringIndex, pElementData, elementType, null);
+                    stringIndex = UnflattenData(pBuffer, true, stringIndex, pElementData, elementType, nullptr);
                     if (stringIndex == -1)
                         return -1;
                 }
@@ -194,7 +194,7 @@ IntIndex UnflattenData(SubBinaryBuffer *pBuffer, Boolean prependArrayLength, Int
                 // prependArrayLength set to true.
                 TypeRef elementType = type->GetSubElement(j);
                 IntIndex offset = elementType->ElementOffset();
-                AQBlock1* pElementData = pData ? (AQBlock1*)pData + offset : null;
+                AQBlock1* pElementData = pData ? (AQBlock1*)pData + offset : nullptr;
 
                 stringIndex = UnflattenData(pBuffer, true, stringIndex, pDefaultData, elementType, pElementData);
                 if (stringIndex == -1)
@@ -227,7 +227,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
     Boolean prependArrayLength = _ParamPointer(1) ? _Param(1) : true;
     TypeRef type = _ParamPointer(2);
     void *pDefaultData = _ParamPointer(3);
-    StringRef pRemainder = _ParamPointer(4) ? _Param(4) : null;
+    StringRef pRemainder = _ParamPointer(4) ? _Param(4) : nullptr;
     void *pData  = _ParamPointer(5);
     Boolean error;
 

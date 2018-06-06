@@ -34,7 +34,7 @@ VIREO_EXPORT Int32 Vireo_MaxExecWakeUpTime()
 }
 
 //------------------------------------------------------------
-//! Create a new shell with a designated parent, or null for a new root.
+//! Create a new shell with a designated parent, or nullptr for a new root.
 VIREO_EXPORT void* EggShell_Create(TypeManagerRef parent)
 {
     return TypeManager::New(parent);
@@ -65,7 +65,7 @@ VIREO_EXPORT TypeRef EggShell_GetTypeList(TypeManagerRef tm)
 //! Delete a shell and all the types it owns.
 VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm)
 {
-    if (tm != null)
+    if (tm != nullptr)
         tm->Delete();
 }
 //------------------------------------------------------------
@@ -74,12 +74,12 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm,
 {
     memset(buffer, 0, bufferSize);
 
-    void *pData = null;
+    void *pData = nullptr;
 
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null)
+    if (actualType == nullptr)
         return -1;
 
     TypeManagerScope scope(tm);
@@ -98,19 +98,19 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm,
 VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
         const char* viName, const char* eltName, Int32 bufferSize, char* buffer)
 {
-    void *pData = null;
+    void *pData = nullptr;
 
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null)
+    if (actualType == nullptr)
         return -1;
 
     TypeManagerScope scope(tm);
     SubBinaryBuffer subBuffer(reinterpret_cast<UInt8*>(buffer), reinterpret_cast<UInt8*>(buffer)+bufferSize);
 
     // Write unflattened data to the element
-    if (UnflattenData(&subBuffer, true, 0, null, actualType, pData) == -1) {
+    if (UnflattenData(&subBuffer, true, 0, nullptr, actualType, pData) == -1) {
         return -1;
     } else {
         return bufferSize;
@@ -120,12 +120,12 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
 //! Write a numeric value to a symbol. Value will be coerced as needed.
 VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d)
 {
-    void *pData = null;
+    void *pData = nullptr;
 
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null)
+    if (actualType == nullptr)
         return;
 
     WriteDoubleToMemory(actualType, pData, d);
@@ -134,11 +134,11 @@ VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, co
 //! Read a numeric value from a symbol. Value will be coerced as needed.
 VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName)
 {
-    void *pData = null;
+    void *pData = nullptr;
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null)
+    if (actualType == nullptr)
         return -1;
 
     return ReadDoubleFromMemory(actualType, pData);
@@ -150,14 +150,14 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
 {
     TypeManagerScope scope(tm);
 
-    void *pData = null;
+    void *pData = nullptr;
 
     SubString objectName(viName);
     SubString path(eltName);
     SubString valueString(value);
 
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null)
+    if (actualType == nullptr)
         return;
 
     EventLog log(EventLog::DevNull);
@@ -171,16 +171,16 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
         const char* viName, const char* eltName, const char* format)
 {
     TypeManagerScope scope(tm);
-    void *pData = null;
+    void *pData = nullptr;
 
     SubString objectName(viName);
     SubString path(eltName);
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null)
-        return null;
+    if (actualType == nullptr)
+        return nullptr;
 
-    static StringRef returnBuffer = null;
-    if (returnBuffer == null) {
+    static StringRef returnBuffer = nullptr;
+    if (returnBuffer == nullptr) {
         // Allocate a string the first time it is used.
         // After that it will be resized as needed.
         STACK_VAR(String, tempReturn);
@@ -193,7 +193,7 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
         SubString formatss(format);
         TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
         formatter.FormatData(actualType, pData);
-        // Add an explicit null terminator so it looks like a C string.
+        // Add an explicit nullptr terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*) returnBuffer->Begin();
     }
@@ -208,7 +208,7 @@ void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString ar
 unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
 {
     if (arrayObject->GetLength(0) <= 0) {
-        return null;
+        return nullptr;
     } else {
         return arrayObject->BeginAt(0);
     }
@@ -219,10 +219,10 @@ VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm, const char* v
 {
     SubString objectName(viName);
     SubString path(elementName);
-    void *pData = null;
+    void *pData = nullptr;
 
     TypeRef objectType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (objectType == null)
+    if (objectType == nullptr)
         return kEggShellResult_ObjectNotFoundAtPath;
 
     if (objectType->IsArray()) {
@@ -245,10 +245,10 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 {
     SubString objectName(viName);
     SubString path(eltName);
-    void *pData = null;
+    void *pData = nullptr;
 
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null || !actualType->IsArray())
+    if (actualType == nullptr || !actualType->IsArray())
         return -1;
 
     TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
@@ -261,10 +261,10 @@ VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, c
 {
     SubString objectName(viName);
     SubString path(eltName);
-    void *pData = null;
+    void *pData = nullptr;
 
     TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == null || !actualType->IsArray()) {
+    if (actualType == nullptr || !actualType->IsArray()) {
         return kLVError_ArgError;
     }
 
@@ -294,18 +294,18 @@ VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef ty
 }
 //------------------------------------------------------------
 //! Get information about an Array such as the type of its subtype, the array rank,
-//! and the memory location of the first element (or null if there are zero elements)
+//! and the memory location of the first element (or nullptr if there are zero elements)
 VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
         TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
 {
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     TypeManagerScope scope(tm);
 
-    if (arrayTypeName == null || arrayRank == null || arrayBegin == null)
+    if (arrayTypeName == nullptr || arrayRank == nullptr || arrayBegin == nullptr)
         return kEggShellResult_InvalidResultPointer;
 
-    static StringRef arrayTypeNameBuffer = null;
-    if (arrayTypeNameBuffer == null) {
+    static StringRef arrayTypeNameBuffer = nullptr;
+    if (arrayTypeNameBuffer == nullptr) {
         // Allocate a string the first time it is used.
         // After that it will be resized as needed.
         STACK_VAR(String, tempReturn);
@@ -314,7 +314,7 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
         arrayTypeNameBuffer->Resize1D(0);
     }
 
-    if (arrayTypeNameBuffer == null) {
+    if (arrayTypeNameBuffer == nullptr) {
         return kEggShellResult_UnableToCreateReturnBuffer;
     }
 
