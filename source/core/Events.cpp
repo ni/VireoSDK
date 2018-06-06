@@ -218,7 +218,8 @@ void EventOracle::OccurEvent(EventOracleIndex eventOracleIdx, const EventData &e
             EventRegQueueIDList::iterator rqIter = eRegIter->_qIDList.begin(), rqIterEnd = eRegIter->_qIDList.end();
             RefNum ref = eData.common.eventRef.GetRefNum();
             while (rqIter != rqIterEnd) {
-                if (rqIter->_ref == ref)
+                RefNum rRef = rqIter->_ref;
+                if (rRef == ref)
                     _qObject[rqIter->_qID].OccurEvent(eData);
                 ++rqIter;
             }
@@ -417,7 +418,7 @@ class DynamicEventRegInfo {
             ++*dynIndexBase;  // the whole cluster counts as one, matching the rules for unbundler recursive indexes
             for (Int32 j = 0; j < numElts; ++j) {
                 TypeRef eltType = regRefType->GetSubElement(j);
-                eltPtr += eltType->ElementOffset();
+                eltPtr = refClustPtr + eltType->ElementOffset();
                 if ((dynIndex = DynamicEventMatchCore(eltType, eltPtr, refnum, dynIndexBase)))
                     break;
                 ++*dynIndexBase;
@@ -692,9 +693,9 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
         Int32 numElts = refType->SubElementCount();
         for (Int32 j = 0; j < numElts; ++j) {
             TypeRef eltType = refType->GetSubElement(j);
-            eltPtr += eltType->ElementOffset();
-            if (oldEltPtr)
-                oldEltPtr += eltType->ElementOffset();
+            eltPtr = refClustPtr + eltType->ElementOffset();
+            if (pOldData)
+                oldEltPtr = (AQBlock1*)pOldData + eltType->ElementOffset();
             // Recurse to handle subelements
             if ((err = RegisterForEventsCore(qID, regInfo, refInput, eltType, eSource, eventType, eltPtr, oldEltPtr)))
                 break;
@@ -901,10 +902,9 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
         }
     }
 
-    AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin();
     TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
     Int32 esCount = eventSpecType->SubElementCount();
-    eventSpecClustPtr += eventSpecType->ElementOffset();
+    AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
     EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
     {
         Int32 &staticCount = eventInfo[eventStructIndex].setCount;
