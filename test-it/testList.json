@@ -65,6 +65,7 @@
                 "UserEventsMultiple.via",
                 "UserEventsMultUEMultES.via",
                 "UserEventsRegClust.via",
+                "UserEventsRegClustBug1.via",
                 "UserEventsReregister.via",
                 "UserEventsThroughput.via",
                 "UserEventsPoly.via"
