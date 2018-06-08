@@ -16,9 +16,7 @@ define(UserEventTestProgram dv(.VirtualInstrument (
            e(dv(UInt32 0) controlUID)  // for static control refs
            e(dv(UInt32 1) dynIndex)    // non-zero = dynamically registered, index into event reg ref
        ))
-       e(dv(c(  // Event spec 1 (more compact equivalent representation)
-            e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)) (0 1 0 0)
-       ))
+       e(dv(.EventSpec (0 /*App*/ 1 /*Timeout*/ 0 /*no control*/ 0 /*not dynamic*/))) // more compact representation
        // TODO - should we make .EventSpec a built-in type so we don't have to generate the type each time?
      )) // End Event Struct 1
      //e(c( // Event Struct 2
