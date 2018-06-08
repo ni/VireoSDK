@@ -1011,6 +1011,9 @@ VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean);
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Events)
 
+    // EventSpec used for event structure configuration
+    DEFINE_VIREO_TYPE(EventSpec, "c(e(UInt32 eventSource)e(UInt32 eventType)e(UInt32 controlUID)e(UInt32 dynIndex)");
+
     // User Events
     DEFINE_VIREO_TYPE(UserEventRefNum, "refnum($0)")
     DEFINE_VIREO_FUNCTION_CUSTOM(CreateUserEvent, UserEventRef_Create, "p(o(UserEventRefNum ue) io(ErrorCluster err))")
