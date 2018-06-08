@@ -81,6 +81,7 @@
         publicAPI.javaScriptInvoke = {};
 
         // Private Instance Variables (per vireo instance)
+        var internalFunctionsMap = new Map();
         var JavaScriptInvoke_GetParameterType = Module.cwrap('JavaScriptInvoke_GetParameterType', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetParameterPointer = Module.cwrap('JavaScriptInvoke_GetParameterPointer', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetArrayElementType = Module.cwrap('JavaScriptInvoke_GetArrayElementType', 'number', ['number']);
@@ -214,13 +215,13 @@
                     return value instanceof Float64Array;
                 }
             },
-			ObjectRefNum: {
+            ObjectRefNum: {
                 reader: Module.eggShell.dataReadObjectRefNum,
                 writer: Module.eggShell.dataWriteObjectRefNum,
                 isValidReturnType: function (value) {
                     return typeof value === 'object';
                 }
-            },
+            }
         };
 
         var createJavaScriptParametersArray = function (parametersPointer, parametersCount) {
@@ -234,7 +235,7 @@
 
                 var parameterValue = undefined;
                 var readFunction = typeFunctions[typeName].reader;
-                if (readFunction === undefined) {					
+                if (readFunction === undefined) {
                     throw new Error(' Unsupported type for parameter with index = ' + index);
                 } else {
                     parameterValue = readFunction(parameterPointer);
@@ -246,7 +247,13 @@
             return parameters;
         };
 
-        var findJavaScriptFunctionToCall = function (functionName) {
+        var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
+            if (isInternalFunction) {
+                return {
+                    functionToCall: internalFunctionsMap.get(functionName),
+                    context: undefined
+                };
+            }
             var names = functionName.split('.');
             var jsSelfScope = typeof self !== 'undefined' ? self : {};
             var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
@@ -294,7 +301,7 @@
             (returnTypeName === 'boolean') ||
             (returnTypeName === 'string') ||
             (returnTypeName === 'undefined') ||
-			(returnTypeName === 'object') ||
+            (returnTypeName === 'object') ||
             (isTypedArray(returnValue));
         };
 
@@ -405,13 +412,22 @@
             return api;
         };
 
+        publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
+            Object.keys(functionsToAdd).forEach(function (name) {
+                if (internalFunctionsMap.has(name)) {
+                    throw new Error('Private function already registered for name:' + name);
+                }
+                internalFunctionsMap.set(name, functionsToAdd[name]);
+            });
+        };
+
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
             occurrencePointer,
             functionNamePointer,
             returnPointer,
             parametersPointer,
             parametersCount,
-            errorCheckingEnabled,
+            isInternalFunction,
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
@@ -432,7 +448,7 @@
                 return;
             }
 
-            var functionAndContext = findJavaScriptFunctionToCall(functionName);
+            var functionAndContext = findJavaScriptFunctionToCall(functionName, isInternalFunction);
             var functionToCall = functionAndContext.functionToCall;
             var context = functionAndContext.context;
             if (functionToCall === undefined) {

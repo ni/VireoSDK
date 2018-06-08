@@ -24,8 +24,7 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    // Parameters: occurrence, functionName, returnValue, parameters*, parametersCount, errorCheckingEnabled, errorStatus*, errorCode*, errorSource*
-    // Remark : errorCheckingEnabled is currently unused. It was added to support an optional error checking feature just like the SLI does.
+    // Parameters: occurrence, functionName, returnValue, parameters*, parametersCount, isInternalFunction, errorStatus*, errorCode*, errorSource*
     extern void jsJavaScriptInvoke(OccurrenceRef, StringRef, void *, void *, Int32, Boolean, Boolean *, Int32 *, StringRef);
 }
 #endif
@@ -101,11 +100,11 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *param
 }
 
 //------------------------------------------------------------
-// arguments: occurrence, errorCheckingEnabled, errorCluster, functionName, returnValue, then variable number of inputs that can be null or any type
+// arguments: occurrence, isInternalFunction, errorCluster, functionName, returnValue, then variable number of inputs that can be null or any type
 struct JavaScriptInvokeParamBlock : public VarArgInstruction
 {
     _ParamDef(OccurrenceRef, occurrence);
-    _ParamDef(Boolean, errorCheckingEnabled);
+    _ParamDef(Boolean, isInternalFunction);
     _ParamDef(ErrorCluster, errorCluster);
     _ParamDef(StringRef, functionName);
     _ParamImmediateDef(StaticTypeAndData, returnValue[1]);
@@ -127,8 +126,8 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
         StringRef functionName = _Param(functionName);
-        Boolean errorCheckingEnabled = _Param(errorCheckingEnabled);
-        const Int32 configurationParameters = 4;  // occurrence, errorCheckingEnabled, errorCluster and functionName
+        Boolean isInternalFunction = _Param(isInternalFunction);
+        const Int32 configurationParameters = 4;  // occurrence, isInternalFunction, errorCluster and functionName
         const Int32 staticTypeAndDataParameters = 2;  // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
         Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
         StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
@@ -143,7 +142,7 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
                 returnValuePtr,
                 parametersPtr,
                 userParametersCount,
-                errorCheckingEnabled,
+                isInternalFunction,
                 &errorClusterPtr->status,
                 &errorClusterPtr->code,
                 errorClusterPtr->source);
@@ -166,7 +165,7 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(JavaScriptInvoke)
     DEFINE_VIREO_REQUIRE(Synchronization)
-    DEFINE_VIREO_FUNCTION(JavaScriptInvoke, "p(i(VarArgCount argumentCount) i(Occurrence occurrence) i(Boolean errorCheckingEnabled)"
+    DEFINE_VIREO_FUNCTION(JavaScriptInvoke, "p(i(VarArgCount argumentCount) i(Occurrence occurrence) i(Boolean isInternalFunction)"
         "io(ErrorCluster errorCluster) i(String functionName) o(StaticTypeAndData returnValue) io(StaticTypeAndData functionParameters))")
 DEFINE_VIREO_END()
 
