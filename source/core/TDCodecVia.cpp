@@ -1626,7 +1626,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
             break;
         } else {
             // Read its arguments.
-            tokenFound = _string.ReadSubexpressionToken(&token) != TokenTraits_Unrecognized;
+            tokenFound = (_string.ReadSubexpressionToken(&token) != TokenTraits_Unrecognized);
         }
     } while (tokenFound);
 }
@@ -2692,7 +2692,7 @@ VIREO_FUNCTION_SIGNATURE6(ExponentialStringToNumber, StringRef, Int32, void, Int
             if (type->BitEncoding() == kEncoding_IEEE754Binary) {
                 WriteDoubleToMemory(type, pData, parsedValue);
             } else {
-                Int64 value = parsedValue;
+                Int64 value = Int64(parsedValue);
                 SaturateValue(type, &value, true);
                 WriteIntToMemory(type, pData, value);
             }

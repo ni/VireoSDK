@@ -184,7 +184,7 @@ class EventOracle {
         return _qObject[qID].DoneProcessingEvent();
     }
     void DeleteEventQueue(EventQueueID qID) {  // marks unallocated
-        if (qID < _qObject.size())
+        if (UInt32(qID) < _qObject.size())
             _qObject[qID].DeleteQueue();
     }
     Int32 GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, RefNumVal *dynRegRefs, Int32 *dynIndexBase);
@@ -207,7 +207,7 @@ EventOracle EventOracle::_s_singleton;
 
 // OccurEvent -- broadcast an event to all registered event queues
 void EventOracle::OccurEvent(EventOracleIndex eventOracleIdx, const EventData &eData) {
-    if (eventOracleIdx < _eventReg.size()) {
+    if (UInt32(eventOracleIdx) < _eventReg.size()) {
         EventRegList &eRegList = _eventReg[eventOracleIdx]._eRegList;
         EventRegList::iterator eRegIter = eRegList.begin(), eRegIterEnd = eRegList.end();
         while (eRegIter != eRegIterEnd && (eRegIter->_eventSource != eData.common.eventSource
@@ -283,7 +283,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
     EventOracleIndex eventOracleIndex = kNotAnEventOracleIdx;
     if (oracleIdxPtr)
         *oracleIdxPtr = eventOracleIndex;
-    if (qID >= _qObject.size()) {
+    if (UInt32(qID) >= _qObject.size()) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents with invalid QueueiD");
         return false;
     }
@@ -303,7 +303,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
     }
     if (eventOracleIndex == kNotAnEventOracleIdx) {  // no eventOracleIndex, allocate a new one
         size_t size = _eventReg.size(), idx = kAppEventOracleIdx+1;
-        while (eventOracleIndex < size && !_eventReg[eventOracleIndex]._eRegList.empty()) {
+        while (UInt32(eventOracleIndex) < size && !_eventReg[eventOracleIndex]._eRegList.empty()) {
             ++eventOracleIndex;
         }
         if (idx < size) {  // we found an unused index
@@ -943,7 +943,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                             eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : nullptr) : 0;
 
     for (Int32 inputTuple = 0; inputTuple < numTuples; ++inputTuple) {
-        IntIndex eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
+        UInt32 eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
         if (eventSpecIndex >= esCount) {
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Invalid Event Spec Index");
             return THREAD_EXEC()->Stop();
