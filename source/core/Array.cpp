@@ -1779,7 +1779,7 @@ VIREO_FUNCTION_SIGNATURE3(BooleanArrayToNumber, TypedArrayCoreRef, StaticType, v
     if (arrayLength > numBits)
         arrayLength = numBits;
     while (i < arrayLength) {
-        lastBit = *eltPointer++ != 0;
+        lastBit = (*eltPointer++ != 0);
         if (lastBit)
             number |= bitMask;
         bitMask <<= 1;
