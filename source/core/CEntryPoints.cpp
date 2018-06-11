@@ -396,7 +396,7 @@ VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
 {
-    *destination = value != 0;
+    *destination = (value != 0);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void Data_WriteInt8(Int8* destination, Int32 value)

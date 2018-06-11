@@ -508,7 +508,7 @@ VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
         _Param(1) = false;
     } else {
         Utf8Char c = str->Begin()[0];
-        _Param(1) = isprint(c) != 0;
+        _Param(1) = (isprint(c) != 0);
     }
     return _NextInstruction();
 }
