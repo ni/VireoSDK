@@ -722,7 +722,7 @@ static bool GetMinimumArrayDimensions(std::vector<TypedArrayCoreRef> arrays,
     IntIndex *array0Lengths = arrays[0]->DimensionLengths();
     for (int i = 0; i < array0Rank; i++) {
         IntIndex dimension0 = *(array0Lengths + i);
-        for (int j = 1; j < arrayCount; j++) {
+        for (int j = 1; j < UInt32(arrayCount); j++) {
             IntIndex *arrayLengths = arrays[j]->DimensionLengths();
             IntIndex dimension = *(arrayLengths + i);
             if (dimension0 != dimension)

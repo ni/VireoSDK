@@ -386,7 +386,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
             str[0] = c1;
             str[1] = c2;
             str[2] = 0;
-            char ascii = strtol(str, nullptr, 16);
+            char ascii = static_cast<char>(strtol(str, nullptr, 16));
             buffer->Append(ascii);
         } else if (c == '\\' && f.ReadRawChar(&c)) {
             switch (c) {
@@ -488,7 +488,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             if (tempDouble < 0) {
                             absDouble = 0.0 - tempDouble;
                             }
-                            exponent = static_cast<Int32>(floor(log10(absDouble)));
+                            exponent = Int32(floor(log10(absDouble)));
                         }
                         if (fOptions.Significant >= 0) {
                             precision = fOptions.Significant-1;
@@ -525,7 +525,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 if (tempDouble < 0) {
                                     absDouble = 0.0 - tempDouble;
                                 }
-                                exponent = floor(log10(absDouble));
+                                exponent = Int32(floor(log10(absDouble)));
                             }
                             // 0.12 has 1 leading zero
                             leadingZero = (exponent >= 0)? 0 : (0 - exponent);
@@ -571,7 +571,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                                 if (tempDouble < 0) {
                                     absDouble = 0.0 - tempDouble;
                                 }
-                                exponent = floor(log10(absDouble));
+                                exponent = Int32(floor(log10(absDouble)));
                             }
                             if (exponent%3 != 0) {
                                 precision = (exponent >= 0)? precision + exponent%3 : precision + 3+exponent%3;
@@ -1315,7 +1315,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
         case 'B':
         case 'o': {
                 intValue = ScanIntBaseValues(formatChar, beginPointer, endPointer);
-                doubleValue = static_cast<Double>(intValue);
+                doubleValue = Double(intValue);
             }
             break;
         case 'f':
@@ -1349,7 +1349,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
             break;
         default: {
                 intValue = strtoll(beginPointer, endPointer, 10);
-                doubleValue = static_cast<Double>(intValue);
+                doubleValue = Double(intValue);
             }
             break;
     }

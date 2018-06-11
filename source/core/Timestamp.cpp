@@ -121,11 +121,11 @@ namespace Vireo
             Double wholeSeconds = floor(seconds);
             _integer = (Int64)wholeSeconds;
             // Conceptually is 2^65 * fractional part though the double will only have ~15 digits
-            _fraction = (UInt64) (18446744073709551616.0 * (seconds - wholeSeconds));
+            _fraction = (UInt64)(18446744073709551616.0 * (seconds - wholeSeconds));
         } else {
             Double wholeSeconds = ceil(seconds);
             _integer = (Int64)wholeSeconds;
-            _fraction = (UInt64) (18446744073709551616.0 * (seconds - wholeSeconds));
+            _fraction = (UInt64)(18446744073709551616.0 * (seconds - wholeSeconds));
         }
     }
     //------------------------------------------------------------
@@ -139,7 +139,7 @@ namespace Vireo
         time_t t = _mkgmtime(&timeVal);
     #endif
     #endif
-        *this = Timestamp((Double)t + kStdDT1970re1904, fracSecs * 18446744073709551616.0);
+        *this = Timestamp((Double)t + kStdDT1970re1904 + fracSecs);
     }
     //------------------------------------------------------------
     Double Timestamp::ToDouble() const {

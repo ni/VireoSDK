@@ -75,7 +75,7 @@ class PlatformTimer {
  public:
     PlatformTickType TickCount();
     PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
-    PlatformTickType SecondsToTickCount(Double seconds);
+    PlatformTickType SecondsToTickCount(Int64 seconds);
     Int64 TickCountToMilliseconds(PlatformTickType);
     Int64 TickCountToMicroseconds(PlatformTickType);
     PlatformTickType MillisecondsFromNowToTickCount(Int64 milliseconds);

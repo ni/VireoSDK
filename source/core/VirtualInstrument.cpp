@@ -696,7 +696,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
     // it should point to nullptr when checked if not yet resolved.
     _argPatches.push_back(_argCount);
     ++_argPatchCount;
-    if (_patchInfos.size() <= _patchInfoCount)
+    if (_patchInfos.size() <= UInt32(_patchInfoCount))
         _patchInfos.resize(_patchInfoCount+kClumpStateIncrementSize);
     PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
     pPatch->_patchType = patchType;
@@ -730,7 +730,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     IntMax perchIndex;
     if (perchToken->ReadInt(&perchIndex)) {
         if (perchIndex >= _perches.size())
-            _perches.resize(perchIndex + kClumpStateIncrementSize);
+            _perches.resize(UInt32(perchIndex + kClumpStateIncrementSize));
         if (_perches[perchIndex] < kPerchUndefined) {
             LogEvent(EventLog::kSoftDataError, 0, "Perch '%d' duplicated in clump", perchIndex);
         }

@@ -516,7 +516,7 @@ VIREO_FUNCTION_SIGNATURE2(IsPrintable, StringRef, Boolean)
 VIREO_FUNCTION_SIGNATURE2(IsPrintableInt, Int32, Boolean)
 {
     Utf8Char c = _Param(0);
-    _Param(1) = isprint(c) != 0;
+    _Param(1) = (isprint(c) != 0);
     return _NextInstruction();
 }
 

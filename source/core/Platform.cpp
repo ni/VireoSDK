@@ -444,9 +444,9 @@ PlatformTickType PlatformTimer::MillisecondsFromNowToTickCount(Int64 millisecond
     return TickCount() + MicrosecondsToTickCount(millisecondCount * 1000);
 }
 //------------------------------------------------------------
-PlatformTickType PlatformTimer::SecondsToTickCount(Double seconds)
+PlatformTickType PlatformTimer::SecondsToTickCount(Int64 seconds)
 {
-    return MicrosecondsToTickCount(seconds * 1000000.0);
+    return MicrosecondsToTickCount(seconds * 1000000);
 }
 //------------------------------------------------------------
 PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
