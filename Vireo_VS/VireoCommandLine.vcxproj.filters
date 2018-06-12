@@ -112,9 +112,6 @@
     <ClCompile Include="..\source\io\HttpClient.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\io\WebSocketClient.cpp">
-      <Filter>VireoSource\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\core\Date.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -142,9 +139,6 @@
       <Filter>VireoSource\IO</Filter>
     </None>
     <None Include="..\source\io\library_httpClient.js">
-      <Filter>VireoSource\IO</Filter>
-    </None>
-    <None Include="..\source\io\library_webSocketClient.js">
       <Filter>VireoSource\IO</Filter>
     </None>
     <None Include="..\source\io\library_javaScriptInvoke.js">

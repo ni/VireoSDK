@@ -34,7 +34,6 @@
                                 <li><a id="PiSample">π calculator</a></li>
                                 <li><a id="TicTockSample">TicTock</a></li>
                                 <li><a id="SineWaveSample">SineWave</a></li>
-                                <li><a id="WebSocketTest">WebSocket</a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
@@ -54,59 +53,10 @@
                     </div>
 <pre id="VireoSource" style="height:500px">
 define(HelloWorld dv(.VirtualInstrument (
-    Locals:
-    c(
-        e(dv(.String 'ws://echo.websocket.org') url)
-        e(.String protocol)
-        e(.UInt32 connection)
-        e(.UInt32 connection2)
-        e(.String errorVal)
-        e(.Int32 errorNum)
-        e(dv(.String 'we did it!') response)
-        e(dv(.String 'we did it!') message)
-        e(dv(.UInt32 1000)  oneHundred)
-        e(dv(.Int32 1000)  oneThousand)
-        e(.String data1)
-        e(.String data2)
-        e(.Int32 state)
-    )
-    clump (
-        WebSocketClientConnect(url protocol connection errorNum errorVal)
-        
-        Println(connection)
-        WebSocketClientConnect(url protocol connection2 errorNum errorVal)
-        Println(connection2)
-        
-        WebSocketClientState(connection state errorNum errorVal)
-        Println(state)
-        
-        WebSocketClientSend(connection message errorNum errorVal)
-        
-        WebSocketClientSend(connection2 message errorNum errorVal)
-        
-        WaitMilliseconds(oneHundred)
-        
-        WebSocketClientSend(connection message errorNum errorVal)
-        
-        WebSocketClientRead(connection oneThousand data1 errorNum errorVal)
-        
-        Println(data1)
-        
-        WebSocketClientState(connection state errorNum errorVal)
-        
-        Println(state)
-        
-        WebSocketClientRead(connection oneThousand data2 errorNum errorVal)
-        
-        WebSocketClientClose(connection errorNum errorVal)
-        
-        WebSocketClientSend(connection message errorNum errorVal)
-        
-        WebSocketClientSend(connection2 message errorNum errorVal)
-        
+    clump (1
+        Println("Hello, sky. I can fly.")
     )
 ) ) )
-
 enqueue(HelloWorld)
 </pre>
                     <input  id="in_state" value="*"></input>
@@ -223,7 +173,6 @@ enqueue(HelloWorld)
         $("#SineWaveSample").click(function(){LoadSample("SineWave.via");} );
         $("#MandelbrotSample").click(function(){LoadSample("Mandelbrot.via");} );
         $("#ParallelSample").click(function(){LoadSample("Parallel.via");} );
-        $("#WebSocketTest").click(function(){LoadSample("WebSocketTest.via");} );
         $("#LVLink").click(function(){LVLink();} );
 
 

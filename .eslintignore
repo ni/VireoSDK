@@ -3,7 +3,6 @@ dist/*
 make-it/objs/*
 env/*
 source/io/library_canvas2d.js
-source/io/library_webSocketClient.js
 emscripten-sdk/*
 emsdk/*
 coverage/*
