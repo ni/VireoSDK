@@ -217,9 +217,14 @@
             },
             ObjectRefNum: {
                 reader: Module.eggShell.dataReadObjectRefNum,
-                writer: Module.eggShell.dataWriteObjectRefNum,
-                isValidReturnType: function (value) {
-                    return typeof value === 'object';
+                writer: function (returnValuePointer, returnUserValue) {
+                    if (returnUserValue === undefined) {
+                        return;
+                    }
+                    Module.eggShell.dataWriteObjectRefNum(returnValuePointer, returnUserValue);
+                },
+                isValidReturnType: function () {
+                    return true;
                 }
             }
         };
@@ -278,33 +283,6 @@
             };
         };
 
-        var isTypedArray = function (
-            value) {
-            if (value instanceof Int8Array ||
-                value instanceof Int16Array ||
-                value instanceof Int32Array ||
-                value instanceof Uint8Array ||
-                value instanceof Uint16Array ||
-                value instanceof Uint32Array ||
-                value instanceof Float32Array ||
-                value instanceof Float64Array) {
-                return true;
-            }
-
-            return false;
-        };
-
-        var isValidJavaScriptReturnType = function (
-            returnValue) {
-            var returnTypeName = typeof returnValue;
-            return (returnTypeName === 'number') ||
-            (returnTypeName === 'boolean') ||
-            (returnTypeName === 'string') ||
-            (returnTypeName === 'undefined') ||
-            (returnTypeName === 'object') ||
-            (isTypedArray(returnValue));
-        };
-
         var completionCallbackRetrievalEnum = {
             AVAILABLE: 'AVAILABLE',
             RETRIEVED: 'RETRIEVED',
@@ -324,13 +302,6 @@
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
-            if (!isValidJavaScriptReturnType(returnUserValue)) {
-                var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
-                var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
-                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                return;
-            }
-
             if (returnTypeName === 'StaticTypeAndData') {
                 // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
                 return;
@@ -376,7 +347,7 @@
             }
         };
 
-        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction) {
             var completionCallback = function (returnValue) {
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
                     throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
@@ -387,6 +358,9 @@
                 if (!(returnValue instanceof Error)) {
                     tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
                 } else {
+                    if (isInternalFunction) {
+                        throw returnValue;
+                    }
                     var newErrorStatus = true;
                     var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
                     var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
@@ -397,7 +371,7 @@
             return completionCallback;
         };
 
-        var generateAPI = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+        var generateAPI = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction) {
             var api = {};
             api.getCompletionCallback = function () {
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
@@ -407,8 +381,14 @@
                     throw new Error('The API being accessed for ' + functionName + ' is not valid anymore.');
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
-                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction);
             };
+
+            if (isInternalFunction) {
+                api.setLabVIEWError = function (statusCode, errorCode, errorMessage) {
+                    Module.coreHelpers.mergeErrors(statusCode, errorCode, errorMessage, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                };
+            }
             return api;
         };
 
@@ -478,13 +458,16 @@
             var returnValue = undefined;
             var api;
             if (functionToCall.length === parameters.length + 1) {
-                api = generateAPI(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                api = generateAPI(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction);
                 parameters.push(api);
             }
 
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
+                if (isInternalFunction) {
+                    throw ex;
+                }
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
                 newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);

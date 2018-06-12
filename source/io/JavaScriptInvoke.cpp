@@ -146,7 +146,13 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
                 &errorClusterPtr->status,
                 &errorClusterPtr->code,
                 errorClusterPtr->source);
-            AddCallChainToSourceIfErrorPresent(errorClusterPtr, "JavaScriptInvoke");
+            if (isInternalFunction) {
+                AddCallChainToSourceIfErrorPresent(errorClusterPtr, "" /*use the functionName*/);
+            }
+            else {
+                AddCallChainToSourceIfErrorPresent(errorClusterPtr, "JavaScriptInvoke");    
+            }
+            
             InstructionCore* instructionCorePtr = clump->WaitOnObservableObject(_this);
             return instructionCorePtr;
         }
