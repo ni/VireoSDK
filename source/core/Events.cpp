@@ -903,7 +903,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     }
 
     TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
-    Int32 esCount = eventSpecType->SubElementCount();
+    UInt32 esCount = UInt32(eventSpecType->SubElementCount());
     AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
     EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
     {
