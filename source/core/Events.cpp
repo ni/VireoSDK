@@ -23,6 +23,16 @@
 
 namespace Vireo {
 
+#if kVireoOS_emscripten
+extern "C" {
+    // JavaScript function prototypes
+    // Parameters: viName, controlId, eventId, eventOracleIndex
+    extern void jsRegisterForControlEvent(StringRef, UInt32, UInt32, UInt32);
+    // Parameters: viName, controlId, eventId, eventOracleIndex
+    extern void jsUnRegisterForControlEvent(StringRef, UInt32, UInt32, UInt32);
+}
+#endif
+
 // Manage UserEvent refnums.
 // The refnum storage stores only a placeholder nullptr value because we only actually need to lookup whether a refnum is valid or not;
 // the data is stored in the Event Oracle's event queues, not in the refnum, and the User Event's type is available in any context
