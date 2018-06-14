@@ -184,7 +184,7 @@ class EventOracle {
         return _qObject[qID].DoneProcessingEvent();
     }
     void DeleteEventQueue(EventQueueID qID) {  // marks unallocated
-        if (UInt32(qID) < _qObject.size())
+        if (qID < _qObject.size())
             _qObject[qID].DeleteQueue();
     }
     Int32 GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, RefNumVal *dynRegRefs, Int32 *dynIndexBase);
