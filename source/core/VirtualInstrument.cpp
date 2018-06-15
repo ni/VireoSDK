@@ -696,7 +696,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
     // it should point to nullptr when checked if not yet resolved.
     _argPatches.push_back(_argCount);
     ++_argPatchCount;
-    if (_patchInfos.size() <= UInt32(_patchInfoCount))
+    if (_patchInfos.size() <= size_t(_patchInfoCount))
         _patchInfos.resize(_patchInfoCount+kClumpStateIncrementSize);
     PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
     pPatch->_patchType = patchType;

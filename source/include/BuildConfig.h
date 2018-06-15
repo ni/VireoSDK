@@ -233,8 +233,9 @@ SDG
 #endif
 
 // TODO(PaulAustin): allow for thread locals on linux/unix
-#undef VIVM_THREAD_LOCAL
+#ifndef VIVM_THREAD_LOCAL
 #define VIVM_THREAD_LOCAL
+#endif
 
 #ifdef VIREO_DEBUG
 #define VIREO_TRACK_MEMORY_QUANTITY
