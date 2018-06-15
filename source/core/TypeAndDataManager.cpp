@@ -609,7 +609,7 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _typeManager->TrackType(this);
     // Derived class must initialize core properties
     _topAQSize      = 0;
-    _aqAlignment      = 0;        // in AQ counts
+    _aqAlignment    = 0;        // in AQ counts
     _rank           = 0;        // 0 for scalar
     _isFlat         = true;
     _isValid        = false;    // Must be reset by derived class.
@@ -1550,7 +1550,7 @@ EquivalenceType::EquivalenceType(TypeManagerRef typeManager, TypeRef elements[],
 
     if (_elements.Length() > 0) {
         TypeRef element = _elements[0];
-        isFlat  = element->IsFlat();
+        isFlat = element->IsFlat();
         alignment = element->AQAlignment();
         aqCount = element->TopAQSize();
         // First element of Equivalence block defines encoding
@@ -2595,7 +2595,7 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1:  *(Int8*)pData  = (Int8)value;          break;
+                case 1:  *(Int8*)pData = (Int8)value;          break;
                 case 2:  *(Int16*)pData = (Int16)value;         break;
                 case 4:  *(Int32*)pData = (Int32)value;         break;
                 case 8:  *(Int64*)pData = (Int64)value;         break;
@@ -2605,7 +2605,7 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
         case kEncoding_UInt:
         case kEncoding_Enum:
             switch (aqSize) {
-                case 1:  *(UInt8*)pData  = (Int8)value;         break;
+                case 1:  *(UInt8*)pData = (Int8)value;         break;
                 case 2:  *(UInt16*)pData = (UInt16)value;       break;
                 case 4:  *(UInt32*)pData = (UInt32)value;       break;
                 case 8:  *(UInt64*)pData = (UInt64)value;       break;
@@ -2703,7 +2703,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1:  *(Int8*)pData  = (Int8)value;      break;
+                case 1:  *(Int8*)pData = (Int8)value;      break;
                 case 2:  *(Int16*)pData = (Int16)value;     break;
                 case 4:  *(Int32*)pData = (Int32)value;     break;
                 case 8:  *(Int64*)pData = (Int64)value;     break;
@@ -2713,7 +2713,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
         case kEncoding_UInt:
         case kEncoding_Enum:
             switch (aqSize) {
-                case 1:  *(UInt8*)pData  = (Int8)value;     break;
+                case 1:  *(UInt8*)pData = (Int8)value;     break;
                 case 2:  *(UInt16*)pData = (UInt16)value;   break;
                 case 4:  *(UInt32*)pData = (UInt32)value;   break;
                 case 8:  *(UInt64*)pData = (UInt64)value;   break;

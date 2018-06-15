@@ -100,7 +100,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
 VIREO_FUNCTION_SIGNATURE4(FlattenToString, StaticType, void, Boolean, StringRef)
 {
     TypeRef type = _ParamPointer(0);
-    void *pData  = _ParamPointer(1);
+    void *pData = _ParamPointer(1);
     Boolean prependArrayLength = _ParamPointer(2) ? _Param(2) : true;
     String *pString = _Param(3);
 
@@ -228,7 +228,7 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
     TypeRef type = _ParamPointer(2);
     void *pDefaultData = _ParamPointer(3);
     StringRef pRemainder = _ParamPointer(4) ? _Param(4) : nullptr;
-    void *pData  = _ParamPointer(5);
+    void *pData = _ParamPointer(5);
     Boolean error;
 
     SubBinaryBuffer subBuffer(pString->Begin(), pString->End());

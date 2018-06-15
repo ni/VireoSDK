@@ -85,7 +85,7 @@ using namespace std;  // NOLINT(build/namespaces)s
         if (_Param(1) == 0) { \
             quotient = 0; \
         } else { \
-            quotient  = _Param(0) / _Param(1); \
+            quotient = _Param(0) / _Param(1); \
             remainder = _Param(0) - _Param(1) * quotient; \
             if (remainder && ((_Param(0) > 0) != (_Param(1) > 0))) { \
                 quotient--; \
@@ -101,7 +101,7 @@ using namespace std;  // NOLINT(build/namespaces)s
         if (_Param(1) == 0) { \
             remainder = _Param(0); \
         } else { \
-            quotient  = _Param(0) / _Param(1); \
+            quotient = _Param(0) / _Param(1); \
             remainder = _Param(0) - _Param(1) * quotient; \
             if (remainder && ((_Param(0) > 0) != (_Param(1) > 0))) { \
                 quotient--; \

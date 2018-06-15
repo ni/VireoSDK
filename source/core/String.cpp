@@ -72,7 +72,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     }
     Int32 needLength = 0;
     const Utf8Char* begin = source;
-    for (IntIndex i=0; i< len; i++) {
+    for (IntIndex i = 0; i < len; i++) {
         Utf8Char c = *(begin+i);
         // TODO(mraj) should also replace multibyte line separator and paragraph separator for interop http://timelessrepo.com/json-isnt-a-javascript-subset
         switch (c) {
@@ -123,7 +123,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
             *ptr-- = '\\'; *ptr-- = '\\';
             break;
         case '"':
-            *ptr--  = '"'; *ptr-- = '\\';
+            *ptr-- = '"'; *ptr-- = '\\';
             break;
         default:
             if (c >= '\x00' && c <= '\x07') {

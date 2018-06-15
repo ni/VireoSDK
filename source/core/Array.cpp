@@ -1004,7 +1004,7 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
     pInstructionBuilder->ReresolveInstruction(&sortOpToken, false);
     InstructionCore* pInstruction = nullptr;
     TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
-    TypeRef elementType  = arrayArg->ElementType();
+    TypeRef elementType = arrayArg->ElementType();
     SubString LTName("IsLTSort");
     // Add param slot to hold the snippet
     Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
@@ -1092,7 +1092,7 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
 
     pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
     InstructionCore* pInstruction = nullptr;
-    TypeRef elementType  = arrayArg->ElementType();
+    TypeRef elementType = arrayArg->ElementType();
     SubString LTName("IsLT");
     // Add param slot to hold the snippet
     Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();

@@ -212,7 +212,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
 void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
 {
     Int32 index = 0;
-    for (Int32 i=0; i< count; i++) {
+    for (Int32 i = 0; i < count; i++) {
         if (i != 0) {
             buffer->AppendCStr(" ");
             index++;
@@ -633,8 +633,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         Int32 length = 0;
                         char* binaryindex = BinaryString;
                         if (intValue < 0) {
-                            for (IntIndex i = intSize-1; i >=0; i--) {
-                                if (intValue%2 == 0) {
+                            for (IntIndex i = intSize - 1; i >= 0; i--) {
+                                if (intValue % 2 == 0) {
                                     BinaryString[i] = '0';
                                 } else {
                                     BinaryString[i] = '1';
@@ -1807,7 +1807,7 @@ VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, v
 {
     StringRef output = _Param(0);
     StringRef formatString = _Param(1);
-    StaticTypeAndData Value  = {_ParamPointer(2), _ParamPointer(3)};
+    StaticTypeAndData Value = {_ParamPointer(2), _ParamPointer(3)};
     defaultFormatValue(output, formatString, Value);
 
     return _NextInstruction();
@@ -2542,7 +2542,7 @@ VIREO_FUNCTION_SIGNATURE4(ArraySpreadsheet, StringRef, StringRef, StringRef, Typ
     // clear the buffer
     _Param(0)->Resize1D(0);
     ArrayDimensionVector  index;
-    if (_Param(2)->Length() ==0) {
+    if (_Param(2)->Length() == 0) {
         STACK_VAR(String, delimiter);
         delimiter.Value->AppendCStr("\t");
         SpreadsheetDimension(_Param(0), _Param(1), delimiter.Value, inputArray, inputArray->Rank(), index);
@@ -2743,7 +2743,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
             lineIndex++;
         }
     } else {
-        for (IntIndex i =0; i< kArrayMaxRank; i++) {
+        for (IntIndex i = 0; i < kArrayMaxRank; i++) {
             elemIndex[i] = 0;
         }
         IntIndex lineIndex = 0;
@@ -2755,7 +2755,7 @@ void ScanSpreadsheet(StringRef inputString, StringRef formatString, TypedArrayCo
                 if (elemIndex[dim] >= array->GetLength(dim)) {
                     dim++;
                     elemIndex[dim] = 1;
-                    for (IntIndex i =0; i< dim; i++) {
+                    for (IntIndex i = 0; i < dim; i++) {
                         elemIndex[i] = 0;
                     }
                 }

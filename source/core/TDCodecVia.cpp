@@ -1717,7 +1717,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 Int32 uncountedArgs = 0;
                 for (Int32 i = 0; (i < argCount) && keepTrying; i++) {
                     token = argExpressionTokens[i];
-                    TypeRef formalType  = state.ReadFormalParameterType();
+                    TypeRef formalType = state.ReadFormalParameterType();
 
                     state._parserFocus = token;
                     if (formalType) {
@@ -1819,7 +1819,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
         while (type != typeEnd) {
             if (type->HasCustomDefault() && type->IsA(&strVIType)) {
                 TypedArrayCoreRef *pObj = (TypedArrayCoreRef*) type->Begin(kPARead);
-                VirtualInstrument *vi  = (VirtualInstrument*) (*pObj)->RawObj();
+                VirtualInstrument *vi = (VirtualInstrument*) (*pObj)->RawObj();
                 TDViaParser::FinalizeVILoad(vi, pLog);
             }
             type = type->Next();

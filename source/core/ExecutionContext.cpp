@@ -319,7 +319,7 @@ InstructionCore* ExecutionContext::SuspendRunningQueueElt(InstructionCore* nextI
 Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int32 millisecondsToRun)
 {
     VIREO_ASSERT((_runningQueueElt == nullptr))
-    PlatformTickType currentTime  = gPlatform.Timer.TickCount();
+    PlatformTickType currentTime = gPlatform.Timer.TickCount();
     PlatformTickType breakOutTime = currentTime + gPlatform.Timer.MicrosecondsToTickCount(millisecondsToRun * 1000);
 
     _timer.QuickCheckTimers(currentTime);
