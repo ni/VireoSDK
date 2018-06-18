@@ -117,6 +117,18 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
     }
 }
 //------------------------------------------------------------
+//! Get a reference to the type pointer and data for a symbol.
+VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
+{
+    SubString objectName(viName);
+    SubString path(eltName);
+    *typeRefLocation = tm->GetObjectElementAddressFromPath(&objectName, &path, dataRefLocation, true);
+    if (*typeRefLocation == nullptr)
+        return kEggShellResult_ObjectNotFoundAtPath;
+
+    return kEggShellResult_Success;
+}
+//------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.
 VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d)
 {

@@ -75,6 +75,29 @@
 
         // Private Instance Variables (per vireo instance)
         var NULL = 0;
+        var POINTER_SIZE = 4;
+
+        // Keep in sync with EggShellResult in CEntryPoints.h
+        var eggShellResultEnum = {
+            0: 'Success',
+            1: 'ObjectNotFoundAtPath',
+            2: 'UnexpectedObjectType',
+            3: 'InvalidResultPointer',
+            4: 'UnableToCreateReturnBuffer'
+        };
+
+        // Keep in sync with NIError in DataTypes.h
+        var niErrorEnum = {
+            0: 'Success',
+            1: 'InsufficientResources',
+            2: 'ResourceNotFound',
+            3: 'ArrayRankMismatch',
+            4: 'CantDecode',
+            5: 'CantEncode',
+            6: 'LogicFailure',
+            7: 'ValueTruncated'
+        };
+
         var Vireo_Version = Module.cwrap('Vireo_Version', 'number', []);
         var Vireo_MaxExecWakeUpTime = Module.cwrap('Vireo_MaxExecWakeUpTime', 'number', []);
         var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
@@ -168,6 +191,30 @@
             v_userShell = EggShell_Create(v_root);
         };
 
+        Module.eggShell.findValueRef = publicAPI.eggShell.findValueRef = function (vi, path) {
+            var stack = Module.stackSave();
+
+            var viStackPointer = Module.coreHelpers.writeJSStringToStack(vi);
+            var pathStackPointer = Module.coreHelpers.writeJSStringToStack(path);
+            var typeStackPointer = Module.stackAlloc(POINTER_SIZE);
+            var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
+
+            var eggShellResult = Module._EggShell_FindValue(v_userShell, viStackPointer, pathStackPointer, typeStackPointer, dataStackPointer);
+            if (eggShellResult !== 0) {
+                throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (vi name: ' + vi + ')' +
+                    ' (path: ' + path + ')');
+            }
+            var valueRef = {
+                typeRef: Module.getValue(typeStackPointer, 'i32'),
+                dataRef: Module.getValue(dataStackPointer, 'i32')
+            };
+
+            Module.stackRestore(stack);
+            return valueRef;
+        };
+
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (vi, path) {
             return EggShell_ReadDouble(v_userShell, vi, path);
         };
@@ -229,27 +276,6 @@
                 heap: Module.HEAPF64,
                 constructorFunction: Float64Array
             }
-        };
-
-        // Keep in sync with EggShellResult in CEntryPoints.h
-        var eggShellResultEnum = {
-            0: 'Success',
-            1: 'ObjectNotFoundAtPath',
-            2: 'UnexpectedObjectType',
-            3: 'InvalidResultPointer',
-            4: 'UnableToCreateReturnBuffer'
-        };
-
-        // Keep in sync with NIError in DataTypes.h
-        var niErrorEnum = {
-            0: 'Success',
-            1: 'InsufficientResources',
-            2: 'ResourceNotFound',
-            3: 'ArrayRankMismatch',
-            4: 'CantDecode',
-            5: 'CantEncode',
-            6: 'LogicFailure',
-            7: 'ValueTruncated'
         };
 
         var groupByDimensionLength = function (arr, startIndex, arrLength, dimensionLength) {
