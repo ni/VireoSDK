@@ -19,7 +19,8 @@
             'NationalInstruments.Vireo.ModuleBuilders.assignEggShell',
             'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient',
             'NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke',
-            'NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode'
+            'NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode',
+            'NationalInstruments.Vireo.ModuleBuilders.assignControlEvents'
         ], factory);
     } else if (typeof module === 'object' && module.exports) {
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
@@ -35,7 +36,8 @@
             require('../../source/io/module_eggShell.js'),
             require('../../source/io/module_httpClient.js'),
             require('../../source/io/module_javaScriptInvoke.js'),
-            require('../../source/io/module_propertyNode.js')
+            require('../../source/io/module_propertyNode.js'),
+            require('../../source/core/module_controlEvents.js'),
         );
     } else {
         // Browser globals (root is window)
@@ -45,7 +47,8 @@
             root.NationalInstruments.Vireo.ModuleBuilders.assignEggShell,
             root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient,
             root.NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode
+            root.NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode,
+            root.NationalInstruments.Vireo.ModuleBuilders.assignControlEvents
         );
     }
 }(this, 'NationalInstruments.Vireo.Vireo', function () {

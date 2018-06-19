@@ -53,19 +53,19 @@
             eventOracleIndex
         ) {
             var newErrorStatus = false;
-            var newErrorCode = ERRORS.NO_ERROR.CODE;
-            var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
+            // var newErrorCode = ERRORS.NO_ERROR.CODE;
+            // var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
-            var viName = Module.eggshell.dataReadString(viNamePointer);
-
+            var viName = Module.eggShell.dataReadString(viNamePointer);
             try {
                 registerForControlEvent(viName, controlId, eventId, eventOracleIndex);
             } catch (ex) {
                 newErrorStatus = true;
-                newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                // This code appears to have been copied by Jared from someplace that had errorIO to write to; commented out.
+                // newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
+                // newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
+                // newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
+                // Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
         };
@@ -77,8 +77,8 @@
             eventOracleIndex
         ) {
             var newErrorStatus = false;
-            var newErrorCode = ERRORS.NO_ERROR.CODE;
-            var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
+            // var newErrorCode = ERRORS.NO_ERROR.CODE;
+            // var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
             var viName = Module.eggshell.dataReadString(viNamePointer);
 
@@ -86,10 +86,10 @@
                 unRegisterForControlEvent(viName, controlId, eventId, eventOracleIndex);
             } catch (ex) {
                 newErrorStatus = true;
-                newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                // newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
+                // newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
+                // newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
+                // Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
         };
