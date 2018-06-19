@@ -560,6 +560,66 @@ VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index)
     return typeRef->GetSubElement(index);
 }
 //------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsCluster(TypeRef typeRef)
+{
+    return typeRef->IsCluster();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsArray(TypeRef typeRef)
+{
+    return typeRef->IsArray();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsBoolean(TypeRef typeRef)
+{
+    return typeRef->IsBoolean();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsInteger(TypeRef typeRef)
+{
+    return typeRef->IsInteger();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsSigned(TypeRef typeRef)
+{
+    return typeRef->IsSignedInteger();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsEnum(TypeRef typeRef)
+{
+    return typeRef->IsEnum();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsFloat(TypeRef typeRef) 
+{
+    return typeRef->IsFloat();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsString(TypeRef typeRef)
+{
+    return typeRef->IsString();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsPath(TypeRef typeRef)
+{
+    return typeRef->IsPath();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsTimestamp(TypeRef typeRef)
+{
+    return typeRef->IsTimestamp();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsComplex(TypeRef typeRef)
+{
+    return typeRef->IsComplex();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsAnalogWaveform(TypeRef typeRef)
+{
+    return typeRef->IsAnalogWaveform();
+}
+//------------------------------------------------------------
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object)
 {

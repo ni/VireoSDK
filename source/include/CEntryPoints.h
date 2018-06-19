@@ -78,6 +78,18 @@ VIREO_EXPORT TypeRef TypeRef_Next(TypeRef typeRef);
 VIREO_EXPORT UsageTypeEnum TypeRef_ElementUsageType(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef);
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index);
+VIREO_EXPORT Boolean TypeRef_IsCluster(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsArray(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsBoolean(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsInteger(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsSigned(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsEnum(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsFloat(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsString(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsPath(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsTimestamp(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsComplex(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsAnalogWaveform(TypeRef typeRef);
 //------------------------------------------------------------
 //! TypedBlock functions
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object);
