@@ -1,0 +1,67 @@
+
+// Current ControlRefNum architecture mock-up for static and dynamic Value Changed event registration
+
+
+//---------------------------------------------------
+// Static case:
+define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
+    Events: c(
+        e(c( // Event Struct 0
+           e(c(  // Event spec 0
+               e(dv(UInt32 1000) eventSource)  // event source enum
+               e(dv(UInt32 2) eventType)  // ValueChanged
+               e(dv(ControlRefNum ControlReference("18")) controlUID)  // for static control refs
+		 // Type ControlRefNum is RefNum-sized (UInt32 cookie); its value is a refnum allocated
+		 // when ControlReference(18) is parsed, which creates a refnum cookie to store the controlID 18.
+               e(dv(UInt32 0) dynIndex)    // zero - statically registered
+           ))
+           e(dv(.EventSpec (0 1 0 0)))
+        ))
+    )
+    Locals: c(   // Data Space
+        e(.ErrorCluster error)
+        e(c(
+            e(.UInt32 Source)
+            e(.UInt32 Type)
+            e(.UInt32 Time)
+            e(.UInt32 Index)
+            e(.ControlRefNum ControlRef)
+            e(.Boolean OldValue)
+            e(.Boolean NewValue)
+        ) eventData)
+        e(c(
+            e(.UInt32 Source)
+            e(.UInt32 Type)
+            e(.UInt32 Time)
+            e(.UInt32 Index)
+        ) timeoutData)
+        e(.Boolean local2)
+        e(.Boolean local3)
+    )
+        clump(1
+	// Note:  No explicit register is generated here, unlike the JavaScriptRefNum static version.
+	// The register is done automatically; before the VI’s first clump runs (or at parse time), we call:
+	//  jsRegisterForControlEvent(StringRef viName, UInt32 controlID, UInt32 eventType, UInt32 eventOracleIdx);
+	// Since the controlRefnum is a Vireo-side reference, OccurEvent will look up the refnum from the eventOracleIdx
+	// and put it in the EventData; the JS code which calls OccurEvent does not need to supply it.
+
+        _OccurEvent(1 18 1000 2)  // for testing
+        // TODO(spathiwa) the 1 is a hard-coded eventOracle index -- fix to lookup from controlID
+
+	// Imagine event loop around this:
+        Printf("Waiting on Events\n")
+        WaitForEventsAndDispatch(50 * 0 0 eventData 1 1 timeoutData 2)
+        Branch(0)
+        Perch(1)
+        Printf("Value Changed Event %z %z\n" eventData.Source eventData.Type)
+        Printf("// ControlRef %z\n" eventData.ControlRef)
+        Copy(eventData.OldValue local2)
+        Copy(eventData.NewValue local3)
+        Branch(0)
+        Perch(2)
+        Printf("Timeout Event\n")
+        Perch(0)
+/* Clump Ended. */    )
+)))
+
+enqueue (StaticControlRef%2Egviweb)
