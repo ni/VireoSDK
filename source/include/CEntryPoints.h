@@ -70,7 +70,7 @@ VIREO_EXPORT Boolean TypeRef_IsValid(TypeRef typeRef);
 VIREO_EXPORT Boolean TypeRef_HasCustomDefault(TypeRef typeRef);
 VIREO_EXPORT EncodingEnum TypeRef_BitEncoding(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef);
-VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer);
+VIREO_EXPORT const char* TypeRef_Name(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Rank(TypeRef typeRef);
 VIREO_EXPORT PointerTypeEnum TypeRef_PointerType(TypeRef typeRef);
