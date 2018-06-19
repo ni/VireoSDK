@@ -17,6 +17,7 @@
 #include "VirtualInstrument.h"
 #include "RefNum.h"
 #include "Events.h"
+#include "ControlRef.h"
 #include <deque>
 #include <vector>
 #include <list>
@@ -51,9 +52,6 @@ class UserEventRefNumManager : public RefNumManager {
 };
 
 UserEventRefNumManager UserEventRefNumManager::_s_singleton;
-
-typedef Int32 EventQueueID;
-enum { kNotAQueueID };
 
 // Monotonically incremented event number, so we can always tell which event is generated first even if timestamps are the same
 UInt32 EventData::_s_eventSequenceNumber = 0;
@@ -304,10 +302,6 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
         }
         eventOracleIndex = kAppEventOracleIdx;
     } else {
-        if (ref) {
-            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents cannot pass both controlUID and dynamic ref");
-            return false;
-        }
         // TODO(spathiwa) -- finish; control should be queried for its cached eventOracleIndex if it previously registered
         // eventOracleIndex = ...
     }
@@ -323,6 +317,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
             _eventReg.push_back(eo);
             // TODO(spathiwa) -- finish: notify control of its new eventOracleIndex
         }
+        eventOracleIndex = EventOracleIndex(idx);
         if (oracleIdxPtr)
             *oracleIdxPtr = eventOracleIndex;
     }
@@ -523,12 +518,67 @@ Int32 EventOracle::GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, 
     return earliestIndex;
 }
 
-void RegisterForStaticEvents(VirtualInstrument *vi) {
-    Int32 numES = vi->EventSpecs()->ElementType()->SubElementCount();
-    EventInfo *eventInfo = new EventInfo[numES];
+struct EventSpec {  // Specifier for Event structure configuration data
+    EventSource eventSource;
+    EventType eventType;
+    EventControlUID eventControlUID;  // 0 == no control (App or VI event, or dynamic)
+    UInt32 dynIndex;  // 0 == not dynamic
+};
+typedef EventSpec *EventSpecRef;
 
-    for (Int32 esIndex = 0; esIndex < numES; ++esIndex) {
-        eventInfo[esIndex].setCount = 0;
+// GetEventSourceForEventType -- return the EventSource associated with an event type
+static inline EventSource GetEventSourceForEventType(EventType eType) {
+    EventSource eSource = kEventSourceLVUserInt;
+    if (eType == kEventTypeUserEvent)
+        eSource = kEventSourceUserEvent;
+    else if (eType >= kEventTypeValueChange)
+        eSource = kEventSourceNXGUIEvent;
+    return eSource;
+}
+
+void RegisterForStaticEvents(VirtualInstrument *vi) {
+    TypedObjectRef eventStructSpecsRef = vi->EventSpecs();
+    Int32 numEventStructs = eventStructSpecsRef->ElementType()->SubElementCount();
+    EventInfo *eventInfo = new EventInfo[numEventStructs];
+
+    for (Int32 eventStructIndex = 0; eventStructIndex < numEventStructs; ++eventStructIndex) {
+        TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
+        AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
+        EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
+        UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
+        EventQueueID qID = kNotAQueueID;
+        EventOracle::TheEventOracle().GetNewQueueObject(&qID, nullptr);
+        for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
+            RefNum controlRef = RefNum(eventSpecRef[eventSpecIndex].eventControlUID);  // TODO(spathiwa) rename eventControlUID field 'UID'->'Ref'
+            if (controlRef) {
+                VirtualInstrument *controlVI = nullptr;
+                StringRef tag = nullptr;
+                STACK_VAR(String, viNameVar);
+                StringRef viName = viNameVar.Value;
+                if (ControlReferenceLookup(controlRef, &controlVI, &tag) == kNIError_Success) {
+                    PercentEncodedSubString encodedStr(controlVI->VIName(), true, false);
+                    SubString encodedSubstr = encodedStr.GetSubString();
+                    viName->AppendSubString(&encodedSubstr);
+                    char *tagBegin = reinterpret_cast<char*>(tag->Begin()), *tagEnd = reinterpret_cast<char*>(tag->End());
+                    EventControlUID controlID = Int32(strtol(tagBegin, &tagEnd, 10));
+                    eventSpecRef[eventSpecIndex].eventControlUID = controlID;
+
+                    EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
+                    EventType eventType = eventSpecRef[eventSpecIndex].eventType;
+                    EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
+
+                    EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, kNotARefNum, &eventOracleIdx);
+
+                    //gPlatform.IO.Printf("StaticRegister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
+                    //    viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
+#if kVireoOS_emscripten
+                    jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
+#endif
+                }
+            }
+        }
+        eventInfo[eventStructIndex].staticQID = qID;
+        eventInfo[eventStructIndex].setCount = 0;
     }
     vi->SetEventInfo(eventInfo);
 }
@@ -624,14 +674,6 @@ struct RegisterForEventsParamBlock : public VarArgInstruction
     _ParamImmediateDef(RegistertForEventArgs, argument1[1]);
     NEXT_INSTRUCTION_METHODV()
 };
-
-// GetEventSourceForEventType -- return the EventSource associated with an event type
-static inline EventSource GetEventSourceForEventType(EventType eType) {
-    EventSource eSource = kEventSourceLVUserInt;
-    if (eType == kEventTypeUserEvent)
-        eSource = kEventSourceUserEvent;
-    return eSource;
-}
 
 // UnregisterForEventsAux -- helper function to unregister for dynamic events, called from prim and cleanup proc
 static bool UnregisterForEventsAux(RefNum refnum) {
@@ -855,14 +897,6 @@ struct WaitForEventsParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-struct EventSpec {
-    EventSource eventSource;
-    EventType eventType;
-    EventControlUID eventControlUID;  // 0 == no control (App or VI event, or dynamic)
-    UInt32 dynIndex;  // 0 == not dynamic
-};
-typedef EventSpec *EventSpecRef;
-
 static inline bool EventMatch(const EventData &eData, const EventSpec &eSpec, Int32 dynIndex = 0) {
     return (eData.common.eventSource == eSpec.eventSource && eData.common.eventType == eSpec.eventType
             && eData.controlUID == eSpec.eventControlUID && dynIndex == eSpec.dynIndex);
@@ -877,7 +911,6 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     Int32 *timeOutPtr = _ParamPointer(timeOut);
     StaticTypeAndData *regRefArg = _ParamImmediate(regRefArg);
     TypeRef regRefType = regRefArg[0]._paramType;
-    EventQueueID eventQID = kNotAQueueID;
     Int32 regRefCount = 1;
     if (regRefType->BitEncoding() == kEncoding_Cluster) {
         regRefCount = regRefType->SubElementCount();
@@ -903,8 +936,11 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     }
 
     EventInfo *eventInfo = owningVI->GetEventInfo();
+    EventQueueID eventQID = eventInfo[eventStructIndex].staticQID;
     OccurrenceCore &occ = eventInfo[eventStructIndex].eventOccurrence;
 
+    if (eventQID)
+        EventOracle::TheEventOracle().ObserveQueue(eventQID, &occ);
     for (Int32 regIndex = 0; regIndex < regRefCount; ++regIndex) {
         DynamicEventRegInfo *regInfo = nullptr;
         if (eventRegRefnumPtr
@@ -973,17 +1009,18 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
             UInt32 eventIndex = 0;
             if (dataNodeSize >= commonDataSize) {
                 memcpy(esEventDataNode, &eventData, commonDataSize);
-                Int32 alignment = eventData.eventDataType->AQAlignment();
-                if (commonDataSize % alignment != 0)
-                    commonDataSize = (commonDataSize + alignment-1) & ~(alignment-1);
                 *EventIndexFieldPtr(esEventDataNode) = eventIndex;
-
-                if (eventData.eventDataType->TopAQSize() == dataNodeSize - commonDataSize) {
-                    // TODO(spathiwa) Should we also verify type of event data node matches event at run-time?
-                    // When we support multiple events with a shared event case, this needs to be smarter
-                    // and copy only common data, using a custom emit proc (which could verify types) and
-                    // generate custom snippets for each event data node cluster.
-                    eventData.eventDataType->CopyData(eventData.pEventData, (AQBlock1*)esEventDataNode + commonDataSize);
+                if (eventData.eventDataType) {
+                    Int32 alignment = eventData.eventDataType->AQAlignment();
+                    if (commonDataSize % alignment != 0)
+                        commonDataSize = (commonDataSize + alignment-1) & ~(alignment-1);  // round up to alignment boundary
+                    if (eventData.eventDataType->TopAQSize() == dataNodeSize - commonDataSize) {
+                        // TODO(spathiwa) Should we also verify type of event data node matches event at run-time?
+                        // When we support multiple events with a shared event case, this needs to be smarter
+                        // and copy only common data, using a custom emit proc (which could verify types) and
+                        // generate custom snippets for each event data node cluster.
+                        eventData.eventDataType->CopyData(eventData.pEventData, (AQBlock1*)esEventDataNode + commonDataSize);
+                    }
                 }
             } else {  // Timeout case eventData node has no ref, so falls through this case.
                 memcpy(esEventDataNode, &eventData, dataNodeSize);
@@ -997,6 +1034,15 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     EventOracle::TheEventOracle().DoneProcessingEvent(eventQID);
 
     return next;
+}
+
+VIREO_FUNCTION_SIGNATURE4(_OccurEvent, UInt32, UInt32, UInt32, UInt32)
+{
+    EventData eData;
+    eData.Init(_Param(2), _Param(3), RefNumVal());
+    eData.controlUID = _Param(1);
+    EventOracle::TheEventOracle().OccurEvent(_Param(0), eData);
+    return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURE2(IsNotAUserEventRefnum, RefNumVal, Boolean)
@@ -1045,6 +1091,8 @@ DEFINE_VIREO_BEGIN(Events)
 
     DEFINE_VIREO_FUNCTION(WaitForEventsAndDispatch, "p(i(VarArgCount) i(Int32 timeOut) i(StaticTypeAndData ref) i(Int32 esIndex) "
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
+
+    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(UInt32 idx) i(UInt32 controlID) i(UInt32 eSource) i(UInt32 eType))")
 
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAUserEventRefnum, "p(i(UserEventRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(UserEventRefNum) i(UserEventRefNum) o(Boolean))")

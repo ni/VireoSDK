@@ -23,7 +23,9 @@ enum {  // Event source
     kEventSourceLVUserInt,
     kEventSourceActiveXUserInt,
     kEventSourceDotNetUserInt,
-    kEventSourceUserEvent = 25 };
+    kEventSourceUserEvent = 25,
+    kEventSourceNXGUIEvent = 1000
+};
 
 enum {
     kEventTypeNull = 0,
@@ -126,7 +128,11 @@ struct EventData {
     static UInt32 _s_eventSequenceNumber;
 };
 
+class VirtualInstrument;
 void RegisterForStaticEvents(VirtualInstrument *vi);
+
+typedef Int32 EventQueueID;
+enum { kNotAQueueID = 0 };
 
 enum { kEventArgErr = 1 };
 
