@@ -267,6 +267,8 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "StaticTypeAndData", "c(e(StaticType) e(DataPointer))");
     Define(tm, "EnumTypeAndData", "StaticTypeAndData");  // same but only matches enums, not overriding other matches
 
+    Define(tm, "StaticTypeExplicitData", "DataPointer"); // Like StaticTypeAndData but does not consume actual argument, which
+    // formal type must be specified next, and also match actual arg type.  To allow more restricted polymorphism.
     Define(tm, "SubString", "c(e(DataPointer begin)e(DataPointer end))");
 }
 

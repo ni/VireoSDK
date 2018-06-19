@@ -700,7 +700,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
         _patchInfos.resize(_patchInfoCount+kClumpStateIncrementSize);
     PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
     pPatch->_patchType = patchType;
-    pPatch->_whereToPeek = whereToPeek;
+    pPatch->_whereToPeek = IntIndex(whereToPeek);
     InternalAddArg(nullptr, (void*)intptr_t(_patchInfoCount));
     ++_patchInfoCount;
 }

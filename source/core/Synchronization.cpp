@@ -663,19 +663,16 @@ NIError QueueRefNumManager::LookupQueueRef(RefNum refnum, QueueRef *queueRefPtr)
 }
 
 // Get the underlying array type from the RefNum Queue template type
-static inline TypeRef GetQueueArrayTypeRef(RefNumVal* refNumPtr) {
-    if (!refNumPtr)
-        return nullptr;
-    TypeRef type = refNumPtr->Type()->GetSubElement(0);
+static inline TypeRef GetQueueArrayTypeRef(TypeRef type) {
     TypeRef clustType = type ? type->GetSubElement(0) : nullptr;
     TypeRef queueType = clustType ? clustType->GetSubElement(1) : nullptr;
     return queueType;
 }
 
 // Get the underlying base element type from the RefNum Queue template type
-static inline TypeRef GetQueueElemTypeRef(RefNumVal* refNumPtr) {
-    TypeRef type = GetQueueArrayTypeRef(refNumPtr);
-    return type ? type->GetSubElement(0) : nullptr;
+static inline TypeRef GetQueueElemTypeRef(TypeRef type) {
+    TypeRef qtype = GetQueueArrayTypeRef(type);
+    return qtype ? qtype->GetSubElement(0) : nullptr;
 }
 
 // Cleanup Proc for disposing queue refnums when top-level VI finishes
@@ -692,19 +689,19 @@ static void CleanUpQueueRefNum(intptr_t arg) {
 }
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringRef, Boolean, Boolean, ErrorCluster)
 {
-    Int32 maxSize = _ParamPointer(1) && _Param(1) >= 0 ? _Param(1) : -1;
+    Int32 maxSize = _ParamPointer(2) && _Param(2) >= 0 ? _Param(2) : -1;
     Int32 errCode = 0;
-    Boolean create = _ParamPointer(3) ? _Param(3) : true;
-    Boolean *createdPtr = _ParamPointer(4);
-    StringRef name = _ParamPointer(2) ? _Param(2) : nullptr;
-    RefNumVal* refnumPtr = _ParamPointer(0);
+    Boolean create = _ParamPointer(4) ? _Param(4) : true;
+    Boolean *createdPtr = _ParamPointer(5);
+    StringRef name = _ParamPointer(3) ? _Param(3) : nullptr;
+    RefNumVal* refnumPtr = _ParamPointer(1);
     RefNum refnumVal = 0;
     QueueRef queueRef = nullptr;
     if (name && name->Length() == 0)
         name = nullptr;
-    ErrorCluster *errPtr = _ParamPointer(5);
+    ErrorCluster *errPtr = _ParamPointer(6);
     if (errPtr && errPtr->status) {
         if (refnumPtr)
             refnumPtr->SetRefNum(0);
@@ -712,8 +709,8 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
             *createdPtr = false;
         return _NextInstruction();
     }
-    TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : nullptr;
-    TypeRef queueType = refnumPtr ? GetQueueArrayTypeRef(refnumPtr) : nullptr;
+    TypeRef type = refnumPtr ? _ParamPointer(0)->GetSubElement(0) : nullptr;
+    TypeRef queueType = refnumPtr ? GetQueueArrayTypeRef(type) : nullptr;
 
     if (!refnumPtr) {
         errCode = kQueueArgErr;
@@ -744,7 +741,7 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_Obtain, RefNumVal, Int32, StringRef, Boolean,
                 if (!refnumVal) {
                     errCode = kQueueMemFull;
                 } else {
-                    if (_ParamPointer(1)) {  // maxSize wired
+                    if (_ParamPointer(2)) {  // maxSize wired
                         QueueCore *pQV = queueRef->ObjBegin();
                         pQV->SetMaxSize(maxSize);  // maxSize non-zero, checked above
                     }
@@ -806,10 +803,10 @@ static void GetQueueRefName(RefNum refnum, StringRef *stringRef, bool deleting) 
     }
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumVal, StringRef, TypedArrayCoreRef, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE5(QueueRef_Release, TypeCommon, RefNumVal, StringRef, TypedArrayCoreRef, ErrorCluster)
 {
-    RefNumVal* refnumPtr = _ParamPointer(0);
-    ErrorCluster *errPtr = _ParamPointer(3);
+    RefNumVal* refnumPtr = _ParamPointer(1);
+    ErrorCluster *errPtr = _ParamPointer(4);
 
     if (!refnumPtr) {
         if (errPtr && !errPtr->status)
@@ -818,26 +815,26 @@ VIREO_FUNCTION_SIGNATURE4(QueueRef_Release, RefNumVal, StringRef, TypedArrayCore
     }
 
     QueueRef queueRef = nullptr;
-    TypeRef type = refnumPtr->Type()->GetSubElement(0);
+    TypeRef type = _ParamPointer(0)->GetSubElement(0);
     QueueCore *pQV = nullptr;
     if (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success && queueRef) {
         pQV = queueRef->ObjBegin();
     }
-    if (_ParamPointer(2)) {  // elements array
+    if (_ParamPointer(3)) {  // elements array
         if (pQV) {
             IntIndex count = pQV->Count();
-            _Param(2)->Resize1D(count);
-            AQBlock1 *pData = _Param(2)->BeginAt(0);
+            _Param(3)->Resize1D(count);
+            AQBlock1 *pData = _Param(3)->BeginAt(0);
             Int32 eltSize = pQV->EltType()->TopAQSize();
             for (IntIndex i = 0; i < count; ++i) {
                 pQV->Peek(pData, i);
                 pData = (AQBlock1*)pData + eltSize;
             }
         } else {
-            _Param(2)->Resize1D(0);
+            _Param(3)->Resize1D(0);
         }
     }
-    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum(), _ParamPointer(1))) {
+    if (QueueRefNumManager::QueueRefManager().DisposeAlias(refnumPtr->GetRefNum(), _ParamPointer(2))) {
         // was a named queue alias
     } else if (QueueRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) {
         if (errPtr && !errPtr->status)
@@ -957,13 +954,13 @@ static InstructionCore* HandleQueueReschedule(IntMax info, Boolean done, QueueCo
 
 //------------------------------------------------------------
 // Helper function shared by Enqueue, EnqueueFront, and LossyEnqueue
-static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumVal, void, void, Boolean,
+static InstructionCore* QueueRef_EnqueueCore(Instruction6<TypeCommon, RefNumVal, void, void, Boolean,
     ErrorCluster>* _this, Boolean lossy, Boolean front, ConstCStr primName) {
-    RefNumVal* refnumPtr = _ParamPointer(0);
-    ErrorCluster *errPtr = _ParamPointer(4);
-    Int32 timeOut = lossy ? 0 : (_ParamPointer(2) ? *(Int32*)_ParamPointer(2) : -1);
-    Boolean *boolOut = _ParamPointer(3);
-    void *overflowElem = lossy ? _ParamPointer(2) : nullptr;
+    RefNumVal* refnumPtr = _ParamPointer(1);
+    ErrorCluster *errPtr = _ParamPointer(5);
+    Int32 timeOut = lossy ? 0 : (_ParamPointer(3) ? *(Int32*)_ParamPointer(3) : -1);
+    Boolean *boolOut = _ParamPointer(4);
+    void *overflowElem = lossy ? _ParamPointer(3) : nullptr;
     QueueRef queueRef = nullptr;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
@@ -973,7 +970,7 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumVal, void, void,
         if (boolOut)
             *boolOut = false;
         if (overflowElem) {
-            TypeRef eltType = GetQueueElemTypeRef(refnumPtr);
+            TypeRef eltType = GetQueueElemTypeRef(_ParamPointer(0));
             if (eltType)
                 eltType->InitData(overflowElem);
         }
@@ -997,64 +994,64 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction5<RefNumVal, void, void,
     }
 
     // First time or retry either way, attempt to enqueue value
-    Boolean done = front ? pQV->PushFront(_ParamPointer(1)) :  pQV->Enqueue(_ParamPointer(1));
+    Boolean done = front ? pQV->PushFront(_ParamPointer(2)) :  pQV->Enqueue(_ParamPointer(2));
     if (!lossy && boolOut)  // timedOut?
         *boolOut = !done;
 
     return HandleQueueReschedule(kQueueEnqueueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
 }
 
-VIREO_FUNCTION_SIGNATURE5(QueueRef_Enqueue, RefNumVal, void, void, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE6(QueueRef_Enqueue, TypeCommon, RefNumVal, void, void, Boolean, ErrorCluster)
 {
     return QueueRef_EnqueueCore(_this, false, false, "Enqueue");
 }
-VIREO_FUNCTION_SIGNATURE5(QueueRef_EnqueueFront, RefNumVal, void, void, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE6(QueueRef_EnqueueFront, TypeCommon, RefNumVal, void, void, Boolean, ErrorCluster)
 {
     return QueueRef_EnqueueCore(_this, false, true, "EnqueueFront");
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE5(QueueRef_LossyEnqueue, RefNumVal, void, void, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE6(QueueRef_LossyEnqueue, TypeCommon, RefNumVal, void, void, Boolean, ErrorCluster)
 {
     return QueueRef_EnqueueCore(_this, true, false, "LossyEnqueue");
 }
 
-static InstructionCore* QueueRef_DequeueCore(Instruction5<RefNumVal, void, Int32, Boolean, ErrorCluster>* _this, Boolean preview)
+static InstructionCore* QueueRef_DequeueCore(Instruction6<TypeCommon, RefNumVal, void, Int32, Boolean, ErrorCluster>* _this, Boolean preview)
 {
-    RefNumVal* refnumPtr = _ParamPointer(0);
-    ErrorCluster *errPtr = _ParamPointer(4);
+    RefNumVal* refnumPtr = _ParamPointer(1);
+    ErrorCluster *errPtr = _ParamPointer(5);
     QueueRef queueRef = nullptr;
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr)
             errPtr->SetError(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, preview ? "Preview Queue":"Dequeue", true);
-        if (_ParamPointer(3))
-            _Param(3) = false;
-        if (_ParamPointer(1)) {
-            TypeRef eltType = GetQueueElemTypeRef(refnumPtr);
+        if (_ParamPointer(4))
+            _Param(4) = false;
+        if (_ParamPointer(2)) {
+            TypeRef eltType = GetQueueElemTypeRef(_ParamPointer(0));
             if (eltType)
-                eltType->InitData(_ParamPointer(1));
+                eltType->InitData(_ParamPointer(2));
         }
         return _NextInstruction();
     }
     QueueCore *pQV = queueRef->ObjBegin();
 
     // First time or retry either way, attempt to dequeue value
-    Boolean done = preview ? pQV->Peek(_ParamPointer(1)) : pQV->Dequeue(_ParamPointer(1));
-    if (_ParamPointer(3))
-        _Param(3) = !done;
+    Boolean done = preview ? pQV->Peek(_ParamPointer(2)) : pQV->Dequeue(_ParamPointer(2));
+    if (_ParamPointer(4))
+        _Param(4) = !done;
 
-    Int32 timeOut = _ParamPointer(2) ? _Param(2) : -1;
+    Int32 timeOut = _ParamPointer(3) ? _Param(3) : -1;
     return HandleQueueReschedule(kQueueDequeueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
 }
 
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE5(QueueRef_Dequeue, RefNumVal, void, Int32, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE6(QueueRef_Dequeue, TypeCommon, RefNumVal, void, Int32, Boolean, ErrorCluster)
 {
     return QueueRef_DequeueCore(_this, false);
 }
 //------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE5(QueueRef_PeekQueue, RefNumVal, void, Int32, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE6(QueueRef_PeekQueue, TypeCommon, RefNumVal, void, Int32, Boolean, ErrorCluster)
 {
     return QueueRef_DequeueCore(_this, true);
 }
@@ -1168,16 +1165,16 @@ DEFINE_VIREO_BEGIN(Synchronization)
     // Dynamic, refnum-based queues
     DEFINE_VIREO_TYPE(QueueRefNum, "refnum(Queue)")
     DEFINE_VIREO_FUNCTION_CUSTOM(ObtainQueue, QueueRef_Obtain,
-        "p(o(QueueRefNum queue)i(Int32 maxsize)i(String name)i(Boolean create)o(Boolean created)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(QueueRefNum queue)o(String name)o(Array remainingElems)io(ErrorCluster err))")
+        "p(i(StaticTypeExplicitData)o(QueueRefNum queue)i(Int32 maxsize)i(String name)i(Boolean create)o(Boolean created)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(StaticTypeExplicitData)i(QueueRefNum queue)o(String name)o(Array remainingElems)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Enqueue, QueueRef_Enqueue,
-        "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+        "p(i(StaticTypeExplicitData)io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueFront, QueueRef_EnqueueFront,
-        "p(io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+        "p(i(StaticTypeExplicitData)io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(LossyEnqueue, QueueRef_LossyEnqueue,
-        "p(io(QueueRefNum queue)i(* element)o(* overflowElem)o(Boolean overflowed)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+        "p(i(StaticTypeExplicitData)io(QueueRefNum queue)i(* element)o(* overflowElem)o(Boolean overflowed)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(i(StaticTypeExplicitData)io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(i(StaticTypeExplicitData)io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(FlushQueue, QueueRef_FlushQueue, "p(i(QueueRefNum queue) o(Array remainingElems)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(GetQueueStatus, QueueRef_GetQueueStatus, "p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)"
         "o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(Int32 numElems)o(Array elements)io(ErrorCluster err))")
