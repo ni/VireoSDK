@@ -190,6 +190,13 @@
             v_userShell = EggShell_Create(v_root);
         };
 
+        Module.eggShell.createValueRef = function (typeRef, dataRef) {
+            return Object.freeze({
+                typeRef: typeRef,
+                dataRef: dataRef
+            });
+        };
+
         Module.eggShell.findValueRef = publicAPI.eggShell.findValueRef = function (vi, path) {
             var stack = Module.stackSave();
 
@@ -205,10 +212,10 @@
                     ' (vi name: ' + vi + ')' +
                     ' (path: ' + path + ')');
             }
-            var valueRef = {
-                typeRef: Module.getValue(typeStackPointer, 'i32'),
-                dataRef: Module.getValue(dataStackPointer, 'i32')
-            };
+
+            var typeRef = Module.getValue(typeStackPointer, 'i32');
+            var dataRef = Module.getValue(dataStackPointer, 'i32');
+            var valueRef = Module.createValueRef(typeRef, dataRef);
 
             Module.stackRestore(stack);
             return valueRef;
