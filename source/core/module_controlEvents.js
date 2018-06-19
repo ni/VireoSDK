@@ -25,26 +25,17 @@
     /* global Map */
 
     // Static Private Variables (all vireo instances)
-    var ERRORS = {
-        // Shared
-        NO_ERROR: {
-            CODE: 0,
-            MESSAGE: ''
-        }
-    };
 
-    var assignControlEvents = function(Module, publicAPI)
-    {
+    var assignControlEvents = function (Module, publicAPI) {
         Module.controlEvents = {};
         publicAPI.controlEvents = {};
 
-        var registerForControlEvent = function() {
+        var registerForControlEvent = function () {
             // Dummy no-op function.
-        }
-        
-        var unRegisterForControlEvent = function() {
+        };
+        var unRegisterForControlEvent = function () {
             // Dummy no-op function.
-        }
+        };
 
         Module.controlEvents.jsRegisterForControlEvent = function (
             viNamePointer,
@@ -52,20 +43,11 @@
             eventId,
             eventOracleIndex
         ) {
-            var newErrorStatus = false;
-            // var newErrorCode = ERRORS.NO_ERROR.CODE;
-            // var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
-
             var viName = Module.eggShell.dataReadString(viNamePointer);
             try {
                 registerForControlEvent(viName, controlId, eventId, eventOracleIndex);
             } catch (ex) {
-                newErrorStatus = true;
-                // This code appears to have been copied by Jared from someplace that had errorIO to write to; commented out.
-                // newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
-                // newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
-                // newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
-                // Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                // TODO error handling
                 return;
             }
         };
@@ -76,20 +58,12 @@
             eventId,
             eventOracleIndex
         ) {
-            var newErrorStatus = false;
-            // var newErrorCode = ERRORS.NO_ERROR.CODE;
-            // var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
-
             var viName = Module.eggshell.dataReadString(viNamePointer);
 
             try {
                 unRegisterForControlEvent(viName, controlId, eventId, eventOracleIndex);
             } catch (ex) {
-                newErrorStatus = true;
-                // newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
-                // newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIObjectReferenceIsInvalid.MESSAGE, ex);
-                // newErrorSource = Module.coreHelpers.createSourceFromMessage(newErrorSource);
-                // Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                // TODO error handling
                 return;
             }
         };
@@ -109,7 +83,7 @@
 
             unRegisterForControlEvent = fn;
         };
-    }
-    
+    };
+
     return assignControlEvents;
 }));

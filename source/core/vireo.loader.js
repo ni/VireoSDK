@@ -37,7 +37,7 @@
             require('../../source/io/module_httpClient.js'),
             require('../../source/io/module_javaScriptInvoke.js'),
             require('../../source/io/module_propertyNode.js'),
-            require('../../source/core/module_controlEvents.js'),
+            require('../../source/core/module_controlEvents.js')
         );
     } else {
         // Browser globals (root is window)
