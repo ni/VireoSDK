@@ -932,11 +932,11 @@ class PointerType : public WrappedType
 typedef UInt32 RefNum;
 
 class RefNumVal {
-public:
+ public:
     RefNumVal() : _refnum(0) { }
     RefNum GetRefNum() const { return _refnum; }
     void SetRefNum(RefNum refNum) { _refnum = refNum; }
-private:
+ private:
     RefNum   _refnum;
 };
 

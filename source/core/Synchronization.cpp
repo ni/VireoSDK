@@ -1166,15 +1166,18 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_TYPE(QueueRefNum, "refnum(Queue)")
     DEFINE_VIREO_FUNCTION_CUSTOM(ObtainQueue, QueueRef_Obtain,
         "p(i(StaticTypeExplicitData)o(QueueRefNum queue)i(Int32 maxsize)i(String name)i(Boolean create)o(Boolean created)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(StaticTypeExplicitData)i(QueueRefNum queue)o(String name)o(Array remainingElems)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(ReleaseQueue, QueueRef_Release, "p(i(StaticTypeExplicitData)i(QueueRefNum queue)o(String name)"
+                                 "o(Array remainingElems)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(Enqueue, QueueRef_Enqueue,
         "p(i(StaticTypeExplicitData)io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueFront, QueueRef_EnqueueFront,
         "p(i(StaticTypeExplicitData)io(QueueRefNum queue)i(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(LossyEnqueue, QueueRef_LossyEnqueue,
         "p(i(StaticTypeExplicitData)io(QueueRefNum queue)i(* element)o(* overflowElem)o(Boolean overflowed)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(i(StaticTypeExplicitData)io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(i(StaticTypeExplicitData)io(QueueRefNum queue)o(* element)i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Dequeue, QueueRef_Dequeue, "p(i(StaticTypeExplicitData)io(QueueRefNum queue)o(* element)"
+                                 "i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(PeekQueue, QueueRef_PeekQueue, "p(i(StaticTypeExplicitData)io(QueueRefNum queue)o(* element)"
+                                 "i(Int32 timeOut)o(Boolean timedOut)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(FlushQueue, QueueRef_FlushQueue, "p(i(QueueRefNum queue) o(Array remainingElems)io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(GetQueueStatus, QueueRef_GetQueueStatus, "p(i(QueueRefNum queue)i(Boolean returnElems)o(Int32 maxSize)"
         "o(String name)o(Int32 pendingRemove)o(Int32 pendingInsert)o(Int32 numElems)o(Array elements)io(ErrorCluster err))")
