@@ -2,10 +2,10 @@
 (function () {
     'use strict';
     var controlEventsCAPI = {
-        jsRegisterForControlEvent: function() {
+        jsRegisterForControlEvent: function () {
             Module.controlEvents.jsRegisterForControlEvent.apply(undefined, arguments);
         },
-        jsUnRegisterForControlEvent: function() {
+        jsUnRegisterForControlEvent: function () {
             Module.controlEvents.jsUnRegisterForControlEvent.apply(undefined, arguments);
         }
     };
