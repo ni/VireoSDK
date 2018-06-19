@@ -666,7 +666,7 @@ TypeRef TDViaParser::ParseControlReference(void *pData) {
         return BadType();
     if (pData) {
         ControlReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, controlTagToken);
-        return ((RefNumVal*)pData)->Type();
+        return ctrlRefType; // ((RefNumVal*)pData)->Type();
     }
 
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, ctrlRefType, true);
@@ -1712,6 +1712,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             }
 
             while (keepTrying) {
+                Int32 uncountedArgs = 0;
                 for (Int32 i = 0; (i < argCount) && keepTrying; i++) {
                     token = argExpressionTokens[i];
                     TypeRef formalType  = state.ReadFormalParameterType();
@@ -1727,11 +1728,13 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             // If the formal type is "VarArgCount"
                             // restart processing current argument, its the first vararg
                             i--;
+                            uncountedArgs++;
                             continue;
                         }
                         if (formalParameterTypeName.CompareCStr("VarArgRepeat")) {
                             state.SetVarArgRepeat();
                             i--;
+                            uncountedArgs++;
                             continue;
                         }
 
@@ -1742,6 +1745,11 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                             state.AddClumpTargetArgument(&token);
                         } else if (formalParameterTypeName.CompareCStr("StaticType")) {
                             state.AddDataTargetArgument(&token, true, false);
+                        } else if (formalParameterTypeName.CompareCStr("StaticTypeExplicitData")) {
+                            state.AddDataTargetArgument(&token, true, false);
+                            i--;
+                            uncountedArgs++;
+                            continue;
                         } else if (formalParameterTypeName.CompareCStr("StaticTypeAndData")) {
                             state.AddDataTargetArgument(&token, true, true);
                         } else if (formalParameterTypeName.CompareCStr("EnumTypeAndData")) {
@@ -1764,7 +1772,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                         }
                     }
                 }
-                if (state._varArgCount >= 0 && argCount < state._instructionType->SubElementCount()-2) {
+                if (state._varArgCount >= 0 && argCount < state._instructionType->SubElementCount()-uncountedArgs-1) {
                     // var args but didn't read all the required args
                     keepTrying = false;
                 }
@@ -2331,9 +2339,9 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
         case kEncoding_RefNum:
             {
-                RefNumVal *refType = (RefNumVal*)pData;
-                SubString name = refType->Type()->Name();
-                UInt32 refnum = refType->GetRefNum();
+                RefNumVal *refVal = (RefNumVal*)pData;
+                SubString name = type->Name();
+                UInt32 refnum = refVal->GetRefNum();
                 if (name.Length() > 0)
                     _string->Append(name.Length(), (Utf8Char*)name.Begin());
                 else

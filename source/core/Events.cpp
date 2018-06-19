@@ -573,13 +573,13 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Create, RefNumVal, ErrorCluster)
 }
 
 // GenerateUserEvent(userEventRef<typed_data> data errorIO) -- fire event, copying data into event queues of all registered observers
-VIREO_FUNCTION_SIGNATURE4(UserEventRef_Generate, RefNumVal, void, Boolean, ErrorCluster)
+VIREO_FUNCTION_SIGNATURE5(UserEventRef_Generate, TypeCommon, RefNumVal, void, Boolean, ErrorCluster)
 {
-    RefNumVal* refnumPtr = _ParamPointer(0);
-    void *pSourceData = _ParamPointer(1);
-    // Boolean highPro = _ParamPointer(2) ? _Param(2) : false;
-    ErrorCluster *errPtr = _ParamPointer(3);
-    TypeRef type = refnumPtr ? refnumPtr->Type()->GetSubElement(0) : nullptr;
+    RefNumVal* refnumPtr = _ParamPointer(1);
+    void *pSourceData = _ParamPointer(2);
+    // Boolean highPro = _ParamPointer(3) ? _Param(3) : false;
+    ErrorCluster *errPtr = _ParamPointer(4);
+    TypeRef type = refnumPtr ? _ParamPointer(0)->GetSubElement(0) : nullptr;
     void *userEventRef = nullptr;
 
     // TODO(spathiwa) implement high-priority User Events
@@ -618,6 +618,7 @@ struct RegistertForEventArgs {
 
 struct RegisterForEventsParamBlock : public VarArgInstruction
 {
+    _ParamDef(TypeCommon, regType);
     _ParamDef(RefNumVal, regRef);
     _ParamDef(ErrorCluster, errorClust);
     _ParamImmediateDef(RegistertForEventArgs, argument1[1]);
@@ -720,7 +721,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     RefNumVal* eventRegRefnumPtr = _ParamPointer(regRef);
     DynamicEventRegInfo *regInfo = nullptr;
 
-    const Int32 numberOfFixedArgs = 2;  // eventRegRef, errorIO
+    const Int32 numberOfFixedArgs = 3;  // eventRegRef (type,data), errorIO
     const Int32 numArgsPerTuple = 3;    // <eventType, user/control ref (STAD)> pairs
     Int32 numVarArgs = (_ParamVarArgCount() - numberOfFixedArgs);
     Int32 numTuples = numVarArgs / numArgsPerTuple;
@@ -729,10 +730,10 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     if (errPtr && errPtr->status)
         return _NextInstruction();
 
-    if (eventRegRefnumPtr->Type()->SubElementCount() != 1 || !eventRegRefnumPtr->Type()->GetSubElement(0)->IsCluster()) {
+    if (_ParamPointer(regType)->SubElementCount() != 1 || !_ParamPointer(regType)->GetSubElement(0)->IsCluster()) {
         return ReturnRegForEventsFatalError("RegisterForEvents: malformed ref ref type, doesn't contain cluster", 0);
     }
-    Int32 regCount = eventRegRefnumPtr->Type()->GetSubElement(0)->SubElementCount();
+    Int32 regCount = _ParamPointer(regType)->GetSubElement(0)->SubElementCount();
     if (numVarArgs % numArgsPerTuple != 0 || regCount != numTuples) {
         return ReturnRegForEventsFatalError("RegisterForEvents: Wrong number of arguments.  Should be one <event code, ref> input pair"
                                 " per item in the event reg refnum output type", 0);
@@ -765,7 +766,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     EventRegistrationRefNumManager::AddCleanupProc(vi, CleanUpEventRegRefNum, erRefNum);
 
     // Loop through input types and register for events
-    TypeRef regRefClusterType = eventRegRefnumPtr->Type()->GetSubElement(0);
+    TypeRef regRefClusterType = _ParamPointer(regType)->GetSubElement(0);
     RegistertForEventArgs *arguments =  _ParamImmediate(argument1);
     for (Int32 refInput = 0; refInput < numTuples; ++refInput) {
         if (!arguments[refInput].ref._pData) {  // wildcard argument, for re-registration, skip argument and leave previous registration
@@ -949,9 +950,12 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
     //                   should go back to sleep w/o running timeout case)
     const EventData &eventData = EventOracle::TheEventOracle().GetEventData(eventQID);
 
-    dynIndex += regInfo ? regInfo->DynamicEventMatch(eventData.common, eventRegRefnumPtr ?
-                            eventRegRefnumPtr[regRefIndex-1].Type()->GetSubElement(0) : nullptr) : 0;
-
+    if (regInfo) {
+        TypeRef eventRegRefType = regRefArg[0]._paramType;
+        if (eventRegRefType->IsCluster())
+            eventRegRefType = eventRegRefType->GetSubElement(regRefIndex-1);
+        dynIndex += regInfo->DynamicEventMatch(eventData.common, eventRegRefType->GetSubElement(0));
+    }
     for (Int32 inputTuple = 0; inputTuple < numTuples; ++inputTuple) {
         UInt32 eventSpecIndex = *arguments[inputTuple].eventSpecIndex;
         if (eventSpecIndex >= esCount) {
@@ -963,12 +967,15 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
         InstructionCore *esBranchTarget = arguments[inputTuple].branchTarget;
         if (EventMatch(eventData, eventSpecRef[eventSpecIndex], dynIndex)) {
             // gPlatform.IO.Printf("Event match %d -> %x\n", eventSpecRef[eventSpecIndex].eventType, esBranchTarget);
-            const Int32 commonDataSize = sizeof(EventCommonData);
+            Int32 commonDataSize = sizeof(EventCommonData);
             Int32 dataNodeSize = esEventDataNodeType->TopAQSize();
             // TODO(spathiwa) Compute eventIndex when we support multiple events sharing event cases
             UInt32 eventIndex = 0;
             if (dataNodeSize >= commonDataSize) {
                 memcpy(esEventDataNode, &eventData, commonDataSize);
+                Int32 alignment = eventData.eventDataType->AQAlignment();
+                if (commonDataSize % alignment != 0)
+                    commonDataSize = (commonDataSize + alignment-1) & ~(alignment-1);
                 *EventIndexFieldPtr(esEventDataNode) = eventIndex;
 
                 if (eventData.eventDataType->TopAQSize() == dataNodeSize - commonDataSize) {
@@ -1027,12 +1034,12 @@ DEFINE_VIREO_BEGIN(Events)
     // User Events
     DEFINE_VIREO_TYPE(UserEventRefNum, "refnum($0)")
     DEFINE_VIREO_FUNCTION_CUSTOM(CreateUserEvent, UserEventRef_Create, "p(o(UserEventRefNum ue) io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(i(UserEventRefNum ue) i(* element) i(Boolean highprio) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(i(StaticTypeExplicitData) i(UserEventRefNum ue) i(* element) i(Boolean highprio) io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(DestroyUserEvent, UserEventRef_Destroy, "p(i(UserEventRefNum ue) io(ErrorCluster err))")
 
     // Event registration
     DEFINE_VIREO_TYPE(EventRegRefNum, "refnum($0)")
-    DEFINE_VIREO_FUNCTION(RegisterForEvents, "p(i(VarArgCount) io(EventRegRefNum ref) io(ErrorCluster err)"
+    DEFINE_VIREO_FUNCTION(RegisterForEvents, "p(i(VarArgCount) i(StaticTypeExplicitData) io(EventRegRefNum ref) io(ErrorCluster err)"
                           "i(VarArgRepeat) i(Int32 eventType)i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(UnregisterForEvents, "p(i(EventRegRefNum ref) io(ErrorCluster err))")
 

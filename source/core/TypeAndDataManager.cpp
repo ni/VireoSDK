@@ -1973,12 +1973,12 @@ RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
     _isFlat = true;
     _hasCustomDefault = true;
     _topAQSize = sizeof(RefNumVal);
+    _aqAlignment = sizeof(RefNumVal) > 4 ? 8 : 4;
     _encoding = kEncoding_RefNum;
     _opaqueReference = true;
 }
 NIError RefNumValType::InitData(void* pData, TypeRef pattern) {
     RefNumVal* pRefnumData = (RefNumVal*)pData;
-    pRefnumData->SetType(pattern);
 
     pRefnumData->SetRefNum(0);
     return kNIError_Success;

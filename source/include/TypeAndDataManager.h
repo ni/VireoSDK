@@ -932,20 +932,14 @@ class PointerType : public WrappedType
 typedef UInt32 RefNum;
 
 class RefNumVal {
- public:
-    RefNumVal() : _refnum(0), _typeRef(nullptr)  { }
-    explicit RefNumVal(TypeRef typeRef) : _refnum(0), _typeRef(typeRef) { }
-    //! Array's type.
-    TypeRef Type()                  { return _typeRef; }
+public:
+    RefNumVal() : _refnum(0) { }
     RefNum GetRefNum() const { return _refnum; }
     void SetRefNum(RefNum refNum) { _refnum = refNum; }
- private:
-    void SetType(const TypeRef typeRef) {  _typeRef = typeRef; }
+private:
     RefNum   _refnum;
-    TypeRef _typeRef;
-
-    friend class RefNumValType;  // Allowed to call SetType
 };
+
 //------------------------------------------------------------
 //! A type describes a refnum to another type.
 class RefNumValType : public WrappedType
