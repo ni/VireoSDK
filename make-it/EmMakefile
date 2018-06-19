@@ -143,6 +143,10 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_GetArrayMetadata',\
     '_Data_GetArrayDimLength',\
     '_Data_ResizeArray',\
+	'_TypeRef_TopAQSize',\
+	'_TypeRef_Name',\
+	'_TypeRef_SubElementCount',\
+	'_TypeRef_SubElementByIndex',\
     '_JavaScriptInvoke_GetParameterType',\
     '_JavaScriptInvoke_GetParameterPointer',\
     '_JavaScriptInvoke_GetArrayElementType'\

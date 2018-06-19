@@ -512,10 +512,28 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
     return typeRef->AQAlignment();
 }
 //------------------------------------------------------------
-VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer)
+VIREO_EXPORT const char* TypeRef_Name(TypeRef typeRef)
 {
     SubString name = typeRef->Name();
-    *bufferSize = name.CopyToBoundedBuffer(*bufferSize, reinterpret_cast<Utf8Char*>(buffer));
+
+    static StringRef returnBuffer = nullptr;
+    if (returnBuffer == nullptr) {
+        // Allocate a string the first time it is used.
+        // After that it will be resized as needed.
+        STACK_VAR(String, tempReturn);
+        returnBuffer = tempReturn.DetachValue();
+    } else {
+        returnBuffer->Resize1D(0);
+    }
+
+    if (returnBuffer) {
+        returnBuffer->AppendSubString(&name);
+        // Add an explicit nullptr terminator so it looks like a C string.
+        returnBuffer->Append((Utf8Char)'\0');
+        return (const char*) returnBuffer->Begin();
+    }
+    
+    return "";
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)
