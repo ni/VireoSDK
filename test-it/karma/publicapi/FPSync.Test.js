@@ -41,7 +41,8 @@ describe('The Vireo CoreHelpers setFPSyncFunction api', function () {
 
         var trackerCalls = [];
         var tracker = function (fpSyncString) {
-            var myDouble = vireo.eggShell.readDouble(viName, 'myDouble');
+            var valueRef = vireo.eggShell.findValueRef(viName, 'myDouble');
+            var myDouble = vireo.eggShell.readDouble(valueRef);
             trackerCalls.push({
                 myDouble: myDouble,
                 fpSyncString: fpSyncString
