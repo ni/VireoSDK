@@ -215,7 +215,7 @@
 
             var typeRef = Module.getValue(typeStackPointer, 'i32');
             var dataRef = Module.getValue(dataStackPointer, 'i32');
-            var valueRef = Module.createValueRef(typeRef, dataRef);
+            var valueRef = Module.eggShell.createValueRef(typeRef, dataRef);
 
             Module.stackRestore(stack);
             return valueRef;
