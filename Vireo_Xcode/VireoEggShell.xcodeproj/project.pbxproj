@@ -17,7 +17,6 @@
 		446506DC206ACCCA00B0CD8E /* ControlRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506DB206ACCCA00B0CD8E /* ControlRef.cpp */; };
 		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
 		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
-		44B71BD31EC65368008683F6 /* WebSocketClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B71BD21EC65368008683F6 /* WebSocketClient.cpp */; };
 		44C2350E20428CD50064583B /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44C2350D20428CD50064583B /* Events.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
@@ -122,6 +121,8 @@
 /* Begin PBXFileReference section */
 		352F24BA209A3D51007D9799 /* DataReflectionVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataReflectionVisitor.h; path = include/DataReflectionVisitor.h; sourceTree = "<group>"; };
 		44026BAA1EFAEFC600DB51B4 /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = include/Array.h; sourceTree = "<group>"; };
+		441F02CB20D9959B008910D2 /* library_controlEvents.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_controlEvents.js; path = ../source/core/library_controlEvents.js; sourceTree = "<group>"; };
+		441F02CC20D9959B008910D2 /* module_controlEvents.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_controlEvents.js; path = ../source/core/module_controlEvents.js; sourceTree = "<group>"; };
 		443536321CFF4979002BA5DB /* 2HelloWorlds.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = 2HelloWorlds.via; path = "../test-it/2HelloWorlds.via"; sourceTree = "<group>"; };
 		443536331CFF4979002BA5DB /* AllocatedDataValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AllocatedDataValues.via; path = "../test-it/AllocatedDataValues.via"; sourceTree = "<group>"; };
 		443536341CFF4979002BA5DB /* ArrayComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayComparison.via; path = "../test-it/ArrayComparison.via"; sourceTree = "<group>"; };
@@ -276,13 +277,10 @@
 		44ABE7DC1D3D6A20008EB066 /* Round.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Round.via; path = "../test-it/Round.via"; sourceTree = "<group>"; };
 		44ABE7DD1D3D6A20008EB066 /* ArrayInterpolate.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayInterpolate.via; path = "../test-it/ArrayInterpolate.via"; sourceTree = "<group>"; };
 		44ABE7DE1D3D6A20008EB066 /* ComplexMathFunctions.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ComplexMathFunctions.via; path = "../test-it/ComplexMathFunctions.via"; sourceTree = "<group>"; };
-		44B71BD21EC65368008683F6 /* WebSocketClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WebSocketClient.cpp; path = ../source/io/WebSocketClient.cpp; sourceTree = "<group>"; };
 		44C2350D20428CD50064583B /* Events.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Events.cpp; path = core/Events.cpp; sourceTree = "<group>"; };
 		44C2350F2045FAD70064583B /* Events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Events.h; path = include/Events.h; sourceTree = "<group>"; };
-		44C295D51F8C037A001877B4 /* library_webSocketClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_webSocketClient.js; path = ../source/io/library_webSocketClient.js; sourceTree = "<group>"; };
 		44C295D61F8C037A001877B4 /* module_httpClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_httpClient.js; path = ../source/io/module_httpClient.js; sourceTree = "<group>"; };
 		44C295D71F8C037A001877B4 /* module_other.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_other.js; path = ../source/io/module_other.js; sourceTree = "<group>"; };
-		44C295D81F8C037A001877B4 /* module_webSocketClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_webSocketClient.js; path = ../source/io/module_webSocketClient.js; sourceTree = "<group>"; };
 		44C295D91F8C037A001877B4 /* module_eggShell.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_eggShell.js; path = ../source/io/module_eggShell.js; sourceTree = "<group>"; };
 		44C295DA1F8C03B7001877B4 /* library_coreHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_coreHelpers.js; path = core/library_coreHelpers.js; sourceTree = "<group>"; };
 		44C295DB1F8C03B7001877B4 /* vireo.loader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.loader.js; path = core/vireo.loader.js; sourceTree = "<group>"; };
@@ -780,14 +778,13 @@
 				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
-				44B71BD21EC65368008683F6 /* WebSocketClient.cpp */,
 				47A877751AE6925800EC5D77 /* library_httpClient.js */,
 				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
-				44C295D51F8C037A001877B4 /* library_webSocketClient.js */,
+				441F02CB20D9959B008910D2 /* library_controlEvents.js */,
+				441F02CC20D9959B008910D2 /* module_controlEvents.js */,
 				44C295D91F8C037A001877B4 /* module_eggShell.js */,
 				44C295D61F8C037A001877B4 /* module_httpClient.js */,
 				44C295D71F8C037A001877B4 /* module_other.js */,
-				44C295D81F8C037A001877B4 /* module_webSocketClient.js */,
 				446506D2206AC83600B0CD8E /* library_javaScriptInvoke.js */,
 				446506D6206AC83600B0CD8E /* library_propertyNode.js */,
 				446506D5206AC83600B0CD8E /* module_javaScriptInvoke.js */,
@@ -1158,7 +1155,6 @@
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				444C46841E1C5A540037FA98 /* Date.cpp in Sources */,
-				44B71BD31EC65368008683F6 /* WebSocketClient.cpp in Sources */,
 				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
 				4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */,
 				47B76CD91B28DB090083AEEB /* Platform.cpp in Sources */,
