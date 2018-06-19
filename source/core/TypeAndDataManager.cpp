@@ -2684,6 +2684,8 @@ Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult)
             if (type->IsTimestamp()) {
               Timestamp* t = (Timestamp*) pData;
               value = t->ToDouble();
+            } else {
+                err = kNIError_kCantDecode;
             }
             break;
         default:
@@ -2740,13 +2742,15 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
             switch (aqSize) {
                 // Beware that anything that's not exactly 0.0 will be true
                 case 1:  *(UInt8*)pData = value != 0.0 ? 1 : 0;  break;
-                default: err = kNIError_kCantEncode;        break;
+                default: err = kNIError_kCantEncode;             break;
             }
             break;
         case kEncoding_Cluster:
             if (type->IsTimestamp()) {
                 Timestamp* t = (Timestamp*) pData;
                 *t = Timestamp(value);
+            } else {
+                err = kNIError_kCantEncode;
             }
             break;
         default: err = kNIError_kCantDecode; break;
