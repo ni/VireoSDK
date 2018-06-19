@@ -347,7 +347,7 @@ class TypeManager
 // Utility functions to read and write numbers to non aligned memory based on size and encoding
 IntMax ReadIntFromMemory(TypeRef type, void* pData);
 NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
-Double ReadDoubleFromMemory(TypeRef type, void* pData);
+Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult = nullptr);
 NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 //------------------------------------------------------------

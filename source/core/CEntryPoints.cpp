@@ -145,16 +145,11 @@ VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, co
 }
 //------------------------------------------------------------
 //! Read a numeric value from a symbol. Value will be coerced as needed.
-VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName)
+VIREO_EXPORT NIError EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result)
 {
-    void *pData = nullptr;
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return -1;
-
-    return ReadDoubleFromMemory(actualType, pData);
+    NIError err = kNIError_Success;
+    *result = ReadDoubleFromMemory(actualType, pData, &err);
+    return err;
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
