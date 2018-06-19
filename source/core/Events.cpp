@@ -569,7 +569,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
 
                     EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, kNotARefNum, &eventOracleIdx);
 
-                    //gPlatform.IO.Printf("StaticRegister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
+                    // gPlatform.IO.Printf("StaticRegister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                     //    viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
 #if kVireoOS_emscripten
                     jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
@@ -1080,7 +1080,8 @@ DEFINE_VIREO_BEGIN(Events)
     // User Events
     DEFINE_VIREO_TYPE(UserEventRefNum, "refnum($0)")
     DEFINE_VIREO_FUNCTION_CUSTOM(CreateUserEvent, UserEventRef_Create, "p(o(UserEventRefNum ue) io(ErrorCluster err))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(i(StaticTypeExplicitData) i(UserEventRefNum ue) i(* element) i(Boolean highprio) io(ErrorCluster err))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(GenerateUserEvent, UserEventRef_Generate, "p(i(StaticTypeExplicitData) i(UserEventRefNum ue) "
+                                 "i(* element) i(Boolean highprio) io(ErrorCluster err))")
     DEFINE_VIREO_FUNCTION_CUSTOM(DestroyUserEvent, UserEventRef_Destroy, "p(i(UserEventRefNum ue) io(ErrorCluster err))")
 
     // Event registration

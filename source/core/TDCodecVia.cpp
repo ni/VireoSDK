@@ -668,7 +668,7 @@ TypeRef TDViaParser::ParseControlReference(void *pData) {
         return BadType();
     if (pData) {
         ControlReferenceCreate((RefNumVal*)pData, _virtualInstrumentScope, controlTagToken);
-        return ctrlRefType; // ((RefNumVal*)pData)->Type();
+        return ctrlRefType;
     }
 
     DefaultValueType *cdt = DefaultValueType::New(_typeManager, ctrlRefType, true);
