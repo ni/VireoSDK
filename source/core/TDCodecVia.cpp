@@ -22,6 +22,7 @@ SDG
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
 #include "ControlRef.h"
+#include "Events.h"
 #include <vector>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
@@ -456,6 +457,7 @@ TypeRef TDViaParser::ParseDefine()
             symbolName.TrimQuotedString(tt);
             vi->SetVIName(symbolName, tt != TokenTraits_String && tt != TokenTraits_VerbatimString);
             symbolName = vi->VIName();  // might have been decoded
+            RegisterForStaticEvents(vi);
         }
     }
     if (!_string.EatChar(')')) {

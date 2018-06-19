@@ -47,7 +47,6 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
         pElt->_owningVI = this;
         pElt++;
     }
-    RegisterForStaticEvents(this);
     return kNIError_Success;
 }
 VirtualInstrument::~VirtualInstrument()

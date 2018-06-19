@@ -16,6 +16,7 @@ SDG
 
 #include "DataTypes.h"
 #include "EventLog.h"
+#include "Events.h"
 
 #include <vector>
 
@@ -42,10 +43,11 @@ class VIClump;
 "    e(SubString ClumpSource)       \n" \
 "))"
 
-class EventInfo {
- public:
+struct EventInfo {
     OccurrenceCore eventOccurrence;
     Int32 setCount;
+    EventQueueID staticQID;
+    EventInfo() : eventOccurrence(), setCount(0), staticQID(0) { }
 };
 //------------------------------------------------------------
 //!
