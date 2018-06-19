@@ -32,7 +32,6 @@
             'Vireo_MaxExecWakeUpTime',
             'EggShell_Create',
             'EggShell_Delete',
-            'EggShell_ReadDouble',
             'EggShell_WriteDouble',
             'EggShell_WriteValueString',
             'EggShell_GetPointer',
@@ -76,6 +75,7 @@
         // Private Instance Variables (per vireo instance)
         var NULL = 0;
         var POINTER_SIZE = 4;
+        var DOUBLE_SIZE = 8;
 
         // Keep in sync with EggShellResult in CEntryPoints.h
         var eggShellResultEnum = {
@@ -102,7 +102,6 @@
         var Vireo_MaxExecWakeUpTime = Module.cwrap('Vireo_MaxExecWakeUpTime', 'number', []);
         var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
-        var EggShell_ReadDouble = Module.cwrap('EggShell_ReadDouble', 'number', ['number', 'string', 'string']);
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
@@ -215,8 +214,22 @@
             return valueRef;
         };
 
-        Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (vi, path) {
-            return EggShell_ReadDouble(v_userShell, vi, path);
+        Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
+            var stack = Module.stackSave();
+            var resultPointer = Module.stackAlloc(DOUBLE_SIZE);
+
+            // TODO mraj should we try to resolve the typeref name on error for more context?
+            var niError = Module._EggShell_ReadDouble(v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
+            if (niError !== 0) {
+                throw new Error('Loading VIA failed for the following reason: ' + niErrorEnum[niError] +
+                    ' (error code: ' + niError + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            var result = Module.getValue(resultPointer, 'double');
+
+            Module.stackRestore(stack);
+            return result;
         };
 
         Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (vi, path, value) {
