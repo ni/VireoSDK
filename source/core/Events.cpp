@@ -562,18 +562,19 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                     char *tagBegin = reinterpret_cast<char*>(tag->Begin()), *tagEnd = reinterpret_cast<char*>(tag->End());
                     EventControlUID controlID = Int32(strtol(tagBegin, &tagEnd, 10));
                     eventSpecRef[eventSpecIndex].eventControlUID = controlID;
+                    if (controlID) {
+                        EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
+                        EventType eventType = eventSpecRef[eventSpecIndex].eventType;
+                        EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
 
-                    EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
-                    EventType eventType = eventSpecRef[eventSpecIndex].eventType;
-                    EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
+                        EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, kNotARefNum, &eventOracleIdx);
 
-                    EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, kNotARefNum, &eventOracleIdx);
-
-                    // gPlatform.IO.Printf("StaticRegister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
-                    //    viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
+                        // gPlatform.IO.Printf("StaticRegister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
+                        //    viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
 #if kVireoOS_emscripten
-                    jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
+                        jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
 #endif
+                    }
                 }
             }
         }
