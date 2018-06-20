@@ -13,6 +13,25 @@ define(PrintJavaScriptRef dv(.VirtualInstrument (
     )
 )))
 
+define(subVI dv(.VirtualInstrument (
+    Params:c(
+        i(JavaScriptRefNum refarg)  // parameter javascript ref, passed from caller
+    )
+    Locals: c(
+        e(JavaScriptRefNum subref) // javascript ref in subVI
+        e(Boolean bool)
+    )
+    clump (1 // top level
+        Println("In SubVI:")
+        PrintJavaScriptRef("refarg" refarg)
+        IsNotANumPathRefnum(refarg bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        PrintJavaScriptRef("subref" subref)
+        IsNotANumPathRefnum(subref bool)
+        Printf("IsNotARefNum: %z\n" bool)
+    )
+)))
+
 define(JavaScriptRefTestProgram dv(.VirtualInstrument (
     Locals:c(
 		e(JavaScriptRefNum ref1)      // static javascript ref 
@@ -37,6 +56,7 @@ define(JavaScriptRefTestProgram dv(.VirtualInstrument (
         Printf("IsNotARefNum: %z\n" bool)
         IsEQ(ref1 ref2 bool)
         Printf("IsEQ ref1 ref2: %z\n" bool)
+        subVI(ref1)
     )
 
 ) ) )
