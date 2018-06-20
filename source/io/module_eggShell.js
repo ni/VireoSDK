@@ -264,58 +264,66 @@
         };
 
         Module.eggShell.typeIsCluster = function (typePointer) {
-            return Module._TypeRef_IsCluster(typePointer);
+            return Module._TypeRef_IsCluster(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsArray = function (typePointer) {
-            return Module._TypeRef_IsArray(typePointer);
+            return Module._TypeRef_IsArray(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsBoolean = function (typePointer) {
-            return Module._TypeRef_IsBoolean(typePointer);
+            return Module._TypeRef_IsBoolean(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsInteger = function (typePointer) {
-            return Module._TypeRef_IsInteger(typePointer);
+            return Module._TypeRef_IsInteger(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsSigned = function (typePointer) {
-            return Module._TypeRef_IsSigned(typePointer);
+            return Module._TypeRef_IsSigned(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsEnum = function (typePointer) {
-            return Module._TypeRef_IsEnum(typePointer);
+            return Module._TypeRef_IsEnum(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsFloat = function (typePointer) {
-            return Module._TypeRef_IsFloat(typePointer);
+            return Module._TypeRef_IsFloat(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsString = function (typePointer) {
-            return Module._TypeRef_IsString(typePointer);
+            return Module._TypeRef_IsString(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsPath = function (typePointer) {
-            return Module._TypeRef_IsPath(typePointer);
+            return Module._TypeRef_IsPath(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsTimestamp = function (typePointer) {
-            return Module._TypeRef_IsTimestamp(typePointer);
+            return Module._TypeRef_IsTimestamp(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsComplex = function (typePointer) {
-            return Module._TypeRef_IsComplex(typePointer);
+            return Module._TypeRef_IsComplex(typePointer) !== 0;
         };
 
         Module.eggShell.typeIsAnalogWaveform = function (typePointer) {
-            return Module._TypeRef_IsAnalogWaveform(typePointer);
+            return Module._TypeRef_IsAnalogWaveform(typePointer) !== 0;
+        };
+
+        var validateVisitMethod = function (fn, fnName) {
+            if (typeof fn !== 'function') {
+                throw new Error('Visitor must have a method named `' + fnName + '`. Found: ' + fn);
+            }
         };
 
         var dispatchVisitBoolean = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitBoolean, 'visitBoolean');
             return typeVisitor.visitBoolean.apply(typeVisitor, args);
         };
 
         var dispatchVisitEnum = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitEnum, 'visitEnum');
             return typeVisitor.visitEnum.apply(typeVisitor, args);
         };
 
@@ -356,60 +364,80 @@
                     visitFn = typeVisitor.visitUInt64;
                     break;
                 default:
-                    throw new Error('Unexpected size for Unsigned Integer');
+                    throw new Error('Unexpected size for Unsigned Integer. Found: ');
                 }
             }
 
+            var intName = (isSignedInteger ? '' : 'U') + 'Int' + (sizeOfInteger * 8);
+            validateVisitMethod(visitFn, 'visit' + intName);
             return visitFn.apply(typeVisitor, args);
         };
 
         var dispatchVisitFloat = function (typeVisitor, args) {
             var typeRef = args[0].typeRef;
             var sizeOfFloat = Module.eggShell.typeTopAQSize(typeRef);
+            var visitFn;
             switch (sizeOfFloat) {
             case 4:
-                return typeVisitor.visitSingle.apply(typeVisitor, args);
+                visitFn = typeVisitor.visitSingle;
+                break;
             case 8:
-                return typeVisitor.visitDouble.apply(typeVisitor, args);
+                visitFn = typeVisitor.visitDouble;
+                break;
             default:
                 throw new Error('Unexpected size for a Float value');
             }
+
+            validateVisitMethod(visitFn, 'visit' + (sizeOfFloat === 4 ? 'Single' : 'Double'));
+            return visitFn.apply(typeVisitor, args);
         };
 
         var dispatchVisitString = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitString, 'visitString');
             return typeVisitor.visitString.apply(typeVisitor, args);
         };
 
         var dispatchVisitComplex = function (typeVisitor, args) {
-            var typeRef = args[0].typeRef;
-            var sizeOfComplex = Module.eggShell.typeTopAQSize(typeRef);
+            var typeRef = args[0].typeRef,
+                sizeOfComplex = Module.eggShell.typeTopAQSize(typeRef),
+                visitFn;
             switch (sizeOfComplex) {
             case 8:
-                return typeVisitor.visitComplexSingle.apply(typeVisitor, args);
+                visitFn = typeVisitor.visitComplexSingle;
+                break;
             case 16:
-                return typeVisitor.visitComplexDouble.apply(typeVisitor, args);
+                visitFn = typeVisitor.visitComplexDouble;
+                break;
             default:
                 throw new Error('Unexpected size for a Complex value');
             }
+
+            validateVisitMethod(visitFn, 'visitComplex' + (sizeOfComplex === 8 ? 'Single' : 'Double'));
+            return visitFn.apply(typeVisitor, args);
         };
 
         var dispatchVisitAnalogWaveform = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitAnalogWaveform, 'visitAnalogWaveform');
             return typeVisitor.visitAnalogWaveform.apply(typeVisitor, args);
         };
 
         var dispatchVisitTimestamp = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitTimestamp, 'visitTimestamp');
             return typeVisitor.visitTimestamp.apply(typeVisitor, args);
         };
 
         var dispatchVisitPath = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitPath, 'visitPath');
             return typeVisitor.visitPath.apply(typeVisitor, args);
         };
 
         var dispatchVisitArray = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitArray, 'visitArray');
             return typeVisitor.visitArray.apply(typeVisitor, args);
         };
 
         var dispatchVisitCluster = function (typeVisitor, args) {
+            validateVisitMethod(typeVisitor.visitCluster, 'visitCluster');
             return typeVisitor.visitCluster.apply(typeVisitor, args);
         };
 
@@ -442,11 +470,11 @@
         ];
 
         Module.eggShell.reflectOnValueRef = publicAPI.eggShell.reflectOnValueRef = function (typeVisitor, valueRef) {
-            if (typeof valueRef !== 'object') {
+            if (typeof valueRef !== 'object' || Array.isArray(valueRef)) {
                 throw new Error('valueRef must be an object. Found: ' + valueRef);
             }
 
-            if (typeof typeVisitor !== 'object') {
+            if (typeof typeVisitor !== 'object' || Array.isArray(typeVisitor)) {
                 throw new Error('typeVisitor must be an object. Found: ' + typeVisitor);
             }
 
@@ -456,18 +484,18 @@
                 i = 0;
 
             for (i = 0; i < registeredTypes.length; i += 1) {
-                if (registeredTypes[i](typeRef)) {
+                if (registeredTypes[i](typeRef) === true) {
                     foundTypeIndex = i;
                     break;
                 }
             }
 
             if (foundTypeIndex < 0) {
-                throw new Error('unexpected type');
+                throw new Error('Unexpected type. Is typeRef pointing to a valid type?. TypeRef found: ' + typeRef);
             }
 
             var dispatchFunction = typeDispatchFunctions[foundTypeIndex];
-            return dispatchFunction(typeVisitor, valueRef, args);
+            return dispatchFunction(typeVisitor, args);
         };
 
         Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (vi, path, value) {

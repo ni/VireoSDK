@@ -146,7 +146,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
 	'_TypeRef_TopAQSize',\
 	'_TypeRef_Name',\
 	'_TypeRef_SubElementCount',\
-	'_TypeRef_SubElementByIndex',\
+	'_TypeRef_GetSubElementByIndex',\
 	'_TypeRef_IsCluster',\
 	'_TypeRef_IsArray',\
 	'_TypeRef_IsBoolean',\
