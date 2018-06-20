@@ -933,7 +933,7 @@ typedef UInt32 RefNum;
 
 class RefNumVal {
  public:
-    RefNumVal() : _refnum(0) { }
+    explicit RefNumVal(RefNum ref = 0) : _refnum(ref) { }
     RefNum GetRefNum() const { return _refnum; }
     void SetRefNum(RefNum refNum) { _refnum = refNum; }
  private:

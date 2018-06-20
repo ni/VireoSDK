@@ -85,11 +85,15 @@ NIError ControlReferenceLookup(ControlRefNum refnum, VirtualInstrument **pVI, St
     ControlRefInfo controlRefInfo;
     NIError err = ControlRefNumManager::RefNumStorage().GetRefNumData(refnum, &controlRefInfo);
     if (err == kNIError_Success) {
-        *pVI = controlRefInfo.vi;
-        *pControlTag = controlRefInfo.controlTag;
+        if (pVI)
+            *pVI = controlRefInfo.vi;
+        if (pControlTag)
+            *pControlTag = controlRefInfo.controlTag;
     } else {
-        *pVI = nullptr;
-        *pControlTag = nullptr;
+        if (pVI)
+            *pVI = nullptr;
+        if (pControlTag)
+            *pControlTag = nullptr;
     }
     return err;
 }

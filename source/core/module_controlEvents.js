@@ -58,7 +58,7 @@
             eventId,
             eventOracleIndex
         ) {
-            var viName = Module.eggshell.dataReadString(viNamePointer);
+            var viName = Module.eggShell.dataReadString(viNamePointer);
 
             try {
                 unRegisterForControlEvent(viName, controlId, eventId, eventOracleIndex);

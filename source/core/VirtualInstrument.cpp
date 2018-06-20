@@ -126,6 +126,7 @@ void VirtualInstrument::GoIsDone()
     // there is nothing for the the debugger to read.
     // So this is postponed until the VI the cleared
     // ClearParamBlock();
+    UnregisterForStaticEvents(this);
     RunCleanupProcs(this);
 }
 //------------------------------------------------------------
