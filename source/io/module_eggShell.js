@@ -138,7 +138,6 @@
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
-        var TypeRef_TopAQSize = Module.cwrap('TypeRef_TopAQSize', 'number', ['number']);
         var TypeRef_Name = Module.cwrap('TypeRef_Name', 'string', ['number']);
         var TypeRef_SubElementCount = Module.cwrap('TypeRef_SubElementCount', 'number', ['number']);
         var TypeRef_GetSubElementByIndex = Module.cwrap('TypeRef_GetSubElementByIndex', 'number', ['number']);
@@ -248,7 +247,7 @@
         };
 
         Module.eggShell.typeTopAQSize = function (typePointer) {
-            return TypeRef_TopAQSize(typePointer);
+            return Module._TypeRef_TopAQSize(typePointer);
         };
 
         Module.eggShell.typeName = function (typePointer) {
