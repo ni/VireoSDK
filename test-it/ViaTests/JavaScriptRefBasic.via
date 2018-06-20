@@ -1,0 +1,44 @@
+define(PrintJavaScriptRef dv(.VirtualInstrument (
+    Params:c(
+        i(String refName)
+        i(JavaScriptRefNum ref)
+    )
+    Locals:c(
+        e(String out)
+        e(String refString)
+    )
+    clump (1 // top level
+        StringFormat(refString "%z" * ref)
+        Printf("Ref %s: %s\n" refName refString)
+    )
+)))
+
+define(JavaScriptRefTestProgram dv(.VirtualInstrument (
+    Locals:c(
+		e(JavaScriptRefNum ref1)      // static javascript ref 
+        e(dv(JavaScriptRefNum) ref2)  // static javascript ref 
+        e(Boolean bool)
+    )
+
+    clump (1 // top level
+        PrintJavaScriptRef("ref1" ref1)
+        PrintJavaScriptRef("ref2" ref2)
+        IsEQ(ref1 ref2 bool)
+        Printf("IsEQ ref1 ref2: %z\n" bool)
+        IsNE(ref1 ref2 bool)
+        Printf("IsNE ref1 ref2: %z\n" bool)
+        IsNotANumPathRefnum(ref1 bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        IsNotANumPathRefnum(ref2 bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        Copy(ref1 ref2)
+        PrintJavaScriptRef("ref2" ref2)
+        IsNotANumPathRefnum(ref2 bool)
+        Printf("IsNotARefNum: %z\n" bool)
+        IsEQ(ref1 ref2 bool)
+        Printf("IsEQ ref1 ref2: %z\n" bool)
+    )
+
+) ) )
+
+enqueue(JavaScriptRefTestProgram)

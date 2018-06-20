@@ -215,6 +215,7 @@
                 "IsOctalDigitFail.via",
                 "IsPrintableFail.via",
                 "IsWhiteSpaceFail.via",
+                "JavaScriptRefBasic.via",
                 "JSONArray.via",
                 "JSONErrorCodes.via",
                 "KeyValuePairDefinitions.via",
