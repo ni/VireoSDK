@@ -15,14 +15,15 @@
  
  Example:
  
- define(MyVI dv(.VirtualInstrument (
- Locals: c(
- e(JavaScriptRefNum  jsref)  // JavaScript ref that is not statically linked
- ) ...
+    define(MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(JavaScriptRefNum  jsref)  // JavaScript ref that is not statically linked
+    ) ...
  
  The actual Type of jsref is JavaScriptRefNum and stores a refnum (cookie) which
- opaquely holds onto the javascript object.
- 
+ opaquely holds onto the javascript object. The refnum is managed on the JS side 
+ and does not use the Vireo RefNumManager.
+  
  These can be used in subVIs to refer to a reference passed in by a caller.
 */
 
@@ -35,7 +36,7 @@
 namespace Vireo
 {
 
-typedef RefNum JavaScriptRefNum;  // RefNum to be used with JavaScript Ref Num API 
+typedef RefNum JavaScriptRefNum;  // RefNum to be used with JavaScript Ref Num API
 
 }  // namespace Vireo
 
