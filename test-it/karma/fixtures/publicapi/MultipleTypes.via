@@ -124,6 +124,7 @@ define (MyVI dv(.VirtualInstrument (
         e(dv('\xF0\x8F\xBF\xBF') dataItem_utf8sequence_overlonglargest4byte) // U+FFFF
 
         e(dv(.String '\\"') dataItem_StringOtherJSONEscapedCharacters)
+        e(dv(.Single 123.5) dataItem_NumericSingle)
         e(dv(.Double 123.456)dataItem_NumericDouble)
         e(dv(.Double nan)dataItem_NumericDoubleNaN)
         e(dv(.Double inf)dataItem_NumericDoublePositiveInfinity)
@@ -133,6 +134,7 @@ define (MyVI dv(.VirtualInstrument (
         e(dv(.Int32 -1073741824)dataItem_Numeric32)
         e(dv(.Int64 -1152921504606846976)dataItem_Numeric64)
         e(dv(.UInt64 18446744073709551615) dataItem_NumericU64)
+        e(dv(.ComplexSingle (123.5 -20.75)) dataItem_ComplexSingle)
         e(dv(.ComplexDouble (1337.73 -9283.12))dataItem_Complex)
         e(dv(.Boolean true) booleanTrueValue)
         e(dv(.Boolean false) booleanFalseValue)
