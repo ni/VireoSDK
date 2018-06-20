@@ -208,3 +208,31 @@ If you want to test your local vireo changes on a separate machine from your loc
 
 This will update the package.json and package-lock.json to point to the tgz file location.
 You can now share the application or if running in a CI environment create a changeset, etc, that has the tgz file and updated package.json and package-lock.json to test.
+
+# Configuring Visual Studio Code Intellisense for the JavaScript build
+1. Create a [c_cpp_properties.json](https://github.com/Microsoft/vscode-cpptools/blob/master/Documentation/Getting%20started%20with%20IntelliSense%20configuration.md) file for the VSCode C/C++ configuration
+2. Add an Emscripten configuration to the c_cpp_properties.json file that uses the `includePath` (**make sure to update the paths to point to your Emscripten installation directory**) and `defines` shown in the following example:
+```json
+{
+    "name": "Emscripten",
+    "browse": {
+        "path": [
+            "${workspaceFolder}"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+    },
+    "includePath": [
+        "C:/dev/Github/emsdk/emscripten/1.37.36/system/include",
+        "C:/dev/Github/emsdk/emscripten/1.37.36/system/include/libcxx",
+        "C:/dev/Github/emsdk/emscripten/1.37.36/system/include/libc",
+        "C:/dev/Github/emsdk/emscripten/1.37.36/system/lib/libc/musl/arch/emscripten",
+        "${workspaceFolder}/source/include"
+    ],
+    "defines": [
+        "kVireoOS_emscripten", "__EMSCRIPTEN__", "VIREO_DEBUG", "VIREO_USING_ASSERTS"
+    ],
+    "cStandard": "c11",
+    "cppStandard": "c++14",
+    "intelliSenseMode": "clang-x64"
+}
+```
