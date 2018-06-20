@@ -143,22 +143,22 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_GetArrayMetadata',\
     '_Data_GetArrayDimLength',\
     '_Data_ResizeArray',\
-	'_TypeRef_TopAQSize',\
-	'_TypeRef_Name',\
-	'_TypeRef_SubElementCount',\
-	'_TypeRef_GetSubElementByIndex',\
-	'_TypeRef_IsCluster',\
-	'_TypeRef_IsArray',\
-	'_TypeRef_IsBoolean',\
-	'_TypeRef_IsInteger',\
-	'_TypeRef_IsSigned',\
-	'_TypeRef_IsEnum',\
-	'_TypeRef_IsFloat',\
-	'_TypeRef_IsString',\
-	'_TypeRef_IsPath',\
-	'_TypeRef_IsTimestamp',\
-	'_TypeRef_IsComplex',\
-	'_TypeRef_IsAnalogWaveform',\
+    '_TypeRef_TopAQSize',\
+    '_TypeRef_Name',\
+    '_TypeRef_SubElementCount',\
+    '_TypeRef_GetSubElementByIndex',\
+    '_TypeRef_IsCluster',\
+    '_TypeRef_IsArray',\
+    '_TypeRef_IsBoolean',\
+    '_TypeRef_IsInteger',\
+    '_TypeRef_IsSigned',\
+    '_TypeRef_IsEnum',\
+    '_TypeRef_IsFloat',\
+    '_TypeRef_IsString',\
+    '_TypeRef_IsPath',\
+    '_TypeRef_IsTimestamp',\
+    '_TypeRef_IsComplex',\
+    '_TypeRef_IsAnalogWaveform',\
     '_JavaScriptInvoke_GetParameterType',\
     '_JavaScriptInvoke_GetParameterPointer',\
     '_JavaScriptInvoke_GetArrayElementType'\
