@@ -130,9 +130,13 @@ struct EventData {
 
 class VirtualInstrument;
 void RegisterForStaticEvents(VirtualInstrument *vi);
+void UnregisterForStaticEvents(VirtualInstrument *vi);
 
 typedef Int32 EventQueueID;
 enum { kNotAQueueID = 0 };
+
+typedef IntIndex EventOracleIndex;
+enum { kNotAnEventOracleIdx = -1, kAppEventOracleIdx = 0 };
 
 enum { kEventArgErr = 1 };
 

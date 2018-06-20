@@ -19,6 +19,7 @@ SDG
 #include "Events.h"
 
 #include <vector>
+#include <map>
 
 namespace Vireo
 {
@@ -43,11 +44,31 @@ class VIClump;
 "    e(SubString ClumpSource)       \n" \
 "))"
 
-struct EventInfo {
+struct EventStructInfo {
     OccurrenceCore eventOccurrence;
     Int32 setCount;
     EventQueueID staticQID;
-    EventInfo() : eventOccurrence(), setCount(0), staticQID(0) { }
+    EventStructInfo() : eventOccurrence(), setCount(0), staticQID(0) { }
+};
+
+struct EventControlInfo {
+    EventOracleIndex eventOracleIndex;
+    RefNum refnum;
+    explicit EventControlInfo(EventOracleIndex eoIdx = 0, RefNum ref = 0) : eventOracleIndex(eoIdx), refnum(ref) { }
+};
+
+struct EventInfo {
+    typedef std::map<EventControlUID, EventControlInfo> ControlIDInfoMap;
+
+    EventStructInfo *eventStructInfo;
+    ControlIDInfoMap controlIDInfoMap;
+
+    EventInfo() : eventStructInfo(nullptr) { }
+    explicit EventInfo(Int32 numEventStruct) : eventStructInfo(nullptr) { eventStructInfo = new EventStructInfo[numEventStruct]; }
+    ~EventInfo() {
+        delete[] eventStructInfo;
+        eventStructInfo = nullptr;
+    }
 };
 //------------------------------------------------------------
 //!

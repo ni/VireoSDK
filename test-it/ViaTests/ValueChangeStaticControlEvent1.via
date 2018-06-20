@@ -45,7 +45,7 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
 	// Since the controlRefnum is a Vireo-side reference, OccurEvent will look up the refnum from the eventOracleIdx
 	// and put it in the EventData; the JS code which calls OccurEvent does not need to supply it.
 
-        _OccurEvent(1 18 1000 2)  // for testing
+        _OccurEvent(18 1000 2)  // for testing
         // TODO(spathiwa) the 1 is a hard-coded eventOracle index -- fix to lookup from controlID
 
 	// Imagine event loop around this:
