@@ -12,7 +12,7 @@ OUTPUT_EXE=$(OUTPUT_DIR)/esh
 OUTPUT_TEST_EXE=$(OUTPUT_DIR)/esh-test
 
 COMMANDLINE = main.cpp
-CORE = Array.cpp Assert.cpp CEntryPoints.cpp ControlRef.cpp Date.cpp EventLog.cpp Events.cpp ExecutionContext.cpp GenericFunctions.cpp MatchPat.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp RefNum.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp TimeFunctions.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp UnitTest.cpp VirtualInstrument.cpp Waveform.cpp
+CORE = Array.cpp Assert.cpp CEntryPoints.cpp ControlRef.cpp Date.cpp EventLog.cpp Events.cpp ExecutionContext.cpp GenericFunctions.cpp JavaScriptRef.cpp MatchPat.cpp Math.cpp NumericString.cpp Platform.cpp Queue.cpp RefNum.cpp String.cpp StringUtilities.cpp Synchronization.cpp TDCodecLVFlat.cpp TDCodecVia.cpp Thread.cpp TimeFunctions.cpp Timestamp.cpp TypeAndDataManager.cpp TypeAndDataReflection.cpp TypeDefiner.cpp TypeTemplates.cpp UnitTest.cpp VirtualInstrument.cpp Waveform.cpp
 UNITTEST = RefNumTest.cpp
 IO = FileIO.cpp Canvas2d.cpp DebugGPIO.cpp HttpClient.cpp JavaScriptInvoke.cpp PropertyNode.cpp
 

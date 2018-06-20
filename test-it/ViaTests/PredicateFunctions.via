@@ -52,6 +52,8 @@ start( VI<(
 	Println("IsNotANumPathRefnum")
 	IsNotANumPathRefnum(nan result)
 	Println(result)
+	IsNotANumPathRefnum(0 result)
+	Println(result)
 	IsNotANumPathRefnum(0.0 result)
 	Println(result)
 	IsNotANumPathRefnum("" result)
