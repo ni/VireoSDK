@@ -1,4 +1,4 @@
-fdescribe('ValueChanged event tests', function () {
+describe('ValueChanged event tests', function () {
     'use strict';
 
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -79,7 +79,6 @@ fdescribe('ValueChanged event tests', function () {
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
-            console.log(rawPrint);
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('eventOccurred')).toEqual(false);
             expect(viPathParser('eventTimedOut')).toEqual(true);
