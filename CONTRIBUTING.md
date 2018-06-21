@@ -210,7 +210,7 @@ This will update the package.json and package-lock.json to point to the tgz file
 You can now share the application or if running in a CI environment create a changeset, etc, that has the tgz file and updated package.json and package-lock.json to test.
 
 # Configuring Visual Studio Code Intellisense for the JavaScript build
-1. Create a [c_cpp_properties.json](https://github.com/Microsoft/vscode-cpptools/blob/master/Documentation/Getting%20started%20with%20IntelliSense%20configuration.md) file for the VSCode C/C++ configuration
+1. Create a [c_cpp_properties.json](https://github.com/Microsoft/vscode-cpptools/blob/master/Documentation/Getting%20started%20with%20IntelliSense%20configuration.md) file for the VSCode C/C++ configuration. A quick shortcut for creating the `c_cpp_properties.json` file is to hit `Ctrl+Shift+P` from inside Visual Studio Code and search for and run the `C/CPP: Edit Configurations...` command.
 2. Add an Emscripten configuration to the c_cpp_properties.json file that uses the `includePath` (**make sure to update the paths to point to your Emscripten installation directory**) and `defines` shown in the following example:
 ```json
 {
