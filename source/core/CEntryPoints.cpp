@@ -512,9 +512,9 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
     return typeRef->AQAlignment();
 }
 //------------------------------------------------------------
-VIREO_EXPORT const char* TypeRef_Name(TypeRef typeRef)
+VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
 {
-    TypeManagerScope scope(typeRef->TheTypeManager());
+    TypeManagerScope scope(tm);
     SubString name = typeRef->Name();
 
     static StringRef returnBuffer = nullptr;
