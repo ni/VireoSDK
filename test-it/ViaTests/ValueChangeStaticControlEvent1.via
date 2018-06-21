@@ -15,6 +15,17 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
 		 // when ControlReference(18) is parsed, which creates a refnum cookie to store the controlID 18.
                e(dv(UInt32 0) dynIndex)    // zero - statically registered
            ))
+           e(c(  // Event spec 1
+               // This is a second EventSpec for the same control; the event is not fired, but
+               // it ensures that the ControlReference refnum (cookie) val is the same as the one 
+               // in the above EventSpec. If it were not, the test would fail (not match the Value 
+               // Change event) because the second ref would overwrite the first in the VI's EventInfo,
+               // causing _OccurEvent to use the 2nd ref, and not matching the 1st ref registered for above.
+               e(dv(UInt32 1000) eventSource)  // event source enum
+               e(dv(UInt32 23) eventType)  // Key Down
+               e(dv(ControlRefNum ControlReference("18")) controlUID)  // for static control refs
+               e(dv(UInt32 0) dynIndex)    // zero - statically registered
+           ))
            e(dv(.EventSpec (0 1 0 0)))
         ))
     )
@@ -50,7 +61,8 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
 
 	// Imagine event loop around this:
         Printf("Waiting on Events\n")
-        WaitForEventsAndDispatch(50 * 0 0 eventData 1 1 timeoutData 2)
+
+        WaitForEventsAndDispatch(50 * 0 0 eventData 1 2 timeoutData 2)
         Branch(0)
         Perch(1)
         Printf("Value Changed Event %z %z\n" eventData.Source eventData.Type)
