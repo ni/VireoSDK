@@ -874,7 +874,7 @@ Boolean TypeCommon::IsNumeric()
     return false;
 }
 //------------------------------------------------------------
-Boolean TypeCommon::IsInteger() 
+Boolean TypeCommon::IsInteger()
 {
     TypeRef t = this;
     while (t) {
