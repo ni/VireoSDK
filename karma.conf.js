@@ -17,6 +17,7 @@
             'test-it/karma/http/*.Test.js',
             'test-it/karma/javascriptinvoke/*.Test.js',
             'test-it/karma/propertynode/*.Test.js',
+            'test-it/karma/events/*.Test.js',
             'test-it/karma/static/*.Test.js'
         ]);
 
