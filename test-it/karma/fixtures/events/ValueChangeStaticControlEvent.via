@@ -1,4 +1,4 @@
-define (OccurEvent dv(.VirtualInstrument (
+define (UpdateBooleanOnValueChangeEvent dv(.VirtualInstrument (
     Events: c(
         e(c( // Event Struct 0
            e(c(  // Event spec 0
@@ -30,7 +30,7 @@ define (OccurEvent dv(.VirtualInstrument (
         e(.Boolean eventOccurred)
         e(.Boolean eventTimedOut)
     )
-        clump(1
+    clump(1
         Printf("Waiting on Events\n")
         WaitForEventsAndDispatch(100 * 0 0 eventData 1 1 timeoutData 2)
         Branch(0)
@@ -43,3 +43,4 @@ define (OccurEvent dv(.VirtualInstrument (
         Perch(0)
     )
 )))
+enqueue(UpdateBooleanOnValueChangeEvent)
