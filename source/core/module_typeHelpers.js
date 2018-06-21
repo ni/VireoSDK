@@ -53,52 +53,52 @@
             var isSignedInteger = Module.typeHelpers.isSigned(typeRef);
             var sizeOfInteger = Module.typeHelpers.topAQSize(typeRef);
             var visitFn = undefined;
-            var typeName = '';
+            var fnName = '';
             if (isSignedInteger === true) {
                 switch (sizeOfInteger) {
                 case 1:
                     visitFn = typeVisitor.visitInt8;
-                    typeName = 'Int8';
+                    fnName = 'visitInt8';
                     break;
                 case 2:
                     visitFn = typeVisitor.visitInt16;
-                    typeName = 'Int16';
+                    fnName = 'visitInt16';
                     break;
                 case 4:
                     visitFn = typeVisitor.visitInt32;
-                    typeName = 'Int32';
+                    fnName = 'visitInt32';
                     break;
                 case 8:
                     visitFn = typeVisitor.visitInt64;
-                    typeName = 'Int64';
+                    fnName = 'visitInt64';
                     break;
                 default:
-                    throw new Error('Unexpected size for Integer');
+                    throw new Error('Unexpected size for Integer. Found: ' + sizeOfInteger);
                 }
             } else {
                 switch (sizeOfInteger) {
                 case 1:
                     visitFn = typeVisitor.visitUInt8;
-                    typeName = 'UInt8';
+                    fnName = 'visitUInt8';
                     break;
                 case 2:
                     visitFn = typeVisitor.visitUInt16;
-                    typeName = 'UInt16';
+                    fnName = 'visitUInt16';
                     break;
                 case 4:
                     visitFn = typeVisitor.visitUInt32;
-                    typeName = 'UInt32';
+                    fnName = 'visitUInt32';
                     break;
                 case 8:
                     visitFn = typeVisitor.visitUInt64;
-                    typeName = 'UInt64';
+                    fnName = 'visitUInt64';
                     break;
                 default:
-                    throw new Error('Unexpected size for Unsigned Integer. Found: ');
+                    throw new Error('Unexpected size for Unsigned Integer. Found: ' + sizeOfInteger);
                 }
             }
 
-            validateVisitMethod(visitFn, 'visit' + typeName);
+            validateVisitMethod(visitFn, fnName);
             return visitFn.call(typeVisitor, valueRef, data);
         };
 
@@ -106,21 +106,21 @@
             var typeRef = valueRef.typeRef;
             var sizeOfFloat = Module.typeHelpers.topAQSize(typeRef);
             var visitFn;
-            var typeName = '';
+            var fnName = '';
             switch (sizeOfFloat) {
             case 4:
                 visitFn = typeVisitor.visitSingle;
-                typeName = 'Single';
+                fnName = 'visitSingle';
                 break;
             case 8:
                 visitFn = typeVisitor.visitDouble;
-                typeName = 'Double';
+                fnName = 'visitDouble';
                 break;
             default:
-                throw new Error('Unexpected size for a Float value');
+                throw new Error('Unexpected size for a Float value. Found: ' + sizeOfFloat);
             }
 
-            validateVisitMethod(visitFn, 'visit' + typeName);
+            validateVisitMethod(visitFn, fnName);
             return visitFn.call(typeVisitor, valueRef, data);
         };
 
@@ -133,21 +133,21 @@
             var typeRef = valueRef.typeRef,
                 sizeOfComplex = Module.typeHelpers.topAQSize(typeRef),
                 visitFn,
-                typeName;
+                fnName;
             switch (sizeOfComplex) {
             case 8:
                 visitFn = typeVisitor.visitComplexSingle;
-                typeName = 'Single';
+                fnName = 'visitComplexSingle';
                 break;
             case 16:
                 visitFn = typeVisitor.visitComplexDouble;
-                typeName = 'Double';
+                fnName = 'visitComplexDouble';
                 break;
             default:
-                throw new Error('Unexpected size for a Complex value');
+                throw new Error('Unexpected size for a Complex value. Found: ' + sizeOfComplex);
             }
 
-            validateVisitMethod(visitFn, 'visitComplex' + typeName);
+            validateVisitMethod(visitFn, fnName);
             return visitFn.call(typeVisitor, valueRef, data);
         };
 
@@ -182,7 +182,7 @@
         };
 
         Module.typeHelpers.typeName = function (typeRef) {
-            return TypeRef_Name(typeRef);
+            return TypeRef_Name(Module.eggShell.v_userShell, typeRef);
         };
 
         Module.typeHelpers.subElementCount = function (typeRef) {
