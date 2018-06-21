@@ -1104,8 +1104,17 @@ VIREO_EXPORT void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 e
     // TODO(spathiwa,sid): Add event data arg
 
     RefNum ref = kNotARefNum;
-    EventOracle::TheEventOracle().GetControlInfoForEventOracleIndex(eventOracleIndex, nullptr, &ref);
-    OccurEvent(eventOracleIndex, controlID, eventType, ref, nullptr, nullptr);
+    EventControlUID eventIndexControlID = 0;
+    if (eventOracleIndex > kAppEventOracleIdx) {
+        EventOracle::TheEventOracle().GetControlInfoForEventOracleIndex(eventOracleIndex, &eventIndexControlID, &ref);
+        if (controlID == eventIndexControlID)
+            OccurEvent(eventOracleIndex, controlID, eventType, ref, nullptr, nullptr);
+        else
+            THREAD_EXEC()->LogEvent(EventLog::kSoftDataError, "OccurEvent: eventOracleIndex %d does not match controlID %d, expected %d",
+                                    eventOracleIndex, controlID, eventIndexControlID);
+    } else {
+        THREAD_EXEC()->LogEvent(EventLog::kSoftDataError, "OccurEvent: eventOracleIndex invalid");
+    }
 }
 
 VIREO_FUNCTION_SIGNATURE3(_OccurEvent, UInt32, UInt32, UInt32)
