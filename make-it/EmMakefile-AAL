@@ -107,6 +107,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
 	"_EggShell_ReadValueString",\
 	"_EggShell_WriteValueString",\
 	"_Occurrence_Set",\
+	"_OccurEvent",\
 	"_Data_WriteString",\
 	"_Data_WriteInt32",\
 	"_Data_WriteUInt32"\
