@@ -1,4 +1,4 @@
-fdescribe('The Vireo EggShell Reflection API', function () {
+describe('The Vireo EggShell Reflection API', function () {
     'use strict';
 
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -12,9 +12,8 @@ fdescribe('The Vireo EggShell Reflection API', function () {
 
     var typeDescriptor = (function () {
         var returnTypeName = function (name) {
-            var typeName = name;
             return function () {
-                return typeName;
+                return name;
             };
         };
 

@@ -514,6 +514,7 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
 //------------------------------------------------------------
 VIREO_EXPORT const char* TypeRef_Name(TypeRef typeRef)
 {
+    TypeManagerScope scope(typeRef->TheTypeManager());
     SubString name = typeRef->Name();
 
     static StringRef returnBuffer = nullptr;
@@ -532,7 +533,7 @@ VIREO_EXPORT const char* TypeRef_Name(TypeRef typeRef)
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*) returnBuffer->Begin();
     }
-    
+
     return "";
 }
 //------------------------------------------------------------
@@ -601,7 +602,7 @@ VIREO_EXPORT Boolean TypeRef_IsEnum(TypeRef typeRef)
     return typeRef->IsEnum();
 }
 //------------------------------------------------------------
-VIREO_EXPORT Boolean TypeRef_IsFloat(TypeRef typeRef) 
+VIREO_EXPORT Boolean TypeRef_IsFloat(TypeRef typeRef)
 {
     return typeRef->IsFloat();
 }
