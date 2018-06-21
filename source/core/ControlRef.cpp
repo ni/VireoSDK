@@ -45,7 +45,7 @@ class ControlRefNumManager : public RefNumManager {
             if (ctlRefIter->second._refData.vi == info->vi && ctlRefIter->second._refData.controlTag->IsEqual(info->controlTag)) {
                 // Found an existing ref with the same data; return it, and dispose the new StringRef, because we now own it.
                 info->controlTag->Delete(info->controlTag);
-                return ctlRefIter->first;
+                return ControlRefNumType::RefNumFromIndexAndExistingHeader(ctlRefIter->first, &ctlRefIter->second._refHeader);
             }
             ++ctlRefIter;
         }
