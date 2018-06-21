@@ -25,7 +25,7 @@ describe('The Vireo EggShell String api can', function () {
     });
 
     describe('use readString', function () {
-        fit('to read different string values from memory', function () {
+        it('to read different string values from memory', function () {
             var valueRef = vireo.eggShell.findValueRef(viName, 'dataItem_String');
             vireo.eggShell.readString(valueRef);
             expect(readString('dataItem_String')).toBe('Hello');
