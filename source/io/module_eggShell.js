@@ -138,9 +138,6 @@
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
-        var TypeRef_Name = Module.cwrap('TypeRef_Name', 'string', ['number']);
-        var TypeRef_SubElementCount = Module.cwrap('TypeRef_SubElementCount', 'number', ['number']);
-        var TypeRef_GetSubElementByIndex = Module.cwrap('TypeRef_GetSubElementByIndex', 'number', ['number']);
 
         // Create shell for vireo instance
         var v_root = EggShell_Create(0);
@@ -246,255 +243,23 @@
             return result;
         };
 
-        Module.eggShell.typeTopAQSize = function (typePointer) {
-            return Module._TypeRef_TopAQSize(typePointer);
-        };
-
-        Module.eggShell.typeName = function (typePointer) {
-            return TypeRef_Name(typePointer);
-        };
-
-        Module.eggShell.typeSubElementCount = function (typePointer) {
-            return TypeRef_SubElementCount(typePointer);
-        };
-
-        Module.eggShell.typeSubElementByIndex = function (typePointer) {
-            return TypeRef_GetSubElementByIndex(typePointer);
-        };
-
-        Module.eggShell.typeIsCluster = function (typePointer) {
-            return Module._TypeRef_IsCluster(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsArray = function (typePointer) {
-            return Module._TypeRef_IsArray(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsBoolean = function (typePointer) {
-            return Module._TypeRef_IsBoolean(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsInteger = function (typePointer) {
-            return Module._TypeRef_IsInteger(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsSigned = function (typePointer) {
-            return Module._TypeRef_IsSigned(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsEnum = function (typePointer) {
-            return Module._TypeRef_IsEnum(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsFloat = function (typePointer) {
-            return Module._TypeRef_IsFloat(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsString = function (typePointer) {
-            return Module._TypeRef_IsString(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsPath = function (typePointer) {
-            return Module._TypeRef_IsPath(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsTimestamp = function (typePointer) {
-            return Module._TypeRef_IsTimestamp(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsComplex = function (typePointer) {
-            return Module._TypeRef_IsComplex(typePointer) !== 0;
-        };
-
-        Module.eggShell.typeIsAnalogWaveform = function (typePointer) {
-            return Module._TypeRef_IsAnalogWaveform(typePointer) !== 0;
-        };
-
-        var validateVisitMethod = function (fn, fnName) {
-            if (typeof fn !== 'function') {
-                throw new Error('Visitor must have a method named `' + fnName + '`. Found: ' + fn);
-            }
-        };
-
-        var dispatchVisitBoolean = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitBoolean, 'visitBoolean');
-            return typeVisitor.visitBoolean.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitEnum = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitEnum, 'visitEnum');
-            return typeVisitor.visitEnum.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitInteger = function (typeVisitor, args) {
-            var typeRef = args[0].typeRef;
-            var isSignedInteger = Module.eggShell.typeIsSigned(typeRef);
-            var sizeOfInteger = Module.eggShell.typeTopAQSize(typeRef);
-            var visitFn = undefined;
-            if (isSignedInteger === true) {
-                switch (sizeOfInteger) {
-                case 1:
-                    visitFn = typeVisitor.visitInt8;
-                    break;
-                case 2:
-                    visitFn = typeVisitor.visitInt16;
-                    break;
-                case 4:
-                    visitFn = typeVisitor.visitInt32;
-                    break;
-                case 8:
-                    visitFn = typeVisitor.visitInt64;
-                    break;
-                default:
-                    throw new Error('Unexpected size for Integer');
-                }
-            } else {
-                switch (sizeOfInteger) {
-                case 1:
-                    visitFn = typeVisitor.visitUInt8;
-                    break;
-                case 2:
-                    visitFn = typeVisitor.visitUInt16;
-                    break;
-                case 4:
-                    visitFn = typeVisitor.visitUInt32;
-                    break;
-                case 8:
-                    visitFn = typeVisitor.visitUInt64;
-                    break;
-                default:
-                    throw new Error('Unexpected size for Unsigned Integer. Found: ');
-                }
-            }
-
-            var intName = (isSignedInteger ? '' : 'U') + 'Int' + (sizeOfInteger * 8);
-            validateVisitMethod(visitFn, 'visit' + intName);
-            return visitFn.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitFloat = function (typeVisitor, args) {
-            var typeRef = args[0].typeRef;
-            var sizeOfFloat = Module.eggShell.typeTopAQSize(typeRef);
-            var visitFn;
-            switch (sizeOfFloat) {
-            case 4:
-                visitFn = typeVisitor.visitSingle;
-                break;
-            case 8:
-                visitFn = typeVisitor.visitDouble;
-                break;
-            default:
-                throw new Error('Unexpected size for a Float value');
-            }
-
-            validateVisitMethod(visitFn, 'visit' + (sizeOfFloat === 4 ? 'Single' : 'Double'));
-            return visitFn.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitString = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitString, 'visitString');
-            return typeVisitor.visitString.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitComplex = function (typeVisitor, args) {
-            var typeRef = args[0].typeRef,
-                sizeOfComplex = Module.eggShell.typeTopAQSize(typeRef),
-                visitFn;
-            switch (sizeOfComplex) {
-            case 8:
-                visitFn = typeVisitor.visitComplexSingle;
-                break;
-            case 16:
-                visitFn = typeVisitor.visitComplexDouble;
-                break;
-            default:
-                throw new Error('Unexpected size for a Complex value');
-            }
-
-            validateVisitMethod(visitFn, 'visitComplex' + (sizeOfComplex === 8 ? 'Single' : 'Double'));
-            return visitFn.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitAnalogWaveform = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitAnalogWaveform, 'visitAnalogWaveform');
-            return typeVisitor.visitAnalogWaveform.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitTimestamp = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitTimestamp, 'visitTimestamp');
-            return typeVisitor.visitTimestamp.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitPath = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitPath, 'visitPath');
-            return typeVisitor.visitPath.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitArray = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitArray, 'visitArray');
-            return typeVisitor.visitArray.apply(typeVisitor, args);
-        };
-
-        var dispatchVisitCluster = function (typeVisitor, args) {
-            validateVisitMethod(typeVisitor.visitCluster, 'visitCluster');
-            return typeVisitor.visitCluster.apply(typeVisitor, args);
-        };
-
-        var typeDispatchFunctions = [
-            dispatchVisitBoolean,
-            dispatchVisitEnum,
-            dispatchVisitInteger,
-            dispatchVisitFloat,
-            dispatchVisitString,
-            dispatchVisitComplex,
-            dispatchVisitAnalogWaveform,
-            dispatchVisitTimestamp,
-            dispatchVisitPath,
-            dispatchVisitArray,
-            dispatchVisitCluster
-        ];
-
-        var registeredTypes = [
-            Module.eggShell.typeIsBoolean,
-            Module.eggShell.typeIsEnum,
-            Module.eggShell.typeIsInteger,
-            Module.eggShell.typeIsFloat,
-            Module.eggShell.typeIsString,
-            Module.eggShell.typeIsComplex,
-            Module.eggShell.typeIsAnalogWaveform,
-            Module.eggShell.typeIsTimestamp,
-            Module.eggShell.typeIsPath,
-            Module.eggShell.typeIsArray,
-            Module.eggShell.typeIsCluster
-        ];
-
-        Module.eggShell.reflectOnValueRef = publicAPI.eggShell.reflectOnValueRef = function (typeVisitor, valueRef) {
-            if (typeof valueRef !== 'object' || Array.isArray(valueRef)) {
+        Module.eggShell.reflectOnValueRef = publicAPI.eggShell.reflectOnValueRef = function (typeVisitor, valueRef, data) {
+            if (typeof valueRef !== 'object' || valueRef === null) {
                 throw new Error('valueRef must be an object. Found: ' + valueRef);
             }
 
-            if (typeof typeVisitor !== 'object' || Array.isArray(typeVisitor)) {
+            if (typeof typeVisitor !== 'object' || typeVisitor === null) {
                 throw new Error('typeVisitor must be an object. Found: ' + typeVisitor);
             }
 
             var typeRef = valueRef.typeRef,
-                args = Array.prototype.slice.call(arguments, 1),
-                foundTypeIndex = -1,
-                i = 0;
+                dispatchFunction = Module.typeHelpers.findTypeDispatcher(typeRef);
 
-            for (i = 0; i < registeredTypes.length; i += 1) {
-                if (registeredTypes[i](typeRef) === true) {
-                    foundTypeIndex = i;
-                    break;
-                }
+            if (dispatchFunction === undefined) {
+                throw new Error('Unexpected type. Is typeRef pointing to a valid type?. Type found: ' + typeRef === 0 ? 'invalid type' : Module.typeHelpers.typeName(typeRef));
             }
 
-            if (foundTypeIndex < 0) {
-                throw new Error('Unexpected type. Is typeRef pointing to a valid type?. TypeRef found: ' + typeRef);
-            }
-
-            var dispatchFunction = typeDispatchFunctions[foundTypeIndex];
-            return dispatchFunction(typeVisitor, args);
+            return dispatchFunction(typeVisitor, valueRef, data);
         };
 
         Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (vi, path, value) {
