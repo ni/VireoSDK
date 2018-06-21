@@ -78,9 +78,10 @@ typedef std::list<EventRegInfo> EventRegList;
 
 class EventOracleObj {
  public:
-    explicit EventOracleObj(EventControlUID controlUID = kNotAnEventControlUID)  { }
-    EventControlUID _controlUID;  // UID of control statically registered
-
+    explicit EventOracleObj(EventControlUID controlUID = kNotAnEventControlUID, RefNum ctlRef = kNotARefNum) :
+        _controlUID(controlUID), _controlRef(ctlRef) { }
+    EventControlUID _controlUID;  // UID of control if statically registered
+    RefNum  _controlRef;    // Control RefNum of control if statically registered
     EventRegList _eRegList;
 };
 typedef std::vector<EventOracleObj> EventOracleObjVector;
@@ -179,6 +180,7 @@ class EventOracle {
  public:
     size_t size(EventQueueID qID) const { return _qObject[qID].size(); }
     void OccurEvent(EventOracleIndex eventOracleIdx, const EventData &eData);
+    bool GetControlInfoForEventOracleIndex(EventOracleIndex eventOracleIdx, EventControlUID *controlID, RefNum *controlRef);
     void ObserveQueue(EventQueueID qID, OccurrenceCore *occ) {
         _qObject[qID].SetObserver(occ);
     }
@@ -230,6 +232,17 @@ void EventOracle::OccurEvent(EventOracleIndex eventOracleIdx, const EventData &e
             }
         }
     }
+}
+
+bool EventOracle::GetControlInfoForEventOracleIndex(EventOracleIndex eventOracleIdx, EventControlUID *controlID, RefNum *controlRef) {
+    if (UInt32(eventOracleIdx) < _eventReg.size()) {
+        if (controlID)
+            *controlID = _eventReg[eventOracleIdx]._controlUID;
+        if (controlRef)
+            *controlRef = _eventReg[eventOracleIdx]._controlRef;
+        return true;
+    }
+    return false;
 }
 
 // EventListInsert -- add registration entry at given eventOracleIndex for event source/type/ref, watching the given QueueID
@@ -312,7 +325,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
         if (idx < size) {  // we found an unused index
             _eventReg[idx]._controlUID = controlUID;
         } else {
-            EventOracleObj eo(controlUID);
+            EventOracleObj eo(controlUID, ref);
             _eventReg.push_back(eo);
             // TODO(spathiwa) -- finish: notify control of its new eventOracleIndex
         }
@@ -603,9 +616,12 @@ void UnregisterForStaticEvents(VirtualInstrument *vi) {
                     EventInfo::ControlIDInfoMap::iterator ciIter = eventInfo->controlIDInfoMap.find(controlID);
                     if (ciIter != eventInfo->controlIDInfoMap.end()) {
                         EventOracleIndex eventOracleIdx = ciIter->second.eventOracleIndex;
+                        RefNum controlRef = ciIter->second.refnum;
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
                         EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
-                        EventOracle::TheEventOracle().UnregisterForEvent(qID, eSource, eventType, eventOracleIdx, kNotARefNum);
+                        eventSpecRef[eventSpecIndex].eventControlUID = controlRef;
+
+                        EventOracle::TheEventOracle().UnregisterForEvent(qID, eSource, eventType, eventOracleIdx, controlRef);
                         // gPlatform.IO.Printf("Static Unregister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                         //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
 #if kVireoOS_emscripten
@@ -1086,7 +1102,10 @@ void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType, UIn
 VIREO_EXPORT void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType)
 {
     // TODO(spathiwa,sid): Add event data arg
-    OccurEvent(eventOracleIndex, controlID, eventType, kNotARefNum, nullptr, nullptr);
+
+    RefNum ref = kNotARefNum;
+    EventOracle::TheEventOracle().GetControlInfoForEventOracleIndex(eventOracleIndex, nullptr, &ref);
+    OccurEvent(eventOracleIndex, controlID, eventType, ref, nullptr, nullptr);
 }
 
 VIREO_FUNCTION_SIGNATURE3(_OccurEvent, UInt32, UInt32, UInt32)
