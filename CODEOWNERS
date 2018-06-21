@@ -11,5 +11,5 @@ make-it/*                   @rajsite @spathiwa
 *.md                        @rajsite
 *.txt                       @rajsite
 .*                          @rajsite
-*.h                         @cglzaguilar @sanmut @spathiwa
-*.cpp                       @cglzaguilar @sanmut @spathiwa
+*.h                         @cglzaguilar @sanmut @spathiwa @segaljared
+*.cpp                       @cglzaguilar @sanmut @spathiwa @segaljared
