@@ -140,11 +140,8 @@
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
         // Create shell for vireo instance
-        var v_root = EggShell_Create(0);
-        var v_userShell = EggShell_Create(v_root);
-
-        Module.eggShell.v_root = v_root;
-        Module.eggShell.v_userShell = v_userShell;
+        Module.eggShell.v_root = EggShell_Create(0);
+        Module.eggShell.v_userShell = EggShell_Create(Module.eggShell.v_root);
 
         // Exported functions
         Module.print = function (text) {
@@ -191,10 +188,10 @@
         Module.eggShell.maxExecWakeUpTime = publicAPI.eggShell.maxExecWakeUpTime = Vireo_MaxExecWakeUpTime;
 
         Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {
-            EggShell_Delete(v_userShell);
-            EggShell_Delete(v_root);
-            v_root = EggShell_Create(0);
-            v_userShell = EggShell_Create(v_root);
+            EggShell_Delete(Module.eggShell.v_userShell);
+            EggShell_Delete(Module.eggShell.v_root);
+            Module.eggShell.v_root = EggShell_Create(0);
+            Module.eggShell.v_userShell = EggShell_Create(Module.eggShell.v_root);
         };
 
         Module.eggShell.createValueRef = function (typeRef, dataRef) {
@@ -212,7 +209,7 @@
             var typeStackPointer = Module.stackAlloc(POINTER_SIZE);
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
 
-            var eggShellResult = Module._EggShell_FindValue(v_userShell, viStackPointer, pathStackPointer, typeStackPointer, dataStackPointer);
+            var eggShellResult = Module._EggShell_FindValue(Module.eggShell.v_userShell, viStackPointer, pathStackPointer, typeStackPointer, dataStackPointer);
             if (eggShellResult !== 0) {
                 throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
@@ -233,7 +230,7 @@
             var resultPointer = Module.stackAlloc(DOUBLE_SIZE);
 
             // TODO mraj should we try to resolve the typeref name on error for more context?
-            var niError = Module._EggShell_ReadDouble(v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
+            var niError = Module._EggShell_ReadDouble(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
             if (niError !== 0) {
                 throw new Error('Loading VIA failed for the following reason: ' + niErrorEnum[niError] +
                     ' (error code: ' + niError + ')' +
@@ -266,7 +263,7 @@
         };
 
         Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (vi, path, value) {
-            EggShell_WriteDouble(v_userShell, vi, path, value);
+            EggShell_WriteDouble(Module.eggShell.v_userShell, vi, path, value);
         };
 
         Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (vi, path) {
@@ -277,7 +274,7 @@
             var pathStackPointer = Module.coreHelpers.writeJSStringToStack(path);
             var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
 
-            var responsePointer = Module._EggShell_ReadValueString(v_userShell, viStackPointer, pathStackPointer, typeStackPointer);
+            var responsePointer = Module._EggShell_ReadValueString(Module.eggShell.v_userShell, viStackPointer, pathStackPointer, typeStackPointer);
             var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, responsePointer);
             var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, responsePointer, responseLength);
 
@@ -286,7 +283,7 @@
         };
 
         Module.eggShell.writeJSON = publicAPI.eggShell.writeJSON = function (vi, path, value) {
-            EggShell_WriteValueString(v_userShell, vi, path, 'JSON', value);
+            EggShell_WriteValueString(Module.eggShell.v_userShell, vi, path, 'JSON', value);
         };
 
         var supportedArrayTypeConfig = {
@@ -394,7 +391,7 @@
         var vireoTypePointer = Module._malloc(4);
 
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
-            var eggShellResult = EggShell_GetPointer(v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
+            var eggShellResult = EggShell_GetPointer(Module.eggShell.v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -405,7 +402,7 @@
 
             var arrayVireoPointer = Module.getValue(vireoObjectPointer, 'i32');
             var typePointer = Module.getValue(vireoTypePointer, 'i32');
-            eggShellResult = Data_ValidateArrayType(v_userShell, typePointer);
+            eggShellResult = Data_ValidateArrayType(Module.eggShell.v_userShell, typePointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -432,7 +429,7 @@
         };
 
         Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
-            return EggShell_GetArrayDimLength(v_userShell, vi, path, dim);
+            return EggShell_GetArrayDimLength(Module.eggShell.v_userShell, vi, path, dim);
         };
 
         Module.eggShell.resizeArray = publicAPI.eggShell.resizeArray = function (vi, path, newDimensionSizes) {
@@ -444,7 +441,7 @@
                 Module.setValue(newLengths + (i * int32Byte), newDimensionSizes[i], 'i32');
             }
 
-            var success = EggShell_ResizeArray(v_userShell, vi, path, rank, newLengths);
+            var success = EggShell_ResizeArray(Module.eggShell.v_userShell, vi, path, rank, newLengths);
 
             Module._free(newLengths);
 
@@ -468,14 +465,14 @@
         // Source should be a JS String
         Module.eggShell.dataWriteString = function (destination, source) {
             var sourceLength = Module.lengthBytesUTF8(source);
-            Data_WriteString(v_userShell, destination, source, sourceLength);
+            Data_WriteString(Module.eggShell.v_userShell, destination, source, sourceLength);
         };
 
         // Source should be a JS array of numbers or a TypedArray of Uint8Array or Int8Array
         Module.eggShell.dataWriteStringFromArray = function (destination, source) {
             var sourceHeapPointer = Module._malloc(source.length);
             Module.writeArrayToMemory(source, sourceHeapPointer);
-            Module._Data_WriteString(v_userShell, destination, sourceHeapPointer, source.length);
+            Module._Data_WriteString(Module.eggShell.v_userShell, destination, sourceHeapPointer, source.length);
             Module._free(sourceHeapPointer);
         };
 
@@ -529,7 +526,7 @@
         };
 
         Module.eggShell.dataReadNumericArrayAsTypedArray = function (arrayPointer) {
-            var eggShellResult = Data_GetArrayMetadata(v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+            var eggShellResult = Data_GetArrayMetadata(Module.eggShell.v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -567,7 +564,7 @@
             var arrayLength = 1;
             dimensionLengths = [];
             for (var j = 0; j < arrayRank; j += 1) {
-                dimensionLengths[j] = Data_GetArrayDimLength(v_userShell, arrayPointer, j);
+                dimensionLengths[j] = Data_GetArrayDimLength(Module.eggShell.v_userShell, arrayPointer, j);
                 arrayLength *= dimensionLengths[j];
             }
 
@@ -622,10 +619,10 @@
             var newLengths = Module._malloc(rank * int32Byte);
             Module.setValue(newLengths, value.length, 'i32');
 
-            Data_ResizeArray(v_userShell, destination, rank, newLengths);
+            Data_ResizeArray(Module.eggShell.v_userShell, destination, rank, newLengths);
             Module._free(newLengths);
 
-            var eggShellResult = Data_GetArrayMetadata(v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
+            var eggShellResult = Data_GetArrayMetadata(Module.eggShell.v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
             if (eggShellResult !== 0) {
                 throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
@@ -668,7 +665,7 @@
                 origPrintErr(textErr);
             };
 
-            var result = Module._EggShell_REPL(v_userShell, viaTextPointer, viaTextLength);
+            var result = Module._EggShell_REPL(Module.eggShell.v_userShell, viaTextPointer, viaTextLength);
             Module._free(viaTextPointer);
             Module.print = origPrint;
             Module.printErr = origPrintErr;
@@ -690,7 +687,7 @@
         //     returns < 0 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
         //     to delay up to N milliseconds before calling again
         Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (numSlices, millisecondsToRun) {
-            return EggShell_ExecuteSlices(v_userShell, numSlices, millisecondsToRun);
+            return EggShell_ExecuteSlices(Module.eggShell.v_userShell, numSlices, millisecondsToRun);
         };
 
         // Pumps vireo asynchronously until the currently loaded via has finished all clumps
