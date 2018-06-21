@@ -142,6 +142,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteDouble',\
     '_Data_WriteJavaScriptRefNum',\
     '_Data_GetArrayMetadata',\
+    '_Data_GetArrayBegin',\
+	'_Data_GetArrayDimensions',\
+	'_Data_GetArrayLength',\
     '_Data_GetArrayDimLength',\
     '_Data_ResizeArray',\
     '_TypeRef_TopAQSize',\
@@ -162,7 +165,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_TypeRef_IsAnalogWaveform',\
     '_JavaScriptInvoke_GetParameterType',\
     '_JavaScriptInvoke_GetParameterPointer',\
-    '_JavaScriptInvoke_GetArrayElementType'\
+    '_JavaScriptInvoke_GetArrayElementType',\
+	'_TypeRef_Rank'\
     ]"
 
 EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
