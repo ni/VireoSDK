@@ -351,6 +351,34 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
+//! Get the starting location of the first element of an Array / String type in memory
+// This function returns the start address of where elements would appear in memory (returns address even if length zero)
+VIREO_EXPORT UInt32 Data_GetArrayBegin(const void* pData)
+{
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    return (UInt32) arrayObject->BeginAt(0);
+}
+//------------------------------------------------------------
+//! Get the values for dimensions of the array. Assumes dimensions target is of length equal to rank
+VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensions[])
+{
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    for (int i = 0; i < arrayObject->Rank(); i++)
+    {
+        dimensions[i] = arrayObject->GetLength(i);
+    }
+}
+//------------------------------------------------------------
+//! Get the total length for an array
+VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData)
+{
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    return arrayObject->Length();
+}
+//------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
 //! an Array or dimension requested is out of the bounds of the rank.
 VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim)

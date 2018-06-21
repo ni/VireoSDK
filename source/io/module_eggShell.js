@@ -80,6 +80,7 @@
         var NULL = 0;
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
+        var LENGTH_SIZE = 4;
 
         // Keep in sync with EggShellResult in CEntryPoints.h
         var eggShellResultEnum = {
@@ -343,6 +344,51 @@
                 heap: Module.HEAPF64,
                 constructorFunction: Float64Array
             }
+        };
+
+        Module.eggShell.getArrayDimensions = publicAPI.eggShell.getArrayDimensions = function (valueRef) {
+            var rank = Module.eggShell.typeRank(valueRef.typeRef);
+
+            var stack = Module.stackSave();
+            var dimensionsPointer = Module.stackAlloc(rank * LENGTH_SIZE);
+            Module._Data_GetArrayDimensions(valueRef.dataRef, dimensionsPointer);
+            var dimensions = [];
+            var i;
+            for (i = 0; i < rank; i += 1) {
+                dimensions.push(Module.getValue(dimensionsPointer + (i * LENGTH_SIZE), 'i32'));
+            }
+            Module.stackRestore(stack);
+
+            return dimensions;
+        };
+
+        Module.eggShell.dataGetArrayBegin = function (dataRef) {
+            return Module._Data_GetArrayBegin(dataRef);
+        };
+
+        Module.eggShell.typeRank = function (typeRef) {
+            return Module._TypeRef_Rank(typeRef);
+        };
+
+        Module.eggShell.dataGetArrayLength = function (dataRef) {
+            return Module._Data_GetArrayLength(dataRef);
+        };
+
+        Module.eggShell.readString = publicAPI.eggShell.readString = function (valueRef) {
+            var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
+            var totalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
+            var result = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, arrayBegin, totalLength);
+            return result;
+        };
+
+        Module.eggShell.readTypedArray = publicAPI.eggShell.readTypedArray = function (valueRef) {
+            // TODO use the type functions to determine the supportedArrayTypeConfig to use
+            var TypedArrayConstructor = Uint8Array;
+
+            var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
+            var totalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
+            var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength * TypedArrayConstructor.BYTES_PER_ELEMENT);
+            return typedArray;
         };
 
         var groupByDimensionLength = function (arr, startIndex, arrLength, dimensionLength) {
