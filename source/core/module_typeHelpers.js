@@ -185,6 +185,10 @@
             return TypeRef_Name(Module.eggShell.v_userShell, typeRef);
         };
 
+        Module.typeHelpers.typeRank = function (typeRef) {
+            return Module._TypeRef_Rank(typeRef);
+        };
+
         Module.typeHelpers.subElementCount = function (typeRef) {
             return Module._TypeRef_SubElementCount(typeRef);
         };
