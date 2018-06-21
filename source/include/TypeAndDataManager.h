@@ -1211,6 +1211,9 @@ class String : public TypedArray1D< Utf8Char >
     void InsertSubString(IntIndex position, SubString* str) {
         Insert(position, (IntIndex)str->Length(), (Utf8Char*)str->Begin());
     }
+    Boolean IsEqual(String *rhs) {
+        return Length() == rhs->Length() && memcmp(Begin(), rhs->Begin(), Length()) == 0;
+    }
 };
 
 typedef String *StringRef;

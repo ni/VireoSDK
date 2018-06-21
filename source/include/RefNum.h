@@ -97,6 +97,11 @@ class TypedRefNum : public RefNumStorageBase {
     virtual void Clear() { _refStorage.clear(); }
 
  public:
+    typedef typename RefNumMap::iterator RefNumIterator;
+
+    RefNumIterator Begin() { return _refStorage.begin(); }
+    RefNumIterator End() { return _refStorage.end(); }
+
     RefNum      NewRefNum(RefNumActualDataPtr info) {
         return RefNumStorageBase::NewRefNum(reinterpret_cast<RefNumDataPtr>(info));
     }

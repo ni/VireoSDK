@@ -721,7 +721,7 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
 }
 //------------------------------------------------------------
 DECLARE_VIREO_CONDITIONAL_BRANCH(BranchIfEQString, StringRef, StringRef,
-    (_Param(1)->Length() == _Param(2)->Length() && (memcmp(_Param(1)->Begin(), _Param(2)->Begin(), _Param(1)->Length()) == 0)))
+    (_Param(1)->IsEqual(_Param(2))))
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(BranchIfLTString, InstructionCore, StringRef, StringRef)

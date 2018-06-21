@@ -39,6 +39,18 @@ class ControlRefNumManager : public RefNumManager {
  public:
     static ControlRefNumManager &ControlRefManager() { return _s_singleton; }
     static ControlRefNumType &RefNumStorage() { return _s_singleton.RefNumManager(); }
+    RefNum NewRefNum(ControlRefInfo *info) {
+        ControlRefNumType::RefNumIterator ctlRefIter = _refStorage.Begin(), ctlRefEnd = _refStorage.End();
+        while (ctlRefIter != ctlRefEnd) {
+            if (ctlRefIter->second._refData.vi == info->vi && ctlRefIter->second._refData.controlTag->IsEqual(info->controlTag)) {
+                // Found an existing ref with the same data; return it, and dispose the new StringRef, because we now own it.
+                info->controlTag->Delete(info->controlTag);
+                return ctlRefIter->first;
+            }
+            ++ctlRefIter;
+        }
+        return _refStorage.NewRefNum(info);
+    }
 
     ControlRefNumType &RefNumManager() { return _refStorage; }
 };
@@ -65,7 +77,7 @@ static void CleanUpControlReference(intptr_t arg) {
 // ControlReferenceCreate -- create a control ref linked to control associated with controlTag on given VI.
 ControlRefNum ControlReferenceCreate(VirtualInstrument *vi, const StringRef &controlTag) {
     ControlRefInfo controlRefInfo(vi, controlTag);
-    ControlRefNum refnum = ControlRefNumManager::RefNumStorage().NewRefNum(&controlRefInfo);
+    ControlRefNum refnum = ControlRefNumManager::ControlRefManager().NewRefNum(&controlRefInfo);
     ControlRefNumManager::AddCleanupProc(nullptr, CleanUpControlReference, refnum);
     return refnum;
 }
