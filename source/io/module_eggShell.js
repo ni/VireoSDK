@@ -66,11 +66,7 @@
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
             'Occurrence_Set',
-            'Pointer_stringify',
-            'TypeRef_TopAQSize',
-            'TypeRef_Name',
-            'TypeRef_SubElementCount',
-            'TypeRef_GetSubElementByIndex',
+            'Pointer_stringify'
         ]}], */
 
         Module.eggShell = {};
@@ -347,7 +343,7 @@
         };
 
         Module.eggShell.getArrayDimensions = publicAPI.eggShell.getArrayDimensions = function (valueRef) {
-            var rank = Module.eggShell.typeRank(valueRef.typeRef);
+            var rank = Module.typeHelpers.typeRank(valueRef.typeRef);
 
             var stack = Module.stackSave();
             var dimensionsPointer = Module.stackAlloc(rank * LENGTH_SIZE);
@@ -364,10 +360,6 @@
 
         Module.eggShell.dataGetArrayBegin = function (dataRef) {
             return Module._Data_GetArrayBegin(dataRef);
-        };
-
-        Module.eggShell.typeRank = function (typeRef) {
-            return Module._TypeRef_Rank(typeRef);
         };
 
         Module.eggShell.dataGetArrayLength = function (dataRef) {
