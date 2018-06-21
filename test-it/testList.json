@@ -68,7 +68,8 @@
                 "UserEventsRegClustBug1.via",
                 "UserEventsReregister.via",
                 "UserEventsThroughput.via",
-                "UserEventsPoly.via"
+                "UserEventsPoly.via",
+                "ValueChangeStaticControlEvent1.via"
             ]
         },
         "manual": {
