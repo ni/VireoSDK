@@ -225,6 +225,29 @@
             return valueRef;
         };
 
+        Module.eggShell.findSubValueRef = publicAPI.eggShell.findSubValueRef = function (valueRef, path) {
+            var stack = Module.stackSave();
+
+            var pathStackPointer = Module.coreHelpers.writeJSStringToStack(path);
+            var typeStackPointer = Module.stackAlloc(POINTER_SIZE);
+            var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
+
+            var eggShellResult = Module._EggShell_FindSubValue(Module.eggShell.v_userShell, valueRef.typeRef, pathStackPointer, typeStackPointer, dataStackPointer);
+            if (eggShellResult !== 0) {
+                throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
+                    ' (path: ' + path + ')');
+            }
+
+            var typeRef = Module.getValue(typeStackPointer, 'i32');
+            var dataRef = Module.getValue(dataStackPointer, 'i32');
+            var subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+
+            Module.stackRestore(stack);
+            return subValueRef;
+        };
+
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
             var stack = Module.stackSave();
             var resultPointer = Module.stackAlloc(DOUBLE_SIZE);
