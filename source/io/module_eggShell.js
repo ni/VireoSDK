@@ -143,6 +143,9 @@
         var v_root = EggShell_Create(0);
         var v_userShell = EggShell_Create(v_root);
 
+        Module.eggShell.v_root = v_root;
+        Module.eggShell.v_userShell = v_userShell;
+
         // Exported functions
         Module.print = function (text) {
             console.log(text);
