@@ -236,3 +236,4 @@ You can now share the application or if running in a CI environment create a cha
     "intelliSenseMode": "clang-x64"
 }
 ```
+3. After the configuration is saved, when you have a C or C++ filetype open you should see an environment configuration in the bottom right of the status bar. Click the environment configuration to choose the newly added `Emscripten` configuration.
