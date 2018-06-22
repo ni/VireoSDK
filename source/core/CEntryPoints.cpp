@@ -354,11 +354,11 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
 //------------------------------------------------------------
 //! Get the starting location of the first element of an Array / String type in memory
 // This function returns the start address of where elements would appear in memory (returns address even if length zero)
-VIREO_EXPORT UInt32 Data_GetArrayBegin(const void* pData)
+VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
 {
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    return (UInt32) arrayObject->BeginAt(0);
+    return arrayObject->BeginAt(0);
 }
 //------------------------------------------------------------
 //! Get the values for dimensions of the array. Assumes dimensions target is of length equal to rank
