@@ -319,10 +319,10 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
     }
     if (eventOracleIndex == kNotAnEventOracleIdx) {  // no eventOracleIndex, allocate a new one
         size_t size = _eventReg.size(), idx = kAppEventOracleIdx+1;
-        while (UInt32(eventOracleIndex) < size && !_eventReg[eventOracleIndex]._eRegList.empty()) {
-            ++eventOracleIndex;
+        while (UInt32(idx) < size && !_eventReg[idx]._eRegList.empty() && _eventReg[idx]._controlUID != controlUID) {
+            ++idx;
         }
-        if (idx < size) {  // we found an unused index
+        if (idx < size) {  // we found an unused index, or one already for this control ID
             _eventReg[idx]._controlUID = controlUID;
         } else {
             EventOracleObj eo(controlUID, ref);
