@@ -45,6 +45,17 @@ describe('The Vireo EggShell findSubValueRef', function () {
             expect(invalidValueRef).toThrow();
         });
 
+        it('throws for an object with invalid typeRef', function () {
+            var invalidValueRef = function () {
+                var invalidTypeRef = {
+                    typeRef: 0
+                };
+                vireo.eggShell.findSubValueRef(invalidTypeRef, 'dataItem_ClusterOfScalars');
+            };
+
+            expect(invalidValueRef).toThrow();
+        });
+
         it('throws for a nonexistant path', function () {
             var invalidPath = function () {
                 vireo.eggShell.findSubValueRef(valueRef, 'nonexistantpath');
