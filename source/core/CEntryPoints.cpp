@@ -366,8 +366,7 @@ VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensions
 {
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    for (int i = 0; i < arrayObject->Rank(); i++)
-    {
+    for (int i = 0; i < arrayObject->Rank(); i++) {
         dimensions[i] = arrayObject->GetLength(i);
     }
 }
