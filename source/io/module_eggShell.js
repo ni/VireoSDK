@@ -373,13 +373,63 @@
             return result;
         };
 
-        Module.eggShell.readTypedArray = publicAPI.eggShell.readTypedArray = function (valueRef) {
-            // TODO use the type functions to determine the supportedArrayTypeConfig to use
-            var TypedArrayConstructor = Uint8Array;
+        var findCompatibleTypedArrayConstructor = function (typeRef) {
+            var subTypeRef, isSigned, size;
+            // String will go down the Array code path a bit as is so check before array checks
+            if (Module.typeHelpers.isString(typeRef)) {
+                return Uint8Array; // exposes UTF-8 encoded array to client
+            } else if (Module.typeHelpers.isArray(typeRef)) {
+                subTypeRef = Module.typeHelpers.subElementByIndex(typeRef, 0);
+                if (Module.typeHelpers.isInteger(subTypeRef)) {
+                    isSigned = Module.typeHelpers.isSigned(subTypeRef);
+                    size = Module.typeHelpers.topAQSize(subTypeRef);
+                    if (isSigned === true) {
+                        switch (size) {
+                        case 1:
+                            return Int8Array;
+                        case 2:
+                            return Int16Array;
+                        case 4:
+                            return Int32Array;
+                        default:
+                            return undefined;
+                        }
+                    } else {
+                        switch (size) {
+                        case 1:
+                            return Uint8Array;
+                        case 2:
+                            return Uint16Array;
+                        case 4:
+                            return Uint32Array;
+                        default:
+                            return undefined;
+                        }
+                    }
+                } else if (Module.typeHelpers.isFloat(subTypeRef)) {
+                    size = Module.typeHelpers.topAQSize(subTypeRef);
+                    switch (size) {
+                    case 4:
+                        return Float32Array;
+                    case 8:
+                        return Float64Array;
+                    default:
+                        return undefined;
+                    }
+                }
+            }
+            return undefined;
+        };
 
+        Module.eggShell.isTypedArrayCompatible = publicAPI.eggShell.isTypedArrayCompatible = function (valueRef) {
+            return findCompatibleTypedArrayConstructor(valueRef.typeRef) !== undefined;
+        };
+
+        Module.eggShell.readTypedArray = publicAPI.eggShell.readTypedArray = function (valueRef) {
+            var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var totalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
-            var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength * TypedArrayConstructor.BYTES_PER_ELEMENT);
+            var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
             return typedArray;
         };
 
