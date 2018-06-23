@@ -1,5 +1,13 @@
 define(ArrayTypesOptimized dv(.VirtualInstrument (
-  c( 
+  c(
+    // Supported non-array types
+    e(dv(.String 'Hello')stringHello)
+    e(dv(.String '\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008\u0009\u000A\u000B\u000C\u000D\u000E\u000F\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001A\u001B\u001C\u001D\u001E\u001F') stringControlCharacters) 
+
+    // Unsupported non-array types
+    e(dv(.UInt32 10) scalarUInt32)
+
+    // Supported array types
     e(dv(a(.Int8 *) (8 6 7 5 3 0 9 0 -128 127)) arrayInt8)
     e(dv(a(.Int16 *) (8 6 7 5 3 0 9 0 -32768 32767)) arrayInt16)
     e(dv(a(.Int32 *) (8 6 7 5 3 0 9 0 -2147483648 2147483647)) arrayInt32)
@@ -10,12 +18,16 @@ define(ArrayTypesOptimized dv(.VirtualInstrument (
     e(dv(a(.Double *) (1.1 2.2 0 -0 inf nan -inf -9007199254740992 9007199254740992)) arrayDouble)
     e(dv(a(.Int32 * *) ((1 2 3 )(4 5 6 )(7 8 9 ))) array2DInt32)
     e(dv(a(.Int32 * * *) (((1 2 3 )(4 5 6 )(7 8 9 ))((10 11 12 )(13 14 15 )(16 17 18 )))) array3DInt32)
-    e(dv(a(.String *) ('aaa' 'bbb' 'ccc')) arrayString)
-    e(dv(a(.Boolean *) (true false true false)) arrayBoolean)
-    e(dv(.UInt32 10) scalarNumber)
     e(dv(a(.Int8 *) ()) arrayInt8Empty)
     e(dv(a(.Int8 * *) ()) array2DInt8Empty)
     e(dv(a(.Int8 * * *) ()) array3DInt8Empty)
+    e(dv(a(Enum8(a b c d e f g h) *) (3 2 1))arrayEnum8)
+    e(dv(a(Enum16(zero one two three four) *) (3 2 1)) arrayEnum16)
+    e(dv(a(Enum32(red orange yellow green blue purple) *) (3 2 1)) arrayEnum32)
+    e(dv(a(.Boolean *) (true false true false)) arrayBoolean)
+
+    // Unsupported array types
+    e(dv(a(.String *) ('aaa' 'bbb' 'ccc')) arrayString)
   )
   clump(
   )
