@@ -37,7 +37,7 @@ extern "C" {
     extern void jsHttpClientGetHeader(UInt32, StringRef, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef, Boolean *, Int32 *, StringRef);
     extern void jsHttpClientListHeaders(UInt32, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, StringRef,
+    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, TypeRef, StringRef*,
                 Int32 *, StringRef, StringRef, UInt32 *, Boolean *, Int32 *, StringRef, OccurrenceRef);
     extern void jsHttpClientConfigCORS(UInt32, UInt32, Boolean *, Int32 *, StringRef);
 }
@@ -293,6 +293,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
                 _Param(1),
                 _Param(2),
                 nullptr,
+                nullptr,
                 _ParamPointer(3),
                 _Param(4),
                 _Param(5),
@@ -342,6 +343,7 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
                 kHead,
                 _Param(0),
                 _Param(1),
+                nullptr,
                 nullptr,
                 nullptr,
                 _ParamPointer(2),
@@ -395,7 +397,8 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
                 _Param(0),
                 _Param(1),
                 _Param(2),
-                _Param(3),
+                _Param(3)->Type(),
+                _ParamPointer(3),
                 _ParamPointer(4),
                 _Param(5),
                 _Param(6),
@@ -448,6 +451,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
                 _Param(1),
                 _Param(2),
                 nullptr,
+                nullptr,
                 _ParamPointer(3),
                 _Param(4),
                 _Param(5),
@@ -499,7 +503,8 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
                 _Param(0),
                 _Param(1),
                 _Param(2),
-                _Param(3),
+                _Param(3)->Type(),
+                _ParamPointer(3),
                 _ParamPointer(4),
                 _Param(5),
                 _Param(6),
