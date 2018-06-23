@@ -79,14 +79,21 @@
         var LENGTH_SIZE = 4;
 
         // Keep in sync with EggShellResult in CEntryPoints.h
-        var eggShellResultEnum = {
-            0: 'Success',
-            1: 'ObjectNotFoundAtPath',
-            2: 'UnexpectedObjectType',
-            3: 'InvalidResultPointer',
-            4: 'UnableToCreateReturnBuffer',
-            5: 'InvalidTypeRef'
+        var EGGSHELL_RESULT = {
+            SUCCESS: 0,
+            OBJECT_NOT_FOUND_AT_PATH: 1,
+            UNEXPECTED_OBJECT_TYPE: 2,
+            INVALID_RESULT_POINTER: 3,
+            UNABLE_TO_CREATE_RETURN_BUFFER: 4,
+            INVALID_TYPE_REF: 5
         };
+        var eggShellResultEnum = {};
+        eggShellResultEnum[EGGSHELL_RESULT.SUCCESS] = 'Success';
+        eggShellResultEnum[EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH] = 'ObjectNotFoundAtPath';
+        eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] = 'UnexpectedObjectType';
+        eggShellResultEnum[EGGSHELL_RESULT.INVALID_RESULT_POINTER] = 'InvalidResultPointer';
+        eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_CREATE_RETURN_BUFFER] = 'UnableToCreateReturnBuffer';
+        eggShellResultEnum[EGGSHELL_RESULT.INVALID_TYPE_REF] = 'InvalidTypeRef';
 
         // Keep in sync with NIError in DataTypes.h
         var niErrorEnum = {
@@ -272,7 +279,7 @@
             // TODO mraj should we try to resolve the typeref name on error for more context?
             var niError = Module._EggShell_ReadDouble(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
             if (niError !== 0) {
-                throw new Error('Loading VIA failed for the following reason: ' + niErrorEnum[niError] +
+                throw new Error('Performing readDouble failed for the following reason: ' + niErrorEnum[niError] +
                     ' (error code: ' + niError + ')' +
                     ' (typeRef: ' + valueRef.typeRef + ')' +
                     ' (dataRef: ' + valueRef.dataRef + ')');
@@ -380,7 +387,9 @@
                 return Uint8Array; // exposes UTF-8 encoded array to client
             } else if (Module.typeHelpers.isArray(typeRef)) {
                 subTypeRef = Module.typeHelpers.subElementByIndex(typeRef, 0);
-                if (Module.typeHelpers.isInteger(subTypeRef)) {
+                if (Module.typeHelpers.isBoolean(subTypeRef)) {
+                    return Uint8Array;
+                } else if (Module.typeHelpers.isInteger(subTypeRef)) { // Used for Enums and Integers
                     isSigned = Module.typeHelpers.isSigned(subTypeRef);
                     size = Module.typeHelpers.topAQSize(subTypeRef);
                     if (isSigned === true) {
@@ -427,6 +436,12 @@
 
         Module.eggShell.readTypedArray = publicAPI.eggShell.readTypedArray = function (valueRef) {
             var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
+            if (TypedArrayConstructor === undefined) {
+                throw new Error('Performing readTypedArray failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var totalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
             var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
