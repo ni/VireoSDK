@@ -44,12 +44,7 @@
             eventOracleIndex
         ) {
             var viName = Module.eggShell.dataReadString(viNamePointer);
-            try {
-                registerForControlEvent(viName, controlId, eventId, eventOracleIndex);
-            } catch (ex) {
-                // TODO error handling
-                return;
-            }
+            registerForControlEvent(viName, controlId, eventId, eventOracleIndex);
         };
 
         Module.controlEvents.jsUnRegisterForControlEvent = function (
@@ -59,13 +54,7 @@
             eventOracleIndex
         ) {
             var viName = Module.eggShell.dataReadString(viNamePointer);
-
-            try {
-                unRegisterForControlEvent(viName, controlId, eventId, eventOracleIndex);
-            } catch (ex) {
-                // TODO error handling
-                return;
-            }
+            unRegisterForControlEvent(viName, controlId, eventId, eventOracleIndex);
         };
 
         publicAPI.controlEvents.setRegisterForControlEventsFunction = Module.controlEvents.setRegisterForControlEventsFunction = function (fn) {
