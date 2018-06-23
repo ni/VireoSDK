@@ -68,7 +68,7 @@ describe('The Vireo EggShell getNumericArray api', function () {
             }).toThrowError(/ObjectNotFoundAtPath/);
 
             expect(function () {
-                vireo.eggShell.getNumericArray(viName, 'scalarNumber');
+                vireo.eggShell.getNumericArray(viName, 'scalarUInt32');
             }).toThrowError(/UnexpectedObjectType/);
 
             done();
