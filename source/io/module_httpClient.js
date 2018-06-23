@@ -677,7 +677,7 @@
             Module.eggShell.dataWriteString(listPointer, list);
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferPointer, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferTypeRef, bufferDataRef, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
             var setDefaultOutputs = function () {
                 Module.eggShell.dataWriteString(headersPointer, '');
                 Module.eggShell.dataWriteUInt32(statusCodePointer, 0);
@@ -707,9 +707,10 @@
                 }
             }
 
-            var buffer, typedArrayBuffer;
-            if (bufferPointer !== NULL) {
-                typedArrayBuffer = Module.eggShell.dataReadStringAsArray_NoCopy(bufferPointer);
+            var valueRef, buffer, typedArrayBuffer;
+            if (bufferDataRef !== NULL) {
+                valueRef = Module.eggShell.createValueRef(bufferTypeRef, bufferDataRef);
+                typedArrayBuffer = Module.eggShell.readTypedArray(valueRef);
 
                 // Blob API does not exist in node.js
                 if (typeof Blob === 'undefined') {
