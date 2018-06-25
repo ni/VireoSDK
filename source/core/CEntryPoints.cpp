@@ -279,20 +279,21 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
-//! Returns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
-VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths)
+//! Caller is expected to allocate an array newLengths of size rank for the duration of function invocation.
+VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData, Int32 rank, Int32 newLengths[])
 {
-    SubString objectName(viName);
-    SubString path(eltName);
-    void *pData = nullptr;
-
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr || !actualType->IsArray()) {
-        return kLVError_ArgError;
+    TypeManagerScope scope(tm);
+    if (actualType == nullptr || !actualType->IsValid() || !actualType->IsArray()) {
+        return kEggShellResult_UnexpectedObjectType;  // TODO(mraj): use memos new invalid type eggShellResult
     }
 
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    return Data_ResizeArray(tm, actualArray, rank, newLengths);
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+
+    if (!arrayObject->ResizeDimensions(rank, newLengths, true, false)) {
+        return kEggShellResult_UnableToCreateReturnBuffer;
+    }
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
@@ -361,6 +362,7 @@ VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
 }
 //------------------------------------------------------------
 //! Get the values for dimensions of the array. Assumes dimensions target is of length equal to rank
+//! Caller is expected to allocate an array dimensions of size array rank for the duration of function invocation.
 VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensions[])
 {
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
