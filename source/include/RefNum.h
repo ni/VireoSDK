@@ -79,7 +79,7 @@ class RefNumStorageBase
     Int32    GetRefNumCount();
     NIError    GetRefNumList(RefNumList *list);
 
-    static RefNum RefNumFromIndexAndExistingHeader(UInt32 index, const RefNumCommonHeader *header);
+    static RefNum RefNumFromIndexAndExistingHeader(UInt32 index, const RefNumCommonHeader &header);
 };
 
 template <typename T, bool _isRefCounted>
