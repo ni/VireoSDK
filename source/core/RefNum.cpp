@@ -94,8 +94,8 @@ RefNum RefNumStorageBase::CloneRefNum(RefNum refnum) {
     return newRefNum;
 }
 
-RefNum RefNumStorageBase::RefNumFromIndexAndExistingHeader(UInt32 index, const RefNumCommonHeader *header) {
-    UInt32 magicNum = MagicFromRefNum(header->magicNum);
+RefNum RefNumStorageBase::RefNumFromIndexAndExistingHeader(UInt32 index, const RefNumCommonHeader &header) {
+    UInt32 magicNum = MagicFromRefNum(header.magicNum);
     return MakeRefNum(index, magicNum);
 }
 
