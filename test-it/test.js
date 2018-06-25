@@ -240,8 +240,11 @@
         });
         // Vireo unit tests can't fire JS events, so register no-op registration functions
         vireo.controlEvents.setRegisterForControlEventsFunction(function () {
+            // No-op.  Wait, didn't you just say above this function was a no-op?
+            // Why yes, yes I did, but this comment is here to defeat stupid eslint rules.
         });
         vireo.controlEvents.setUnRegisterForControlEventsFunction(function () {
+            // No-op.  Ditto.
         });
 
         try {
