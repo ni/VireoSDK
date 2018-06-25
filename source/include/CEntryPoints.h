@@ -21,6 +21,7 @@ typedef enum {
     kEggShellResult_UnexpectedObjectType = 2,
     kEggShellResult_InvalidResultPointer = 3,
     kEggShellResult_UnableToCreateReturnBuffer = 4,
+    kEggShellResult_InvalidTypeRef = 5,
 } EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions
