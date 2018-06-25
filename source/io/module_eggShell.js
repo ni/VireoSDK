@@ -87,7 +87,8 @@
             1: 'ObjectNotFoundAtPath',
             2: 'UnexpectedObjectType',
             3: 'InvalidResultPointer',
-            4: 'UnableToCreateReturnBuffer'
+            4: 'UnableToCreateReturnBuffer',
+            5: 'InvalidTypeRef'
         };
 
         // Keep in sync with NIError in DataTypes.h
