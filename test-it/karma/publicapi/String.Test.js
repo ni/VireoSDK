@@ -26,9 +26,14 @@ describe('The Vireo EggShell String api can', function () {
 
     describe('use readString', function () {
         it('to read different string values from memory', function () {
-            var valueRef = vireo.eggShell.findValueRef(viName, 'dataItem_String');
-            vireo.eggShell.readString(valueRef);
             expect(readString('dataItem_String')).toBe('Hello');
+        });
+
+        it('to throw on unsupported types', function () {
+            var readStringThrows = function () {
+                readString('dataItem_NumericDouble');
+            };
+            expect(readStringThrows).toThrowError(/UnexpectedObjectType/);
         });
     });
 });

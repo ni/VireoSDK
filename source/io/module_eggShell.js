@@ -349,22 +349,6 @@
             }
         };
 
-        Module.eggShell.getArrayDimensions = publicAPI.eggShell.getArrayDimensions = function (valueRef) {
-            var rank = Module.typeHelpers.typeRank(valueRef.typeRef);
-
-            var stack = Module.stackSave();
-            var dimensionsPointer = Module.stackAlloc(rank * LENGTH_SIZE);
-            Module._Data_GetArrayDimensions(valueRef.dataRef, dimensionsPointer);
-            var dimensions = [];
-            var i;
-            for (i = 0; i < rank; i += 1) {
-                dimensions.push(Module.getValue(dimensionsPointer + (i * LENGTH_SIZE), 'i32'));
-            }
-            Module.stackRestore(stack);
-
-            return dimensions;
-        };
-
         Module.eggShell.dataGetArrayBegin = function (dataRef) {
             return Module._Data_GetArrayBegin(dataRef);
         };
@@ -374,6 +358,12 @@
         };
 
         Module.eggShell.readString = publicAPI.eggShell.readString = function (valueRef) {
+            if (Module.typeHelpers.isString(valueRef.typeRef) === false) {
+                throw new Error('Performing readString failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var totalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
             var result = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, arrayBegin, totalLength);
@@ -432,6 +422,29 @@
 
         Module.eggShell.isTypedArrayCompatible = publicAPI.eggShell.isTypedArrayCompatible = function (valueRef) {
             return findCompatibleTypedArrayConstructor(valueRef.typeRef) !== undefined;
+        };
+
+        Module.eggShell.getArrayDimensions = publicAPI.eggShell.getArrayDimensions = function (valueRef) {
+            var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
+            if (TypedArrayConstructor === undefined) {
+                throw new Error('Performing getArrayDimensions failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+
+            var rank = Module.typeHelpers.typeRank(valueRef.typeRef);
+            var stack = Module.stackSave();
+            var dimensionsPointer = Module.stackAlloc(rank * LENGTH_SIZE);
+            Module._Data_GetArrayDimensions(valueRef.dataRef, dimensionsPointer);
+            var dimensions = [];
+            var i;
+            for (i = 0; i < rank; i += 1) {
+                dimensions.push(Module.getValue(dimensionsPointer + (i * LENGTH_SIZE), 'i32'));
+            }
+            Module.stackRestore(stack);
+
+            return dimensions;
         };
 
         Module.eggShell.readTypedArray = publicAPI.eggShell.readTypedArray = function (valueRef) {

@@ -34,21 +34,21 @@ describe('The Vireo EggShell findValueRef api can', function () {
         var invalidViName = function () {
             vireo.eggShell.findValueRef('nonexistantvi', pathName);
         };
-        expect(invalidViName).toThrow();
+        expect(invalidViName).toThrowError(/ObjectNotFoundAtPath/);
     });
 
     it('to throw for an empty vi name', function () {
         var invalidViName = function () {
             vireo.eggShell.findValueRef('', pathName);
         };
-        expect(invalidViName).toThrow();
+        expect(invalidViName).toThrowError(/ObjectNotFoundAtPath/);
     });
 
     it('to throw for a nonexistant path', function () {
         var invalidPath = function () {
             vireo.eggShell.findValueRef(viName, 'nonexistantvalue');
         };
-        expect(invalidPath).toThrow();
+        expect(invalidPath).toThrowError(/ObjectNotFoundAtPath/);
     });
 
     it('to return a typeRef for the the local scope of a VI for an empty path', function () {
