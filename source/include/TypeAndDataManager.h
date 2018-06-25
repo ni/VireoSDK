@@ -280,7 +280,15 @@ class TypeManager
     TypeRef BadType();
 
     Int32   AQAlignment(Int32 size);
-    Int32   AlignAQOffset(Int32 offset, Int32 size);
+    static Int32   AlignAQOffset(Int32 offset, Int32 size) {
+        if (size != 0) {
+            Int32 remainder  = offset % size;
+            if (remainder)
+                offset += size - remainder;
+        }
+        return offset;
+    }
+
     Int32   BitLengthToAQSize(IntIndex length);
     Int32   HostPointerToAQSize() { return sizeof(void*); }
     Int32   AQBitLength() { return _aqBitLength; }
