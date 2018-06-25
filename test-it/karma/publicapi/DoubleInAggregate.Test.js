@@ -1,4 +1,4 @@
-describe('The Vireo EggShell Double api can', function () {
+describe('The Vireo EggShell Double and FindSubValueRef api over aggregate types can', function () {
     'use strict';
     // Reference aliases
     var Vireo = window.NationalInstruments.Vireo.Vireo;
