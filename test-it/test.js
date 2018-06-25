@@ -239,9 +239,9 @@
             testOutput += text + '\n';
         });
         // Vireo unit tests can't fire JS events, so register no-op registration functions
-        vireo.controlEvents.setRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+        vireo.controlEvents.setRegisterForControlEventsFunction(function () {
         });
-        vireo.controlEvents.setUnRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+        vireo.controlEvents.setUnRegisterForControlEventsFunction(function () {
         });
 
         try {
