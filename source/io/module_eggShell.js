@@ -253,6 +253,21 @@
             return subValueRef;
         };
 
+        Module.eggShell.readValueRefObject = publicAPI.eggShell.readValueRefObject = function (valueRef) {
+            var typeRef = valueRef.typeRef;
+            var valueRefs = {};
+
+            var fieldCount = Module.typeHelpers.subElementCount(typeRef);
+
+            for (var i = 0; i < fieldCount; i += 1) {
+                var fieldTypeRef = Module.typeHelpers.subElementByIndex(typeRef, i);
+                var fieldName = Module.typeHelpers.elementName(fieldTypeRef);
+                valueRefs[fieldName] = Module.eggShell.findSubValueRef(valueRef, fieldName);
+            }
+
+            return valueRefs;
+        };
+
         Module.eggShell.reflectOnValueRef = publicAPI.eggShell.reflectOnValueRef = function (typeVisitor, valueRef, data) {
             if (typeof valueRef !== 'object' || valueRef === null) {
                 throw new Error('valueRef must be an object. Found: ' + valueRef);
