@@ -10,6 +10,7 @@ define(ArrayDemo dv(.VirtualInstrument (
 
     e(a(.Int32 * *)   variableArray2d)
     e(a(.Int32 2 3)   fixedArray2d)
+    e(a(.Int32 0 0)   fixedArray2dEmpty)
     e(a(.Int32 1 2 3) fixedArray3d)
   )
     clump(1

@@ -11,6 +11,22 @@ describe('Arrays in Vireo', function () {
     var viName = 'ArrayDemo';
     var runSlicesAsync;
 
+    var resizeArray = function (path, dimensions) {
+        var valueRef = vireo.eggShell.findValueRef(viName, path);
+        vireo.eggShell.resizeArray(valueRef, dimensions);
+    };
+
+    var getArrayDimensions = function (path) {
+        var valueRef = vireo.eggShell.findValueRef(viName, path);
+        return vireo.eggShell.getArrayDimensions(valueRef);
+    };
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            viaPath
+        ], done);
+    });
+
     beforeEach(function () {
         runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
     });
@@ -20,67 +36,41 @@ describe('Arrays in Vireo', function () {
             expect(rawPrint).toBeNonEmptyString();
             expect(rawPrintError).toBeEmptyString();
 
-            var resized = vireo.eggShell.resizeArray(viName, 'variableArray1d', [5]);
-            expect(resized).toBe(0);
-            expect(vireo.eggShell.getArrayDimLength(viName, 'variableArray1d', 0)).toBe(5);
+            resizeArray('variableArray1d', [5]);
+            expect(getArrayDimensions('variableArray1d')).toEqual([5]);
             done();
         });
     });
 
     it('can be resized when they are 1d array with defaults', function (done) {
-        var variableName = 'variableArray1dwithDefaults';
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
             expect(rawPrintError).toBeEmptyString();
+            resizeArray('variableArray1dwithDefaults', [6]);
+            expect(getArrayDimensions('variableArray1dwithDefaults')).toEqual([6]);
 
-            var resized = vireo.eggShell.resizeArray(viName, variableName, [6]);
-
-            expect(resized).toBe(0);
-            expect(vireo.eggShell.getArrayDimLength(viName, variableName, 0)).toBe(6);
-
-            done();
-        });
-    });
-
-    it('returns error code 1 if the array does not exist', function (done) {
-        var variableName = 'imaginaryArrayThatDoesNotExist';
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeNonEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-
-            var resized = vireo.eggShell.resizeArray(viName, variableName, [6]);
-            expect(resized).toBe(1);
             done();
         });
     });
 
     it('cannot be resized if they are fixed 2d arrays', function (done) {
-        var variableName = 'fixedArray2d';
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
             expect(rawPrintError).toBeEmptyString();
 
-            var resized = vireo.eggShell.resizeArray(viName, variableName, [3, 4]);
-
-            expect(resized).toBe(2);
-            expect(vireo.eggShell.getArrayDimLength(viName, variableName, 0)).toBe(2);
-            expect(vireo.eggShell.getArrayDimLength(viName, variableName, 1)).toBe(3);
+            expect(resizeArray.bind(undefined, 'fixedArray2d', [3, 4])).toThrowError(/UnableToCreateReturnBuffer/);
 
             done();
         });
     });
 
     it('can be resized when they are variable 2d array', function (done) {
-        var variableName = 'variableArray2d';
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeNonEmptyString();
             expect(rawPrintError).toBeEmptyString();
 
-            var resized = vireo.eggShell.resizeArray(viName, variableName, [3, 4]);
-
-            expect(resized).toBe(0);
-            expect(vireo.eggShell.getArrayDimLength(viName, variableName, 0)).toBe(3);
-            expect(vireo.eggShell.getArrayDimLength(viName, variableName, 1)).toBe(4);
+            resizeArray('variableArray2d', [3, 4]);
+            expect(getArrayDimensions('variableArray2d')).toEqual([3, 4]);
 
             done();
         });

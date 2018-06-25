@@ -42,6 +42,7 @@ describe('The Vireo EggShell getArrayDimensions api', function () {
             expect(getArrayDimensions('fixedArray1dwithDefaults')).toEqual([5]);
             expect(getArrayDimensions('boundedArray1dwithDefaults')).toEqual([4]);
             expect(getArrayDimensions('fixedArray2d')).toEqual([2, 3]);
+            expect(getArrayDimensions('fixedArray2dEmpty')).toEqual([0, 0]);
             expect(getArrayDimensions('fixedArray3d')).toEqual([1, 2, 3]);
             done();
         });

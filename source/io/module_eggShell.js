@@ -36,7 +36,6 @@
             'EggShell_WriteValueString',
             'EggShell_GetPointer',
             'EggShell_GetArrayDimLength',
-            'EggShell_ResizeArray',
             'Data_ValidateArrayType',
             'Data_GetStringBegin',
             'Data_GetStringLength',
@@ -115,7 +114,6 @@
         var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
-        var EggShell_ResizeArray = Module.cwrap('EggShell_ResizeArray', 'number', ['number', 'string', 'string', 'number', 'number']);
         var Data_ValidateArrayType = Module.cwrap('Data_ValidateArrayType', 'number', ['number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
@@ -446,8 +444,7 @@
         };
 
         Module.eggShell.getArrayDimensions = publicAPI.eggShell.getArrayDimensions = function (valueRef) {
-            var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
-            if (TypedArrayConstructor === undefined) {
+            if (!Module.typeHelpers.isArray(valueRef.typeRef)) {
                 throw new Error('Performing getArrayDimensions failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
                     ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
                     ' (typeRef: ' + valueRef.typeRef + ')' +
@@ -593,20 +590,33 @@
             return EggShell_GetArrayDimLength(Module.eggShell.v_userShell, vi, path, dim);
         };
 
-        Module.eggShell.resizeArray = publicAPI.eggShell.resizeArray = function (vi, path, newDimensionSizes) {
-            var int32Byte = 4;
-            var rank = newDimensionSizes.length;
-            var newLengths = Module._malloc(rank * int32Byte);
-
-            for (var i = 0; i < rank; i += 1) {
-                Module.setValue(newLengths + (i * int32Byte), newDimensionSizes[i], 'i32');
+        Module.eggShell.resizeArray = publicAPI.eggShell.resizeArray = function (valueRef, newDimensions) {
+            if (!Module.typeHelpers.isArray(valueRef.typeRef)) {
+                throw new Error('Performing resizeArray failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
-            var success = EggShell_ResizeArray(Module.eggShell.v_userShell, vi, path, rank, newLengths);
+            var rank = Module.typeHelpers.typeRank(valueRef.typeRef);
+            if (rank !== newDimensions.length) {
+                throw new Error('Current array is of rank ' + rank + ' and resize was called with only ' + newDimensions.length + ' dimensions specified.');
+            }
 
-            Module._free(newLengths);
-
-            return success;
+            var stack = Module.stackSave();
+            var dimensionsPointer = Module.stackAlloc(rank * LENGTH_SIZE);
+            var i;
+            for (i = 0; i < newDimensions.length; i += 1) {
+                Module.setValue(dimensionsPointer + (i * LENGTH_SIZE), newDimensions[i], 'i32');
+            }
+            var eggShellResult = Module._EggShell_ResizeArray(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, rank, dimensionsPointer);
+            if (eggShellResult !== 0) {
+                throw new Error('Resizing the array failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                ' (error code: ' + eggShellResult + ')' +
+                ' (typeRef: ' + valueRef.typeRef + ')' +
+                ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            Module.stackRestore(stack);
         };
 
         Module.eggShell.dataReadString = function (stringPointer) {
