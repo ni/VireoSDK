@@ -238,6 +238,11 @@
         vireo.eggShell.setPrintFunction(function (text) {
             testOutput += text + '\n';
         });
+        // Vireo unit tests can't fire JS events, so register no-op registration functions
+        vireo.controlEvents.setRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+        });
+        vireo.controlEvents.setUnRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+        });
 
         try {
             vireo.eggShell.loadVia(viaCode);
