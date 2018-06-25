@@ -523,17 +523,6 @@ Int32  TypeManager::AQAlignment(Int32 size)
 #endif
 }
 //------------------------------------------------------------
-Int32 TypeManager::AlignAQOffset(Int32 offset, Int32 size)
-{
-    if (size != 0) {
-        Int32 remainder  = offset % size;
-        if (remainder) {
-            offset = offset + size - remainder;
-        }
-    }
-    return offset;
-}
-//------------------------------------------------------------
 Int32 TypeManager::BitLengthToAQSize(IntIndex length)
 {
     if (IsVariableLengthDim(length)) {
@@ -1973,7 +1962,9 @@ RefNumValType::RefNumValType(TypeManagerRef typeManager, TypeRef type)
     _isFlat = true;
     _hasCustomDefault = true;
     _topAQSize = sizeof(RefNumVal);
-    _aqAlignment = sizeof(RefNumVal) > 4 ? 8 : 4;
+    // Override alignment of refnum; default for WrappedType is to take alignment of wrapped type, but we don't store
+    // that type directly.
+    _aqAlignment = alignof(RefNumVal);
     _encoding = kEncoding_RefNum;
     _opaqueReference = true;
 }

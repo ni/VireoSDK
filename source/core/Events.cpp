@@ -1066,8 +1066,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                 *EventIndexFieldPtr(esEventDataNode) = eventIndex;
                 if (eventData.eventDataType) {
                     Int32 alignment = eventData.eventDataType->AQAlignment();
-                    if (commonDataSize % alignment != 0)
-                        commonDataSize = (commonDataSize + alignment-1) & ~(alignment-1);  // round up to alignment boundary
+                    commonDataSize = TypeManager::AlignAQOffset(commonDataSize, alignment);  // round up to alignment boundary
                     if (eventData.eventDataType->TopAQSize() == dataNodeSize - commonDataSize) {
                         // TODO(spathiwa) Should we also verify type of event data node matches event at run-time?
                         // When we support multiple events with a shared event case, this needs to be smarter

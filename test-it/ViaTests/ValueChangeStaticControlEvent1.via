@@ -57,7 +57,6 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
 	// and put it in the EventData; the JS code which calls OccurEvent does not need to supply it.
 
         _OccurEvent(18 1000 2)  // for testing
-        // TODO(spathiwa) the 1 is a hard-coded eventOracle index -- fix to lookup from controlID
 
 	// Imagine event loop around this:
         Printf("Waiting on Events\n")
