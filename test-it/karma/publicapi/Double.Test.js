@@ -80,8 +80,8 @@ describe('The Vireo EggShell Double api can', function () {
                 };
             };
 
-            expect(unsupportedTypeCheck('dataItem_Complex')).toThrow();
-            expect(unsupportedTypeCheck('dataItem_String')).toThrow();
+            expect(unsupportedTypeCheck('dataItem_Complex')).toThrowError(/CantDecode/);
+            expect(unsupportedTypeCheck('dataItem_String')).toThrowError(/CantDecode/);
         });
     });
 });
