@@ -287,7 +287,7 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
         return kEggShellResult_InvalidTypeRef;
     }
 
-    if(!actualType->IsArray()) {
+    if (!actualType->IsArray()) {
         return kEggShellResult_UnexpectedObjectType;
     }
 
