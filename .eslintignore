@@ -8,3 +8,5 @@ emsdk/*
 coverage/*
 objs/*
 gh-pages/*
+Documents/*
+test-it/temp
