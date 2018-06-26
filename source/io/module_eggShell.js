@@ -84,7 +84,8 @@
             UNEXPECTED_OBJECT_TYPE: 2,
             INVALID_RESULT_POINTER: 3,
             UNABLE_TO_CREATE_RETURN_BUFFER: 4,
-            INVALID_TYPE_REF: 5
+            INVALID_TYPE_REF: 5,
+            MISMATCHED_ARRAY_RANK: 6
         };
         var eggShellResultEnum = {};
         eggShellResultEnum[EGGSHELL_RESULT.SUCCESS] = 'Success';
@@ -93,6 +94,7 @@
         eggShellResultEnum[EGGSHELL_RESULT.INVALID_RESULT_POINTER] = 'InvalidResultPointer';
         eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_CREATE_RETURN_BUFFER] = 'UnableToCreateReturnBuffer';
         eggShellResultEnum[EGGSHELL_RESULT.INVALID_TYPE_REF] = 'InvalidTypeRef';
+        eggShellResultEnum[EGGSHELL_RESULT.MISMATCHED_ARRAY_RANK] = 'MismatchedArrayRank';
 
         // Keep in sync with NIError in DataTypes.h
         var niErrorEnum = {
@@ -598,18 +600,22 @@
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
-            var rank = Module.typeHelpers.typeRank(valueRef.typeRef);
-            if (rank !== newDimensions.length) {
-                throw new Error('Current array is of rank ' + rank + ' and resize was called with only ' + newDimensions.length + ' dimensions specified.');
+            if (!Array.isArray(newDimensions)) {
+                throw new Error('Expected newDimensions to be an array of dimension lengths, instead got: ' + newDimensions);
             }
-
             var stack = Module.stackSave();
-            var dimensionsPointer = Module.stackAlloc(rank * LENGTH_SIZE);
-            var i;
-            for (i = 0; i < newDimensions.length; i += 1) {
-                Module.setValue(dimensionsPointer + (i * LENGTH_SIZE), newDimensions[i], 'i32');
+            var newDimensionsLength = newDimensions.length;
+            var dimensionsPointer = Module.stackAlloc(newDimensionsLength * LENGTH_SIZE);
+            var i, currentDimension;
+            for (i = 0; i < newDimensionsLength; i += 1) {
+                currentDimension = newDimensions[i];
+
+                if (typeof currentDimension !== 'number') {
+                    throw new Error('Expected all dimensions of newDimensions to be numeric values for dimension length, instead got' + currentDimension);
+                }
+                Module.setValue(dimensionsPointer + (i * LENGTH_SIZE), currentDimension, 'i32');
             }
-            var eggShellResult = Module._EggShell_ResizeArray(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, rank, dimensionsPointer);
+            var eggShellResult = Module._EggShell_ResizeArray(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, newDimensionsLength, dimensionsPointer);
             if (eggShellResult !== 0) {
                 throw new Error('Resizing the array failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
                 ' (error code: ' + eggShellResult + ')' +
