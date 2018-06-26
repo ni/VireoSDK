@@ -23,7 +23,7 @@ namespace Vireo {
 // ControlRefInfo -- Storage for static control references.
 struct ControlRefInfo {
     VirtualInstrument *vi;  // VI containing control
-    StringRef controlTag;   // Unique identifying tag (data item name) for control
+    StringRef controlTag;   // Unique identifying tag (control id) for control
 
     ControlRefInfo() : vi(nullptr), controlTag(nullptr) { }
     ControlRefInfo(VirtualInstrument *aVi, StringRef aControlTag) : vi(aVi), controlTag(aControlTag) { }

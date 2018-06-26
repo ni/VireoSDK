@@ -54,7 +54,7 @@
         // Private Instance Variables (per vireo instance)
         Module.propertyNode.jsPropertyNodeWrite = function (
             viNamePointer,
-            dataItemIdPointer,
+            controlIdPointer,
             propertyNamePointer,
             propertyTypeNamePointer,
             tempVariableVINamePointer,
@@ -67,14 +67,14 @@
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
             var viName = Module.eggShell.dataReadString(viNamePointer);
-            var dataItemId = Module.eggShell.dataReadString(dataItemIdPointer);
+            var controlId = Module.eggShell.dataReadString(controlIdPointer);
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyTypeName = Module.eggShell.dataReadString(propertyTypeNamePointer);
             var tempVariablePath = Module.eggShell.dataReadString(tempVariablePathPointer);
             var tempVariableVIName = Module.eggShell.dataReadString(tempVariableVINamePointer);
 
             try {
-                writeProperty(viName, dataItemId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath);
+                writeProperty(viName, controlId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
@@ -87,7 +87,7 @@
 
         Module.propertyNode.jsPropertyNodeRead = function (
             viNamePointer,
-            dataItemIdPointer,
+            controlIdPointer,
             propertyNamePointer,
             propertyTypeNamePointer,
             tempVariableVINamePointer,
@@ -100,14 +100,14 @@
             var newErrorSource = ERRORS.NO_ERROR.MESSAGE;
 
             var viName = Module.eggShell.dataReadString(viNamePointer);
-            var dataItemId = Module.eggShell.dataReadString(dataItemIdPointer);
+            var controlId = Module.eggShell.dataReadString(controlIdPointer);
             var propertyName = Module.eggShell.dataReadString(propertyNamePointer);
             var propertyTypeName = Module.eggShell.dataReadString(propertyTypeNamePointer);
             var tempVariablePath = Module.eggShell.dataReadString(tempVariablePathPointer);
             var tempVariableVIName = Module.eggShell.dataReadString(tempVariableVINamePointer);
 
             try {
-                readProperty(viName, dataItemId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath);
+                readProperty(viName, controlId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIObjectReferenceIsInvalid.CODE;
