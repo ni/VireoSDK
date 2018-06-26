@@ -293,6 +293,8 @@
                 dispatcher: dispatchVisitArray
             },
             {
+                // Cluster is evaluated last, since internally Complex, AnalogWaveform and Timestamps
+                // are also clusters.
                 typeChecker: Module.typeHelpers.isCluster,
                 dispatcher: dispatchVisitCluster
             }
