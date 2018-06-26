@@ -257,10 +257,7 @@
             var typeRef = valueRef.typeRef;
             var valueRefs = {};
 
-            if (Module.typeHelpers.isCluster(typeRef) === false &&
-                Module.typeHelpers.isTimestamp(typeRef) === false &&
-                Module.typeHelpers.isComplex(typeRef) === false &&
-                Module.typeHelpers.isAnalogWaveform(typeRef) === false) {
+            if (Module.typeHelpers.isCluster(typeRef) === false) {
                 throw new Error('A ValueRefObject could not be made for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
                     ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
                     ' (type name: ' + Module.typeHelpers.typeName(typeRef) + ')');
