@@ -569,6 +569,31 @@ VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
     return "";
 }
 //------------------------------------------------------------
+VIREO_EXPORT const char* TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
+{
+    TypeManagerScope scope(tm);
+    SubString name = typeRef->ElementName();
+
+    static StringRef returnBuffer = nullptr;
+    if (returnBuffer == nullptr) {
+        // Allocate a string the first time it is used.
+        // After that it will be resized as needed.
+        STACK_VAR(String, tempReturn);
+        returnBuffer = tempReturn.DetachValue();
+    } else {
+        returnBuffer->Resize1D(0);
+    }
+
+    if (returnBuffer) {
+        returnBuffer->AppendSubString(&name);
+        // Add an explicit nullptr terminator so it looks like a C string.
+        returnBuffer->Append((Utf8Char)'\0');
+        return (const char*) returnBuffer->Begin();
+    }
+
+    return "";
+}
+//------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)
 {
     return typeRef->ElementOffset();
