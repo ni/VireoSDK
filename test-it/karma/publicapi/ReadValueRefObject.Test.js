@@ -106,6 +106,21 @@ describe('The Vireo EggShell readValueRefObject', function () {
         });
     });
 
+    describe('for path', function () {
+        var valueRef,
+            nipathPath = 'win32Path';
+
+        beforeAll(function () {
+            valueRef = vireo.eggShell.findValueRef(viName, nipathPath);
+        });
+
+        it('returns an object with keys "components" and "type" and valueReds as values', function () {
+            var objectValueRef = vireo.eggShell.readValueRefObject(valueRef);
+            expectValidValueRef(objectValueRef.components);
+            expectValidValueRef(objectValueRef.type);
+        });
+    });
+
     it('throws for any other type', function () {
         var tryReadValueRefObject = function (path) {
             return function () {
