@@ -374,7 +374,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToUpper, StringRef, StringRef)
     while (pSourceChar < pSourceCharEnd) {
         char c = *pSourceChar++;
         if ('a' <= c && c <= 'z') {
-            c =  (c - 0x20);
+            c = (c - 0x20);
         }
         *pDestChar++ = c;
     }
@@ -398,7 +398,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
     while (pSourceChar < pSourceCharEnd) {
         char c = *pSourceChar++;
         if ('A' <= c && c <= 'Z') {
-            c =  (c + 0x20);
+            c = (c + 0x20);
         }
         *pDestChar++ = c;
     }
@@ -409,7 +409,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToUpperInt, Int8, Int8)
 {
     char c = _Param(0);
     if ('a' <= c && c <= 'z') {
-        c =  (c - 0x20);
+        c = (c - 0x20);
     }
     _Param(1) = c;
     return _NextInstruction();
@@ -419,7 +419,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToLowerInt, Int8, Int8)
 {
     char c = _Param(0);
     if ('A' <= c && c <= 'Z') {
-        c =  (c + 0x20);
+        c = (c + 0x20);
     }
     _Param(1) = c;
     return _NextInstruction();
@@ -672,7 +672,7 @@ VIREO_FUNCTION_SIGNATUREV(StringConcatenate, StringConcatenateParamBlock)
     StringRef pDest = _Param(StringOut);
     Int32 originalLength = pDest->Length();
     Int32 totalLength = 0;
-    TypedArrayCoreRef** inputs =  (_ParamImmediate(Element));
+    TypedArrayCoreRef** inputs = (_ParamImmediate(Element));
     for (Int32 i = 0; i < numInputs; i++) {
         TypedArrayCoreRef arrayInput = *(inputs[i]);
         if (arrayInput->ElementType()->IsArray()) {

@@ -21,7 +21,7 @@ SDG
 
 namespace Vireo
 {
-ConstCStr CopyProcName(void *pSource, void *pDest, TypeRef elemType)
+ConstCStr GetCopyOpName(void *pSource, void *pDest, TypeRef elemType)
 {
     Int32 aqSize = elemType->TopAQSize();
     // If the source or dest are not aligned to the alignment required by the Copy proc
@@ -31,25 +31,38 @@ ConstCStr CopyProcName(void *pSource, void *pDest, TypeRef elemType)
     Int32 alignment = elemType->TheTypeManager()->AQAlignment(aqSize);
     if (((uintptr_t)pSource % alignment != 0) || ((uintptr_t)pDest % alignment != 0))
         return nullptr;
-    switch (aqSize) {  // copy sizes go to 32 bytes just for efficiency
-        case 1:     return "Copy1";   break;
-        case 2:     return "Copy2";   break;
-        case 4:     return "Copy4";   break;
-        case 8:     return "Copy8";   break;
-        case 16:    return "Copy16";  break;
-        case 32:    return "Copy32";  break;
-        default:    return nullptr;      break;
+
+    switch (aqSize) {  // copy sizes go to 32 bytes for efficiency
+        case 1:     
+            return "Copy1";
+        case 2:     
+            return "Copy2";
+        case 4:     
+            return "Copy4";
+        case 8:     
+            return "Copy8";
+        case 16:    
+            return "Copy16";
+        case 32:    
+            return "Copy32";
+        default:    
+            return nullptr;
     }
 }
 //------------------------------------------------------------
-ConstCStr CopyEnumProcName(Int32 aqSize)
+ConstCStr GetCopyEnumOpName(Int32 aqSize)
 {
-    switch (aqSize) {  // these are bytes not bits.  Enums are max UInt64 sized.
-        case 1:     return "CopyEnum1";   break;
-        case 2:     return "CopyEnum2";   break;
-        case 4:     return "CopyEnum4";   break;
-        case 8:     return "CopyEnum8";   break;
-        default:    return nullptr;      break;
+    switch (aqSize) {  // these are bytes not bits. Enums are max UInt64 sized.
+        case 1:     
+            return "CopyEnum1";
+        case 2:     
+            return "CopyEnum2";
+        case 4:     
+            return "CopyEnum4";
+        case 8:     
+            return "CopyEnum8";
+        default:    
+            return nullptr;
     }
 }
 //------------------------------------------------------------
@@ -58,7 +71,6 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
     // TODO(PaulAustin): security. user code should only be allowed to use the "Copy" operation,
     // not the more type-specific ones this function references.
     // those should be marked as kernel access. (can user name spaces over load the same names?)
-    InstructionCore* pInstruction = nullptr;
     if (pInstructionBuilder->_argCount != 2)
         return nullptr;
     TypeRef sourceType = pInstructionBuilder->_argTypes[0];
@@ -67,6 +79,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
 
     // Compare types
 
+    InstructionCore* pInstruction = nullptr;
     if (sourceType->IsA(destType, true) || destType->IsA(sourceType, true)) {
         void* pSource = pInstructionBuilder->_argPointers[0];
         void* pDest = pInstructionBuilder->_argPointers[1];
@@ -74,7 +87,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         ConstCStr copyOpName = nullptr;
         if (sourceType->IsFlat() || originalCopyOp.CompareCStr("CopyTop")) {
             if (destType->IsEnum()) {
-                copyOpName = CopyEnumProcName(sourceType->TopAQSize());
+                copyOpName = GetCopyEnumOpName(sourceType->TopAQSize());
                 if (!copyOpName) {
                     pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Unsupported enum size");
                 }
@@ -82,7 +95,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
             } else if (destType->BitEncoding() == kEncoding_RefNum) {
                     copyOpName = "CopyRefnum";
             } else {
-                copyOpName = CopyProcName(pSource, pDest, sourceType);
+                copyOpName = GetCopyOpName(pSource, pDest, sourceType);
                 if (!copyOpName) {
                     copyOpName = "CopyN";
                     // For CopyN a count is passed as well
@@ -103,15 +116,16 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
             // Non flat clusters (e.g clusters with arrays) need type info passed
             // so the general purpose copy function can get to the types copy proc.
             copyOpName = "CopyStaticTypedBlock";
-            extraParam = (void*) sourceType;
+            extraParam = (void*)sourceType;
         }
 
-        SubString copyOpToken(copyOpName);
         if (extraParam) {
             // Some copy operations take an additional parameter, pass it at the end.
             pInstructionBuilder->InternalAddArg(nullptr, extraParam);
         }
-        pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
+
+        SubString copyOpToken(copyOpName);
+        pInstructionBuilder->ReresolveInstruction(&copyOpToken);
         pInstruction = pInstructionBuilder->EmitInstruction();
     } else {
         pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Type mismatch");
@@ -166,19 +180,19 @@ DECLARE_VIREO_PRIMITIVE2(Copy8, Int64, Int64, (_Param(1) = _Param(0)))
 DECLARE_VIREO_PRIMITIVE2(Copy16, Block128, Block128, (_Param(1) = _Param(0)))
 DECLARE_VIREO_PRIMITIVE2(Copy32, Block256, Block256, (_Param(1) = _Param(0)))
 
-DECLARE_VIREO_PRIMITIVE3(CopyEnum1, UInt8, UInt8, void, (_Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2))-1))
-DECLARE_VIREO_PRIMITIVE3(CopyEnum2, UInt16, UInt16, void, (_Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2))-1))
+DECLARE_VIREO_PRIMITIVE3(CopyEnum1, UInt8, UInt8, void, (_Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2)) - 1))
+DECLARE_VIREO_PRIMITIVE3(CopyEnum2, UInt16, UInt16, void, (_Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ? _Param(0) : uintptr_t(_ParamPointer(2)) - 1))
 DECLARE_VIREO_PRIMITIVE3(CopyEnum4, UInt32, UInt32, void, (_Param(1) = _Param(0) < UInt32(uintptr_t(_ParamPointer(2))) ?
-    _Param(0) : UInt32(uintptr_t(_ParamPointer(2)))-1))
+    _Param(0) : UInt32(uintptr_t(_ParamPointer(2))) - 1))
 DECLARE_VIREO_PRIMITIVE3(CopyEnum8, UInt64, UInt64, void, (_Param(1) = _Param(0) < uintptr_t(_ParamPointer(2)) ?
-    _Param(0) : uintptr_t(_ParamPointer(2))-1))
+    _Param(0) : uintptr_t(_ParamPointer(2)) - 1))
 
 DECLARE_VIREO_PRIMITIVE2(CopyRefnum, RefNumVal, RefNumVal, (_Param(1).SetRefNum(_Param(0).GetRefNum())))
 
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(CopyN, void, void, void)
 {
-    size_t countAq = (size_t) _ParamPointer(2);
+    size_t countAq = (size_t)_ParamPointer(2);
     memmove(_ParamPointer(1), _ParamPointer(0), countAq);
     return _NextInstruction();
 }
@@ -230,38 +244,44 @@ struct AggregateBinOpInstruction : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = nullptr;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef sourceYType = pInstructionBuilder->_argTypes[1];
     TypeRef destType = pInstructionBuilder->_argTypes[2];
     TypeRef goalType = destType;
     Boolean isAccumulator = false;
     Int32 argCount = pInstructionBuilder->_argCount;
-    SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+    SubString operationName = pInstructionBuilder->_instructionPointerType->Name();
 
     // Check for accumulator style binops where the dest type is simpler (eg. compareAggregates, others?)
-    if (argCount == 3 && sourceXType->BitEncoding() == kEncoding_Array &&
-        sourceYType->BitEncoding() == kEncoding_Array && destType->BitEncoding() != kEncoding_Array) {
+    if (argCount == 3
+        && sourceXType->BitEncoding() == kEncoding_Array 
+        && sourceYType->BitEncoding() == kEncoding_Array 
+        && destType->BitEncoding() != kEncoding_Array) {
         goalType = sourceXType;
         isAccumulator = true;
-    } else if (argCount == 3 && sourceXType->BitEncoding() == kEncoding_Cluster
-               && sourceYType->BitEncoding() == kEncoding_Cluster
-               && destType->BitEncoding() != kEncoding_Cluster) {
+    } else if (argCount == 3 
+        && sourceXType->BitEncoding() == kEncoding_Cluster
+        && sourceYType->BitEncoding() == kEncoding_Cluster
+        && destType->BitEncoding() != kEncoding_Cluster) {
         goalType = sourceXType;
         isAccumulator = true;
     } else if (destType->BitEncoding() == kEncoding_Boolean) {  // some kind of comparison
         goalType = sourceXType;
     }
-    if (savedOperation.CompareCStr("Split") || savedOperation.CompareCStr("Join")) {
+
+    if (operationName.CompareCStr("Split") || operationName.CompareCStr("Join")) {
         // Split and Join are uniquely identified by source type rather than dest type
         goalType = sourceXType;
     }
+
     // two-output binops all must have identical output types
     if (argCount > 4 || (argCount == 4 &&
         (pInstructionBuilder->_argTypes[3]->BitEncoding() != destType->BitEncoding() ||
-         pInstructionBuilder->_argTypes[3]->BitLength() != destType->BitLength())))
+            pInstructionBuilder->_argTypes[3]->BitLength() != destType->BitLength()))) {
         return nullptr;
+    }
 
+    InstructionCore* pInstruction = nullptr;
     switch (goalType->BitEncoding()) {
         default:
         {
@@ -286,14 +306,23 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                         void *savedArg = pInstructionBuilder->_argPointers[1];
                         if (pInstructionBuilder->_argumentState == ClumpParseState::kArgumentNotResolved) {
                             // invoked via recursion from Generic array/cluster binop
-                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2,
-                             sourceXType, pInstructionBuilder->_argPointers[0],
-                             destType, (void*)-1);  // tell vector/cluster op invoking us to convert the 1st arg
+                            pInstruction = pInstructionBuilder->EmitInstruction(
+                                &convertOpToken, 
+                                2,
+                                sourceXType, 
+                                pInstructionBuilder->_argPointers[0],
+                                destType, 
+                                (void*) - 1);  // tell vector/cluster op invoking us to convert the 1st arg
                         } else {
-                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2,
-                             sourceXType, pInstructionBuilder->_argPointers[0], destType, destArg);
+                            pInstruction = pInstructionBuilder->EmitInstruction(
+                                &convertOpToken, 
+                                2,
+                                sourceXType, 
+                                pInstructionBuilder->_argPointers[0], 
+                                destType, 
+                                destArg);
                         }
-                        pInstructionBuilder->EmitInstruction(&savedOperation, 3, destType, destArg, sourceYType, savedArg, destType, destArg);
+                        pInstructionBuilder->EmitInstruction(&operationName, 3, destType, destArg, sourceYType, savedArg, destType, destArg);
                     }
                 } else if ((sourceYEncoding != destEncoding || sourceYType->BitLength() != destType->BitLength())  // sourceY needs conversion
                            && sourceXEncoding == destEncoding && sourceXType->BitLength() == destType->BitLength()) {
@@ -304,15 +333,32 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                         void *savedArg = pInstructionBuilder->_argPointers[0];
                         if (pInstructionBuilder->_argumentState == ClumpParseState::kArgumentNotResolved) {
                             // invoked via recursion from Generic array/cluster binop
-                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2,
-                              sourceYType, pInstructionBuilder->_argPointers[1], destType, (void*)-2);
+                            pInstruction = pInstructionBuilder->EmitInstruction(
+                                &convertOpToken, 
+                                2,
+                                sourceYType, 
+                                pInstructionBuilder->_argPointers[1], 
+                                destType, 
+                                (void*) - 2);
                             // tell vector/cluster op invoking us to convert the 2nd arg
                         } else {
-                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2,
-                              sourceYType, pInstructionBuilder->_argPointers[1], destType, destArg);
+                            pInstruction = pInstructionBuilder->EmitInstruction(
+                                &convertOpToken, 
+                                2,
+                                sourceYType, 
+                                pInstructionBuilder->_argPointers[1], 
+                                destType, 
+                                destArg);
                         }
-                        pInstructionBuilder->EmitInstruction(&savedOperation, 3, sourceXType, savedArg,
-                                                            destType, destArg, destType, destArg);
+                        pInstructionBuilder->EmitInstruction(
+                            &operationName, 
+                            3, 
+                            sourceXType, 
+                            savedArg,
+                            destType, 
+                            destArg, 
+                            destType, 
+                            destArg);
                     }
                 }
             }
@@ -323,11 +369,11 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         {
             // Find out what this name of the original opcode was.
             // this will be the name of the _instructionPointerType.
-            savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+            operationName = pInstructionBuilder->_instructionPointerType->Name();
             ConstCStr pVectorBinOpName = nullptr;
             // TODO(PaulAustin): Validating runtime will require  type checking
             if (sourceXType->IsArray() && sourceYType->IsArray()) {
-                if (savedOperation.CompareCStr("Split"))
+                if (operationName.CompareCStr("Split"))
                     pVectorBinOpName = "VectorVectorSplitOp";
                 else
                     pVectorBinOpName = isAccumulator ? "VectorVectorBinaryAccumulatorOp" : "VectorVectorBinaryOp";
@@ -339,7 +385,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                 pVectorBinOpName = "ScalarScalarConvertBinaryOp";
             }
             SubString vectorBinOpToken(pVectorBinOpName);
-            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false);  // build a vector op
+            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken);  // build a vector op
             // This would be easier if the vector bin op was at the end...
 
             // If a 4th argument is passed, it overlaps the accumulator slot
@@ -360,14 +406,24 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
             TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
-            if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, xEltType, (void*)nullptr, yEltType,
-                (void*)nullptr, destEltType, (void*)nullptr, destEltType, (void*)nullptr))
+            if (!snippetBuilder.EmitInstruction(
+                &operationName, 
+                argCount, 
+                xEltType, 
+                nullptr, 
+                yEltType,
+                nullptr, 
+                destEltType, 
+                nullptr, 
+                destEltType, 
+                nullptr)) {
                 pInstruction = nullptr;
+            }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
 
             // Create the accumulator snippet
             if (isAccumulator) {
-                TempStackCString opToken(&savedOperation);
+                TempStackCString opToken(&operationName);
                 SubString accToken("Accumulator");
                 opToken.Append(&accToken);
                 SubString accumulatorToken(opToken.BeginCStr());
@@ -385,11 +441,11 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
         }
         case kEncoding_Cluster:
         {
-            savedOperation = pInstructionBuilder->_instructionPointerType->Name();
+            operationName = pInstructionBuilder->_instructionPointerType->Name();
             ConstCStr pClusterBinOpName = isAccumulator ?  "ClusterAggBinaryOp" : "ClusterBinaryOp";
             SubString clusterBinOpToken(pClusterBinOpName);
 
-            pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
+            pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken);
 
             // If a 4th argument is passed, it overlaps the accumulator slot
             Int32 accumulatorOpArgId = argCount < 4 || isAccumulator ? pInstructionBuilder->AddSubSnippet() : 0;
@@ -431,7 +487,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                     arg3Data = nullptr;
                 }
 
-                if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, arg1Type, arg1Data,
+                if (!snippetBuilder.EmitInstruction(&operationName, argCount, arg1Type, arg1Data,
                         arg2Type, arg2Data, arg3Type, arg3Data, arg3Type, arg3Data))
                     // 2-output prims must have identical output types
                     pInstruction = nullptr;
@@ -440,7 +496,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
             if (isAccumulator) {
                 // create the accumulator snippet
-                TempStackCString opToken(&savedOperation);
+                TempStackCString opToken(&operationName);
                 SubString accToken("Accumulator");
                 opToken.Append(&accToken);
                 SubString accumulatorToken(opToken.BeginCStr());
@@ -494,7 +550,6 @@ struct AggregateUnOp2OutputInstruction : public InstructionCore
 //------------------------------------------------------------
 InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder)
 {
-    InstructionCore* pInstruction = nullptr;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
     TypeRef destType = pInstructionBuilder->_argTypes[1];
     SubString savedOperation = pInstructionBuilder->_instructionPointerType->Name();
@@ -502,27 +557,31 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     Boolean isTwoOutput = false;
     if ((savedOperation.CompareCStr("ComplexToPolar") || savedOperation.CompareCStr("ComplexToReOrIm"))) {
         isTwoOutput = true;
-        if (argCount != 3 || (pInstructionBuilder->_argTypes[2]->BitEncoding() != destType->BitEncoding() ||
-                                                    pInstructionBuilder->_argTypes[2]->BitLength() != destType->BitLength()))
+        if (argCount != 3 
+            || (pInstructionBuilder->_argTypes[2]->BitEncoding() != destType->BitEncoding() 
+                || pInstructionBuilder->_argTypes[2]->BitLength() != destType->BitLength())) {
             return nullptr;
+        }
     }
+
     if (savedOperation.CompareCStr("Convert")) {
         // Special case for convert, if the types are the same go straight to the more efficient copy
         SubString destTypeName = destType->Name();
         if (destTypeName.Length() > 0 && sourceXType->CompareType(destType)) {
             ConstCStr copyOpName = "Copy";
             SubString copyOpToken(copyOpName);
-            pInstructionBuilder->ReresolveInstruction(&copyOpToken, false);
+            pInstructionBuilder->ReresolveInstruction(&copyOpToken);
             return pInstructionBuilder->EmitInstruction();
         }
     }
 
+    InstructionCore* pInstruction = nullptr;
     switch (destType->BitEncoding()) {
         case kEncoding_Array:
         {
             ConstCStr pVectorUnOpName = isTwoOutput ? "VectorUnary2OutputOp" : "VectorUnaryOp";
             SubString vectorUnOpToken(pVectorUnOpName);
-            pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken, false);  // build a vector op
+            pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken);  // build a vector op
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
             InstructionCore* unaryOp = pInstructionBuilder->EmitInstruction();  // emit the vector op
             pInstruction = unaryOp;
@@ -531,9 +590,17 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
 
-            if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceXType->GetSubElement(0),
-                (void*)nullptr, destType->GetSubElement(0), (void*)nullptr, destType->GetSubElement(0), (void*)nullptr))
-               pInstruction = nullptr;
+            if (!snippetBuilder.EmitInstruction(
+                &savedOperation, 
+                argCount, 
+                sourceXType->GetSubElement(0),
+                nullptr, 
+                destType->GetSubElement(0), 
+                nullptr, 
+                destType->GetSubElement(0), 
+                nullptr)) {
+                pInstruction = nullptr;
+            }
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             if (isTwoOutput)
@@ -547,7 +614,7 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             ConstCStr pClusterUnOpName = isTwoOutput ? "ClusterUnary2OutputOp" : "ClusterUnaryOp";
             SubString clusterUnOpToken(pClusterUnOpName);
 
-            pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken, false);
+            pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken);
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
             AggregateUnOpInstruction* unaryOp = (AggregateUnOpInstruction*)pInstructionBuilder->EmitInstruction();
             pInstruction = unaryOp;
@@ -561,11 +628,19 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
                 void* sourceData = nullptr;
                 if (sourceXType->BitEncoding() == kEncoding_Cluster) {
                     sourceSub = sourceXType->GetSubElement(i);
-                    sourceData =  (void*)(size_t)sourceSub->ElementOffset();
+                    sourceData = (void*)(size_t)sourceSub->ElementOffset();
                 }
-                if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceSub, sourceData,
-                    destSub, (void*)(size_t)destSub->ElementOffset(), destSub, (void*)(size_t)destSub->ElementOffset()))
+                if (!snippetBuilder.EmitInstruction(
+                    &savedOperation,
+                    argCount,
+                    sourceSub,
+                    sourceData,
+                    destSub,
+                    (void*)(size_t)destSub->ElementOffset(),
+                    destSub,
+                    (void*)(size_t)destSub->ElementOffset())) {
                     pInstruction = nullptr;
+                }
             }
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -609,7 +684,7 @@ struct AggregateMaxAndMinInstruction : public InstructionCore
 };
 
 //------------------------------------------------------------
-InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
+InstructionCore* EmitMaxMinElementsInstruction(ClumpParseState* pInstructionBuilder)
 {
     InstructionCore* pInstruction = nullptr;
     TypeRef sourceXType = pInstructionBuilder->_argTypes[0];
@@ -633,7 +708,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
                 pVectorUnOpName = "ScalarVectorMaxMinOp";
             }
             SubString vectorUnOpToken(pVectorUnOpName);
-            pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken, false);  // build a vector op
+            pInstructionBuilder->ReresolveInstruction(&vectorUnOpToken);  // build a vector op
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
             AggregateMaxAndMinInstruction* maxMinOp = (AggregateMaxAndMinInstruction*) pInstructionBuilder->EmitInstruction();  // emit the vector op
             pInstruction = maxMinOp;
@@ -644,11 +719,17 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
 
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
-            snippetBuilder.EmitInstruction(&savedOperation, 4,
-                xEltType, (void*)nullptr,
-                yEltType, (void*)nullptr,
-                maxType->GetSubElement(0), (void*)nullptr,
-                minType->GetSubElement(0), (void*)nullptr);
+            snippetBuilder.EmitInstruction(
+                &savedOperation, 
+                4,
+                xEltType, 
+                nullptr,
+                yEltType, 
+                nullptr,
+                maxType->GetSubElement(0), 
+                nullptr,
+                minType->GetSubElement(0), 
+                nullptr);
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
@@ -659,7 +740,7 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
             ConstCStr pClusterUnOpName = "ClusterMaxMinOp";
             SubString clusterUnOpToken(pClusterUnOpName);
 
-            pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken, false);
+            pInstructionBuilder->ReresolveInstruction(&clusterUnOpToken);
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
             AggregateMaxAndMinInstruction* maxMinOp = (AggregateMaxAndMinInstruction*)pInstructionBuilder->EmitInstruction();
             pInstruction = maxMinOp;
@@ -673,14 +754,23 @@ InstructionCore* EmitMaxMinEltsInstruction(ClumpParseState* pInstructionBuilder)
                 void *sourceXData = nullptr, *sourceYData = nullptr;
                 if (sourceXType->BitEncoding() == kEncoding_Cluster) {
                     sourceXSub = sourceXType->GetSubElement(i);
-                    sourceXData =  (void*)(size_t)sourceXSub->ElementOffset();
+                    sourceXData = (void*)(size_t)sourceXSub->ElementOffset();
                 }
                 if (sourceYType->BitEncoding() == kEncoding_Cluster) {
                     sourceYSub = sourceYType->GetSubElement(i);
-                    sourceYData =  (void*)(size_t)sourceYSub->ElementOffset();
+                    sourceYData = (void*)(size_t)sourceYSub->ElementOffset();
                 }
-                snippetBuilder.EmitInstruction(&savedOperation, 4, sourceXSub, sourceXData, sourceYSub, sourceYData,
-                                               maxSub, (void*)(size_t)maxSub->ElementOffset(), minSub, (void*)(size_t)minSub->ElementOffset());
+                snippetBuilder.EmitInstruction(
+                    &savedOperation, 
+                    4, 
+                    sourceXSub, 
+                    sourceXData, 
+                    sourceYSub, 
+                    sourceYData,
+                    maxSub, 
+                    (void*)(size_t)maxSub->ElementOffset(), 
+                    minSub, 
+                    (void*)(size_t)minSub->ElementOffset());
             }
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -975,7 +1065,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
         ConstCStr pInRangeOpAggregateName = "InRangeAccumulator";
         SubString findInRangeOpAggregateToken(pInRangeOpAggregateName);
 
-        pInstructionBuilder->ReresolveInstruction(&findInRangeOpAggregateToken, false);
+        pInstructionBuilder->ReresolveInstruction(&findInRangeOpAggregateToken);
         if (!sourceXType->CompareType(sourceLoType) || !sourceLoType->CompareType(sourceHiType)) {
             return nullptr;
         }
@@ -992,7 +1082,15 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 
         ClumpParseState snippetBuilder(pInstructionBuilder);
         pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, ircOp, snippetArgId);
-        snippetBuilder.EmitInstruction(&LTName, 3, sourceXType, (void*)nullptr, sourceXType, (void*)nullptr, booleanType, (void*)nullptr);
+        snippetBuilder.EmitInstruction(
+            &LTName, 
+            3, 
+            sourceXType, 
+            nullptr, 
+            sourceXType, 
+            nullptr, 
+            booleanType, 
+            nullptr);
 
         pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
         pInstructionBuilder->RecordNextHere(&ircOp->_piNext);
@@ -1009,7 +1107,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
             // TODO(PaulAustin): Validating runtime will require  type checking
             pVectorBinOpName = "VectorOrScalarInRangeOp";
             SubString vectorBinOpToken(pVectorBinOpName);
-            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false);  // build a vector op
+            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken);  // build a vector op
 
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef loEltType = sourceLoType->IsArray() ? sourceLoType->GetSubElement(0) : sourceLoType;
@@ -1048,9 +1146,23 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
 
-            snippetBuilder.EmitInstruction(&savedOperation, 7, xEltType, (void*)nullptr, loEltType, (void*)nullptr, hiEltType, (void*)nullptr,
-                                           booleanType, (void*)nullptr, booleanType, (void*)nullptr,
-                                           coercedEltType, (void*)nullptr, destEltType, (void*)nullptr);
+            snippetBuilder.EmitInstruction(
+                &savedOperation, 
+                7, 
+                xEltType, 
+                nullptr, 
+                loEltType, 
+                nullptr, 
+                hiEltType, 
+                nullptr,
+                booleanType, 
+                nullptr, 
+                booleanType, 
+                nullptr,
+                coercedEltType, 
+                nullptr, 
+                destEltType, 
+                nullptr);
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
             break;
@@ -1061,7 +1173,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
             ConstCStr pClusterBinOpName = "ClusterInRangeOp";
             SubString clusterBinOpToken(pClusterBinOpName);
 
-            pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken, false);
+            pInstructionBuilder->ReresolveInstruction(&clusterBinOpToken);
 
             if (sourceXType->IsCluster() && sourceLoType->IsCluster() && sourceXType->SubElementCount() != sourceLoType->SubElementCount())
                 return nullptr;
@@ -1129,8 +1241,23 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
                 }
                 if (!arg1Type->CompareType(arg2Type) || !arg2Type->CompareType((arg3Type)) || !arg1Type->CompareType(arg6Type))
                     return nullptr;
-                snippetBuilder.EmitInstruction(&savedOperation, 7, arg1Type, arg1Data, arg2Type, arg2Data, arg3Type, arg3Data,
-                                               booleanType, (void*)nullptr, booleanType, (void*)nullptr, arg6Type, arg6Data, arg7Type, arg7Data);
+                snippetBuilder.EmitInstruction(
+                    &savedOperation, 
+                    7, 
+                    arg1Type, 
+                    arg1Data, 
+                    arg2Type, 
+                    arg2Data, 
+                    arg3Type, 
+                    arg3Data,
+                    booleanType, 
+                    nullptr, 
+                    booleanType, 
+                    nullptr, 
+                    arg6Type, 
+                    arg6Data, 
+                    arg7Type, 
+                    arg7Data);
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&clusterOp->_piNext);
@@ -1248,6 +1375,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
     }
     return _NextInstruction();
 }
+
 InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
 {
     InstructionCore* pInstruction = nullptr;
@@ -1265,7 +1393,7 @@ InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
             ConstCStr pVectorBinOpName = nullptr;
             pVectorBinOpName = "VectorOrClusterStrToNumOp";
             SubString vectorBinOpToken(pVectorBinOpName);
-            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken, false);  // build a vector op
+            pInstructionBuilder->ReresolveInstruction(&vectorBinOpToken);  // build a vector op
             if (sourceStrType->BitEncoding() != outputType->BitEncoding())
                 return nullptr;
             TypeRef srcEltType = sourceStrType->GetSubElement(0);
@@ -1286,8 +1414,19 @@ InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
             ClumpParseState snippetBuilder(pInstructionBuilder);
 
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
-            snippetBuilder.EmitInstruction(&savedOperation, 5, srcEltType, (void*)nullptr, Int32Type, (void*)nullptr, outEltType, (void*)nullptr,
-                                           Int32Type, (void*)nullptr, staticTypeAndDataType, (void*)nullptr);
+            snippetBuilder.EmitInstruction(
+                &savedOperation, 
+                5, 
+                srcEltType, 
+                nullptr, 
+                Int32Type, 
+                nullptr, 
+                outEltType, 
+                nullptr,
+                Int32Type, 
+                nullptr, 
+                staticTypeAndDataType, 
+                nullptr);
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
             break;
@@ -1315,7 +1454,7 @@ InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder
     ConstCStr pMaxMinOpName = "MaxMinValueInternal";
     SubString findMaxMinOpToken(pMaxMinOpName);
 
-    pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
+    pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken);
     InstructionCore* pInstruction = nullptr;
     TypeRef argType =  pInstructionBuilder->_argTypes[0];
     TypeRef argType2 = pInstructionBuilder->_argTypes[1];
@@ -1327,6 +1466,7 @@ InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder
     if (!outputType->CompareType(outputType2)) {
         return nullptr;
     }
+
     if (!argType2->CompareType(outputType2)) {
         return nullptr;
     }
@@ -1340,7 +1480,7 @@ InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, maxMinOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, argType, (void*)nullptr, argType, (void*)nullptr, booleanType, (void*)nullptr);
+    snippetBuilder.EmitInstruction(&LTName, 3, argType, nullptr, argType, nullptr, booleanType, nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
@@ -1384,7 +1524,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
     ConstCStr pSearchOpName = "Search1DArrayInternal";
     SubString searchOpToken(pSearchOpName);
 
-    pInstructionBuilder->ReresolveInstruction(&searchOpToken, false);
+    pInstructionBuilder->ReresolveInstruction(&searchOpToken);
     InstructionCore* pInstruction = nullptr;
     TypeRef elementType = pInstructionBuilder->_argTypes[1];
 
@@ -1399,7 +1539,7 @@ InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, searchOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&EQName, 3, elementType, (void*)nullptr, elementType, pInstructionBuilder->_argPointers[1], booleanType, (void*)nullptr);
+    snippetBuilder.EmitInstruction(&EQName, 3, elementType, nullptr, elementType, pInstructionBuilder->_argPointers[1], booleanType, nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&searchOp->_piNext);
@@ -1475,7 +1615,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     // Build the vector op
     ConstCStr vectorOpName = "VectorOpInternal";
     SubString vectorOpToken(vectorOpName);
-    pInstructionBuilder->ReresolveInstruction(&vectorOpToken, false);
+    pInstructionBuilder->ReresolveInstruction(&vectorOpToken);
     pInstructionBuilder->InternalAddArg(nullptr, (void *) (size_t)isIdentityOne);
     Int32 scalarOpSnippetArgId = pInstructionBuilder->AddSubSnippet();
     VectorOpInstruction* vectorOp = (VectorOpInstruction*) pInstructionBuilder->EmitInstruction();
@@ -1484,8 +1624,15 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorOp, scalarOpSnippetArgId);
 
-    snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), (void*)nullptr,
-        destType, pInstructionBuilder->_argPointers[1], destType, pInstructionBuilder->_argPointers[1]);
+    snippetBuilder.EmitInstruction(
+        &scalarOpToken, 
+        3, 
+        sourceType->GetSubElement(0), 
+        nullptr,
+        destType, 
+        pInstructionBuilder->_argPointers[1], 
+        destType, 
+        pInstructionBuilder->_argPointers[1]);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&vectorOp->_piNext);
@@ -1549,7 +1696,7 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
 {
     SubString ArrayConcatenateOpToken("ArrayConcatenateInternal");
 
-    pInstructionBuilder->ReresolveInstruction(&ArrayConcatenateOpToken, false);
+    pInstructionBuilder->ReresolveInstruction(&ArrayConcatenateOpToken);
     Int32 argCount = pInstructionBuilder->_argCount;
     // _argPointers[0] holds the count
     TypeRef pDestType = pInstructionBuilder->_argTypes[1];
@@ -2809,7 +2956,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_GENERIC(StringToUpper, "GenericUnOp", EmitGenericUnOpInstruction);
     DEFINE_VIREO_GENERIC(StringToLower, "GenericUnOp", EmitGenericUnOpInstruction);
 
-    DEFINE_VIREO_GENERIC(MaxAndMinElts, "p(i(*) i(*) o(*) o(*) s(Instruction))", EmitMaxMinEltsInstruction);
+    DEFINE_VIREO_GENERIC(MaxAndMinElts, "p(i(*) i(*) o(*) o(*) s(Instruction))", EmitMaxMinElementsInstruction);
     DEFINE_VIREO_FUNCTION(VectorMaxMinOp, "p(i(Array) i(Array) o(Array) o(Array) s(Instruction))")
     DEFINE_VIREO_FUNCTION(ScalarVectorMaxMinOp, "p(i(*) i(Array) o(Array) o(Array) s(Instruction))")
     DEFINE_VIREO_FUNCTION(VectorScalarMaxMinOp, "p(i(Array) i(*) o(Array) o(Array) s(Instruction))")

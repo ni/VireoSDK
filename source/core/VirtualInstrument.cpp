@@ -427,14 +427,13 @@ void ClumpParseState::SetClumpFireCount(Int32 fireCount)
     _clump->_fireCount = fireCount;
 }
 //------------------------------------------------------------
-TypeRef ClumpParseState::ReresolveInstruction(SubString* opName, Boolean allowErrors)
+TypeRef ClumpParseState::ReresolveInstruction(SubString* opName)
 {
     // A new instruction function is being substituted for the
     // on original map (used for generics and SubVI calling)
     VIREO_ASSERT(_instructionType != nullptr)
     TypeRef foundType = _clump->TheTypeManager()->FindType(opName);
-    if (foundType == nullptr && allowErrors)
-        return nullptr;
+
     _instructionPointerType = foundType;
     // For now reresolving should map to a native function. In time that will change
     // when it does this will look more like StartInstruction.
@@ -800,10 +799,10 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
         // Reentrant VI clones exist in TM the caller VI is in.
         DefaultValueType *cdt = DefaultValueType::New(tm, viType, false);
         VirtualInstrumentObjectRef pVICopy = *(VirtualInstrumentObjectRef*)cdt->Begin(kPARead);
-        vi = (VirtualInstrument*) pVICopy->RawObj();
+        vi = (VirtualInstrument*)pVICopy->RawObj();
     } else {
         // Non reentrant VIs use the original type
-        vi =  (VirtualInstrument*) (*pObj)->RawObj();
+        vi = (VirtualInstrument*)(*pObj)->RawObj();
     }
 
     if (vi != nullptr) {
@@ -820,7 +819,7 @@ Int32 ClumpParseState::AddSubSnippet()
     // has been emitted so the memory will be allocated in the correct order.
     // However the parameter position can be returned
 
-    InternalAddArg(nullptr, (void*) nullptr);
+    InternalAddArg(nullptr, nullptr);
     return _argCount - 1;
 }
 //------------------------------------------------------------
@@ -933,7 +932,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
 
     _bIsVI = false;
     SubString  opName("CallVI");
-    _instructionType = ReresolveInstruction(&opName, false);
+    _instructionType = ReresolveInstruction(&opName);
 
     // Recurse now that the instruction is a simple one.
     CallVIInstruction* callInstruction = (CallVIInstruction*)EmitInstruction();

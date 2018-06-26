@@ -290,7 +290,7 @@ void TypeTemplateVisitor::VisitNamed(NamedType* type)
     tempString.Value->Append('<');
     for (Int32 i = 0; i < nTParams; i++) {
         tempString.Value->Append('.');
-        name =  (_parameters->Begin()[i])->Name();
+        name = (_parameters->Begin()[i])->Name();
         tempString.Value->Append(name.Length(), (Utf8Char*)name.Begin());
         if (i < nTParams-1)
             tempString.Value->Append(' ');
