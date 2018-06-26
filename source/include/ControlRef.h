@@ -17,13 +17,13 @@
  
  define(MyVI dv(.VirtualInstrument (
  Locals: c(
- e(ControlReference("dataItem_Foo") ctlref1)  // static control ref linked to dataItem_Foo
+ e(ControlReference("controlID1") ctlref1)  // static control ref linked to controlID1
  // -or-
- e(dv(ControlRefNum ControlReference("dataItem_Bar")) ctlref2)  // more explicit syntax
+ e(dv(ControlRefNum ControlReference("controlID2")) ctlref2)  // more explicit syntax
  ) ...
  
  The actual Type of ctlref1 is ControlRefNum and stores a refnum (cookie) which
- opaquely holds onto the VI and control tag (data item).
+ opaquely holds onto the VI and control tag (control id).
  The VI isn't passed directly, it's implicitly taken from the context,
  whatever VI the ControlReference is defined in.
  ControlRefNums defined with ControlReference() exist during the entire

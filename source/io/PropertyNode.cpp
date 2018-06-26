@@ -29,9 +29,9 @@ enum { kNIError_ObjectReferenceIsInvalid = 1055 };  // TODO(spathiwa) move to co
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    // Parameters: controlRefVIName, dataItemName, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
+    // Parameters: controlRefVIName, controlId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
     extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
-    // Parameters: controlRefVIName, dataItemName, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
+    // Parameters: controlRefVIName, controlId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
     extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
 }
 #endif
@@ -51,9 +51,9 @@ struct PropertyNodeWriteParamBlock : public VarArgInstruction
 
 #if kVireoOS_emscripten
 static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *errorClusterPtr,
-                                           StringRef viName, StringRef *dataItemId, ConstCStr propNodeName) {
+                                           StringRef viName, StringRef *controlId, ConstCStr propNodeName) {
     VirtualInstrument *vi;
-    if (ControlReferenceLookup(refNumPtr->GetRefNum(), &vi, dataItemId) != kNIError_Success) {
+    if (ControlReferenceLookup(refNumPtr->GetRefNum(), &vi, controlId) != kNIError_Success) {
         errorClusterPtr->SetError(true, kNIError_ObjectReferenceIsInvalid, propNodeName);
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeName);
         return false;
@@ -111,8 +111,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 
     STACK_VAR(String, controlRefVINameVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
-    StringRef controlRefDataItemId = nullptr;
-    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeWriteName))
+    StringRef controlRefControlId = nullptr;
+    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefControlId, propNodeWriteName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
     STACK_VAR(String, tempVariableVINameStackVar);
@@ -134,7 +134,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
             controlRefVIName,
-            controlRefDataItemId,
+            controlRefControlId,
             propertyName,
             propertyTypeName,
             tempVariableVIName,
@@ -173,8 +173,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
 
     STACK_VAR(String, controlRefVINameVar);
     StringRef controlRefVIName = controlRefVINameVar.Value;
-    StringRef controlRefDataItemId = nullptr;
-    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefDataItemId, propNodeReadName))
+    StringRef controlRefControlId = nullptr;
+    if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefControlId, propNodeReadName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
     STACK_VAR(String, tempVariableVINameStackVar);
@@ -196,7 +196,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
             controlRefVIName,
-            controlRefDataItemId,
+            controlRefControlId,
             propertyName,
             propertyTypeName,
             tempVariableVIName,
