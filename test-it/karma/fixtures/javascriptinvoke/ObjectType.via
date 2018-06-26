@@ -1,0 +1,41 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error1)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error2)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error3)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error4)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error5)
+        e(.JavaScriptRefNum ref1)
+        e(.JavaScriptRefNum ref2)
+        e(.JavaScriptRefNum ref3)
+        e(dv(.String "Foo") name1)
+        e(dv(.String "FooBar") name2)
+        e(dv(.Int32 0) length1)
+        e(dv(.Int32 0) length2)
+        e(dv(.Boolean false) isEqual)
+        e(dv(.Boolean false) isNotEqual)
+        e(dv(.Boolean false) isNotANumPathRefnum1)
+        e(dv(.Boolean false) isNotANumPathRefnum2)
+        e(dv(.Boolean false) isSharedRef)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        // Get js object ref
+        JavaScriptInvoke(occurrence false error1 'NI_GetObjectFunction' ref1 name1)
+        JavaScriptInvoke(occurrence false error2 'NI_GetObjectFunction' ref2 name2)
+        IsEQ(ref1 ref2 isEqual)
+        IsNE(ref1 ref2 isNotEqual)
+        IsNotANumPathRefnum(ref1 isNotANumPathRefnum1)
+        IsNotANumPathRefnum(ref2 isNotANumPathRefnum2)
+
+        // Use the js object ref
+        JavaScriptInvoke(occurrence false error3 'NI_UseObjectFunction' length1 ref1)
+        JavaScriptInvoke(occurrence false error4 'NI_UseObjectFunction' length2 ref2)
+        
+        // Get the same js ref
+        JavaScriptInvoke(occurrence false error5 'NI_GetObjectFunction' ref3 name1) 
+        IsEQ(ref1 ref3 isSharedRef)
+    )
+) ) )
+
+enqueue(MyVI)

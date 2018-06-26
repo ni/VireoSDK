@@ -8,10 +8,14 @@ describe('A JavaScript function invoke', function () {
     var vireo;
 
     var jsDataTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/DataTypes.via');
+    var jsObjectTypeViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ObjectType.via');
+
+    var jsObjectMap = new Map(); // to share javascript objects for JavaScriptRefNum types. <key,value>=<uniquifier, jsObject>
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
-            jsDataTypesViaUrl
+            jsDataTypesViaUrl,
+            jsObjectTypeViaUrl
         ], done);
     });
 
@@ -106,6 +110,24 @@ describe('A JavaScript function invoke', function () {
             expect(value instanceof Float64Array).toBeTrue();
             return value;
         };
+
+        window.NI_GetObjectFunction = function (name) {
+            var existingObject = jsObjectMap.get(name);
+            if (existingObject === undefined) { // create new object
+                var myObject = {};
+                myObject.name = name;
+                myObject.getLengthOfName = function () {
+                    return this.name.length;
+                };
+                jsObjectMap.set(name, myObject);
+                return myObject;
+            }
+            return existingObject; // share object
+        };
+
+        window.NI_UseObjectFunction = function (myObject) {
+            return myObject.getLengthOfName();
+        };
     });
 
     afterEach(function () {
@@ -128,6 +150,8 @@ describe('A JavaScript function invoke', function () {
         window.NI_UInt32ArrayFunction = undefined;
         window.NI_SingleArrayFunction = undefined;
         window.NI_DoubleArrayFunction = undefined;
+        window.NI_GetObjectFunction = undefined;
+        window.NI_UseObjectFunction = undefined;
     });
 
     it('succesfully pass different data types', function (done) {
@@ -177,6 +201,39 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error.status')).toBeFalse();
             expect(viPathParser('error.code')).toBe(0);
             expect(viPathParser('error.source')).toBeEmptyString();
+            done();
+        });
+    });
+
+    fit('succesfully create and use an object type', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsObjectTypeViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error1.status')).toBeFalse();
+            expect(viPathParser('error1.code')).toBe(0);
+            expect(viPathParser('error1.source')).toBeEmptyString();
+            expect(viPathParser('error2.status')).toBeFalse();
+            expect(viPathParser('error2.code')).toBe(0);
+            expect(viPathParser('error2.source')).toBeEmptyString();
+            expect(viPathParser('error3.status')).toBeFalse();
+            expect(viPathParser('error3.code')).toBe(0);
+            expect(viPathParser('error3.source')).toBeEmptyString();
+            expect(viPathParser('error4.status')).toBeFalse();
+            expect(viPathParser('error4.code')).toBe(0);
+            expect(viPathParser('error4.source')).toBeEmptyString();
+            expect(viPathParser('length1')).toBe(3);
+            expect(viPathParser('length2')).toBe(6);
+            expect(viPathParser('isEqual')).toBeFalse();
+            expect(viPathParser('isNotEqual')).toBeTrue();
+            expect(viPathParser('isNotANumPathRefnum1')).toBeFalse();
+            expect(viPathParser('isNotANumPathRefnum2')).toBeFalse();
+            expect(viPathParser('error5.code')).toBe(0);
+            expect(viPathParser('error5.status')).toBeFalse();
+            expect(viPathParser('error5.source')).toBeEmptyString();
+            expect(viPathParser('isSharedRef')).toBeTrue();
             done();
         });
     });

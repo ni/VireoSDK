@@ -213,6 +213,13 @@
                 isValidReturnType: function (value) {
                     return value instanceof Float64Array;
                 }
+            },
+            JavaScriptRefNum: {
+                reader: Module.eggShell.dataReadJavaScriptRefNum,
+                writer: Module.eggShell.dataWriteJavaScriptRefNum,
+                isValidReturnType: function (value) {
+                    return typeof value === 'object';
+                }
             }
         };
 
@@ -228,7 +235,7 @@
                 var parameterValue = undefined;
                 var readFunction = typeFunctions[typeName].reader;
                 if (readFunction === undefined) {
-                    throw new Error(' Unsupported type for parameter with index = ' + index);
+                    throw new Error(' Unsupported type = ' + typeName + ' for parameter with index = ' + index);
                 } else {
                     parameterValue = readFunction(parameterPointer);
                 }
@@ -284,10 +291,11 @@
             returnValue) {
             var returnTypeName = typeof returnValue;
             return (returnTypeName === 'number') ||
-            (returnTypeName === 'boolean') ||
-            (returnTypeName === 'string') ||
-            (returnTypeName === 'undefined') ||
-            (isTypedArray(returnValue));
+                (returnTypeName === 'boolean') ||
+                (returnTypeName === 'string') ||
+                (returnTypeName === 'undefined') ||
+                (returnTypeName === 'object') ||
+                (isTypedArray(returnValue));
         };
 
         var completionCallbackRetrievalEnum = {

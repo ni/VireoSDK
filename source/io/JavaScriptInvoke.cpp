@@ -91,7 +91,7 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *param
         pData = *(StringRef*)pData;
     } else if (parameterType->IsArray()) {
         pData = *(TypedArrayCoreRef*)pData;
-    } else if (!(parameterType->IsNumeric() || parameterType->IsString() || parameterType->IsFloat() || parameterType->IsBoolean())) {
+    } else if (!(parameterType->IsNumeric() || parameterType->IsString() || parameterType->IsFloat() || parameterType->IsBoolean() || parameterType->IsJavaScriptRefNum())) {
         return nullptr;
     } else if (parameterType->IsInteger64()) {
         return nullptr;

@@ -125,6 +125,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_ReadUInt32',\
     '_Data_ReadSingle',\
     '_Data_ReadDouble',\
+    '_Data_ReadJavaScriptRefNum',\
     '_Data_WriteString',\
     '_Data_WriteBoolean',\
     '_Data_WriteInt8',\
@@ -135,6 +136,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_WriteUInt32',\
     '_Data_WriteSingle',\
     '_Data_WriteDouble',\
+    '_Data_WriteJavaScriptRefNum',\
     '_Data_GetArrayMetadata',\
     '_Data_GetArrayDimLength',\
     '_Data_ResizeArray',\

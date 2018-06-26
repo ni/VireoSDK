@@ -17,6 +17,7 @@ SDG
 #include "TDCodecLVFlat.h"
 #include "TDCodecVia.h"
 #include "CEntryPoints.h"
+#include "JavaScriptRef.h"
 
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
@@ -394,6 +395,11 @@ VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
     return *doublePointer;
 }
 //------------------------------------------------------------
+VIREO_EXPORT JavaScriptRefNum Data_ReadJavaScriptRefNum(JavaScriptRefNum* refNumPointer)
+{
+    return *refNumPointer;
+}
+//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
 {
     *destination = (value != 0);
@@ -438,7 +444,12 @@ VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
 {
     *destination = value;
 }
-
+//------------------------------------------------------------
+VIREO_EXPORT void Data_WriteJavaScriptRefNum(JavaScriptRefNum* destination, JavaScriptRefNum value)
+{
+    *destination = value;
+}
+//------------------------------------------------------------
 VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths)
 {
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));

@@ -50,6 +50,7 @@
             'Data_ReadUInt32',
             'Data_ReadSingle',
             'Data_ReadDouble',
+            'Data_ReadJavaScriptRefNum',
             'Data_GetArrayMetadata',
             'Data_GetArrayDimLength',
             'Data_WriteBoolean',
@@ -63,6 +64,7 @@
             'Data_WriteUInt32',
             'Data_WriteSingle',
             'Data_WriteDouble',
+            'Data_WriteJavaScriptRefNum',
             'Data_ResizeArray',
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
@@ -98,6 +100,7 @@
         var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
         var Data_ReadSingle = Module.cwrap('Data_ReadSingle', 'number', ['number']);
         var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
+        var Data_ReadJavaScriptRefNum = Module.cwrap('Data_ReadJavaScriptRefNum', 'number', ['number']);
         var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
         var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
         var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number', 'number']);
@@ -110,6 +113,7 @@
         var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
         var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
+        var Data_WriteJavaScriptRefNum = Module.cwrap('Data_WriteJavaScriptRefNum', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -321,6 +325,10 @@
         var vireoObjectPointer = Module._malloc(4);
         var vireoTypePointer = Module._malloc(4);
 
+        var jsRefNumToJsObjectMap = new Map();
+        var jsObjectToJsRefNumMap = new Map();
+        var jsRefNumCookieCounter = 0;
+
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
             var eggShellResult = EggShell_GetPointer(v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
 
@@ -452,6 +460,12 @@
             return numericValue;
         };
 
+        Module.eggShell.dataReadJavaScriptRefNum = function (javaScriptRefNumPointer) {
+            var refNumValue = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            var jsObject = jsRefNumToJsObjectMap.get(refNumValue);
+            return jsObject;
+        };
+
         Module.eggShell.dataReadTypedArray = function (arrayPointer) {
             return Module.eggShell.dataReadNumericArrayAsTypedArray(arrayPointer).array;
         };
@@ -542,6 +556,53 @@
 
         Module.eggShell.dataWriteDouble = function (destination, value) {
             Data_WriteDouble(destination, value);
+        };
+
+        Module.eggShell.dataWriteJavaScriptRefNum = function (destination, jsObject) {
+            // local helper methods
+            var cacheRefNum = function (cookie, jsObject) {
+                jsRefNumToJsObjectMap.set(cookie, jsObject);
+                jsObjectToJsRefNumMap.set(jsObject, cookie);
+            };
+
+            var hasCachedRefNum = function (cookie) {
+                var refNumExists = (jsRefNumToJsObjectMap.get(cookie) !== undefined);
+                if (!refNumExists && cookie !== 0) {
+                    throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
+                }
+                return refNumExists;
+            };
+
+            var getCachedRefNum = function (jsObject) {
+                return jsObjectToJsRefNumMap.get(jsObject);
+            };
+
+            var getCachedJsObject = function (cookie) {
+                return jsRefNumToJsObjectMap.get(cookie);
+            };
+
+            var generateUniqueCookie = function () {
+                jsRefNumCookieCounter += 1;
+                return jsRefNumCookieCounter;
+            };
+
+            // start of function
+            var cachedRefNumValue = getCachedRefNum(jsObject);
+            if (cachedRefNumValue !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
+                Data_WriteJavaScriptRefNum(destination, cachedRefNumValue); // set the VIA local to be this refnum value
+                return;
+            }
+
+            var refNumValue = Data_ReadJavaScriptRefNum(destination);
+            if (hasCachedRefNum(refNumValue)) {
+                if (getCachedJsObject(refNumValue) !== jsObject) {
+                    throw new Error('JsRefNum[' + refNumValue + '] already set to ' + jsObject);
+                }
+                return; // nothing to do, tried to set the same object to the same reference
+            }
+            var newRefNumValue = generateUniqueCookie();
+            Data_WriteJavaScriptRefNum(destination, newRefNumValue);
+            cacheRefNum(newRefNumValue, jsObject);
         };
 
         Module.eggShell.dataWriteTypedArray = function (destination, value) {
