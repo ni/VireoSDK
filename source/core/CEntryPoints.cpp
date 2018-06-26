@@ -283,8 +283,12 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
                                                  Int32 newDimensionsLength, Int32 newDimensions[])
 {
     TypeManagerScope scope(tm);
-    if (actualType == nullptr || !actualType->IsValid() || !actualType->IsArray()) {
+    if (actualType == nullptr || !actualType->IsValid()) {
         return kEggShellResult_InvalidTypeRef;
+    }
+
+    if(!actualType->IsArray()) {
+        return kEggShellResult_UnexpectedObjectType;
     }
 
     if (actualType->Rank() != newDimensionsLength) {

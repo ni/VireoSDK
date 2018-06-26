@@ -593,13 +593,6 @@
         };
 
         Module.eggShell.resizeArray = publicAPI.eggShell.resizeArray = function (valueRef, newDimensions) {
-            if (!Module.typeHelpers.isArray(valueRef.typeRef)) {
-                throw new Error('Performing resizeArray failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
-                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
-                    ' (typeRef: ' + valueRef.typeRef + ')' +
-                    ' (dataRef: ' + valueRef.dataRef + ')');
-            }
-
             if (!Array.isArray(newDimensions)) {
                 throw new Error('Expected newDimensions to be an array of dimension lengths, instead got: ' + newDimensions);
             }
