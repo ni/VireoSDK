@@ -25,7 +25,7 @@ static struct {
 
 void RunExec();
 
-}
+}  // namespace Vireo
 
 //------------------------------------------------------------
 int VIREO_MAIN(int argc, const char * argv[])
