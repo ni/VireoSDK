@@ -25,11 +25,13 @@
     var assignTypeHelpers = function (Module) {
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-            'TypeRef_Name'
+            'TypeRef_Name',
+            'TypeRef_ElementName'
         ]}], */
         Module.typeHelpers = {};
 
         var TypeRef_Name = Module.cwrap('TypeRef_Name', 'string', ['number']);
+        var TypeRef_ElementName = Module.cwrap('TypeRef_ElementName', 'string', ['number']);
 
         // Private instance functions
         var validateVisitMethod = function (fn, fnName) {
@@ -187,6 +189,10 @@
 
         Module.typeHelpers.typeRank = function (typeRef) {
             return Module._TypeRef_Rank(typeRef);
+        };
+
+        Module.typeHelpers.elementName = function (typeRef) {
+            return TypeRef_ElementName(Module.eggShell.v_userShell, typeRef);
         };
 
         Module.typeHelpers.subElementCount = function (typeRef) {
