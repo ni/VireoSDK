@@ -315,17 +315,25 @@
             EggShell_WriteDouble(Module.eggShell.v_userShell, vi, path, value);
         };
 
-        Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (vi, path) {
+        Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (valueRef) {
             var stack = Module.stackSave(); // Stack save only needed for input parameter string or array
 
             var type = 'JSON';
-            var viStackPointer = Module.coreHelpers.writeJSStringToStack(vi);
-            var pathStackPointer = Module.coreHelpers.writeJSStringToStack(path);
+            var jsonStackDoublePointer = Module.stackAlloc(POINTER_SIZE);
             var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
 
-            var responsePointer = Module._EggShell_ReadValueString(Module.eggShell.v_userShell, viStackPointer, pathStackPointer, typeStackPointer);
-            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, responsePointer);
-            var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, responsePointer, responseLength);
+            var eggShellError = Module._EggShell_ReadValueString(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, typeStackPointer, jsonStackDoublePointer);
+
+            if (eggShellError !== 0) {
+                throw new Error('Performing readJSON failed for the following reason: ' + eggShellResultEnum[eggShellError] +
+                    ' (error code: ' + eggShellError + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+
+            var jsonStackPointer = Module.getValue(jsonStackDoublePointer, 'i32');
+            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, jsonStackPointer);
+            var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, jsonStackPointer, responseLength);
 
             Module.stackRestore(stack);
             return response;
