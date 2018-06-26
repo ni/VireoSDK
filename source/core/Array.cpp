@@ -1015,13 +1015,13 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, sortOp, snippetArgId);
     snippetBuilder.EmitInstruction(
-        &LTName, 
-        3, 
-        elementType, 
-        nullptr, 
+        &LTName,
+        3,
         elementType,
-        nullptr, 
-        booleanType, 
+        nullptr,
+        elementType,
+        nullptr,
+        booleanType,
         nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -1110,13 +1110,13 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, findOp, snippetArgId);
     snippetBuilder.EmitInstruction(
-        &LTName, 
-        3, 
-        elementType, 
-        nullptr, 
+        &LTName,
+        3,
         elementType,
-        nullptr, 
-        booleanType, 
+        nullptr,
+        elementType,
+        nullptr,
+        booleanType,
         nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
