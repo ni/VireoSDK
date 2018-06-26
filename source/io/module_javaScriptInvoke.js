@@ -52,11 +52,6 @@
             MESSAGE: 'Unable to set return value for JavaScript Library interface node parameter when calling: '
         },
 
-        kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke: {
-            CODE: 44304,
-            MESSAGE: 'Unsupported JavaScript return type for JavaScript Library interface node parameter when calling: '
-        },
-
         kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke: {
             CODE: 44305,
             MESSAGE: 'Unsupported LabVIEW return type for JavaScript Library interface node parameter when calling: '
@@ -217,8 +212,8 @@
             JavaScriptRefNum: {
                 reader: Module.eggShell.dataReadJavaScriptRefNum,
                 writer: Module.eggShell.dataWriteJavaScriptRefNum,
-                isValidReturnType: function (value) {
-                    return typeof value === 'object';
+                isValidReturnType: function () {
+                    return true;
                 }
             }
         };
@@ -271,33 +266,6 @@
             };
         };
 
-        var isTypedArray = function (
-            value) {
-            if (value instanceof Int8Array ||
-                value instanceof Int16Array ||
-                value instanceof Int32Array ||
-                value instanceof Uint8Array ||
-                value instanceof Uint16Array ||
-                value instanceof Uint32Array ||
-                value instanceof Float32Array ||
-                value instanceof Float64Array) {
-                return true;
-            }
-
-            return false;
-        };
-
-        var isValidJavaScriptReturnType = function (
-            returnValue) {
-            var returnTypeName = typeof returnValue;
-            return (returnTypeName === 'number') ||
-                (returnTypeName === 'boolean') ||
-                (returnTypeName === 'string') ||
-                (returnTypeName === 'undefined') ||
-                (returnTypeName === 'object') ||
-                (isTypedArray(returnValue));
-        };
-
         var completionCallbackRetrievalEnum = {
             AVAILABLE: 'AVAILABLE',
             RETRIEVED: 'RETRIEVED',
@@ -317,13 +285,6 @@
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
-            if (!isValidJavaScriptReturnType(returnUserValue)) {
-                var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
-                var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
-                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                return;
-            }
-
             if (returnTypeName === 'StaticTypeAndData') {
                 // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
                 return;

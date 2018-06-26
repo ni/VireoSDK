@@ -5,7 +5,6 @@ describe('A JavaScript function invoke', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    var kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke = 44304;
     var kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke = 44305;
     var kNITypeMismatchForReturnTypeInJavaScriptInvoke = 44306;
 
@@ -323,7 +322,7 @@ describe('A JavaScript function invoke', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeTrue();
-            expect([kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke]).toContain(viPathParser('error.code'));
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('error.code'));
             expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
             done();
         });

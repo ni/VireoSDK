@@ -205,7 +205,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    fit('succesfully create and use an object type', function (done) {
+    it('succesfully create and use an object type', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsObjectTypeViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
