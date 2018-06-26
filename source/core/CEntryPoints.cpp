@@ -279,18 +279,22 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
-//! Caller is expected to allocate an array newLengths of size rank for the duration of function invocation.
-VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData, Int32 rank, Int32 newLengths[])
+VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData,
+                                                 Int32 newDimensionsLength, Int32 newDimensions[])
 {
     TypeManagerScope scope(tm);
     if (actualType == nullptr || !actualType->IsValid() || !actualType->IsArray()) {
-        return kEggShellResult_UnexpectedObjectType;  // TODO(mraj): use memos new invalid type eggShellResult
+        return kEggShellResult_InvalidTypeRef;
+    }
+
+    if (actualType->Rank() != newDimensionsLength) {
+        return kEggShellResult_MismatchedArrayRank;
     }
 
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
 
-    if (!arrayObject->ResizeDimensions(rank, newLengths, true, false)) {
+    if (!arrayObject->ResizeDimensions(newDimensionsLength, newDimensions, true, false)) {
         return kEggShellResult_UnableToCreateReturnBuffer;
     }
     return kEggShellResult_Success;
