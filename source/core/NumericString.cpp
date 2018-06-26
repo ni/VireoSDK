@@ -2029,7 +2029,7 @@ struct StringToByteArrayParamBlock : InstructionCore
 VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
 {
     StringRef stringIn = _Param(StringIn);
-    TypedArrayCoreRef byteArrayOut = _ParamPointer(ByteArrayOut) ? _Param(ByteArrayOut) : null;
+    TypedArrayCoreRef byteArrayOut = _ParamPointer(ByteArrayOut) ? _Param(ByteArrayOut) : nullptr;
     ErrorCluster *errorCluster = _ParamPointer(ErrorInOut);
     if ((byteArrayOut == nullptr && errorCluster == nullptr) || (errorCluster != nullptr && errorCluster->hasError()))
         return _NextInstruction();

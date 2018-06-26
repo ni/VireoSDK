@@ -364,7 +364,7 @@ class ClumpParseState
     TypeRef         StartInstruction(SubString* opName);
     TypeRef         StartNextOverload();
     Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
-    TypeRef         ReresolveInstruction(SubString* opName, Boolean allowErrors);
+    TypeRef         ReresolveInstruction(SubString* opName);
     void            ResolveActualArgument(SubString* argument, void** ppData , Boolean needsAddress);
     void            AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress);
     void            InternalAddArg(TypeRef actualType, void* address);

@@ -70,11 +70,6 @@ typedef union {
     void*   _align_Pointer;
 } MaxAlignedType;
 
-//! Using the classic C++ definition of nullptr. Avoiding nullptr
-//  Since it may not be treated as POD and constructor initialization
-//  is much less predictable.
-#define null 0
-
 #include "Platform.h"
 
 namespace Vireo

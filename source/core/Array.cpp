@@ -1001,7 +1001,7 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
     ConstCStr pSortOpName = "Sort1DArrayInternal";
     SubString sortOpToken(pSortOpName);
 
-    pInstructionBuilder->ReresolveInstruction(&sortOpToken, false);
+    pInstructionBuilder->ReresolveInstruction(&sortOpToken);
     InstructionCore* pInstruction = nullptr;
     TypedArrayCoreRef arrayArg = *(TypedArrayCoreRef*)pInstructionBuilder->_argPointers[0];
     TypeRef elementType = arrayArg->ElementType();
@@ -1014,8 +1014,15 @@ InstructionCore* EmitSortInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, sortOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)nullptr, elementType,
-                                   (void*)nullptr, booleanType, (void*)nullptr);
+    snippetBuilder.EmitInstruction(
+        &LTName, 
+        3, 
+        elementType, 
+        nullptr, 
+        elementType,
+        nullptr, 
+        booleanType, 
+        nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&sortOp->_piNext);
@@ -1090,7 +1097,7 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
     ConstCStr pMaxMinOpName = arrayArg->Rank() > 1 ? "ArrayMaxMinInternal" : "ArrayMaxMinInternal";
     SubString findMaxMinOpToken(pMaxMinOpName);
 
-    pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken, false);
+    pInstructionBuilder->ReresolveInstruction(&findMaxMinOpToken);
     InstructionCore* pInstruction = nullptr;
     TypeRef elementType = arrayArg->ElementType();
     SubString LTName("IsLT");
@@ -1102,8 +1109,15 @@ InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)
 
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, findOp, snippetArgId);
-    snippetBuilder.EmitInstruction(&LTName, 3, elementType, (void*)nullptr, elementType,
-                                   (void*)nullptr, booleanType, (void*)nullptr);
+    snippetBuilder.EmitInstruction(
+        &LTName, 
+        3, 
+        elementType, 
+        nullptr, 
+        elementType,
+        nullptr, 
+        booleanType, 
+        nullptr);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&findOp->_piNext);
