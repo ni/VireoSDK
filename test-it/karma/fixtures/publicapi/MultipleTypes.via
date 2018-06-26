@@ -166,6 +166,10 @@ define (MyVI dv(.VirtualInstrument (
         e(dv(Enum16 (zero one two three four) 3) enum16numbers)
         e(dv(Enum32 (red orange yellow green blue purple) 2) enum32colors)
         e(dv(Enum64 (altair bajor cardassiaA cardassiaB armadillo cobra lynx marmot panda whiskyjack) 5) enum64releases)
+
+        e(dv(.NIPath (() '')) notAPath)
+        e(dv(.NIPath (() 'ABSOLUTE')) emptyPath)
+        e(dv(.NIPath (('C' 'Windows' 'System32') 'ABSOLUTE')) win32Path)
     )
     clump(
     )
