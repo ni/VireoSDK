@@ -257,6 +257,16 @@
             var typeRef = valueRef.typeRef;
             var valueRefs = {};
 
+            if (Module.typeHelpers.isCluster(typeRef) === false &&
+                Module.typeHelpers.isTimestamp(typeRef) === false &&
+                Module.typeHelpers.isComplex(typeRef) === false &&
+                Module.typeHelpers.isAnalogWaveform(typeRef) === false) {
+                var unexpectedObjectTypeErrorCode = 2;
+                throw new Error('A ValueRefObject could not be made for the following reason: ' + eggShellResultEnum[unexpectedObjectTypeErrorCode] +
+                    ' (error code: ' + unexpectedObjectTypeErrorCode + ')' +
+                    ' (type name: ' + Module.typeHelpers.typeName(typeRef) + ')');
+            }
+
             var fieldCount = Module.typeHelpers.subElementCount(typeRef);
 
             for (var i = 0; i < fieldCount; i += 1) {

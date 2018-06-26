@@ -68,7 +68,7 @@ describe('The Vireo EggShell readValueRefObject', function () {
             valueRef = vireo.eggShell.findValueRef(viName, timestampPath);
         });
 
-        it('returns something', function () {
+        it('returns an object with keys "seconds" and "fraction" and valueRefs as values', function () {
             var objectValueRef = vireo.eggShell.readValueRefObject(valueRef);
             expectValidValueRef(objectValueRef.seconds);
             expectValidValueRef(objectValueRef.fraction);
@@ -83,7 +83,7 @@ describe('The Vireo EggShell readValueRefObject', function () {
             valueRef = vireo.eggShell.findValueRef(viName, analogWaveformPath);
         });
 
-        it('returns something else', function () {
+        it('returns an object with keys "dt", "t0" and "Y" and valueRefs as values', function () {
             var objectValueRef = vireo.eggShell.readValueRefObject(valueRef);
             expectValidValueRef(objectValueRef.t0);
             expectValidValueRef(objectValueRef.dt);
@@ -99,19 +99,35 @@ describe('The Vireo EggShell readValueRefObject', function () {
             valueRef = vireo.eggShell.findValueRef(viName, complexSinglePath);
         });
 
-        it('returns something else', function () {
+        it('returns an object with keys "real" and "imaginary" and valueRefs as values', function () {
             var objectValueRef = vireo.eggShell.readValueRefObject(valueRef);
             expectValidValueRef(objectValueRef.real);
             expectValidValueRef(objectValueRef.imaginary);
         });
     });
 
-    describe('for a 1-D array of', function () {
-        it('booleans', function () {
-            var valueRef = vireo.eggShell.findValueRef(viName, 'dataItem_ArrayOfBoolean');
-            var objectValueRef = vireo.eggShell.readValueRefObject(valueRef);
-            console.log(objectValueRef);
-            expectValidValueRef(objectValueRef['']);
-        });
+    it('throws for any other type', function () {
+        var tryReadValueRefObject = function (path) {
+            return function () {
+                vireo.eggShell.readValueRefObject(vireo.eggShell.findValueRef(viName, path));
+            };
+        };
+
+        expect(tryReadValueRefObject('dataItem_ArrayOfBoolean')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('dataItem_ArrayOfClusters')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('dataItem_NumericSingle')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('dataItem_NumericDouble')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('booleanTrueValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('int8MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('int16MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('int32MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('int64MinSafeInteger')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('int64MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('uInt8MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('uInt16MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('uInt32MinValue')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('uInt64MinSafeInteger')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('dataItem_String')).toThrowError(/ValueRefObject/);
+        expect(tryReadValueRefObject('enum8alphabet')).toThrowError(/ValueRefObject/);
     });
 });
