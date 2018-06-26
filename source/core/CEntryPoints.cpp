@@ -190,17 +190,12 @@ VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.
-VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
-        const char* viName, const char* eltName, const char* format)
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, UInt8** valueString)
 {
     TypeManagerScope scope(tm);
-    void *pData = nullptr;
 
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return nullptr;
+    if (typeRef == null || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
 
     static StringRef returnBuffer = nullptr;
     if (returnBuffer == nullptr) {
@@ -215,12 +210,14 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     if (returnBuffer) {
         SubString formatss(format);
         TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
-        formatter.FormatData(actualType, pData);
+        formatter.FormatData(typeRef, data);
         // Add an explicit nullptr terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
-        return (const char*) returnBuffer->Begin();
+        *valueString = returnBuffer->Begin();
+        return kEggShellResult_Success;
     }
-    return "";
+
+    return kEggShellResult_UnableToCreateReturnBuffer;
 }
 void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
 {
