@@ -51,7 +51,8 @@
 
     var createVIPathParser = function (vireo, viName) {
         return function (path) {
-            return JSON.parse(vireo.eggShell.readJSON(viName, path));
+            var valueRef = vireo.eggShell.findValueRef(viName, path);
+            return JSON.parse(vireo.eggShell.readJSON(valueRef));
         };
     };
 
