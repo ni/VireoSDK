@@ -31,12 +31,10 @@
         publicAPI.controlEvents = {};
 
         var registerForControlEvent = function () {
-            throw new Error('unimplemented registerForControlEvent');
-            // Dummy no-op function.
+            // Dummy no-op function
         };
         var unRegisterForControlEvent = function () {
-            throw new Error('unimplemented unRegisterForControlEvent');
-            // Dummy no-op function.
+            // Dummy no-op function
         };
 
         Module.controlEvents.jsRegisterForControlEvent = function (
