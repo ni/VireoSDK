@@ -69,7 +69,9 @@
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
             'JavaScriptInvoke_GetParameterPointer',
             'JavaScriptInvoke_GetParameterType',
-            'JavaScriptInvoke_GetArrayElementType'
+            'JavaScriptInvoke_GetArrayElementType',
+            'Data_ReadJavaScriptRefNum',
+            'Data_WriteJavaScriptRefNum'
         ]}], */
 
         Module.javaScriptInvoke = {};
@@ -79,6 +81,8 @@
         var JavaScriptInvoke_GetParameterType = Module.cwrap('JavaScriptInvoke_GetParameterType', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetParameterPointer = Module.cwrap('JavaScriptInvoke_GetParameterPointer', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetArrayElementType = Module.cwrap('JavaScriptInvoke_GetArrayElementType', 'number', ['number']);
+        var Data_ReadJavaScriptRefNum = Module.cwrap('Data_ReadJavaScriptRefNum', 'number', ['number']);
+        var Data_WriteJavaScriptRefNum = Module.cwrap('Data_WriteJavaScriptRefNum', 'void', ['number', 'number']);
 
         var getParameterTypeString = function (parametersPointer, index) {
             var typeNamePointer = JavaScriptInvoke_GetParameterType(parametersPointer, index);
@@ -96,6 +100,61 @@
 
         var isJavaScriptNumber = function (value) {
             return typeof value === 'number';
+        };
+
+        var jsRefNumToJsObjectMap = new Map();
+        var jsObjectToJsRefNumMap = new Map();
+        var jsRefNumCookieCounter = 0;
+
+        var cacheRefNum = function (cookie, jsObject) {
+            jsRefNumToJsObjectMap.set(cookie, jsObject);
+            jsObjectToJsRefNumMap.set(jsObject, cookie);
+        };
+
+        var hasCachedRefNum = function (cookie) {
+            var refNumExists = (jsRefNumToJsObjectMap.get(cookie) !== undefined);
+            if (!refNumExists && cookie !== 0) {
+                throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
+            }
+            return refNumExists;
+        };
+
+        var getCachedRefNum = function (jsObject) {
+            return jsObjectToJsRefNumMap.get(jsObject);
+        };
+
+        var getCachedJsObject = function (cookie) {
+            return jsRefNumToJsObjectMap.get(cookie);
+        };
+
+        var generateUniqueRefNumCookie = function () {
+            jsRefNumCookieCounter += 1;
+            return jsRefNumCookieCounter;
+        };
+
+        var dataReadJavaScriptRefNum = function (javaScriptRefNumPointer) {
+            var refNumValue = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            var jsObject = jsRefNumToJsObjectMap.get(refNumValue);
+            return jsObject;
+        };
+
+        var dataWriteJavaScriptRefNum = function (destination, jsObject) {
+            var cachedRefNumValue = getCachedRefNum(jsObject);
+            if (cachedRefNumValue !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
+                Data_WriteJavaScriptRefNum(destination, cachedRefNumValue); // set the VIA local to be this refnum value
+                return;
+            }
+
+            var refNumValue = Data_ReadJavaScriptRefNum(destination);
+            if (hasCachedRefNum(refNumValue)) {
+                if (getCachedJsObject(refNumValue) !== jsObject) {
+                    throw new Error('JsRefNum[' + refNumValue + '] already set to ' + jsObject);
+                }
+                return; // nothing to do, tried to set the same object to the same reference
+            }
+            var newRefNumValue = generateUniqueRefNumCookie();
+            Data_WriteJavaScriptRefNum(destination, newRefNumValue);
+            cacheRefNum(newRefNumValue, jsObject);
         };
 
         var typeFunctions = {
@@ -210,8 +269,8 @@
                 }
             },
             JavaScriptRefNum: {
-                reader: Module.eggShell.dataReadJavaScriptRefNum,
-                writer: Module.eggShell.dataWriteJavaScriptRefNum,
+                reader: dataReadJavaScriptRefNum,
+                writer: dataWriteJavaScriptRefNum,
                 isValidReturnType: function () {
                     return true;
                 }
