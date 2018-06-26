@@ -149,6 +149,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Data_ResizeArray',\
     '_TypeRef_TopAQSize',\
     '_TypeRef_Name',\
+    '_TypeRef_ElementName',\
     '_TypeRef_SubElementCount',\
     '_TypeRef_GetSubElementByIndex',\
     '_TypeRef_IsCluster',\
