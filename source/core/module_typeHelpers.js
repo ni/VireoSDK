@@ -257,6 +257,7 @@
                 dispatcher: dispatchVisitBoolean
             },
             {
+                // Enum is wrapping an integer, so it needs to be evaluated first.
                 typeChecker: Module.typeHelpers.isEnum,
                 dispatcher: dispatchVisitEnum
             },
@@ -269,6 +270,7 @@
                 dispatcher: dispatchVisitFloat
             },
             {
+                // String is an array of UTF-8 chars so it is evaluated before array.
                 typeChecker: Module.typeHelpers.isString,
                 dispatcher: dispatchVisitString
             },
@@ -293,8 +295,8 @@
                 dispatcher: dispatchVisitArray
             },
             {
-                // Cluster is evaluated last, since internally Complex, AnalogWaveform and Timestamps
-                // are also clusters.
+                // Cluster is evaluated last because Complex, AnalogWaveform, Path and Timestamps
+                // are internally also clusters.
                 typeChecker: Module.typeHelpers.isCluster,
                 dispatcher: dispatchVisitCluster
             }
