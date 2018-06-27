@@ -413,6 +413,27 @@
             return result;
         };
 
+        Module.eggShell.writeString = publicAPI.eggShell.writeString = function (valueRef, inputString) {
+            if (Module.typeHelpers.isString(valueRef.typeRef) === false) {
+                throw new Error('Performing writeString failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+
+            if (typeof inputString !== 'string') {
+                throw new Error('Expected string input to be of type string, instead got: ' + inputString);
+            }
+
+            var strLength = Module.lengthBytesUTF8(inputString);
+            Module.eggShell.resizeArray(valueRef, [strLength]);
+            var typedArray = Module.eggShell.readTypedArray(valueRef);
+            var bytesWritten = Module.coreHelpers.jsStringToSizedUTF8Array(inputString, typedArray, 0, strLength);
+            if (bytesWritten !== strLength) {
+                throw new Error('Could not write JS string to memory');
+            }
+        };
+
         var findCompatibleTypedArrayConstructor = function (typeRef) {
             var subTypeRef, isSigned, size;
             // String will go down the Array code path a bit as is so check before array checks
