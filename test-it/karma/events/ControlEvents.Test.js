@@ -21,6 +21,12 @@ describe('ValueChanged event tests', function () {
 
     beforeEach(function () {
         vireo = new Vireo();
+        vireo.eventHelpers.setRegisterForControlEventsFunction(function () {
+            // no-op
+        });
+        vireo.eventHelpers.setUnRegisterForControlEventsFunction(function () {
+            // no-op
+        });
     });
 
     it('Verify registration callback is called on parse and unregister callback on exit', function (done) {
