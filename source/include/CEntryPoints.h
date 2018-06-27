@@ -23,6 +23,7 @@ typedef enum {
     kEggShellResult_UnableToCreateReturnBuffer = 4,
     kEggShellResult_InvalidTypeRef = 5,
     kEggShellResult_MismatchedArrayRank = 6,
+    kEggSehllResult_UnableToParseData = 7,
 } EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions
@@ -41,8 +42,7 @@ VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* vi
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, TypeRef type, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d);
 VIREO_EXPORT NIError EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result);
-VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName,
-                                            const char* format, const char* value);
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, const char* value);
 VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
 VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm,
         const char* viName, const char* elementName, void** dataPointer, void** typePointer);
