@@ -19,25 +19,32 @@
         // Browser globals (root is window)
         buildGlobalNamespace();
     }
-}(this, 'NationalInstruments.Vireo.ModuleBuilders.assignControlEvents', function () {
+}(this, 'NationalInstruments.Vireo.ModuleBuilders.assignEventHelpers', function () {
     'use strict';
-
+        
     /* global Map */
 
     // Static Private Variables (all vireo instances)
 
-    var assignControlEvents = function (Module, publicAPI) {
-        Module.controlEvents = {};
-        publicAPI.controlEvents = {};
+    var assignEventHelpers = function (Module, publicAPI) {
+        // Disable new-cap for the cwrap functions so the names can be the same in C and JS
+            /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
+                'OccurEvent'
+            ]}], */
+
+        Module.eventHelpers = {};
+        publicAPI.eventHelpers = {};
+
+        var OccurEvent = Module.cwrap('OccurEvent', 'void', ['number', 'number', 'number']);
 
         var registerForControlEvent = function () {
-            // Dummy no-op function
+            throw new Error('No event registration callback was supplied');
         };
         var unRegisterForControlEvent = function () {
-            // Dummy no-op function
+            throw new Error('No event un-registration callback was supplied');
         };
 
-        Module.controlEvents.jsRegisterForControlEvent = function (
+        Module.eventHelpers.jsRegisterForControlEvent = function (
             viNamePointer,
             controlId,
             eventId,
@@ -47,7 +54,7 @@
             registerForControlEvent(viName, controlId, eventId, eventOracleIndex);
         };
 
-        Module.controlEvents.jsUnRegisterForControlEvent = function (
+        Module.eventHelpers.jsUnRegisterForControlEvent = function (
             viNamePointer,
             controlId,
             eventId,
@@ -57,7 +64,7 @@
             unRegisterForControlEvent(viName, controlId, eventId, eventOracleIndex);
         };
 
-        publicAPI.controlEvents.setRegisterForControlEventsFunction = Module.controlEvents.setRegisterForControlEventsFunction = function (fn) {
+        publicAPI.eventHelpers.setRegisterForControlEventsFunction = Module.eventHelpers.setRegisterForControlEventsFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error('RegisterForControlEvents must be a callable function');
             }
@@ -65,14 +72,16 @@
             registerForControlEvent = fn;
         };
 
-        publicAPI.controlEvents.setUnRegisterForControlEventsFunction = Module.controlEvents.setUnRegisterForControlEventsFunction = function (fn) {
+        publicAPI.eventHelpers.setUnRegisterForControlEventsFunction = Module.eventHelpers.setUnRegisterForControlEventsFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error('UnRegisterForControlEvents must be a callable function');
             }
 
             unRegisterForControlEvent = fn;
         };
+        
+        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = OccurEvent;
     };
 
-    return assignControlEvents;
+    return assignEventHelpers;
 }));
