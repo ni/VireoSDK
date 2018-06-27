@@ -56,7 +56,8 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         vireo.eggShell.loadVia(viaCode);
         var maxExecWakeUpTime = vireo.eggShell.maxExecWakeUpTime();
         var numIterations = 100;
-        vireo.eggShell.writeJSON('MyVI', 'numIterations', JSON.stringify(numIterations));
+        var valueRef = vireo.eggShell.findValueRef('MyVI', 'numIterations');
+        vireo.eggShell.writeJSON(valueRef, JSON.stringify(numIterations));
 
         var maxTimewithBuffer = maxExecWakeUpTime * numIterations * 0.5;
 
@@ -87,7 +88,8 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         var maxExecWakeUpTime = vireo.eggShell.maxExecWakeUpTime();
         var maxExecuteSlicesCalls = 20;
         var waitTime = maxExecuteSlicesCalls * maxExecWakeUpTime;
-        vireo.eggShell.writeJSON('MyVI', 'waitTime', JSON.stringify(waitTime));
+        var valueRef = vireo.eggShell.findValueRef('MyVI', 'waitTime');
+        vireo.eggShell.writeJSON(valueRef, JSON.stringify(waitTime));
 
         var internalModule = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired;
         spyOn(internalModule.eggShell, 'executeSlicesUntilWait').and.callThrough();

@@ -25,7 +25,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             return value;
         });
 
-        vireo.eggShell.writeJSON(viName, path, newValToWriteJSON);
+        vireo.eggShell.writeJSON(valueRef, newValToWriteJSON);
 
         var newValueRef = vireo.eggShell.findValueRef(viName, path);
         var newValJSON = vireo.eggShell.readJSON(newValueRef);
@@ -37,7 +37,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             expect(newValActual).toMatchIEEE754Number(newVal);
         }
 
-        vireo.eggShell.writeJSON(viName, path, oldValJSON);
+        vireo.eggShell.writeJSON(valueRef, oldValJSON);
         var newNewValueRef = vireo.eggShell.findValueRef(viName, path);
         var oldValRewriteJSON = vireo.eggShell.readJSON(newNewValueRef);
         var oldValRewrite = JSON.parse(oldValRewriteJSON);
