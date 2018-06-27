@@ -136,7 +136,7 @@ describe('The Vireo PropertyNode', function () {
                 fraction: '0'
             };
             var valuesToRead = [true, -123, -4321, -987654321, '-9876543210', 123, 4321, 987654321, '9876543210',
-                3.5, 6.28, complexToRead, complexToRead, 'Lorem ipsum', '0:0', 1.618, 3.236, true];
+                3.5, 6.28, complexToRead, complexToRead, 'Lorem ipsum', expectedTimestamp, 1.618, 3.236, true];
 
             var readFunction = generateReadFunction(valuesToRead);
             vireo.propertyNode.setPropertyReadFunction(readFunction);
