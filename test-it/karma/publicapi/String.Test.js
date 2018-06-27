@@ -14,6 +14,10 @@ describe('The Vireo EggShell String api can', function () {
         return vireo.eggShell.readString(vireo.eggShell.findValueRef(viName, path));
     };
 
+    var writeString = function (path, str) {
+        vireo.eggShell.writeString(vireo.eggShell.findValueRef(viName, path), str);
+    };
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             publicApiMultipleTypesViaUrl
@@ -34,6 +38,14 @@ describe('The Vireo EggShell String api can', function () {
                 readString('dataItem_NumericDouble');
             };
             expect(readStringThrows).toThrowError(/UnexpectedObjectType/);
+        });
+    });
+
+    describe('use writeString', function () {
+        it('to write different string values from memory', function () {
+            expect(readString('dataItem_String')).toBe('Hello');
+            writeString('dataItem_String', 'Iñtërnâtiônàlizætiøn☃💩');
+            expect(readString('dataItem_String')).toBe('Iñtërnâtiônàlizætiøn☃💩');
         });
     });
 });

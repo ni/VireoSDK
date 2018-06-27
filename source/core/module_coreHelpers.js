@@ -211,6 +211,81 @@
             }
         };
 
+        // Source adapted from https://github.com/kripken/emscripten/blob/bd050e64bb0d9952df1344b8ea9356252328ad83/src/preamble.js#L488
+        // Copies the given Javascript String object 'str' to the given byte array at address 'outIdx',
+        // encoded in UTF8 form. Use the function lengthBytesUTF8 to compute the exact number of bytes (excluding null terminator) that this function will write.
+        // Parameters:
+        //   str: the Javascript string to copy.
+        //   outU8Array: the array to copy to. Each index in this array is assumed to be one 8-byte element.
+        //   outIdx: The starting offset in the array to begin the copying.
+        //   maxBytesToWrite: The maximum number of bytes this function can write to the array. maxBytesToWrite=0 does not write any bytes to the output.
+        // Returns the number of bytes written.
+        Module.coreHelpers.jsStringToSizedUTF8Array = function (str, outU8Array, startIndex, maxBytesToWrite) {
+            /* eslint-disable no-plusplus, id-length */
+            // Parameter maxBytesToWrite is not optional. Negative values, 0, null, undefined and false each don't write out any bytes.
+            if (!(maxBytesToWrite > 0)) {
+                return 0;
+            }
+            var outIdx = startIndex;
+            var endIdx = outIdx + maxBytesToWrite;
+            for (var i = 0; i < str.length; ++i) {
+                // Gotcha: charCodeAt returns a 16-bit word that is a UTF-16 encoded code unit, not a Unicode code point of the character! So decode UTF16->UTF32->UTF8.
+                // See http://unicode.org/faq/utf_bom.html#utf16-3
+                // For UTF8 byte structure, see http://en.wikipedia.org/wiki/UTF-8#Description and https://www.ietf.org/rfc/rfc2279.txt and https://tools.ietf.org/html/rfc3629
+                var u = str.charCodeAt(i); // possibly a lead surrogate
+                if (u >= 0xD800 && u <= 0xDFFF) {
+                    u = 0x10000 + ((u & 0x3FF) << 10) | (str.charCodeAt(++i) & 0x3FF);
+                }
+                if (u <= 0x7F) {
+                    if (outIdx >= endIdx) {
+                        break;
+                    }
+                    outU8Array[outIdx++] = u;
+                } else if (u <= 0x7FF) {
+                    if (outIdx + 1 >= endIdx) {
+                        break;
+                    }
+                    outU8Array[outIdx++] = 0xC0 | (u >> 6);
+                    outU8Array[outIdx++] = 0x80 | (u & 63);
+                } else if (u <= 0xFFFF) {
+                    if (outIdx + 2 >= endIdx) {
+                        break;
+                    }
+                    outU8Array[outIdx++] = 0xE0 | (u >> 12);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
+                    outU8Array[outIdx++] = 0x80 | (u & 63);
+                } else if (u <= 0x1FFFFF) {
+                    if (outIdx + 3 >= endIdx) {
+                        break;
+                    }
+                    outU8Array[outIdx++] = 0xF0 | (u >> 18);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 12) & 63);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
+                    outU8Array[outIdx++] = 0x80 | (u & 63);
+                } else if (u <= 0x3FFFFFF) {
+                    if (outIdx + 4 >= endIdx) {
+                        break;
+                    }
+                    outU8Array[outIdx++] = 0xF8 | (u >> 24);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 18) & 63);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 12) & 63);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
+                    outU8Array[outIdx++] = 0x80 | (u & 63);
+                } else {
+                    if (outIdx + 5 >= endIdx) {
+                        break;
+                    }
+                    outU8Array[outIdx++] = 0xFC | (u >> 30);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 24) & 63);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 18) & 63);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 12) & 63);
+                    outU8Array[outIdx++] = 0x80 | ((u >> 6) & 63);
+                    outU8Array[outIdx++] = 0x80 | (u & 63);
+                }
+            }
+            return outIdx - startIndex;
+        };
+
         Module.coreHelpers.jsCurrentBrowserFPS = function () {
             if (trackingFPS === false) {
                 trackingFPS = true;
