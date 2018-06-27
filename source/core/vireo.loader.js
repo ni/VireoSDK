@@ -20,7 +20,7 @@
             'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient',
             'NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke',
             'NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode',
-            'NationalInstruments.Vireo.ModuleBuilders.assignControlEvents'
+            'NationalInstruments.Vireo.ModuleBuilders.assignEventHelpers'
         ], factory);
     } else if (typeof module === 'object' && module.exports) {
         // Node. "CommonJS-like" for environments like Node but not strict CommonJS
@@ -37,7 +37,7 @@
             require('../../source/io/module_httpClient.js'),
             require('../../source/io/module_javaScriptInvoke.js'),
             require('../../source/io/module_propertyNode.js'),
-            require('../../source/core/module_controlEvents.js')
+            require('../../source/core/module_eventHelpers.js')
         );
     } else {
         // Browser globals (root is window)
@@ -48,7 +48,7 @@
             root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient,
             root.NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke,
             root.NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignControlEvents
+            root.NationalInstruments.Vireo.ModuleBuilders.assignEventHelpers
         );
     }
 }(this, 'NationalInstruments.Vireo.Vireo', function () {

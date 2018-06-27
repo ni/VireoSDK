@@ -67,7 +67,6 @@
             'EggShell_REPL',
             'EggShell_ExecuteSlices',
             'Occurrence_Set',
-            'OccurEvent',
             'Pointer_stringify'
         ]}], */
 
@@ -112,8 +111,7 @@
         var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
         var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
-        var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
-        var OccurEvent = Module.cwrap('OccurEvent', 'void', ['number', 'number', 'number']);
+        var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);6666
 
         // Create shell for vireo instance
         var v_root = EggShell_Create(0);
@@ -681,8 +679,6 @@
         };
 
         Module.eggShell.setOccurrence = Occurrence_Set;
-
-        Module.eggShell.occurEvent = publicAPI.eggShell.occurEvent = OccurEvent;
     };
 
     return assignEggShell;

@@ -26,7 +26,7 @@ describe('ValueChanged event tests', function () {
     it('Verify registration callback is called on parse and unregister callback on exit', function (done) {
         var registerCallbackExecuted = false;
         var unregisterCallbackExecuted = false;
-        vireo.controlEvents.setRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+        vireo.eventHelpers.setRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
             expect(viName).toBe('ValueChangedEventRegisterAndUnregister');
             expect(controlId).toBe(18);
             expect(eventId).toBe(2);
@@ -34,7 +34,7 @@ describe('ValueChanged event tests', function () {
             registerCallbackExecuted = true;
         });
 
-        vireo.controlEvents.setUnRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+        vireo.eventHelpers.setUnRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
             expect(viName).toBe('ValueChangedEventRegisterAndUnregister');
             expect(controlId).toBe(18);
             expect(eventId).toBe(2);
@@ -58,7 +58,7 @@ describe('ValueChanged event tests', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
         setTimeout(function () {
-            vireo.eggShell.occurEvent(1, 18, 2);
+            vireo.eventHelpers.occurEvent(1, 18, 2);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -75,7 +75,7 @@ describe('ValueChanged event tests', function () {
 
         var unregisteredControlId = 19;
         setTimeout(function () {
-            vireo.eggShell.occurEvent(1, unregisteredControlId, 2);
+            vireo.eventHelpers.occurEvent(1, unregisteredControlId, 2);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -103,7 +103,7 @@ describe('ValueChanged event tests', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MultipleEventStructuresListeningToSameControl');
 
         setTimeout(function () {
-            vireo.eggShell.occurEvent(1, 18, 2);
+            vireo.eventHelpers.occurEvent(1, 18, 2);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {

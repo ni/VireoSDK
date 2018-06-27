@@ -121,8 +121,8 @@
 /* Begin PBXFileReference section */
 		352F24BA209A3D51007D9799 /* DataReflectionVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DataReflectionVisitor.h; path = include/DataReflectionVisitor.h; sourceTree = "<group>"; };
 		44026BAA1EFAEFC600DB51B4 /* Array.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Array.h; path = include/Array.h; sourceTree = "<group>"; };
-		441F02CB20D9959B008910D2 /* library_controlEvents.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_controlEvents.js; path = ../source/core/library_controlEvents.js; sourceTree = "<group>"; };
-		441F02CC20D9959B008910D2 /* module_controlEvents.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_controlEvents.js; path = ../source/core/module_controlEvents.js; sourceTree = "<group>"; };
+		441F02CB20D9959B008910D2 /* library_eventHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_eventHelpers.js; path = ../source/core/library_eventHelpers.js; sourceTree = "<group>"; };
+		441F02CC20D9959B008910D2 /* module_eventHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_eventHelpers.js; path = ../source/core/module_eventHelpers.js; sourceTree = "<group>"; };
 		443536321CFF4979002BA5DB /* 2HelloWorlds.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = 2HelloWorlds.via; path = "../test-it/2HelloWorlds.via"; sourceTree = "<group>"; };
 		443536331CFF4979002BA5DB /* AllocatedDataValues.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AllocatedDataValues.via; path = "../test-it/AllocatedDataValues.via"; sourceTree = "<group>"; };
 		443536341CFF4979002BA5DB /* ArrayComparison.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ArrayComparison.via; path = "../test-it/ArrayComparison.via"; sourceTree = "<group>"; };
@@ -780,8 +780,8 @@
 				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
 				47A877751AE6925800EC5D77 /* library_httpClient.js */,
 				4750F16F19C378D600FA80B8 /* library_canvas2d.js */,
-				441F02CB20D9959B008910D2 /* library_controlEvents.js */,
-				441F02CC20D9959B008910D2 /* module_controlEvents.js */,
+				441F02CB20D9959B008910D2 /* library_eventHelpers.js */,
+				441F02CC20D9959B008910D2 /* module_eventHelpers.js */,
 				44C295D91F8C037A001877B4 /* module_eggShell.js */,
 				44C295D61F8C037A001877B4 /* module_httpClient.js */,
 				44C295D71F8C037A001877B4 /* module_other.js */,

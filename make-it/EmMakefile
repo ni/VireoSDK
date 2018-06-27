@@ -90,7 +90,7 @@ endif
 EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
-            --js-library $(CORESOURCEDIR)/library_controlEvents.js \
+            --js-library $(CORESOURCEDIR)/library_eventHelpers.js \
             --js-library $(IOSOURCEDIR)/library_canvas2d.js \
             --js-library $(IOSOURCEDIR)/library_httpClient.js \
             --js-library $(IOSOURCEDIR)/library_javaScriptInvoke.js \
