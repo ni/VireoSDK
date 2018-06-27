@@ -56,6 +56,7 @@
             fpSync = fn;
         };
 
+        // Returns the length of a C string (excluding null terminator)
         Module.coreHelpers.findCStringLength = function (u8Array, startIndex) {
             var i,
                 end = u8Array.length;
@@ -212,12 +213,12 @@
         };
 
         // Source adapted from https://github.com/kripken/emscripten/blob/bd050e64bb0d9952df1344b8ea9356252328ad83/src/preamble.js#L488
-        // Copies the given Javascript String object 'str' to the given byte array at address 'outIdx',
-        // encoded in UTF8 form. Use the function lengthBytesUTF8 to compute the exact number of bytes (excluding null terminator) that this function will write.
+        // Copies the given Javascript String object 'str' to the given byte array at address 'startIndex' encoded in UTF8 form.
+        // Use the function lengthBytesUTF8 to compute the exact number of bytes that this function will write.
         // Parameters:
         //   str: the Javascript string to copy.
         //   outU8Array: the array to copy to. Each index in this array is assumed to be one 8-byte element.
-        //   outIdx: The starting offset in the array to begin the copying.
+        //   startIndex: The starting offset in the array to begin the copying.
         //   maxBytesToWrite: The maximum number of bytes this function can write to the array. maxBytesToWrite=0 does not write any bytes to the output.
         // Returns the number of bytes written.
         Module.coreHelpers.jsStringToSizedUTF8Array = function (str, outU8Array, startIndex, maxBytesToWrite) {
