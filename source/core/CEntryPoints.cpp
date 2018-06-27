@@ -168,7 +168,7 @@ VIREO_EXPORT NIError EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actual
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
-VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, const char* value)
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const TypeRef typeRef, void* data, const char* format, const char* value)
 {
     TypeManagerScope scope(tm);
 
@@ -189,7 +189,7 @@ VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.
-VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, UInt8** valueString)
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* data, const char* format, UInt8** valueString)
 {
     TypeManagerScope scope(tm);
 
