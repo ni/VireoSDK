@@ -5,9 +5,13 @@ define(MyVI dv(VirtualInstrument (
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error3)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error4)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error5)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error6)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error7)
         e(.JavaScriptRefNum ref1)
         e(.JavaScriptRefNum ref2)
         e(.JavaScriptRefNum ref3)
+        e(.JavaScriptRefNum ref4)
+        e(.JavaScriptRefNum ref5)
         e(dv(.String "Foo") name1)
         e(dv(.String "FooBar") name2)
         e(dv(.Int32 0) length1)
@@ -17,6 +21,7 @@ define(MyVI dv(VirtualInstrument (
         e(dv(.Boolean false) isNotANumPathRefnum1)
         e(dv(.Boolean false) isNotANumPathRefnum2)
         e(dv(.Boolean false) isSharedRef)
+        e(dv(.Boolean false) isSharedPrimRef)
         e(.Occurrence occurrence)
     )
     clump (
@@ -35,6 +40,10 @@ define(MyVI dv(VirtualInstrument (
         // Get the same js ref
         JavaScriptInvoke(occurrence false error5 'NI_GetObjectFunction' ref3 name1) 
         IsEQ(ref1 ref3 isSharedRef)
+
+        JavaScriptInvoke(occurrence false error6 'NI_GetPrimitiveFunction' ref4 name1)
+        JavaScriptInvoke(occurrence false error7 'NI_GetPrimitiveFunction' ref5 name1)
+        IsEQ(ref4 ref5 isSharedPrimRef)
     )
 ) ) )
 

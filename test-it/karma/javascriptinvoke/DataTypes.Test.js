@@ -128,6 +128,10 @@ describe('A JavaScript function invoke', function () {
         window.NI_UseObjectFunction = function (myObject) {
             return myObject.getLengthOfName();
         };
+
+        window.NI_GetPrimitiveFunction = function () {
+            return 'foo';
+        };
     });
 
     afterEach(function () {
@@ -234,6 +238,13 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error5.status')).toBeFalse();
             expect(viPathParser('error5.source')).toBeEmptyString();
             expect(viPathParser('isSharedRef')).toBeTrue();
+            expect(viPathParser('isSharedPrimRef')).toBeFalse();
+            expect(viPathParser('error6.code')).toBe(0);
+            expect(viPathParser('error6.status')).toBeFalse();
+            expect(viPathParser('error6.source')).toBeEmptyString();
+            expect(viPathParser('error7.code')).toBe(0);
+            expect(viPathParser('error7.status')).toBeFalse();
+            expect(viPathParser('error7.source')).toBeEmptyString();
             done();
         });
     });
