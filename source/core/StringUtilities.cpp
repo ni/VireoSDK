@@ -964,7 +964,7 @@ Int32 SubString::CountMatches(char value)
 //! The length of the string in logical characters, not bytes.
 Int32 SubString::StringLength()
 {
-    const Utf8Char* pCharSequence  = _begin;
+    const Utf8Char* pCharSequence = _begin;
     const Utf8Char* pEnd = _end;
 
     // If the string contains invalid UTF-8 encodings the logical length

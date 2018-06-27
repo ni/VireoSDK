@@ -1047,7 +1047,7 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
     while (keepTrying) {
         va_start(args, argCount);
         for (Int32 i = 0; (i < argCount) && keepTrying; i++) {
-            TypeRef formalType  = ReadFormalParameterType();
+            TypeRef formalType = ReadFormalParameterType();
             TypeRef actualType = va_arg(args, TypeRef);
             void* actualData = va_arg(args, void*);
 

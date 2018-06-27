@@ -162,9 +162,9 @@ VIREO_FUNCTION_SIGNATURE2(FileSize, FileHandle, Int32)
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedArrayCoreRef, Int32, Int32)
 {
-    FileHandle handle   = _Param(0);
-    TypedArrayCoreRef array   = _Param(1);
-    Int32 numElts       = _Param(2);
+    FileHandle handle = _Param(0);
+    TypedArrayCoreRef array = _Param(1);
+    Int32 numElts = _Param(2);
     Int32 bytesToRead = 0;
 
     if (numElts == -1) {
@@ -199,8 +199,8 @@ VIREO_FUNCTION_SIGNATURE4(StreamRead, FileHandle, TypedArrayCoreRef, Int32, Int3
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE3(StreamWrite, FileHandle, TypedArrayCoreRef, Int32)
 {
-    FileHandle handle   = _Param(0);
-    TypedArrayCoreRef array   = _Param(1);
+    FileHandle handle = _Param(0);
+    TypedArrayCoreRef array = _Param(1);
 
     Int32 eltsToWrite = array->Length();
     Int32 bytesToWrite = array->AQBlockLength(eltsToWrite);

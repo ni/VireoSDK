@@ -52,27 +52,28 @@ int VIREO_MAIN(int argc, const char * argv[])
                 gShells._pRootShell->DumpPrimitiveDictionary();
                 continue;
             }
+
             gShells._pUserShell = TypeManager::New(gShells._pRootShell);
             TypeManagerScope scope(gShells._pUserShell);
             fileName.AliasAssignCStr(argv[arg]);
             if (fileName.Length() && argv[arg][0] != '-') {
-                // Nested scope so that buffer is cleaned up before userShell continue running.
+                // Nested scope so that buffer is cleaned up before userShell continues running.
                 {
-                    STACK_VAR(String, buffer);
-                    gPlatform.IO.ReadFile(&fileName, buffer.Value);
-                    if (buffer.Value->Length() == 0) {
+                    STACK_VAR(String, fileBuffer);
+                    gPlatform.IO.ReadFile(&fileName, fileBuffer.Value);
+                    if (fileBuffer.Value->Length() == 0) {
                         gPlatform.IO.Printf("(Error \"file <%.*s> empty\")\n", FMT_LEN_BEGIN(&fileName));
                     }
 
-                    SubString input = buffer.Value->MakeSubStringAlias();
+                    SubString fileString = fileBuffer.Value->MakeSubStringAlias();
                     gShells._keepRunning = true;
-                    if (TDViaParser::StaticRepl(gShells._pUserShell, &input) != kNIError_Success) {
+                    if (TDViaParser::StaticRepl(gShells._pUserShell, &fileString) != kNIError_Success) {
                         gShells._keepRunning = false;
                     }
 
                     // Destructor will clear out the data, but just in case let's fill it out
                     // with something that looks like stale data.
-                    memset(buffer.Value->Begin(), 0xFE, buffer.Value->Length());
+                    memset(fileBuffer.Value->Begin(), 0xFE, fileBuffer.Value->Length());
                 }
 
                 LOG_PLATFORM_MEM("Mem after load")
@@ -98,11 +99,11 @@ int VIREO_MAIN(int argc, const char * argv[])
         while (gShells._keepRunning) {
             gPlatform.IO.Print(">");
             {
-            TypeManagerScope scope(gShells._pUserShell);
-            STACK_VAR(String, buffer);
-            gPlatform.IO.ReadStdin(buffer.Value);
-            SubString input = buffer.Value->MakeSubStringAlias();
-            TDViaParser::StaticRepl(gShells._pUserShell, &input);
+                TypeManagerScope scope(gShells._pUserShell);
+                STACK_VAR(String, buffer);
+                gPlatform.IO.ReadStdin(buffer.Value);
+                SubString input = buffer.Value->MakeSubStringAlias();
+                TDViaParser::StaticRepl(gShells._pUserShell, &input);
             }
 
             while (gShells._keepRunning) {

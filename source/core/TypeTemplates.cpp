@@ -206,7 +206,7 @@ void TypeTemplateVisitor::VisitArray(ArrayType* type)
 
     IntIndexItr iDim(type->DimensionLengths(), type->Rank());
     ArrayDimensionVector newDimensions;
-    IntIndex* pNew  = newDimensions;
+    IntIndex* pNew = newDimensions;
     while (iDim.HasNext()) {
         *pNew++ = AcceptIntDim(iDim.Read());
     }

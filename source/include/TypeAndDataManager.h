@@ -421,10 +421,10 @@ class TypeVisitor
     virtual void VisitBad(TypeRef type) = 0;
     virtual void VisitBitBlock(BitBlockType* type) = 0;
     virtual void VisitBitCluster(BitClusterType* type) = 0;
-    virtual void VisitCluster(ClusterType* type)  = 0;
-    virtual void VisitParamBlock(ParamBlockType* type)  = 0;
+    virtual void VisitCluster(ClusterType* type) = 0;
+    virtual void VisitParamBlock(ParamBlockType* type) = 0;
     virtual void VisitEquivalence(EquivalenceType* type) = 0;
-    virtual void VisitArray(ArrayType* type)  = 0;
+    virtual void VisitArray(ArrayType* type) = 0;
     virtual void VisitElement(ElementType* type) = 0;
     virtual void VisitNamed(NamedType* type) = 0;
     virtual void VisitPointer(PointerType* type) = 0;
@@ -516,7 +516,7 @@ class TypeCommon
     //! True if the type is an indexable container that contains another type.
     Boolean IsArray()               { return BitEncoding() == kEncoding_Array; }
     //! True if the type is an indexable container that contains another type.
-    Boolean IsZDA()                 { return (IsArray() && Rank() ==0); }
+    Boolean IsZDA()                 { return (IsArray() && Rank() == 0); }
     //! True if the type is an aggregate of other types.
     Boolean IsCluster()             { return BitEncoding() == kEncoding_Cluster; }
     //! True if type is an enum
