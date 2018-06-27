@@ -52,13 +52,15 @@
     var createVIPathParser = function (vireo, viName) {
         return function (path) {
             var valueRef = vireo.eggShell.findValueRef(viName, path);
-            return JSON.parse(vireo.eggShell.readJSON(valueRef));
+            var json = vireo.eggShell.readJSON(valueRef);
+            return JSON.parse(json);
         };
     };
 
     var createVIPathWriter = function (vireo, viName) {
         return function (path, value) {
-            vireo.eggShell.writeJSON(viName, path, JSON.stringify(value));
+            var valueRef = vireo.eggShell.findValueRef(viName, path);
+            vireo.eggShell.writeJSON(valueRef, JSON.stringify(value));
         };
     };
 
