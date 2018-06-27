@@ -168,25 +168,24 @@ VIREO_EXPORT NIError EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actual
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
-VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
-        const char* viName, const char* eltName, const char* format, const char* value)
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, const char* value)
 {
     TypeManagerScope scope(tm);
 
-    void *pData = nullptr;
-
-    SubString objectName(viName);
-    SubString path(eltName);
     SubString valueString(value);
 
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return;
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
 
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
     TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
-    parser.ParseData(actualType, pData);
+    Int32 error = parser.ParseData(typeRef, data);
+    if (error) {
+        return kEggSehllResult_UnableToParseData;
+    }
+
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to the format designated.
@@ -194,7 +193,7 @@ VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef 
 {
     TypeManagerScope scope(tm);
 
-    if (typeRef == null || !typeRef->IsValid())
+    if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
 
     static StringRef returnBuffer = nullptr;
