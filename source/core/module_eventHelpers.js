@@ -21,16 +21,16 @@
     }
 }(this, 'NationalInstruments.Vireo.ModuleBuilders.assignEventHelpers', function () {
     'use strict';
-        
+
     /* global Map */
 
     // Static Private Variables (all vireo instances)
 
     var assignEventHelpers = function (Module, publicAPI) {
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
-            /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-                'OccurEvent'
-            ]}], */
+        /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
+            'OccurEvent'
+        ]}], */
 
         Module.eventHelpers = {};
         publicAPI.eventHelpers = {};
@@ -79,7 +79,7 @@
 
             unRegisterForControlEvent = fn;
         };
-        
+
         publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = OccurEvent;
     };
 
