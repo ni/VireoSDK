@@ -33,7 +33,6 @@
             'EggShell_Create',
             'EggShell_Delete',
             'EggShell_WriteDouble',
-            'EggShell_WriteValueString',
             'EggShell_GetPointer',
             'EggShell_GetArrayDimLength',
             'Data_ValidateArrayType',
@@ -85,7 +84,8 @@
             INVALID_RESULT_POINTER: 3,
             UNABLE_TO_CREATE_RETURN_BUFFER: 4,
             INVALID_TYPE_REF: 5,
-            MISMATCHED_ARRAY_RANK: 6
+            MISMATCHED_ARRAY_RANK: 6,
+            UNABLE_TO_PARSE_DATA: 7
         };
         var eggShellResultEnum = {};
         eggShellResultEnum[EGGSHELL_RESULT.SUCCESS] = 'Success';
@@ -95,6 +95,7 @@
         eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_CREATE_RETURN_BUFFER] = 'UnableToCreateReturnBuffer';
         eggShellResultEnum[EGGSHELL_RESULT.INVALID_TYPE_REF] = 'InvalidTypeRef';
         eggShellResultEnum[EGGSHELL_RESULT.MISMATCHED_ARRAY_RANK] = 'MismatchedArrayRank';
+        eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_PARSE_DATA] = 'UnableToParseData';
 
         // Keep in sync with NIError in DataTypes.h
         var niErrorEnum = {
@@ -113,7 +114,6 @@
         var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
         var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
-        var EggShell_WriteValueString = Module.cwrap('EggShell_WriteValueString', 'void', ['number', 'string', 'string', 'string', 'string']);
         var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var Data_ValidateArrayType = Module.cwrap('Data_ValidateArrayType', 'number', ['number', 'number']);
@@ -339,8 +339,22 @@
             return response;
         };
 
-        Module.eggShell.writeJSON = publicAPI.eggShell.writeJSON = function (vi, path, value) {
-            EggShell_WriteValueString(Module.eggShell.v_userShell, vi, path, 'JSON', value);
+        Module.eggShell.writeJSON = publicAPI.eggShell.writeJSON = function (valueRef, value) {
+            var stack = Module.stackSave();
+
+            var type = 'JSON';
+            var valueStackPointer = Module.coreHelpers.writeJSStringToHeap(value);
+            var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
+
+            var eggShellError = Module._EggShell_WriteValueString(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, typeStackPointer, valueStackPointer);
+            if (eggShellError !== 0) {
+                throw new Error('Performing writeJSON failed for the following reason: ' + eggShellResultEnum[eggShellError] +
+                    ' (error code: ' + eggShellError + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+
+            Module.stackRestore(stack);
         };
 
         var supportedArrayTypeConfig = {
