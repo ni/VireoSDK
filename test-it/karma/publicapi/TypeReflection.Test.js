@@ -19,9 +19,9 @@ describe('The Vireo EggShell Reflection API', function () {
 
         return {
             visitBoolean: returnTypeName('Boolean'),
-            visitEnumUInt8: returnTypeName('Enum8'),
-            visitEnumUInt16: returnTypeName('Enum16'),
-            visitEnumUInt32: returnTypeName('Enum32'),
+            visitEnum8: returnTypeName('Enum8'),
+            visitEnum16: returnTypeName('Enum16'),
+            visitEnum32: returnTypeName('Enum32'),
             visitInt8: returnTypeName('Int8'),
             visitInt16: returnTypeName('Int16'),
             visitInt32: returnTypeName('Int32'),
@@ -98,12 +98,16 @@ describe('The Vireo EggShell Reflection API', function () {
                 expect(reflectOnEmptyVisitor('dataItem_String')).toThrowError(/visitString/);
                 expect(reflectOnEmptyVisitor('dataItem_Boolean')).toThrowError(/visitBoolean/);
                 expect(reflectOnEmptyVisitor('dataItem_Timestamp')).toThrowError(/visitTimestamp/);
-                expect(reflectOnEmptyVisitor('enum8alphabet')).toThrowError(/visitEnumUInt8/);
-                expect(reflectOnEmptyVisitor('enum16numbers')).toThrowError(/visitEnumUInt16/);
-                expect(reflectOnEmptyVisitor('enum32colors')).toThrowError(/visitEnumUInt32/);
+                expect(reflectOnEmptyVisitor('enum8alphabet')).toThrowError(/visitEnum8/);
+                expect(reflectOnEmptyVisitor('enum16numbers')).toThrowError(/visitEnum16/);
+                expect(reflectOnEmptyVisitor('enum32colors')).toThrowError(/visitEnum32/);
                 expect(reflectOnEmptyVisitor('wave_Double')).toThrowError(/visitAnalogWaveform/);
                 expect(reflectOnEmptyVisitor('dataItem_ClusterOfScalars')).toThrowError(/visitCluster/);
                 expect(reflectOnEmptyVisitor('dataItem_ArrayOfBoolean')).toThrowError(/visitArray/);
+            });
+
+            it('throws for unsupported enum types', function () {
+                expect(reflectOnEmptyVisitor('enum64releases')).toThrowError(/Unexpected size/);
             });
         });
 

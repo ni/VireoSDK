@@ -51,16 +51,16 @@
             var fnName = '';
             switch (sizeOfEnum) {
             case 1:
-                visitFn = typeVisitor.visitEnumUInt8;
-                fnName = 'visitEnumUInt8';
+                visitFn = typeVisitor.visitEnum8;
+                fnName = 'visitEnum8';
                 break;
             case 2:
-                visitFn = typeVisitor.visitEnumUInt16;
-                fnName = 'visitEnumUInt16';
+                visitFn = typeVisitor.visitEnum16;
+                fnName = 'visitEnum16';
                 break;
             case 4:
-                visitFn = typeVisitor.visitEnumUInt32;
-                fnName = 'visitEnumUInt32';
+                visitFn = typeVisitor.visitEnum32;
+                fnName = 'visitEnum32';
                 break;
             default:
                 throw new Error('Unexpected size for Enum. Found: ' + sizeOfEnum);
