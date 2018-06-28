@@ -46,8 +46,28 @@
         };
 
         var dispatchVisitEnum = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitEnum, 'visitEnum');
-            return typeVisitor.visitEnum(typeVisitor, valueRef, data);
+            var sizeOfEnum = Module.typeHelpers.topAQSize(valueRef.typeRef);
+            var visitFn = undefined;
+            var fnName = '';
+            switch (sizeOfEnum) {
+            case 1:
+                visitFn = typeVisitor.visitEnumUInt8;
+                fnName = 'visitEnumUInt8';
+                break;
+            case 2:
+                visitFn = typeVisitor.visitEnumUInt16;
+                fnName = 'visitEnumUInt16';
+                break;
+            case 4:
+                visitFn = typeVisitor.visitEnumUInt32;
+                fnName = 'visitEnumUInt32';
+                break;
+            default:
+                throw new Error('Unexpected size for Enum. Found: ' + sizeOfEnum);
+            }
+
+            validateVisitMethod(visitFn, fnName);
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitInteger = function (typeVisitor, valueRef, data) {
