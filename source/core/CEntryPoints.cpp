@@ -146,25 +146,33 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, TypeRef typ
 }
 //------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.
-VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef actualType, void* pData, Double value)
+VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value)
 {
     TypeManagerScope scope(tm);
-    if (actualType == nullptr || !actualType->IsValid()) {
+    if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
-    }
-    NIError error = WriteDoubleToMemory(actualType, pData, value);
-    if (error) {
-        return kEggShellResult_UnexpectedObjectType;  // TODO(mraj) use memos new error
-    }
+
+    NIError error = WriteDoubleToMemory(typeRef, pData, value);
+    if (error)
+        return kEggShellResult_UnexpectedObjectType;
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Read a numeric value from a symbol. Value will be coerced as needed.
-VIREO_EXPORT NIError EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result)
+VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Double* result)
 {
-    NIError err = kNIError_Success;
-    *result = ReadDoubleFromMemory(actualType, pData, &err);
-    return err;
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
+
+    if (result == nullptr)
+        return kEggShellResult_InvalidResultPointer;
+
+    NIError error = kNIError_Success;
+    *result = ReadDoubleFromMemory(typeRef, pData, &error);
+    if (error)
+        return kEggShellResult_UnexpectedObjectType;
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
@@ -275,21 +283,18 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
-VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData,
+VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef typeRef, const void* pData,
                                                  Int32 newDimensionsLength, Int32 newDimensions[])
 {
     TypeManagerScope scope(tm);
-    if (actualType == nullptr || !actualType->IsValid()) {
+    if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
-    }
 
-    if (!actualType->IsArray()) {
+    if (!typeRef->IsArray())
         return kEggShellResult_UnexpectedObjectType;
-    }
 
-    if (actualType->Rank() != newDimensionsLength) {
+    if (typeRef->Rank() != newDimensionsLength)
         return kEggShellResult_MismatchedArrayRank;
-    }
 
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));

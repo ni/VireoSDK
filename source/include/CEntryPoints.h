@@ -41,7 +41,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, co
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, TypeRef type, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef actualType, void* pData, Double value);
-VIREO_EXPORT NIError EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result);
+VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result);
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, const char* value);
 VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
 VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm,
