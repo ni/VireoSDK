@@ -213,7 +213,7 @@
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
 
             var eggShellResult = Module._EggShell_FindValue(Module.eggShell.v_userShell, viStackPointer, pathStackPointer, typeStackPointer, dataStackPointer);
-            if (eggShellResult !== 0) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (vi name: ' + vi + ')' +
@@ -236,7 +236,7 @@
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
 
             var eggShellResult = Module._EggShell_FindSubValue(Module.eggShell.v_userShell, valueRef.typeRef, pathStackPointer, typeStackPointer, dataStackPointer);
-            if (eggShellResult !== 0) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
@@ -296,10 +296,10 @@
             var resultPointer = Module.stackAlloc(DOUBLE_SIZE);
 
             // TODO mraj should we try to resolve the typeref name on error for more context?
-            var niError = Module._EggShell_ReadDouble(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
-            if (niError !== 0) {
-                throw new Error('Performing readDouble failed for the following reason: ' + niErrorEnum[niError] +
-                    ' (error code: ' + niError + ')' +
+            var eggShellResult = Module._EggShell_ReadDouble(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('Could not run readDouble for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
                     ' (typeRef: ' + valueRef.typeRef + ')' +
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
@@ -315,7 +315,7 @@
             }
 
             var eggShellResult = Module._EggShell_WriteDouble(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, value);
-            if (eggShellResult !== 0) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('Could not run writeDouble for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (typeRef: ' + valueRef.typeRef + ')' +
@@ -660,7 +660,7 @@
                 Module.setValue(dimensionsPointer + (i * LENGTH_SIZE), currentDimension, 'i32');
             }
             var eggShellResult = Module._EggShell_ResizeArray(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, newDimensionsLength, dimensionsPointer);
-            if (eggShellResult !== 0) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('Resizing the array failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
                 ' (error code: ' + eggShellResult + ')' +
                 ' (typeRef: ' + valueRef.typeRef + ')' +
