@@ -146,17 +146,17 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, TypeRef typ
 }
 //------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.
-VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d)
+VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef actualType, void* pData, Double value)
 {
-    void *pData = nullptr;
-
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return;
-
-    WriteDoubleToMemory(actualType, pData, d);
+    TypeManagerScope scope(tm);
+    if (actualType == nullptr || !actualType->IsValid()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
+    NIError error = WriteDoubleToMemory(actualType, pData, value);
+    if (error) {
+        return kEggShellResult_UnexpectedObjectType;  // TODO(mraj) use memos new error
+    }
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Read a numeric value from a symbol. Value will be coerced as needed.
