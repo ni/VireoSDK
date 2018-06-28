@@ -32,7 +32,6 @@
             'Vireo_MaxExecWakeUpTime',
             'EggShell_Create',
             'EggShell_Delete',
-            'EggShell_WriteDouble',
             'EggShell_GetPointer',
             'EggShell_GetArrayDimLength',
             'Data_ValidateArrayType',
@@ -113,7 +112,6 @@
         var Vireo_MaxExecWakeUpTime = Module.cwrap('Vireo_MaxExecWakeUpTime', 'number', []);
         var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
-        var EggShell_WriteDouble = Module.cwrap('EggShell_WriteDouble', 'void', ['number', 'string', 'string', 'number']);
         var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
         var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
         var Data_ValidateArrayType = Module.cwrap('Data_ValidateArrayType', 'number', ['number', 'number']);
@@ -311,8 +309,18 @@
             return result;
         };
 
-        Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (vi, path, value) {
-            EggShell_WriteDouble(Module.eggShell.v_userShell, vi, path, value);
+        Module.eggShell.writeDouble = publicAPI.eggShell.writeDouble = function (valueRef, value) {
+            if (typeof value !== 'number') {
+                throw new Error('Expected value to write to be of type number, instead got: ' + value);
+            }
+
+            var eggShellResult = Module._EggShell_WriteDouble(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, value);
+            if (eggShellResult !== 0) {
+                throw new Error('Could not run writeDouble for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
         };
 
         Module.eggShell.readJSON = publicAPI.eggShell.readJSON = function (valueRef) {

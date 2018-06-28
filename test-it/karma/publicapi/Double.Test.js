@@ -14,6 +14,30 @@ describe('The Vireo EggShell Double api can', function () {
         return vireo.eggShell.readDouble(vireo.eggShell.findValueRef(viName, path));
     };
 
+    var tryReadDouble = function (path) {
+        return function () {
+            readDouble(path);
+        };
+    };
+
+    var writeDouble = function (path, value) {
+        vireo.eggShell.writeDouble(vireo.eggShell.findValueRef(viName, path), value);
+    };
+
+    var tryWriteDouble = function (path, value) {
+        return function () {
+            writeDouble(path, value);
+        };
+    };
+
+    var testWriteDouble = function (path, initialValue, newValue) {
+        expect(readDouble(path)).toBe(initialValue);
+        writeDouble(path, newValue);
+        expect(readDouble(path)).toBe(newValue);
+        writeDouble(path, initialValue);
+        expect(readDouble(path)).toBe(initialValue);
+    };
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             publicApiMultipleTypesViaUrl
@@ -74,14 +98,19 @@ describe('The Vireo EggShell Double api can', function () {
         });
 
         it('to error for unsupported types', function () {
-            var unsupportedTypeCheck = function (path) {
-                return function () {
-                    readDouble(path);
-                };
-            };
+            expect(tryReadDouble('dataItem_Complex')).toThrowError(/CantDecode/);
+            expect(tryReadDouble('dataItem_String')).toThrowError(/CantDecode/);
+        });
+    });
 
-            expect(unsupportedTypeCheck('dataItem_Complex')).toThrowError(/CantDecode/);
-            expect(unsupportedTypeCheck('dataItem_String')).toThrowError(/CantDecode/);
+    describe('use writeDouble', function () {
+        it('to write double values to memory', function () {
+            testWriteDouble('dataItem_NumericDouble', 123.456, 42);
+        });
+
+        it('to error for unsupported types', function () {
+            expect(tryWriteDouble('dataItem_Complex', 42)).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteDouble('dataItem_String', 42)).toThrowError(/UnexpectedObjectType/);
         });
     });
 });

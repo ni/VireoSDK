@@ -2761,7 +2761,7 @@ Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult)
 }
 //------------------------------------------------------------
 //! Write a IEEE754 double value to memory converting as necessary.
-NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
+NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
 {
     NIError err = kNIError_Success;
     EncodingEnum encoding = type->BitEncoding();

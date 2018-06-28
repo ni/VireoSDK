@@ -348,7 +348,7 @@ class TypeManager
 IntMax ReadIntFromMemory(TypeRef type, void* pData);
 NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
 Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult = nullptr);
-NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
+NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 //------------------------------------------------------------
 //! Banker's rounding for Doubles.
