@@ -31,8 +31,8 @@ describe('The Vireo PropertyNode', function () {
             runSlicesAsync(function (rawPrint, rawPrintError) {
                 expect(rawPrint).toBeEmptyString();
                 expect(rawPrintError).toBeEmptyString();
-                expect(spyRead.calls.argsFor(0)).toEqual(['topVI', 'dataItem', 'Value', 'Double', 'subSubVI', 'doubleLocal']);
-                expect(spyWrite.calls.argsFor(0)).toEqual(['topVI', 'dataItem', 'Value', 'Double', 'subSubVI', 'doubleLocal']);
+                expect(spyRead.calls.argsFor(0)).toEqual(['topVI', '1', 'Value', 'Double', 'subSubVI', 'doubleLocal']);
+                expect(spyWrite.calls.argsFor(0)).toEqual(['topVI', '1', 'Value', 'Double', 'subSubVI', 'doubleLocal']);
                 done();
             });
         });

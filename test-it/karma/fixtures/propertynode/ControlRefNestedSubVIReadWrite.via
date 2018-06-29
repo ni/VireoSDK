@@ -30,7 +30,7 @@ define(subVI dv(.VirtualInstrument (
 
 define(topVI dv(.VirtualInstrument (
     Locals: c(
-        e(dv(ControlRefNum ControlReference("dataItem")) ref)
+        e(dv(ControlRefNum ControlReference("1")) ref)
     )
 
     clump (1

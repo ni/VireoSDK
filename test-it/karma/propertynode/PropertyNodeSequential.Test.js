@@ -31,8 +31,8 @@ describe('The Vireo PropertyNode', function () {
         vireo.propertyNode.setPropertyReadFunction(spy);
 
         var expectedCallArgs = [
-            [viName, 'dataItem_MyLED', propertyName, 'Boolean', viName, 'local3'],
-            [viName, 'dataItem_MyLED', propertyName, 'Boolean', viName, 'local6']
+            [viName, '1', propertyName, 'Boolean', viName, 'local3'],
+            [viName, '1', propertyName, 'Boolean', viName, 'local6']
         ];
 
         runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, propertyNodeReadRead);
@@ -49,8 +49,8 @@ describe('The Vireo PropertyNode', function () {
         vireo.propertyNode.setPropertyWriteFunction(spy);
 
         var expectedCallArgs = [
-            [viName, 'dataItem_MyLED', propertyName, 'Boolean', viName, 'c1'],
-            [viName, 'dataItem_MyLED', propertyName, 'Boolean', viName, 'c4']
+            [viName, '1', propertyName, 'Boolean', viName, 'c1'],
+            [viName, '1', propertyName, 'Boolean', viName, 'c4']
         ];
 
         runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, propertyNodeWriteWrite);
@@ -68,8 +68,8 @@ describe('The Vireo PropertyNode', function () {
         vireo.propertyNode.setPropertyReadFunction(spy);
 
         var expectedCallArgs = [
-            [viName, 'dataItem_MyLED', propertyName, 'Boolean', viName, 'c1'],
-            [viName, 'dataItem_MyLED', propertyName, 'Boolean', viName, 'local6']
+            [viName, '1', propertyName, 'Boolean', viName, 'c1'],
+            [viName, '1', propertyName, 'Boolean', viName, 'local6']
         ];
 
         runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, propertyNodeWriteRead);

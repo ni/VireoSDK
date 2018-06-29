@@ -55,9 +55,9 @@ define(ControlRefTestProgram dv(.VirtualInstrument (
      )) // End Event Struct 1
     )
     Locals:c(
-        e(ControlReference("dataItem1") ref1)  // static control ref linked to dataItem1
-        e(dv(ControlReference("dataItem2")) ref2)  // static control ref linked to dataItem2
-        e(dv(ControlRefNum ControlReference("dataItem3")) ref3)  // more verbose with explicit type and dv definition
+        e(ControlReference("1") ref1)  // static control ref linked to dataItem1
+        e(dv(ControlReference("2")) ref2)  // static control ref linked to dataItem2
+        e(dv(ControlRefNum ControlReference("3")) ref3)  // more verbose with explicit type and dv definition
 	e(ControlRefNum ref4)  // variable control refnum wire
 	e(Boolean bool)
     )

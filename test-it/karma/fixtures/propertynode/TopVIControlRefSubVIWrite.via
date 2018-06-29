@@ -27,9 +27,9 @@ define(subVI dv(.VirtualInstrument (
 
 define(TopVI dv(.VirtualInstrument (
     Locals: c(
-        e(dv(ControlRefNum ControlReference("dataItem_Boolean")) booleanRef)
-        e(dv(ControlRefNum ControlReference("dataItem_String")) stringRef)
-        e(dv(ControlRefNum ControlReference("dataItem_Double")) doubleRef)
+        e(dv(ControlRefNum ControlReference("1")) booleanRef)
+        e(dv(ControlRefNum ControlReference("2")) stringRef)
+        e(dv(ControlRefNum ControlReference("3")) doubleRef)
     )
 
     clump (1

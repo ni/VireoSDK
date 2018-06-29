@@ -62,24 +62,24 @@ describe('The Vireo PropertyNode', function () {
 
             it('when controlRef and property var are in the same top VI', function (done) {
                 var expectedCallArgs = [
-                    [propertyReadVIName, 'dataItem_Boolean', propertyName, 'Boolean', propertyReadVIName, 'local_Boolean'],
-                    [propertyReadVIName, 'dataItem_Int8', propertyName, 'Int8', propertyReadVIName, 'local_Int8'],
-                    [propertyReadVIName, 'dataItem_Int16', propertyName, 'Int16', propertyReadVIName, 'local_Int16'],
-                    [propertyReadVIName, 'dataItem_Int32', propertyName, 'Int32', propertyReadVIName, 'local_Int32'],
-                    [propertyReadVIName, 'dataItem_Int64', propertyName, 'Int64', propertyReadVIName, 'local_Int64'],
-                    [propertyReadVIName, 'dataItem_UInt8', propertyName, 'UInt8', propertyReadVIName, 'local_UInt8'],
-                    [propertyReadVIName, 'dataItem_UInt16', propertyName, 'UInt16', propertyReadVIName, 'local_UInt16'],
-                    [propertyReadVIName, 'dataItem_UInt32', propertyName, 'UInt32', propertyReadVIName, 'local_UInt32'],
-                    [propertyReadVIName, 'dataItem_UInt64', propertyName, 'UInt64', propertyReadVIName, 'local_UInt64'],
-                    [propertyReadVIName, 'dataItem_Single', propertyName, 'Single', propertyReadVIName, 'local_Single'],
-                    [propertyReadVIName, 'dataItem_Double', propertyName, 'Double', propertyReadVIName, 'local_Double'],
-                    [propertyReadVIName, 'dataItem_ComplexSingle', propertyName, 'ComplexSingle', propertyReadVIName, 'local_ComplexSingle'],
-                    [propertyReadVIName, 'dataItem_ComplexDouble', propertyName, 'ComplexDouble', propertyReadVIName, 'local_ComplexDouble'],
-                    [propertyReadVIName, 'dataItem_String', propertyName, 'String', propertyReadVIName, 'local_String'],
-                    [propertyReadVIName, 'dataItem_Timestamp', propertyName, 'Timestamp', propertyReadVIName, 'local_Timestamp'],
-                    [propertyReadVIName, 'dataItem_MíNúmero', propertyName, 'Double', propertyReadVIName, 'numberLocal'],
-                    [propertyReadVIName, 'dataItem_MíNúmero', propertyName, 'Double', propertyReadVIName, 'clusterLocal.%3Anumeric%3A'],
-                    [propertyReadVIName, 'dataItem_Boolean', propertyName, 'Boolean', propertyReadVIName, 'clusterLocal.nestedClusterLocal.Boolean%20Space%20Part']
+                    [propertyReadVIName, '1', propertyName, 'Boolean', propertyReadVIName, 'local_Boolean'],
+                    [propertyReadVIName, '2', propertyName, 'Int8', propertyReadVIName, 'local_Int8'],
+                    [propertyReadVIName, '3', propertyName, 'Int16', propertyReadVIName, 'local_Int16'],
+                    [propertyReadVIName, '4', propertyName, 'Int32', propertyReadVIName, 'local_Int32'],
+                    [propertyReadVIName, '5', propertyName, 'Int64', propertyReadVIName, 'local_Int64'],
+                    [propertyReadVIName, '6', propertyName, 'UInt8', propertyReadVIName, 'local_UInt8'],
+                    [propertyReadVIName, '7', propertyName, 'UInt16', propertyReadVIName, 'local_UInt16'],
+                    [propertyReadVIName, '8', propertyName, 'UInt32', propertyReadVIName, 'local_UInt32'],
+                    [propertyReadVIName, '9', propertyName, 'UInt64', propertyReadVIName, 'local_UInt64'],
+                    [propertyReadVIName, '10', propertyName, 'Single', propertyReadVIName, 'local_Single'],
+                    [propertyReadVIName, '11', propertyName, 'Double', propertyReadVIName, 'local_Double'],
+                    [propertyReadVIName, '12', propertyName, 'ComplexSingle', propertyReadVIName, 'local_ComplexSingle'],
+                    [propertyReadVIName, '13', propertyName, 'ComplexDouble', propertyReadVIName, 'local_ComplexDouble'],
+                    [propertyReadVIName, '14', propertyName, 'String', propertyReadVIName, 'local_String'],
+                    [propertyReadVIName, '15', propertyName, 'Timestamp', propertyReadVIName, 'local_Timestamp'],
+                    [propertyReadVIName, '16', propertyName, 'Double', propertyReadVIName, 'numberLocal'],
+                    [propertyReadVIName, '16', propertyName, 'Double', propertyReadVIName, 'clusterLocal.%3Anumeric%3A'],
+                    [propertyReadVIName, '1', propertyName, 'Boolean', propertyReadVIName, 'clusterLocal.nestedClusterLocal.Boolean%20Space%20Part']
                 ];
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -94,9 +94,9 @@ describe('The Vireo PropertyNode', function () {
                 var topVIName = 'TopVI',
                     subVIName = 'subVI';
                 var expectedCallArgs = [
-                    [topVIName, 'dataItem_Boolean', 'Value', 'Boolean', subVIName, 'booleanLocal'],
-                    [topVIName, 'dataItem_String', 'Value', 'String', subVIName, 'stringLocal'],
-                    [topVIName, 'dataItem_Double', 'Value', 'Double', subVIName, 'doubleLocal']
+                    [topVIName, '1', 'Value', 'Boolean', subVIName, 'booleanLocal'],
+                    [topVIName, '2', 'Value', 'String', subVIName, 'stringLocal'],
+                    [topVIName, '3', 'Value', 'Double', subVIName, 'doubleLocal']
                 ];
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, topVIControlRefReadViaUrl);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -201,21 +201,21 @@ describe('The Vireo PropertyNode', function () {
 
             it('when controlRef and property var are in the same top VI', function (done) {
                 var expectedCallArgs = [
-                    [propertyWriteVIName, 'dataItem_Boolean', propertyName, 'Boolean', propertyWriteVIName, 'local_Boolean'],
-                    [propertyWriteVIName, 'dataItem_Int8', propertyName, 'Int8', propertyWriteVIName, 'local_Int8'],
-                    [propertyWriteVIName, 'dataItem_Int16', propertyName, 'Int16', propertyWriteVIName, 'local_Int16'],
-                    [propertyWriteVIName, 'dataItem_Int32', propertyName, 'Int32', propertyWriteVIName, 'local_Int32'],
-                    [propertyWriteVIName, 'dataItem_Int64', propertyName, 'Int64', propertyWriteVIName, 'local_Int64'],
-                    [propertyWriteVIName, 'dataItem_UInt8', propertyName, 'UInt8', propertyWriteVIName, 'local_UInt8'],
-                    [propertyWriteVIName, 'dataItem_UInt16', propertyName, 'UInt16', propertyWriteVIName, 'local_UInt16'],
-                    [propertyWriteVIName, 'dataItem_UInt32', propertyName, 'UInt32', propertyWriteVIName, 'local_UInt32'],
-                    [propertyWriteVIName, 'dataItem_UInt64', propertyName, 'UInt64', propertyWriteVIName, 'local_UInt64'],
-                    [propertyWriteVIName, 'dataItem_Single', propertyName, 'Single', propertyWriteVIName, 'local_Single'],
-                    [propertyWriteVIName, 'dataItem_Double', propertyName, 'Double', propertyWriteVIName, 'local_Double'],
-                    [propertyWriteVIName, 'dataItem_ComplexSingle', propertyName, 'ComplexSingle', propertyWriteVIName, 'local_ComplexSingle'],
-                    [propertyWriteVIName, 'dataItem_ComplexDouble', propertyName, 'ComplexDouble', propertyWriteVIName, 'local_ComplexDouble'],
-                    [propertyWriteVIName, 'dataItem_String', propertyName, 'String', propertyWriteVIName, 'local_String'],
-                    [propertyWriteVIName, 'dataItem_Timestamp', propertyName, 'Timestamp', propertyWriteVIName, 'local_Timestamp']
+                    [propertyWriteVIName, '1', propertyName, 'Boolean', propertyWriteVIName, 'local_Boolean'],
+                    [propertyWriteVIName, '2', propertyName, 'Int8', propertyWriteVIName, 'local_Int8'],
+                    [propertyWriteVIName, '3', propertyName, 'Int16', propertyWriteVIName, 'local_Int16'],
+                    [propertyWriteVIName, '4', propertyName, 'Int32', propertyWriteVIName, 'local_Int32'],
+                    [propertyWriteVIName, '5', propertyName, 'Int64', propertyWriteVIName, 'local_Int64'],
+                    [propertyWriteVIName, '6', propertyName, 'UInt8', propertyWriteVIName, 'local_UInt8'],
+                    [propertyWriteVIName, '7', propertyName, 'UInt16', propertyWriteVIName, 'local_UInt16'],
+                    [propertyWriteVIName, '8', propertyName, 'UInt32', propertyWriteVIName, 'local_UInt32'],
+                    [propertyWriteVIName, '9', propertyName, 'UInt64', propertyWriteVIName, 'local_UInt64'],
+                    [propertyWriteVIName, '10', propertyName, 'Single', propertyWriteVIName, 'local_Single'],
+                    [propertyWriteVIName, '11', propertyName, 'Double', propertyWriteVIName, 'local_Double'],
+                    [propertyWriteVIName, '12', propertyName, 'ComplexSingle', propertyWriteVIName, 'local_ComplexSingle'],
+                    [propertyWriteVIName, '13', propertyName, 'ComplexDouble', propertyWriteVIName, 'local_ComplexDouble'],
+                    [propertyWriteVIName, '14', propertyName, 'String', propertyWriteVIName, 'local_String'],
+                    [propertyWriteVIName, '15', propertyName, 'Timestamp', propertyWriteVIName, 'local_Timestamp']
                 ];
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeWrite);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -230,9 +230,9 @@ describe('The Vireo PropertyNode', function () {
                 var topVIName = 'TopVI',
                     subVIName = 'subVI',
                     expectedCallArgs = [
-                        [topVIName, 'dataItem_Boolean', 'Value', 'Boolean', subVIName, 'booleanLocal'],
-                        [topVIName, 'dataItem_String', 'Value', 'String', subVIName, 'stringLocal'],
-                        [topVIName, 'dataItem_Double', 'Value', 'Double', subVIName, 'doubleLocal']
+                        [topVIName, '1', 'Value', 'Boolean', subVIName, 'booleanLocal'],
+                        [topVIName, '2', 'Value', 'String', subVIName, 'stringLocal'],
+                        [topVIName, '3', 'Value', 'Double', subVIName, 'doubleLocal']
                     ];
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, topVIControlRefWriteViaUrl);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
