@@ -33,21 +33,21 @@ describe('The Vireo PropertyNode', function () {
 
         it('callback is invoked with no wired error terminal', function (done) {
             var expectedCallArgs = [
-                [propertyReadVIName, 'dataItem_Boolean', propertyName, 'Boolean', propertyReadVIName, 'local_Boolean'],
-                [propertyReadVIName, 'dataItem_Int8', propertyName, 'Int8', propertyReadVIName, 'local_Int8'],
-                [propertyReadVIName, 'dataItem_Int16', propertyName, 'Int16', propertyReadVIName, 'local_Int16'],
-                [propertyReadVIName, 'dataItem_Int32', propertyName, 'Int32', propertyReadVIName, 'local_Int32'],
-                [propertyReadVIName, 'dataItem_Int64', propertyName, 'Int64', propertyReadVIName, 'local_Int64'],
-                [propertyReadVIName, 'dataItem_UInt8', propertyName, 'UInt8', propertyReadVIName, 'local_UInt8'],
-                [propertyReadVIName, 'dataItem_UInt16', propertyName, 'UInt16', propertyReadVIName, 'local_UInt16'],
-                [propertyReadVIName, 'dataItem_UInt32', propertyName, 'UInt32', propertyReadVIName, 'local_UInt32'],
-                [propertyReadVIName, 'dataItem_UInt64', propertyName, 'UInt64', propertyReadVIName, 'local_UInt64'],
-                [propertyReadVIName, 'dataItem_Single', propertyName, 'Single', propertyReadVIName, 'local_Single'],
-                [propertyReadVIName, 'dataItem_Double', propertyName, 'Double', propertyReadVIName, 'local_Double'],
-                [propertyReadVIName, 'dataItem_ComplexSingle', propertyName, 'ComplexSingle', propertyReadVIName, 'local_ComplexSingle'],
-                [propertyReadVIName, 'dataItem_ComplexDouble', propertyName, 'ComplexDouble', propertyReadVIName, 'local_ComplexDouble'],
-                [propertyReadVIName, 'dataItem_String', propertyName, 'String', propertyReadVIName, 'local_String'],
-                [propertyReadVIName, 'dataItem_Timestamp', propertyName, 'Timestamp', propertyReadVIName, 'local_Timestamp']
+                [propertyReadVIName, '1', propertyName, 'Boolean', propertyReadVIName, 'local_Boolean'],
+                [propertyReadVIName, '2', propertyName, 'Int8', propertyReadVIName, 'local_Int8'],
+                [propertyReadVIName, '3', propertyName, 'Int16', propertyReadVIName, 'local_Int16'],
+                [propertyReadVIName, '4', propertyName, 'Int32', propertyReadVIName, 'local_Int32'],
+                [propertyReadVIName, '5', propertyName, 'Int64', propertyReadVIName, 'local_Int64'],
+                [propertyReadVIName, '6', propertyName, 'UInt8', propertyReadVIName, 'local_UInt8'],
+                [propertyReadVIName, '7', propertyName, 'UInt16', propertyReadVIName, 'local_UInt16'],
+                [propertyReadVIName, '8', propertyName, 'UInt32', propertyReadVIName, 'local_UInt32'],
+                [propertyReadVIName, '9', propertyName, 'UInt64', propertyReadVIName, 'local_UInt64'],
+                [propertyReadVIName, '10', propertyName, 'Single', propertyReadVIName, 'local_Single'],
+                [propertyReadVIName, '11', propertyName, 'Double', propertyReadVIName, 'local_Double'],
+                [propertyReadVIName, '12', propertyName, 'ComplexSingle', propertyReadVIName, 'local_ComplexSingle'],
+                [propertyReadVIName, '13', propertyName, 'ComplexDouble', propertyReadVIName, 'local_ComplexDouble'],
+                [propertyReadVIName, '14', propertyName, 'String', propertyReadVIName, 'local_String'],
+                [propertyReadVIName, '15', propertyName, 'Timestamp', propertyReadVIName, 'local_Timestamp']
             ];
 
             runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);

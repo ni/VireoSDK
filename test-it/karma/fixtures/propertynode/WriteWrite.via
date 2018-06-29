@@ -4,7 +4,7 @@
 //VI Definition: ::Web Server::Interactive::WebApp::WriteWrite.gviweb
 define (%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AWriteWrite%2Egviweb dv(.VirtualInstrument (
     Locals: c(   // Data Space
-        e(dv(.ControlRefNum ControlReference("dataItem_MyLED"))local0)
+        e(dv(.ControlRefNum ControlReference("1"))local0)
         ce(dv(.Boolean true)c1)
         e(.ControlRefNum local2)
         e(.ErrorCluster local3)
