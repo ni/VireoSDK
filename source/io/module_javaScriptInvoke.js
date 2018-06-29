@@ -52,11 +52,6 @@
             MESSAGE: 'Unable to set return value for JavaScript Library interface node parameter when calling: '
         },
 
-        kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke: {
-            CODE: 44304,
-            MESSAGE: 'Unsupported JavaScript return type for JavaScript Library interface node parameter when calling: '
-        },
-
         kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke: {
             CODE: 44305,
             MESSAGE: 'Unsupported LabVIEW return type for JavaScript Library interface node parameter when calling: '
@@ -74,7 +69,9 @@
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
             'JavaScriptInvoke_GetParameterPointer',
             'JavaScriptInvoke_GetParameterType',
-            'JavaScriptInvoke_GetArrayElementType'
+            'JavaScriptInvoke_GetArrayElementType',
+            'Data_ReadJavaScriptRefNum',
+            'Data_WriteJavaScriptRefNum'
         ]}], */
 
         Module.javaScriptInvoke = {};
@@ -84,6 +81,8 @@
         var JavaScriptInvoke_GetParameterType = Module.cwrap('JavaScriptInvoke_GetParameterType', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetParameterPointer = Module.cwrap('JavaScriptInvoke_GetParameterPointer', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetArrayElementType = Module.cwrap('JavaScriptInvoke_GetArrayElementType', 'number', ['number']);
+        var Data_ReadJavaScriptRefNum = Module.cwrap('Data_ReadJavaScriptRefNum', 'number', ['number']);
+        var Data_WriteJavaScriptRefNum = Module.cwrap('Data_WriteJavaScriptRefNum', 'void', ['number', 'number']);
 
         var getParameterTypeString = function (parametersPointer, index) {
             var typeNamePointer = JavaScriptInvoke_GetParameterType(parametersPointer, index);
@@ -101,6 +100,67 @@
 
         var isJavaScriptNumber = function (value) {
             return typeof value === 'number';
+        };
+
+        var jsRefNumToJsValueMap = new Map();
+        var jsValueToJsRefNumCache = new Map();
+        var jsRefNumCookieCounter = 0;
+
+        var isPrimitiveType = function (jsValue) {
+            return ((typeof jsValue !== 'object' || jsValue === null) && typeof jsValue !== 'function' && typeof jsValue !== 'symbol');
+        };
+
+        var cacheRefNum = function (cookie, jsValue) {
+            jsRefNumToJsValueMap.set(cookie, jsValue);
+            if (!isPrimitiveType(jsValue)) { // we don't want to share refnum for js primitives
+                jsValueToJsRefNumCache.set(jsValue, cookie);
+            }
+        };
+
+        var hasCachedRefNum = function (cookie) {
+            var refNumExists = (jsRefNumToJsValueMap.get(cookie) !== undefined);
+            if (!refNumExists && cookie !== 0) {
+                throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
+            }
+            return refNumExists;
+        };
+
+        var getCachedRefNum = function (jsValue) {
+            return jsValueToJsRefNumCache.get(jsValue);
+        };
+
+        var getCachedJsValue = function (cookie) {
+            return jsRefNumToJsValueMap.get(cookie);
+        };
+
+        var generateUniqueRefNumCookie = function () {
+            jsRefNumCookieCounter += 1;
+            return jsRefNumCookieCounter;
+        };
+
+        var dataReadJavaScriptRefNum = function (javaScriptRefNumPointer) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            return jsRefNumToJsValueMap.get(cookie);
+        };
+
+        var dataWriteJavaScriptRefNum = function (javaScriptRefNumPointer, jsValue) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            if (hasCachedRefNum(cookie)) { // refnum was already set to something
+                if (getCachedJsValue(cookie) !== jsValue) {
+                    throw new Error('JavaScriptRefNum[' + cookie + '] already set to ' + getCachedJsValue(cookie) + ' and can not be set to new value' + jsValue);
+                }
+                return; // nothing to do, tried to set the same object to the same reference
+            }
+
+            var cachedCookie = getCachedRefNum(jsValue);
+            if (cachedCookie !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
+                Data_WriteJavaScriptRefNum(javaScriptRefNumPointer, cachedCookie); // set the VIA local to be this refnum value
+                return;
+            }
+
+            var newCookie = generateUniqueRefNumCookie();
+            Data_WriteJavaScriptRefNum(javaScriptRefNumPointer, newCookie);
+            cacheRefNum(newCookie, jsValue);
         };
 
         var typeFunctions = {
@@ -213,6 +273,13 @@
                 isValidReturnType: function (value) {
                     return value instanceof Float64Array;
                 }
+            },
+            JavaScriptRefNum: {
+                reader: dataReadJavaScriptRefNum,
+                writer: dataWriteJavaScriptRefNum,
+                isValidReturnType: function () {
+                    return true;
+                }
             }
         };
 
@@ -228,7 +295,7 @@
                 var parameterValue = undefined;
                 var readFunction = typeFunctions[typeName].reader;
                 if (readFunction === undefined) {
-                    throw new Error(' Unsupported type for parameter with index = ' + index);
+                    throw new Error(' Unsupported type = ' + typeName + ' for parameter with index = ' + index);
                 } else {
                     parameterValue = readFunction(parameterPointer);
                 }
@@ -264,32 +331,6 @@
             };
         };
 
-        var isTypedArray = function (
-            value) {
-            if (value instanceof Int8Array ||
-                value instanceof Int16Array ||
-                value instanceof Int32Array ||
-                value instanceof Uint8Array ||
-                value instanceof Uint16Array ||
-                value instanceof Uint32Array ||
-                value instanceof Float32Array ||
-                value instanceof Float64Array) {
-                return true;
-            }
-
-            return false;
-        };
-
-        var isValidJavaScriptReturnType = function (
-            returnValue) {
-            var returnTypeName = typeof returnValue;
-            return (returnTypeName === 'number') ||
-            (returnTypeName === 'boolean') ||
-            (returnTypeName === 'string') ||
-            (returnTypeName === 'undefined') ||
-            (isTypedArray(returnValue));
-        };
-
         var completionCallbackRetrievalEnum = {
             AVAILABLE: 'AVAILABLE',
             RETRIEVED: 'RETRIEVED',
@@ -309,13 +350,6 @@
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
-            if (!isValidJavaScriptReturnType(returnUserValue)) {
-                var code = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.CODE;
-                var source = ERRORS.kNIUnsupportedJavaScriptReturnTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.';
-                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
-                return;
-            }
-
             if (returnTypeName === 'StaticTypeAndData') {
                 // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
                 return;
@@ -477,6 +511,12 @@
                 Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;
+        };
+
+        Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum = function (returnPointer, javaScriptRefNumPointer) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            var isNotAJavaScriptRefnum = !hasCachedRefNum(cookie);
+            Module.eggShell.dataWriteBoolean(returnPointer, isNotAJavaScriptRefnum);
         };
     };
 
