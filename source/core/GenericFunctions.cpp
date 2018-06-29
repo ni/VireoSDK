@@ -33,36 +33,24 @@ ConstCStr GetCopyOpName(void *pSource, void *pDest, TypeRef elemType)
         return nullptr;
 
     switch (aqSize) {  // copy sizes go to 32 bytes for efficiency
-        case 1:
-            return "Copy1";
-        case 2:
-            return "Copy2";
-        case 4:
-            return "Copy4";
-        case 8:
-            return "Copy8";
-        case 16:
-            return "Copy16";
-        case 32:
-            return "Copy32";
-        default:
-            return nullptr;
+        case 1:  return "Copy1";
+        case 2:  return "Copy2";
+        case 4:  return "Copy4";
+        case 8:  return "Copy8";
+        case 16: return "Copy16";
+        case 32: return "Copy32";
+        default: return nullptr;
     }
 }
 //------------------------------------------------------------
 ConstCStr GetCopyEnumOpName(Int32 aqSize)
 {
     switch (aqSize) {  // these are bytes not bits. Enums are max UInt64 sized.
-        case 1:
-            return "CopyEnum1";
-        case 2:
-            return "CopyEnum2";
-        case 4:
-            return "CopyEnum4";
-        case 8:
-            return "CopyEnum8";
-        default:
-            return nullptr;
+        case 1:  return "CopyEnum1";
+        case 2:  return "CopyEnum2";
+        case 4:  return "CopyEnum4";
+        case 8:  return "CopyEnum8";
+        default: return nullptr;
     }
 }
 //------------------------------------------------------------
@@ -306,21 +294,11 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                         void *savedArg = pInstructionBuilder->_argPointers[1];
                         if (pInstructionBuilder->_argumentState == ClumpParseState::kArgumentNotResolved) {
                             // invoked via recursion from Generic array/cluster binop
-                            pInstruction = pInstructionBuilder->EmitInstruction(
-                                &convertOpToken,
-                                2,
-                                sourceXType,
-                                pInstructionBuilder->_argPointers[0],
-                                destType,
-                                (void*) - 1);  // tell vector/cluster op invoking us to convert the 1st arg
+                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2, sourceXType, pInstructionBuilder->_argPointers[0],
+                                destType, (void*) - 1);  // tell vector/cluster op invoking us to convert the 1st arg
                         } else {
-                            pInstruction = pInstructionBuilder->EmitInstruction(
-                                &convertOpToken,
-                                2,
-                                sourceXType,
-                                pInstructionBuilder->_argPointers[0],
-                                destType,
-                                destArg);
+                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2, sourceXType, pInstructionBuilder->_argPointers[0],
+                                destType, destArg);
                         }
                         pInstructionBuilder->EmitInstruction(&operationName, 3, destType, destArg, sourceYType, savedArg, destType, destArg);
                     }
@@ -333,32 +311,15 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
                         void *savedArg = pInstructionBuilder->_argPointers[0];
                         if (pInstructionBuilder->_argumentState == ClumpParseState::kArgumentNotResolved) {
                             // invoked via recursion from Generic array/cluster binop
-                            pInstruction = pInstructionBuilder->EmitInstruction(
-                                &convertOpToken,
-                                2,
-                                sourceYType,
-                                pInstructionBuilder->_argPointers[1],
-                                destType,
-                                (void*) - 2);
+                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2,
+                                sourceYType, pInstructionBuilder->_argPointers[1], destType, (void*) - 2);
                             // tell vector/cluster op invoking us to convert the 2nd arg
                         } else {
-                            pInstruction = pInstructionBuilder->EmitInstruction(
-                                &convertOpToken,
-                                2,
-                                sourceYType,
-                                pInstructionBuilder->_argPointers[1],
-                                destType,
-                                destArg);
+                            pInstruction = pInstructionBuilder->EmitInstruction(&convertOpToken, 2,
+                                sourceYType, pInstructionBuilder->_argPointers[1], destType, destArg);
                         }
-                        pInstructionBuilder->EmitInstruction(
-                            &operationName,
-                            3,
-                            sourceXType,
-                            savedArg,
-                            destType,
-                            destArg,
-                            destType,
-                            destArg);
+
+                        pInstructionBuilder->EmitInstruction(&operationName, 3, sourceXType, savedArg, destType, destArg, destType, destArg);
                     }
                 }
             }
@@ -406,17 +367,8 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
             TypeRef destEltType = destType->IsArray() ? destType->GetSubElement(0) : destType;
-            if (!snippetBuilder.EmitInstruction(
-                &operationName,
-                argCount,
-                xEltType,
-                nullptr,
-                yEltType,
-                nullptr,
-                destEltType,
-                nullptr,
-                destEltType,
-                nullptr)) {
+            if (!snippetBuilder.EmitInstruction(&operationName, argCount, xEltType, nullptr, yEltType, nullptr,
+                destEltType, nullptr, destEltType, nullptr)) {
                 pInstruction = nullptr;
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -590,15 +542,8 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
             ClumpParseState snippetBuilder(pInstructionBuilder);
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, unaryOp, snippetArgId);
 
-            if (!snippetBuilder.EmitInstruction(
-                &savedOperation,
-                argCount,
-                sourceXType->GetSubElement(0),
-                nullptr,
-                destType->GetSubElement(0),
-                nullptr,
-                destType->GetSubElement(0),
-                nullptr)) {
+            if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceXType->GetSubElement(0), nullptr,
+                destType->GetSubElement(0), nullptr, destType->GetSubElement(0), nullptr)) {
                 pInstruction = nullptr;
             }
 
@@ -630,15 +575,8 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
                     sourceSub = sourceXType->GetSubElement(i);
                     sourceData = (void*)(size_t)sourceSub->ElementOffset();
                 }
-                if (!snippetBuilder.EmitInstruction(
-                    &savedOperation,
-                    argCount,
-                    sourceSub,
-                    sourceData,
-                    destSub,
-                    (void*)(size_t)destSub->ElementOffset(),
-                    destSub,
-                    (void*)(size_t)destSub->ElementOffset())) {
+                if (!snippetBuilder.EmitInstruction(&savedOperation, argCount, sourceSub, sourceData, destSub,
+                    (void*)(size_t)destSub->ElementOffset(), destSub, (void*)(size_t)destSub->ElementOffset())) {
                     pInstruction = nullptr;
                 }
             }
@@ -719,20 +657,12 @@ InstructionCore* EmitMaxMinElementsInstruction(ClumpParseState* pInstructionBuil
 
             TypeRef xEltType = sourceXType->IsArray() ? sourceXType->GetSubElement(0) : sourceXType;
             TypeRef yEltType = sourceYType->IsArray() ? sourceYType->GetSubElement(0) : sourceYType;
-            snippetBuilder.EmitInstruction(
-                &savedOperation,
-                4,
-                xEltType,
-                nullptr,
-                yEltType,
-                nullptr,
-                maxType->GetSubElement(0),
-                nullptr,
-                minType->GetSubElement(0),
-                nullptr);
+            snippetBuilder.EmitInstruction(&savedOperation, 4, xEltType, nullptr, yEltType, nullptr, maxType->GetSubElement(0),
+                nullptr, minType->GetSubElement(0), nullptr);
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&maxMinOp->_piNext);
+
             break;
         }
         case kEncoding_Cluster:
@@ -760,17 +690,8 @@ InstructionCore* EmitMaxMinElementsInstruction(ClumpParseState* pInstructionBuil
                     sourceYSub = sourceYType->GetSubElement(i);
                     sourceYData = (void*)(size_t)sourceYSub->ElementOffset();
                 }
-                snippetBuilder.EmitInstruction(
-                    &savedOperation,
-                    4,
-                    sourceXSub,
-                    sourceXData,
-                    sourceYSub,
-                    sourceYData,
-                    maxSub,
-                    (void*)(size_t)maxSub->ElementOffset(),
-                    minSub,
-                    (void*)(size_t)minSub->ElementOffset());
+                snippetBuilder.EmitInstruction(&savedOperation, 4, sourceXSub, sourceXData, sourceYSub, sourceYData,
+                    maxSub, (void*)(size_t)maxSub->ElementOffset(), minSub, (void*)(size_t)minSub->ElementOffset());
             }
 
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -1082,19 +1003,12 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 
         ClumpParseState snippetBuilder(pInstructionBuilder);
         pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, ircOp, snippetArgId);
-        snippetBuilder.EmitInstruction(
-            &LTName,
-            3,
-            sourceXType,
-            nullptr,
-            sourceXType,
-            nullptr,
-            booleanType,
-            nullptr);
+        snippetBuilder.EmitInstruction(&LTName, 3, sourceXType, nullptr, sourceXType, nullptr, booleanType, nullptr);
 
         pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
         pInstructionBuilder->RecordNextHere(&ircOp->_piNext);
         pInstruction = ircOp;
+
         return pInstruction;
     }
     switch (goalType->BitEncoding()) {
@@ -1146,25 +1060,12 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
 
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
 
-            snippetBuilder.EmitInstruction(
-                &savedOperation,
-                7,
-                xEltType,
-                nullptr,
-                loEltType,
-                nullptr,
-                hiEltType,
-                nullptr,
-                booleanType,
-                nullptr,
-                booleanType,
-                nullptr,
-                coercedEltType,
-                nullptr,
-                destEltType,
-                nullptr);
+            snippetBuilder.EmitInstruction(&savedOperation, 7, xEltType, nullptr, loEltType, nullptr, hiEltType, nullptr, booleanType, nullptr,
+                booleanType, nullptr, coercedEltType, nullptr, destEltType, nullptr);
+
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
+
             break;
         }
         case kEncoding_Cluster:
@@ -1239,25 +1140,12 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
                     arg7Type = destType;
                     arg7Data = nullptr;
                 }
+
                 if (!arg1Type->CompareType(arg2Type) || !arg2Type->CompareType((arg3Type)) || !arg1Type->CompareType(arg6Type))
                     return nullptr;
-                snippetBuilder.EmitInstruction(
-                    &savedOperation,
-                    7,
-                    arg1Type,
-                    arg1Data,
-                    arg2Type,
-                    arg2Data,
-                    arg3Type,
-                    arg3Data,
-                    booleanType,
-                    nullptr,
-                    booleanType,
-                    nullptr,
-                    arg6Type,
-                    arg6Data,
-                    arg7Type,
-                    arg7Data);
+
+                snippetBuilder.EmitInstruction(&savedOperation, 7, arg1Type, arg1Data, arg2Type, arg2Data, arg3Type,
+                    arg3Data, booleanType, nullptr, booleanType, nullptr, arg6Type, arg6Data, arg7Type, arg7Data);
             }
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&clusterOp->_piNext);
@@ -1414,21 +1302,11 @@ InstructionCore* EmitGenericStringToNumber(ClumpParseState* pInstructionBuilder)
             ClumpParseState snippetBuilder(pInstructionBuilder);
 
             pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, snippetArgId);
-            snippetBuilder.EmitInstruction(
-                &savedOperation,
-                5,
-                srcEltType,
-                nullptr,
-                Int32Type,
-                nullptr,
-                outEltType,
-                nullptr,
-                Int32Type,
-                nullptr,
-                staticTypeAndDataType,
-                nullptr);
+            snippetBuilder.EmitInstruction(&savedOperation, 5, srcEltType, nullptr, Int32Type, nullptr, outEltType,
+                nullptr, Int32Type, nullptr, staticTypeAndDataType, nullptr);
             pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             pInstructionBuilder->RecordNextHere(&vectorBinOp->_piNext);
+
             break;
         }
         default:
@@ -1624,15 +1502,8 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ClumpParseState snippetBuilder(pInstructionBuilder);
     pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorOp, scalarOpSnippetArgId);
 
-    snippetBuilder.EmitInstruction(
-        &scalarOpToken,
-        3,
-        sourceType->GetSubElement(0),
-        nullptr,
-        destType,
-        pInstructionBuilder->_argPointers[1],
-        destType,
-        pInstructionBuilder->_argPointers[1]);
+    snippetBuilder.EmitInstruction(&scalarOpToken, 3, sourceType->GetSubElement(0), nullptr, destType, pInstructionBuilder->_argPointers[1],
+        destType, pInstructionBuilder->_argPointers[1]);
 
     pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
     pInstructionBuilder->RecordNextHere(&vectorOp->_piNext);
