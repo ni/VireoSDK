@@ -53,8 +53,8 @@ struct EventStructInfo {
 
 struct EventControlInfo {
     EventOracleIndex eventOracleIndex;
-    RefNum refnum;
-    explicit EventControlInfo(EventOracleIndex eoIdx = 0, RefNum ref = 0) : eventOracleIndex(eoIdx), refnum(ref) { }
+    EventControlUID controlID;
+    explicit EventControlInfo(EventOracleIndex eoIdx = 0, EventControlUID ctlID = 0) : eventOracleIndex(eoIdx), controlID(ctlID) { }
 };
 
 struct EventInfo {
