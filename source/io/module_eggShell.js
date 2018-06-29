@@ -601,6 +601,7 @@
         var vireoObjectPointer = Module._malloc(4);
         var vireoTypePointer = Module._malloc(4);
 
+        // **DEPRECATED**
         Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
             var eggShellResult = EggShell_GetPointer(Module.eggShell.v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
 
@@ -639,6 +640,7 @@
             return convertFlatArraytoNArray(actualArray, arrayInfo.dimensionLengths);
         };
 
+        // **DEPRECATED**
         Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
             return EggShell_GetArrayDimLength(Module.eggShell.v_userShell, vi, path, dim);
         };
@@ -669,6 +671,7 @@
             Module.stackRestore(stack);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadString = function (stringPointer) {
             var begin = Data_GetStringBegin(stringPointer);
             var length = Data_GetStringLength(stringPointer);
@@ -677,6 +680,7 @@
         };
 
         // Note this function is tied to the underlying buffer, a copy is not made
+        // **DEPRECATED**
         Module.eggShell.dataReadStringAsArray_NoCopy = function (stringPointer) {
             var begin = Data_GetStringBegin(stringPointer);
             var length = Data_GetStringLength(stringPointer);
@@ -684,12 +688,14 @@
         };
 
         // Source should be a JS String
+        // **DEPRECATED**
         Module.eggShell.dataWriteString = function (destination, source) {
             var sourceLength = Module.lengthBytesUTF8(source);
             Data_WriteString(Module.eggShell.v_userShell, destination, source, sourceLength);
         };
 
         // Source should be a JS array of numbers or a TypedArray of Uint8Array or Int8Array
+        // **DEPRECATED**
         Module.eggShell.dataWriteStringFromArray = function (destination, source) {
             var sourceHeapPointer = Module._malloc(source.length);
             Module.writeArrayToMemory(source, sourceHeapPointer);
@@ -697,55 +703,66 @@
             Module._free(sourceHeapPointer);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadBoolean = function (booleanPointer) {
             var numericValue = Data_ReadBoolean(booleanPointer);
             return numericValue !== 0;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadInt8 = function (intPointer) {
             var numericValue = Data_ReadInt8(intPointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadInt16 = function (intPointer) {
             var numericValue = Data_ReadInt16(intPointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadInt32 = function (intPointer) {
             var numericValue = Data_ReadInt32(intPointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadUInt8 = function (intPointer) {
             var numericValue = Data_ReadUInt8(intPointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadUInt16 = function (intPointer) {
             var numericValue = Data_ReadUInt16(intPointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadUInt32 = function (intPointer) {
             var numericValue = Data_ReadUInt32(intPointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadSingle = function (singlePointer) {
             var numericValue = Data_ReadSingle(singlePointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadDouble = function (doublePointer) {
             var numericValue = Data_ReadDouble(doublePointer);
             return numericValue;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadTypedArray = function (arrayPointer) {
             return Module.eggShell.dataReadNumericArrayAsTypedArray(arrayPointer).array;
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataReadNumericArrayAsTypedArray = function (arrayPointer) {
             var eggShellResult = Data_GetArrayMetadata(Module.eggShell.v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
 
@@ -797,43 +814,53 @@
             };
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
             var numericValue = booleanValue ? 1 : 0;
             Data_WriteBoolean(booleanPointer, numericValue);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteInt8 = function (destination, value) {
             Data_WriteInt8(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteInt16 = function (destination, value) {
             Data_WriteInt16(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteInt32 = function (destination, value) {
             Data_WriteInt32(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteUInt8 = function (destination, value) {
             Data_WriteUInt8(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteUInt16 = function (destination, value) {
             Data_WriteUInt16(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteUInt32 = function (destination, value) {
             Data_WriteUInt32(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteSingle = function (destination, value) {
             Data_WriteSingle(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteDouble = function (destination, value) {
             Data_WriteDouble(destination, value);
         };
 
+        // **DEPRECATED**
         Module.eggShell.dataWriteTypedArray = function (destination, value) {
             var int32Byte = 4;
             var rank = 1;
