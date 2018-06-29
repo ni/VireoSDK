@@ -27,10 +27,11 @@ define (ValueChangedEventRegisterAndUnregister dv(.VirtualInstrument (
             e(.UInt32 Time)
             e(.UInt32 Index)
         ) timeoutData)
+        e(dv(ControlRefNum ControlReference("18")) controlRef)
     )
         clump(1
 
-        _OccurEvent(18 1000 2)  // for testing
+        // _OccurEvent(controlRef 1000 2)  // Vireo unit test fires here; karma test fires event in JS
 
         Printf("Waiting on Events\n")
         WaitForEventsAndDispatch(50 * 0 0 eventData 1 1 timeoutData 2)

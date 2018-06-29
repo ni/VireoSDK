@@ -324,6 +324,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
         }
         if (idx < size) {  // we found an unused index, or one already for this control ID
             _eventReg[idx]._controlUID = controlUID;
+            _eventReg[idx]._controlRef = ref;
         } else {
             EventOracleObj eo(controlUID, ref);
             _eventReg.push_back(eo);
@@ -529,7 +530,7 @@ Int32 EventOracle::GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, 
 struct EventSpec {  // Specifier for Event structure configuration data
     EventSource eventSource;
     EventType eventType;
-    EventControlUID eventControlUID;  // 0 == no control (App or VI event, or dynamic)
+    ControlRefNum eventControlRef;  // 0 == no control (App or VI event, or dynamic)
     UInt32 dynIndex;  // 0 == not dynamic
 };
 typedef EventSpec *EventSpecRef;
@@ -557,7 +558,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
         EventQueueID qID = kNotAQueueID;
         EventOracle::TheEventOracle().GetNewQueueObject(&qID, nullptr);
         for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
-            RefNum controlRef = RefNum(eventSpecRef[eventSpecIndex].eventControlUID);  // TODO(spathiwa) rename eventControlUID field 'UID'->'Ref'
+            ControlRefNum controlRef = eventSpecRef[eventSpecIndex].eventControlRef;
             if (controlRef) {
                 StringRef tag = nullptr;
                 STACK_VAR(String, viNameVar);
@@ -568,7 +569,6 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                     viName->AppendSubString(&encodedSubstr);
                     char *tagBegin = reinterpret_cast<char*>(tag->Begin()), *tagEnd = reinterpret_cast<char*>(tag->End());
                     EventControlUID controlID = Int32(strtol(tagBegin, &tagEnd, 10));
-                    eventSpecRef[eventSpecIndex].eventControlUID = controlID;
                     if (controlID) {
                         EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
@@ -578,7 +578,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                         // gPlatform.IO.Printf("Static Register for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                         //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
                         if (eventOracleIdx > kAppEventOracleIdx) {
-                            eventInfo->controlIDInfoMap[controlID] = EventControlInfo(eventOracleIdx, controlRef);
+                            eventInfo->controlIDInfoMap[controlRef] = EventControlInfo(eventOracleIdx, controlID);
 #if kVireoOS_emscripten
                             jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
 #endif
@@ -611,21 +611,19 @@ void UnregisterForStaticEvents(VirtualInstrument *vi) {
             UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
             EventQueueID qID =  eventInfo->eventStructInfo[eventStructIndex].staticQID;
             for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
-                EventControlUID controlID = eventSpecRef[eventSpecIndex].eventControlUID;
-                if (controlID) {
-                    EventInfo::ControlIDInfoMap::iterator ciIter = eventInfo->controlIDInfoMap.find(controlID);
+                ControlRefNum controlRef = eventSpecRef[eventSpecIndex].eventControlRef;
+                if (controlRef) {
+                    EventInfo::ControlIDInfoMap::iterator ciIter = eventInfo->controlIDInfoMap.find(controlRef);
                     if (ciIter != eventInfo->controlIDInfoMap.end()) {
                         EventOracleIndex eventOracleIdx = ciIter->second.eventOracleIndex;
-                        RefNum controlRef = ciIter->second.refnum;
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
                         EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
-                        eventSpecRef[eventSpecIndex].eventControlUID = controlRef;
 
                         EventOracle::TheEventOracle().UnregisterForEvent(qID, eSource, eventType, eventOracleIdx, controlRef);
                         // gPlatform.IO.Printf("Static Unregister for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                         //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
 #if kVireoOS_emscripten
-                        jsUnRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
+                        jsUnRegisterForControlEvent(viName, ciIter->second.controlID, eventType, eventOracleIdx);
 #endif
                         eventInfo->controlIDInfoMap.erase(ciIter);
                     }
@@ -953,7 +951,8 @@ struct WaitForEventsParamBlock : public VarArgInstruction
 
 static inline bool EventMatch(const EventData &eData, const EventSpec &eSpec, Int32 dynIndex = 0) {
     return (eData.common.eventSource == eSpec.eventSource && eData.common.eventType == eSpec.eventType
-            && eData.controlUID == eSpec.eventControlUID && dynIndex == eSpec.dynIndex);
+            && (!eSpec.eventControlRef || eData.common.eventRef.GetRefNum() == eSpec.eventControlRef)
+            && dynIndex == eSpec.dynIndex);
 }
 
 inline Boolean IsEventRegRefnum(TypeRef regRefType) {
@@ -1116,19 +1115,20 @@ VIREO_EXPORT void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 e
     }
 }
 
-VIREO_FUNCTION_SIGNATURE3(_OccurEvent, UInt32, UInt32, UInt32)
+VIREO_FUNCTION_SIGNATURE3(_OccurEvent, RefNumVal, UInt32, UInt32)
 {
-    UInt32 controlID = _Param(0);
+    RefNumVal controlRefVal = _Param(0);
     UInt32 eventSource = _Param(1);
     UInt32 eventType = _Param(2);
     VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
     EventInfo *eventInfo = owningVI->GetEventInfo();
     EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
-    RefNum ref = kNotARefNum;
+    EventControlUID controlID = 0;
+    RefNum ref = controlRefVal.GetRefNum();
     if (eventInfo) {
-        EventControlInfo *ecInfo = &eventInfo->controlIDInfoMap[controlID];
+        EventControlInfo *ecInfo = &eventInfo->controlIDInfoMap[ref];
         eventOracleIdx = ecInfo->eventOracleIndex;
-        ref = ecInfo->refnum;
+        controlID = ecInfo->controlID;
     }
 
     if (eventSource != GetEventSourceForEventType(eventType)) {
@@ -1167,6 +1167,7 @@ VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean);
 
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Events)
+    DEFINE_VIREO_REQUIRE(ControlRefs)
 
     // EventSpec used for event structure configuration
     DEFINE_VIREO_TYPE(EventSpec, "c(e(UInt32 eventSource) e(UInt32 eventType) e(UInt32 controlUID) e(UInt32 dynIndex)");
@@ -1187,7 +1188,7 @@ DEFINE_VIREO_BEGIN(Events)
     DEFINE_VIREO_FUNCTION(WaitForEventsAndDispatch, "p(i(VarArgCount) i(Int32 timeOut) i(StaticTypeAndData ref) i(Int32 esIndex) "
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
 
-    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(UInt32 controlID) i(UInt32 eSource) i(UInt32 eType))")
+    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(ControlRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
 
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAUserEventRefnum, "p(i(UserEventRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(UserEventRefNum) i(UserEventRefNum) o(Boolean))")
