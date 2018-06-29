@@ -29,10 +29,10 @@ enum { kNIError_ObjectReferenceIsInvalid = 1055 };  // TODO(spathiwa) move to co
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    // Parameters: controlRefVIName, controlId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
-    extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
-    // Parameters: controlRefVIName, controlId, propertyName, propertyTypeName, tempVariableVIName, tempVariablePath, errorStatus*, errorCode*, errorSource*
-    extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, StringRef, StringRef, StringRef, Boolean *, Int32 *, StringRef);
+    // Parameters: controlRefVIName, dataItemName, propertyName, tempVariableType, tempVariableDataPtr, errorStatus*, errorCode*, errorSource*
+    extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, TypeRef, void *, Boolean *, Int32 *, StringRef);
+    // Parameters: controlRefVIName, dataItemName, propertyName, tempVariableType, tempVariableDataPtr, errorStatus*, errorCode*, errorSource*
+    extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, TypeRef, void *, Boolean *, Int32 *, StringRef);
 }
 #endif
 
@@ -63,39 +63,6 @@ static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *
     viName->AppendSubString(&encodedSubstr);
     return true;
 }
-
-static bool FindVINameAndPropertyPathForValue(StaticTypeAndData *value, ErrorCluster *errorClusterPtr,
-                                            StringRef viName, StringRef path, ConstCStr propNodeName)
-{
-    TypeManagerRef typeManager = value->_paramType->TheTypeManager();
-
-    STACK_VAR(String, pathRef);
-    StringRef symbolPath = pathRef.Value;
-    Boolean foundInVI = false;
-    typeManager->PointerToSymbolPath(value->_paramType, value->_pData, symbolPath, &foundInVI);
-
-    SubString symbolPathSubStr = symbolPath->MakeSubStringAlias();
-    if (symbolPathSubStr.CompareCStr("*pointer-not-found*")) {
-        errorClusterPtr->SetError(true, kNIError_ObjectReferenceIsInvalid, propNodeName);
-        AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeName);
-        return false;
-    }
-
-    if (foundInVI) {
-       SubString pathHead;
-       SubString pathTail;
-       symbolPathSubStr.SplitString(&pathHead, &pathTail, '.');
-       viName->AppendSubString(&pathHead);
-       SubString localsTail;
-       pathTail.SplitString(&pathHead, &localsTail, '.');
-       path->AppendSubString(&localsTail);
-    } else {
-       viName->AppendCStr("");
-       path->AppendStringRef(pathRef.Value);
-    }
-
-    return true;
-}
 #endif
 
 //------------------------------------------------------------
@@ -115,18 +82,6 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefControlId, propNodeWriteName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
-    STACK_VAR(String, tempVariableVINameStackVar);
-    STACK_VAR(String, tempVariablePathStackVar);
-    StringRef tempVariableVIName = tempVariableVINameStackVar.Value;
-    StringRef tempVariablePath = tempVariablePathStackVar.Value;
-    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, tempVariableVIName, tempVariablePath, propNodeWriteName))
-        return _NextInstruction();
-
-    STACK_VAR(String, typeNameStackVar);
-    StringRef propertyTypeName = typeNameStackVar.Value;
-    SubString typeNameSubStr = value->_paramType->Name();
-    propertyTypeName->AppendSubString(&typeNameSubStr);
-
     ErrorCluster internalErrorCluster;
     if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
@@ -136,9 +91,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
             controlRefVIName,
             controlRefControlId,
             propertyName,
-            propertyTypeName,
-            tempVariableVIName,
-            tempVariablePath,
+            value->_paramType,
+            value->_pData,
             &errorClusterPtr->status,
             &errorClusterPtr->code,
             errorClusterPtr->source);
@@ -177,18 +131,6 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     if (!LookupControlRefForPropertyNode(refNumPtr, errorClusterPtr, controlRefVIName, &controlRefControlId, propNodeReadName))
         return _NextInstruction();  // control refnum lookup failed and set errorCluster
 
-    STACK_VAR(String, tempVariableVINameStackVar);
-    STACK_VAR(String, tempVariablePathStackVar);
-    StringRef tempVariableVIName = tempVariableVINameStackVar.Value;
-    StringRef tempVariablePath = tempVariablePathStackVar.Value;
-    if (!FindVINameAndPropertyPathForValue(value, errorClusterPtr, tempVariableVIName, tempVariablePath, propNodeReadName))
-        return _NextInstruction();
-
-    STACK_VAR(String, typeNameStackVar);
-    StringRef propertyTypeName = typeNameStackVar.Value;
-    SubString typeNameSubStr = value->_paramType->Name();
-    propertyTypeName->AppendSubString(&typeNameSubStr);
-
     ErrorCluster internalErrorCluster;
     if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
@@ -198,9 +140,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
             controlRefVIName,
             controlRefControlId,
             propertyName,
-            propertyTypeName,
-            tempVariableVIName,
-            tempVariablePath,
+            value->_paramType,
+            value->_pData,
             &errorClusterPtr->status,
             &errorClusterPtr->code,
             errorClusterPtr->source);

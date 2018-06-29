@@ -4,7 +4,6 @@ describe('The Vireo PropertyNode', function () {
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
-    var spyHelpers = window.testHelpers.spyHelpers;
 
     var vireo;
 
@@ -14,6 +13,18 @@ describe('The Vireo PropertyNode', function () {
     var topVIControlRefWriteViaUrl = fixtures.convertToAbsoluteFromFixturesDir('propertynode/TopVIControlRefSubVIWrite.via');
     var propertyReadVIName = '%3AWeb%20Server%3AInteractive%3AWebApp%3AMain%2Egviweb';
     var propertyWriteVIName = 'MyVI';
+
+    var expectValidValueRef = function (valueRef) {
+        expect(valueRef).toBeObject();
+        expect(valueRef.typeRef).toBeDefined();
+        expect(valueRef.dataRef).toBeDefined();
+        expect(valueRef.typeRef).toBeNumber();
+        expect(valueRef.dataRef).toBeNumber();
+    };
+
+    var writeValue = function (valueRef, value) {
+        vireo.eggShell.writeJSON(valueRef, JSON.stringify(value));
+    };
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -43,11 +54,10 @@ describe('The Vireo PropertyNode', function () {
         var runSlicesAsync;
         var generateReadFunction = function (valuesToRead) {
             var indexToRead = 0;
-            return function (viName, fpId, propertyName, propertyTypeName, propertyViName, propertyPath) {
-                var writer = vireoRunner.createVIPathWriter(vireo, propertyViName);
+            return function (viName, fpId, propertyName, valueRef) {
                 var valueRead = valuesToRead[indexToRead];
                 indexToRead += 1;
-                writer(propertyPath, valueRead);
+                writeValue(valueRef, valueRead);
             };
         };
 
@@ -61,48 +71,62 @@ describe('The Vireo PropertyNode', function () {
             });
 
             it('when controlRef and property var are in the same top VI', function (done) {
-                var expectedCallArgs = [
-                    [propertyReadVIName, '1', propertyName, 'Boolean', propertyReadVIName, 'local_Boolean'],
-                    [propertyReadVIName, '2', propertyName, 'Int8', propertyReadVIName, 'local_Int8'],
-                    [propertyReadVIName, '3', propertyName, 'Int16', propertyReadVIName, 'local_Int16'],
-                    [propertyReadVIName, '4', propertyName, 'Int32', propertyReadVIName, 'local_Int32'],
-                    [propertyReadVIName, '5', propertyName, 'Int64', propertyReadVIName, 'local_Int64'],
-                    [propertyReadVIName, '6', propertyName, 'UInt8', propertyReadVIName, 'local_UInt8'],
-                    [propertyReadVIName, '7', propertyName, 'UInt16', propertyReadVIName, 'local_UInt16'],
-                    [propertyReadVIName, '8', propertyName, 'UInt32', propertyReadVIName, 'local_UInt32'],
-                    [propertyReadVIName, '9', propertyName, 'UInt64', propertyReadVIName, 'local_UInt64'],
-                    [propertyReadVIName, '10', propertyName, 'Single', propertyReadVIName, 'local_Single'],
-                    [propertyReadVIName, '11', propertyName, 'Double', propertyReadVIName, 'local_Double'],
-                    [propertyReadVIName, '12', propertyName, 'ComplexSingle', propertyReadVIName, 'local_ComplexSingle'],
-                    [propertyReadVIName, '13', propertyName, 'ComplexDouble', propertyReadVIName, 'local_ComplexDouble'],
-                    [propertyReadVIName, '14', propertyName, 'String', propertyReadVIName, 'local_String'],
-                    [propertyReadVIName, '15', propertyName, 'Timestamp', propertyReadVIName, 'local_Timestamp'],
-                    [propertyReadVIName, '16', propertyName, 'Double', propertyReadVIName, 'numberLocal'],
-                    [propertyReadVIName, '16', propertyName, 'Double', propertyReadVIName, 'clusterLocal.%3Anumeric%3A'],
-                    [propertyReadVIName, '1', propertyName, 'Boolean', propertyReadVIName, 'clusterLocal.nestedClusterLocal.Boolean%20Space%20Part']
+                var expectedControlRefs = [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                    '11',
+                    '12',
+                    '13',
+                    '14',
+                    '15',
+                    '16',
+                    '16',
+                    '1'
                 ];
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
+
+                    var callCount = spy.calls.count();
+                    for (var i = 0; i < callCount; i += 1) {
+                        var args = spy.calls.argsFor(i);
+                        expect(args[0]).toEqual(propertyReadVIName);
+                        expect(args[1]).toEqual(expectedControlRefs[i]);
+                        expect(args[2]).toEqual(propertyName);
+                        expectValidValueRef(args[3]);
+                    }
+
                     done();
                 });
             });
 
             it('when controlRef is in top VI and property var is in subVI', function (done) {
                 var topVIName = 'TopVI',
-                    subVIName = 'subVI';
-                var expectedCallArgs = [
-                    [topVIName, '1', 'Value', 'Boolean', subVIName, 'booleanLocal'],
-                    [topVIName, '2', 'Value', 'String', subVIName, 'stringLocal'],
-                    [topVIName, '3', 'Value', 'Double', subVIName, 'doubleLocal']
-                ];
+                    expectedControlRefs = ['1', '2', '3'];
+
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, topVIControlRefReadViaUrl);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
+
+                    var callCount = spy.calls.count();
+                    for (var i = 0; i < callCount; i += 1) {
+                        var args = spy.calls.argsFor(i);
+
+                        expect(args[0]).toEqual(topVIName);
+                        expect(args[1]).toEqual(expectedControlRefs[i]);
+                        expect(args[2]).toEqual('Value');
+                        expectValidValueRef(args[3]);
+                    }
                     done();
                 });
             });
@@ -182,11 +206,12 @@ describe('The Vireo PropertyNode', function () {
     describe('propertyWrite', function () {
         var runSlicesAsync;
         var generateWriteVerifier = function (expectedValues) {
-            return function (viName, fpId, propertyName, propertyTypeName, propertyVIName, propertyPath) {
-                var parser = vireoRunner.createVIPathParser(vireo, propertyVIName);
-                var readValue = parser(propertyPath);
-                var expectedVal = expectedValues[propertyPath];
+            var index = 0;
+            return function (viName, fpId, propertyName, valueRef) {
+                var readValue = JSON.parse(vireo.eggShell.readJSON(valueRef));
+                var expectedVal = expectedValues[index];
                 expect(readValue).toEqual(expectedVal);
+                index += 1;
             };
         };
 
@@ -200,45 +225,59 @@ describe('The Vireo PropertyNode', function () {
             });
 
             it('when controlRef and property var are in the same top VI', function (done) {
-                var expectedCallArgs = [
-                    [propertyWriteVIName, '1', propertyName, 'Boolean', propertyWriteVIName, 'local_Boolean'],
-                    [propertyWriteVIName, '2', propertyName, 'Int8', propertyWriteVIName, 'local_Int8'],
-                    [propertyWriteVIName, '3', propertyName, 'Int16', propertyWriteVIName, 'local_Int16'],
-                    [propertyWriteVIName, '4', propertyName, 'Int32', propertyWriteVIName, 'local_Int32'],
-                    [propertyWriteVIName, '5', propertyName, 'Int64', propertyWriteVIName, 'local_Int64'],
-                    [propertyWriteVIName, '6', propertyName, 'UInt8', propertyWriteVIName, 'local_UInt8'],
-                    [propertyWriteVIName, '7', propertyName, 'UInt16', propertyWriteVIName, 'local_UInt16'],
-                    [propertyWriteVIName, '8', propertyName, 'UInt32', propertyWriteVIName, 'local_UInt32'],
-                    [propertyWriteVIName, '9', propertyName, 'UInt64', propertyWriteVIName, 'local_UInt64'],
-                    [propertyWriteVIName, '10', propertyName, 'Single', propertyWriteVIName, 'local_Single'],
-                    [propertyWriteVIName, '11', propertyName, 'Double', propertyWriteVIName, 'local_Double'],
-                    [propertyWriteVIName, '12', propertyName, 'ComplexSingle', propertyWriteVIName, 'local_ComplexSingle'],
-                    [propertyWriteVIName, '13', propertyName, 'ComplexDouble', propertyWriteVIName, 'local_ComplexDouble'],
-                    [propertyWriteVIName, '14', propertyName, 'String', propertyWriteVIName, 'local_String'],
-                    [propertyWriteVIName, '15', propertyName, 'Timestamp', propertyWriteVIName, 'local_Timestamp']
+                var expectedControlRefs = [
+                    '1',
+                    '2',
+                    '3',
+                    '4',
+                    '5',
+                    '6',
+                    '7',
+                    '8',
+                    '9',
+                    '10',
+                    '11',
+                    '12',
+                    '13',
+                    '14',
+                    '15'
                 ];
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeWrite);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
+
+                    var callCount = spy.calls.count();
+                    for (var i = 0; i < callCount; i += 1) {
+                        var args = spy.calls.argsFor(i);
+                        expect(args[0]).toEqual(propertyWriteVIName);
+                        expect(args[1]).toEqual(expectedControlRefs[i]);
+                        expect(args[2]).toEqual(propertyName);
+                        expectValidValueRef(args[3]);
+                    }
+
                     done();
                 });
             });
 
             it('when controlRef is in top vi and property var is in sub VI', function (done) {
                 var topVIName = 'TopVI',
-                    subVIName = 'subVI',
-                    expectedCallArgs = [
-                        [topVIName, '1', 'Value', 'Boolean', subVIName, 'booleanLocal'],
-                        [topVIName, '2', 'Value', 'String', subVIName, 'stringLocal'],
-                        [topVIName, '3', 'Value', 'Double', subVIName, 'doubleLocal']
-                    ];
+                    expectedControlRefs = ['1', '2', '3'];
+
                 runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, topVIControlRefWriteViaUrl);
                 runSlicesAsync(function (rawPrint, rawPrintError) {
                     expect(rawPrint).toBeEmptyString();
                     expect(rawPrintError).toBeEmptyString();
-                    spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
+
+                    var callCount = spy.calls.count();
+                    for (var i = 0; i < callCount; i += 1) {
+                        var args = spy.calls.argsFor(i);
+                        expect(args[0]).toEqual(topVIName);
+                        expect(args[1]).toEqual(expectedControlRefs[i]);
+                        expect(args[2]).toEqual(propertyName);
+                        expectValidValueRef(args[3]);
+                    }
+
                     done();
                 });
             });
@@ -263,38 +302,42 @@ describe('The Vireo PropertyNode', function () {
 
         it('callback function can read from vireo using parameters', function (done) {
             // Must match default values in .via
-            var expectedValues = {
-                local_Boolean: false,
-                local_Int8: -123,
-                local_Int16: -4321,
-                local_Int32: -987654321,
-                local_Int64: '-9876543210',
-                local_UInt8: 123,
-                local_UInt16: 4321,
-                local_UInt32: 987654321,
-                local_UInt64: '9876543210',
-                local_Single: 3.5,
-                local_Double: 1234.5678,
-                local_ComplexSingle: {
+            var expectedValues = [
+                false,
+                -123,
+                -4321,
+                -987654321,
+                '-9876543210',
+                123,
+                4321,
+                987654321,
+                '9876543210',
+                3.5,
+                1234.5678,
+                {
                     real: 5.25,
                     imaginary: -5.5
                 },
-                local_ComplexDouble: {
+                {
                     real: 5.045,
                     imaginary: -5.67
                 },
-                local_String: 'Dolor amet sit amet',
-                local_Timestamp: {
+                'Dolor amet sit amet',
+                {
                     seconds: '3564057536',
                     fraction: '7811758927381448193'
                 }
-            };
+            ];
             var writeFunction = generateWriteVerifier(expectedValues);
             vireo.propertyNode.setPropertyWriteFunction(writeFunction);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, propertyWriteVIName);
             runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeWrite);
             runSlicesAsync(function (rawPrint, rawPrintError) {
                 expect(rawPrint).toBeEmptyString();
                 expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
                 done();
             });
         });
