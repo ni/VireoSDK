@@ -29,7 +29,6 @@ extern "C" {
 VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
 {
     JavaScriptRefNum* refnumPtr = _ParamPointer(0);
-    Boolean result = false;
     Boolean isNotARefnum = false;
     #if kVireoOS_emscripten
         jsIsNotAJavaScriptRefnum(&isNotARefnum, refnumPtr);
