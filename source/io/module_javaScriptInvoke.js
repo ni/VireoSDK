@@ -129,7 +129,7 @@
             return jsValueToJsRefNumCache.get(jsValue);
         };
 
-        var getCachedJsObject = function (cookie) {
+        var getCachedJsValue = function (cookie) {
             return jsRefNumToJsValueMap.get(cookie);
         };
 
@@ -139,27 +139,28 @@
         };
 
         var dataReadJavaScriptRefNum = function (javaScriptRefNumPointer) {
-            var refNumValue = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
-            return jsRefNumToJsValueMap.get(refNumValue);
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            return jsRefNumToJsValueMap.get(cookie);
         };
 
-        var dataWriteJavaScriptRefNum = function (destination, jsValue) {
-            var cachedRefNumValue = getCachedRefNum(jsValue);
-            if (cachedRefNumValue !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
-                Data_WriteJavaScriptRefNum(destination, cachedRefNumValue); // set the VIA local to be this refnum value
-                return;
-            }
-
-            var refNumValue = Data_ReadJavaScriptRefNum(destination);
-            if (hasCachedRefNum(refNumValue)) {
-                if (getCachedJsObject(refNumValue) !== jsValue) {
-                    throw new Error('JsRefNum[' + refNumValue + '] already set to ' + jsValue);
+        var dataWriteJavaScriptRefNum = function (javaScriptRefNumPointer, jsValue) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            if (hasCachedRefNum(cookie)) { // refnum was already set to something
+                if (getCachedJsValue(cookie) !== jsValue) {
+                    throw new Error('JavaScriptRefNum[' + cookie + '] already set to ' + getCachedJsValue(cookie) + ' and can not be set to new value' + jsValue);
                 }
                 return; // nothing to do, tried to set the same object to the same reference
             }
-            var newRefNumValue = generateUniqueRefNumCookie();
-            Data_WriteJavaScriptRefNum(destination, newRefNumValue);
-            cacheRefNum(newRefNumValue, jsValue);
+
+            var cachedCookie = getCachedRefNum(jsValue);
+            if (cachedCookie !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
+                Data_WriteJavaScriptRefNum(javaScriptRefNumPointer, cachedCookie); // set the VIA local to be this refnum value
+                return;
+            }
+
+            var newCookie = generateUniqueRefNumCookie();
+            Data_WriteJavaScriptRefNum(javaScriptRefNumPointer, newCookie);
+            cacheRefNum(newCookie, jsValue);
         };
 
         var typeFunctions = {
@@ -510,6 +511,12 @@
                 Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;
+        };
+
+        Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum = function (returnPointer, javaScriptRefNumPointer) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+            var isNotAJavaScriptRefnum = !hasCachedRefNum(cookie);
+            Module.eggShell.dataWriteBoolean(returnPointer, isNotAJavaScriptRefnum);
         };
     };
 

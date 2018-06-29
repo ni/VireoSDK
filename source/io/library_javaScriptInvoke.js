@@ -7,5 +7,12 @@
         }
     };
 
+    var isNotAJavaScriptRefnumCAPI = {
+        jsIsNotAJavaScriptRefnum: function () {
+            Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum.apply(undefined, arguments);
+        }
+    };
+
     mergeInto(LibraryManager.library, javaScriptInvokeCAPI);
+    mergeInto(LibraryManager.library, isNotAJavaScriptRefnumCAPI);
 }());

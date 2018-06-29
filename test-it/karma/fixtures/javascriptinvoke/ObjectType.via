@@ -7,25 +7,33 @@ define(MyVI dv(VirtualInstrument (
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error5)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error6)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error7)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error8)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error9)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error10)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error11)
         e(.JavaScriptRefNum ref1)
         e(.JavaScriptRefNum ref2)
         e(.JavaScriptRefNum ref3)
         e(.JavaScriptRefNum ref4)
         e(.JavaScriptRefNum ref5)
+        e(.JavaScriptRefNum ref6)
         e(dv(.String "Foo") name1)
         e(dv(.String "FooBar") name2)
+        e(dv(.String "FooBarBaz") name3)
         e(dv(.Int32 0) length1)
         e(dv(.Int32 0) length2)
+        e(dv(.Int32 0) length3)
         e(dv(.Boolean false) isEqual)
         e(dv(.Boolean false) isNotEqual)
         e(dv(.Boolean false) isNotANumPathRefnum1)
         e(dv(.Boolean false) isNotANumPathRefnum2)
+        e(dv(.Boolean false) isNotANumPathRefnum3)
         e(dv(.Boolean false) isSharedRef)
         e(dv(.Boolean false) isSharedPrimRef)
         e(.Occurrence occurrence)
     )
     clump (
-        // Get js object ref
+        // Get js object refs
         JavaScriptInvoke(occurrence false error1 'NI_GetObjectFunction' ref1 name1)
         JavaScriptInvoke(occurrence false error2 'NI_GetObjectFunction' ref2 name2)
         IsEQ(ref1 ref2 isEqual)
@@ -33,7 +41,7 @@ define(MyVI dv(VirtualInstrument (
         IsNotANumPathRefnum(ref1 isNotANumPathRefnum1)
         IsNotANumPathRefnum(ref2 isNotANumPathRefnum2)
 
-        // Use the js object ref
+        // Use the js object refs
         JavaScriptInvoke(occurrence false error3 'NI_UseObjectFunction' length1 ref1)
         JavaScriptInvoke(occurrence false error4 'NI_UseObjectFunction' length2 ref2)
         
@@ -41,9 +49,21 @@ define(MyVI dv(VirtualInstrument (
         JavaScriptInvoke(occurrence false error5 'NI_GetObjectFunction' ref3 name1) 
         IsEQ(ref1 ref3 isSharedRef)
 
+        // Primitive types don't get same js ref
         JavaScriptInvoke(occurrence false error6 'NI_GetPrimitiveFunction' ref4 name1)
         JavaScriptInvoke(occurrence false error7 'NI_GetPrimitiveFunction' ref5 name1)
         IsEQ(ref4 ref5 isSharedPrimRef)
+
+        // Use un-inialized ref
+        IsNotANumPathRefnum(ref6 isNotANumPathRefnum3)
+        JavaScriptInvoke(occurrence false error8 'NI_UseObjectFunction' length3 ref6)
+
+        // Setting pre-initalized ref to the same js object is ok, this case can happen for JSLI with in/out ref terminal
+        JavaScriptInvoke(occurrence false error9 'NI_GetObjectFunction' ref1 name1)
+
+        // Setting pre-initalized ref to a different object is not ok
+        JavaScriptInvoke(occurrence false error10 'NI_GetObjectFunction' ref1 name2)
+        JavaScriptInvoke(occurrence false error11 'NI_GetObjectFunction' ref1 name3)
     )
 ) ) )
 

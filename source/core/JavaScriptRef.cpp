@@ -18,12 +18,21 @@
 
 namespace Vireo {
 
+#if kVireoOS_emscripten
+extern "C" {
+    // JavaScript Reference methods to call from JS land
+    // Parameters: returnValue*, reference
+    extern void jsIsNotAJavaScriptRefnum(Boolean*, JavaScriptRefNum*);
+}
+#endif
 
 VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
 {
     JavaScriptRefNum* refnumPtr = _ParamPointer(0);
-    bool result = *refnumPtr == 0;  // this will be changed to call into JS to validate reference.
-    _Param(1) = result;
+    Boolean result = false;
+    Boolean* isNotARefnum = &result;
+    jsIsNotAJavaScriptRefnum(isNotARefnum, refnumPtr);
+    _Param(1) = *isNotARefnum;
     return _NextInstruction();
 }
 
