@@ -30,9 +30,13 @@ VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
 {
     JavaScriptRefNum* refnumPtr = _ParamPointer(0);
     Boolean result = false;
-    Boolean* isNotARefnum = &result;
-    jsIsNotAJavaScriptRefnum(isNotARefnum, refnumPtr);
-    _Param(1) = *isNotARefnum;
+    Boolean isNotARefnum = false;
+    #if kVireoOS_emscripten
+        jsIsNotAJavaScriptRefnum(&isNotARefnum, refnumPtr);
+    #else
+        isNotARefnum = *refnumPtr == 0;
+    #endif
+    _Param(1) = isNotARefnum;
     return _NextInstruction();
 }
 
