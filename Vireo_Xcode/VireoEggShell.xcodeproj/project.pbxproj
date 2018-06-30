@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		443C635520E7516C009B1C69 /* JavaScriptRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 443C635420E7516C009B1C69 /* JavaScriptRef.cpp */; };
 		444C46841E1C5A540037FA98 /* Date.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46821E1C5A540037FA98 /* Date.cpp */; };
 		444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46831E1C5A540037FA98 /* TimeFunctions.cpp */; };
 		444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468B1E26D73C0037FA98 /* RefNum.cpp */; };
@@ -248,6 +249,8 @@
 		443536B31CFF4979002BA5DB /* VIOverloads.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = VIOverloads.via; path = "../test-it/VIOverloads.via"; sourceTree = "<group>"; };
 		443536B41CFF4979002BA5DB /* Waveform.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Waveform.via; path = "../test-it/Waveform.via"; sourceTree = "<group>"; };
 		443536B51CFF4979002BA5DB /* ZDACrash1.via */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ZDACrash1.via; path = "../test-it/ZDACrash1.via"; sourceTree = "<group>"; };
+		443C635320E75158009B1C69 /* JavaScriptRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JavaScriptRef.h; path = include/JavaScriptRef.h; sourceTree = "<group>"; };
+		443C635420E7516C009B1C69 /* JavaScriptRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScriptRef.cpp; path = core/JavaScriptRef.cpp; sourceTree = "<group>"; };
 		444C46821E1C5A540037FA98 /* Date.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Date.cpp; path = ../source/core/Date.cpp; sourceTree = "<group>"; };
 		444C46831E1C5A540037FA98 /* TimeFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimeFunctions.cpp; path = ../source/core/TimeFunctions.cpp; sourceTree = "<group>"; };
 		444C46871E1C5ABC0037FA98 /* Date.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Date.h; path = ../source/include/Date.h; sourceTree = "<group>"; };
@@ -853,6 +856,7 @@
 				470F626B1886F53F003146BF /* EventLog.cpp */,
 				44C2350D20428CD50064583B /* Events.cpp */,
 				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
+				443C635420E7516C009B1C69 /* JavaScriptRef.cpp */,
 				4466C7971E4F08EE004B5E31 /* MatchPat.cpp */,
 				47D84DDF17C2A271009053DB /* Math.cpp */,
 				472A07891AA6204A008109FA /* NumericString.cpp */,
@@ -885,7 +889,6 @@
 		479AFEBE170DDA76002C0FF0 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				352F24BA209A3D51007D9799 /* DataReflectionVisitor.h */,
 				44026BAA1EFAEFC600DB51B4 /* Array.h */,
 				444C46871E1C5ABC0037FA98 /* Date.h */,
 				44C2350F2045FAD70064583B /* Events.h */,
@@ -894,9 +897,12 @@
 				4797A38E1862265B00E643D7 /* CEntryPoints.h */,
 				446506DA206ACB3400B0CD8E /* ControlRef.h */,
 				47D84DC417C2A258009053DB /* BuildConfig.h */,
+				352F24BA209A3D51007D9799 /* DataReflectionVisitor.h */,
 				47D84DC917C2A258009053DB /* DataTypes.h */,
 				470F626A1886F522003146BF /* EventLog.h */,
 				47D84DCB17C2A258009053DB /* ExecutionContext.h */,
+				47D84DCC17C2A258009053DB /* Instruction.h */,
+				443C635320E75158009B1C69 /* JavaScriptRef.h */,
 				444C46881E1C5ABC0037FA98 /* LVDateTimeRecord.h */,
 				444C468D1E26D9A10037FA98 /* RefNum.h */,
 				47D84DCF17C2A258009053DB /* StringUtilities.h */,
@@ -906,11 +912,10 @@
 				4797A38F1862265B00E643D7 /* TDCodecLVFlat.h */,
 				472B7BE917D0E43D00201196 /* TDCodecVia.h */,
 				472B7BEA17D0E43D00201196 /* TDCodecVib.h */,
-				47D84DD217C2A258009053DB /* VirtualInstrument.h */,
-				47D84DCC17C2A258009053DB /* Instruction.h */,
 				47D84DCE17C2A258009053DB /* Thread.h */,
 				476CE4EB18F590DF00399E88 /* Timestamp.h */,
 				444C46911E2D69ED0037FA98 /* UnitTest.h */,
+				47D84DD217C2A258009053DB /* VirtualInstrument.h */,
 				4466C79B1E4FEDFB004B5E31 /* Waveform.h */,
 			);
 			name = include;
@@ -1141,6 +1146,7 @@
 				47D84DF517C2A271009053DB /* Queue.cpp in Sources */,
 				47D84DF617C2A271009053DB /* String.cpp in Sources */,
 				446506D9206AC83700B0CD8E /* PropertyNode.cpp in Sources */,
+				443C635520E7516C009B1C69 /* JavaScriptRef.cpp in Sources */,
 				444C46901E299A390037FA98 /* RefNumTest.cpp in Sources */,
 				47D84DF717C2A271009053DB /* StringUtilities.cpp in Sources */,
 				444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */,
