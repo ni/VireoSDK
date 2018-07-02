@@ -41,8 +41,9 @@
         };
 
         var dispatchVisitBoolean = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitBoolean, 'visitBoolean');
-            return typeVisitor.visitBoolean(valueRef, data);
+            var visitFn = typeVisitor.visitBoolean;
+            validateVisitMethod(visitFn, 'visitBoolean');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitEnum = function (typeVisitor, valueRef, data) {
@@ -147,8 +148,9 @@
         };
 
         var dispatchVisitString = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitString, 'visitString');
-            return typeVisitor.visitString(valueRef, data);
+            var visitFn = typeVisitor.visitString;
+            validateVisitMethod(visitFn, 'visitString');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitComplex = function (typeVisitor, valueRef, data) {
@@ -174,28 +176,33 @@
         };
 
         var dispatchVisitAnalogWaveform = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitAnalogWaveform, 'visitAnalogWaveform');
-            return typeVisitor.visitAnalogWaveform(valueRef, data);
+            var visitFn = typeVisitor.visitAnalogWaveform;
+            validateVisitMethod(visitFn, 'visitAnalogWaveform');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitTimestamp = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitTimestamp, 'visitTimestamp');
-            return typeVisitor.visitTimestamp(valueRef, data);
+            var visitFn = typeVisitor.visitTimestamp;
+            validateVisitMethod(visitFn, 'visitTimestamp');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitPath = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitPath, 'visitPath');
-            return typeVisitor.visitPath(valueRef, data);
+            var visitFn = typeVisitor.visitPath;
+            validateVisitMethod(visitFn, 'visitPath');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitArray = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitArray, 'visitArray');
-            return typeVisitor.visitArray(valueRef, data);
+            var visitFn = typeVisitor.visitArray;
+            validateVisitMethod(visitFn, 'visitArray');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         var dispatchVisitCluster = function (typeVisitor, valueRef, data) {
-            validateVisitMethod(typeVisitor.visitCluster, 'visitCluster');
-            return typeVisitor.visitCluster(typeVisitor, valueRef, data);
+            var visitFn = typeVisitor.visitCluster;
+            validateVisitMethod(visitFn, 'visitCluster');
+            return visitFn.call(typeVisitor, valueRef, data);
         };
 
         // Exported functions
@@ -326,7 +333,7 @@
             var i = 0,
                 typeHandler;
 
-            for (i = 0; typeHandlers.length; i += 1) {
+            for (i = 0; i < typeHandlers.length; i += 1) {
                 typeHandler = typeHandlers[i];
                 if (typeHandler.typeChecker(typeRef) === true) {
                     return typeHandler.dispatcher;
