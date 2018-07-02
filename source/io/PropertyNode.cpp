@@ -49,7 +49,6 @@ struct PropertyNodeWriteParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-#if kVireoOS_emscripten
 static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *errorClusterPtr,
                                            StringRef viName, StringRef *controlId, ConstCStr propNodeName) {
     VirtualInstrument *vi;
@@ -96,7 +95,6 @@ static bool FindVINameAndPropertyPathForValue(StaticTypeAndData *value, ErrorClu
 
     return true;
 }
-#endif
 
 //------------------------------------------------------------
 // Function for setting a property in a control
@@ -104,7 +102,6 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
     const char *propNodeWriteName = "PropertyNodeWrite";
-#if kVireoOS_emscripten
     RefNumVal *refNumPtr = _ParamPointer(refNum);
     StringRef propertyName = _Param(propertyName);
     StaticTypeAndData *value = _ParamImmediate(value);
@@ -131,6 +128,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
 
+#if kVireoOS_emscripten
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
             controlRefVIName,
@@ -144,9 +142,17 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
             errorClusterPtr->source);
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeWriteName);
     }
-#else
-    GenerateNotSupportedOnPlatformError(errorClusterPtr, propNodeWriteName);
 #endif
+    STACK_VAR(String, valuePropertyName);
+    valuePropertyName.Value->AppendCStr("Value");
+    if (propertyName->IsEqual(valuePropertyName.Value)) {
+        SubString objectName(controlRefVIName->Begin(), controlRefVIName->End());
+        SubString path(controlRefDataItemId->Begin(), controlRefDataItemId->End());
+        void *pData = nullptr;
+        TypeManagerRef typeManager = value->_paramType->TheTypeManager();
+        typeManager->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
+        value->_paramType->CopyData(value->_pData, pData);
+    }
     return _NextInstruction();
 }
 

@@ -264,6 +264,7 @@
                 "PrintTemplateTypes.via",
                 "PrintTypes.via",
                 "PrintTypeVectors.via",
+                "PropWriteTerminalRead.via",
                 "Random.via",
                 "ReadWriteUsingPaths.via",
                 "ReentrantMemLeak2.via",
