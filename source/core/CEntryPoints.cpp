@@ -131,14 +131,13 @@ VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* vi
 }
 //------------------------------------------------------------
 //! Get a reference to the type pointer and data for a sub element
-VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, TypeRef typeRef, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
+VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef typeRef, void * pData, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
 {
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
 
     TypeManagerScope scope(tm);
     SubString path(eltName);
-    void* pData = typeRef->Begin(kPARead);
     *typeRefLocation = typeRef->GetSubElementAddressFromPath(&path, pData, dataRefLocation, true);
     if (*typeRefLocation == nullptr)
         return kEggShellResult_ObjectNotFoundAtPath;
