@@ -24,8 +24,8 @@ describe('Peek/Poke different datatypes', function () {
 
         expect(viPathParser('wave_dbl_1')).toEqual({
             t0: {
-                seconds: 3566073600,
-                fraction: 123
+                seconds: '3566073600',
+                fraction: '123'
             },
             dt: 5.8,
             Y: [1.2, 1.3, 1, -0.5] // eslint-disable-line id-length
@@ -33,8 +33,8 @@ describe('Peek/Poke different datatypes', function () {
 
         expect(viPathParser('wave_i32_1')).toEqual({
             t0: {
-                seconds: 0,
-                fraction: 0
+                seconds: '0',
+                fraction: '0'
             },
             dt: 0,
             Y: [] // eslint-disable-line id-length
@@ -42,8 +42,8 @@ describe('Peek/Poke different datatypes', function () {
 
         var newValue = {
             t0: {
-                seconds: 50000,
-                fraction: 456
+                seconds: '50000',
+                fraction: '456'
             },
             dt: 10.5,
             Y: [5, 25] // eslint-disable-line id-length
@@ -53,8 +53,8 @@ describe('Peek/Poke different datatypes', function () {
 
         var newValue2 = {
             t0: {
-                seconds: 60000,
-                fraction: 656
+                seconds: '60000',
+                fraction: '656'
             },
             dt: 20.5,
             Y: [45, 55] // eslint-disable-line id-length
@@ -67,8 +67,8 @@ describe('Peek/Poke different datatypes', function () {
         runSlicesAsync(function () {
             expect(viPathParser('wave_i32_1')).toEqual({
                 t0: {
-                    seconds: 456,
-                    fraction: 123
+                    seconds: '456',
+                    fraction: '123'
                 },
                 dt: 6.8,
                 Y: [10, 20, 30] // eslint-disable-line id-length
