@@ -351,7 +351,7 @@
             var stack = Module.stackSave();
 
             var type = 'JSON';
-            var valueStackPointer = Module.coreHelpers.writeJSStringToStack(value);
+            var valueStackPointer = Module.coreHelpers.writeJSStringToHeap(value);
             var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
 
             var eggShellError = Module._EggShell_WriteValueString(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, typeStackPointer, valueStackPointer);
@@ -362,6 +362,7 @@
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
+            Module._free(valueStackPointer);
             Module.stackRestore(stack);
         };
 
