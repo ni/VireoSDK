@@ -43,6 +43,14 @@ describe('The Vireo EggShell Reflection API', function () {
         };
     }());
 
+    var validateValueRef = function (valueRef) {
+        expect(valueRef).toBeNonEmptyObject();
+        expect(valueRef.typeRef).toBeNumber();
+        expect(valueRef.typeRef).not.toBe(0);
+        expect(valueRef.dataRef).toBeNumber();
+        expect(valueRef.dataRef).not.toBe(0);
+    };
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             publicApiMultipleTypesViaUrl
@@ -143,6 +151,49 @@ describe('The Vireo EggShell Reflection API', function () {
                 expect(getTypeName('wave_Double')).toEqual('AnalogWaveform');
                 expect(getTypeName('dataItem_ClusterOfScalars')).toEqual('Cluster');
                 expect(getTypeName('dataItem_ArrayOfBoolean')).toEqual('Array');
+            });
+
+            it('with "this" bound to the visitor a valid valueRef and data as arguments', function () {
+                var dummyData = {};
+                var visitor = {};
+                var validateVisitArgs = function (valueRef, data) {
+                    /* eslint-disable no-invalid-this */
+                    expect(this).toBe(visitor);
+                    validateValueRef(valueRef);
+                    expect(data).toBe(dummyData);
+                };
+
+                for (var visitkey in typeDescriptor) {
+                    if (typeDescriptor.hasOwnProperty(visitkey)) {
+                        visitor[visitkey] = validateVisitArgs;
+                    }
+                }
+
+                var visitorArgsTest = function (path) {
+                    vireo.eggShell.reflectOnValueRef(visitor, vireo.eggShell.findValueRef(viName, path), dummyData);
+                };
+
+                visitorArgsTest('int8MinValue');
+                visitorArgsTest('int16MinValue');
+                visitorArgsTest('int32MinValue');
+                visitorArgsTest('int64MinSafeInteger');
+                visitorArgsTest('uInt8MinValue');
+                visitorArgsTest('uInt16MinValue');
+                visitorArgsTest('uInt32MinValue');
+                visitorArgsTest('uInt64MinSafeInteger');
+                visitorArgsTest('dataItem_NumericSingle');
+                visitorArgsTest('dataItem_NumericDouble');
+                visitorArgsTest('dataItem_ComplexSingle');
+                visitorArgsTest('dataItem_Complex');
+                visitorArgsTest('dataItem_String');
+                visitorArgsTest('dataItem_Boolean');
+                visitorArgsTest('dataItem_Timestamp');
+                visitorArgsTest('enum8alphabet');
+                visitorArgsTest('enum16numbers');
+                visitorArgsTest('enum32colors');
+                visitorArgsTest('wave_Double');
+                visitorArgsTest('dataItem_ClusterOfScalars');
+                visitorArgsTest('dataItem_ArrayOfBoolean');
             });
         });
     });
