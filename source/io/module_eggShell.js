@@ -235,7 +235,7 @@
             var typeStackPointer = Module.stackAlloc(POINTER_SIZE);
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
 
-            var eggShellResult = Module._EggShell_FindSubValue(Module.eggShell.v_userShell, valueRef.typeRef, pathStackPointer, typeStackPointer, dataStackPointer);
+            var eggShellResult = Module._EggShell_FindSubValue(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, pathStackPointer, typeStackPointer, dataStackPointer);
             if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
@@ -362,6 +362,7 @@
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
+            Module._free(valueStackPointer);
             Module.stackRestore(stack);
         };
 
