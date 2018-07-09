@@ -1616,7 +1616,7 @@ static AQBlock1* ArrayToArrayCopyHelperRev(TypeRef elementType, AQBlock1* pDest,
     if (sourceRank == 1) {
         Int32 topAQSize = elementType->TopAQSize();
         Int32 copyElems = sourceDimLengths[0];
-        Int32 copyLength = copyElems * elementType->TopAQSize();
+        Int32 copyLength = copyElems * topAQSize;
         pDest += copyLength;
         pSource += copyLength;
         while (copyElems > 0) {
