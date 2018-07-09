@@ -131,7 +131,8 @@ VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* vi
 }
 //------------------------------------------------------------
 //! Get a reference to the type pointer and data for a sub element
-VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef typeRef, void * pData, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
+VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm,
+        const TypeRef typeRef, void * pData, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
 {
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
