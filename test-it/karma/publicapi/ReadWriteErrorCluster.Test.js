@@ -7,7 +7,7 @@ describe('The Vireo EggShell public api can', function () {
 
     var vireo = new Vireo();
 
-    var publicApiReadWriteJSONViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ReadWriteIntegration.via');
+    var publicApiReadWriteJSONViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ReadWriteErrorCluster.via');
     var viName = 'MyVI';
 
     var readValue = function (valueRef) {
