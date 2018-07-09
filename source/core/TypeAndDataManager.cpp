@@ -1006,8 +1006,7 @@ Boolean TypeCommon::IsAnalogWaveform()
     TypeRef t = this;
     while (t) {
         SubString typeName = t->Name();
-        SubString analogTypess(TypeAnalogWaveform);
-        if (typeName.FindFirstMatch(&analogTypess, 0, false) == 0) {
+        if (typeName.FindFirstMatch(&TypeAnalogWaveform, 0, false) == 0) {
             return true;
         }
         t = t->BaseType();

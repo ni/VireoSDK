@@ -121,6 +121,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
 //! Get a reference to the type pointer and data for a symbol.
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
 {
+    TypeManagerScope scope(tm);
     SubString objectName(viName);
     SubString path(eltName);
     *typeRefLocation = tm->GetObjectElementAddressFromPath(&objectName, &path, dataRefLocation, true);
@@ -177,7 +178,7 @@ VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
-VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const TypeRef typeRef, void* data, const char* format, const char* value)
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format, const char* value)
 {
     TypeManagerScope scope(tm);
 
@@ -189,16 +190,16 @@ VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const T
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
     TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
-    Int32 error = parser.ParseData(typeRef, data);
+    Int32 error = parser.ParseData(typeRef, pData);
     if (error) {
-        return kEggSehllResult_UnableToParseData;
+        return kEggShellResult_UnableToParseData;
     }
 
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! Read a symbol's value as a string. Value will be formatted according to the format designated.
-VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* data, const char* format, UInt8** valueString)
+//! Read a symbol's value as a string. Value will be formatted according to designated format.
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format, UInt8** valueString)
 {
     TypeManagerScope scope(tm);
 
@@ -218,8 +219,8 @@ VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const Ty
     if (returnBuffer) {
         SubString formatss(format);
         TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
-        formatter.FormatData(typeRef, data);
-        // Add an explicit nullptr terminator so it looks like a C string.
+        formatter.FormatData(typeRef, pData);
+        // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         *valueString = returnBuffer->Begin();
         return kEggShellResult_Success;
@@ -285,7 +286,7 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
 VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef typeRef, const void* pData,
-                                                 Int32 newDimensionsLength, Int32 newDimensions[])
+                                                 Int32 rank, Int32 dimensionLengths[])
 {
     TypeManagerScope scope(tm);
     if (typeRef == nullptr || !typeRef->IsValid())
@@ -294,13 +295,13 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
     if (!typeRef->IsArray())
         return kEggShellResult_UnexpectedObjectType;
 
-    if (typeRef->Rank() != newDimensionsLength)
+    if (typeRef->Rank() != rank)
         return kEggShellResult_MismatchedArrayRank;
 
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
 
-    if (!arrayObject->ResizeDimensions(newDimensionsLength, newDimensions, true, false)) {
+    if (!arrayObject->ResizeDimensions(rank, dimensionLengths, true, false)) {
         return kEggShellResult_UnableToCreateReturnBuffer;
     }
     return kEggShellResult_Success;
@@ -373,12 +374,12 @@ VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
 //------------------------------------------------------------
 //! Get the values for dimensions of the array. Assumes dimensions target is of length equal to rank
 //! Caller is expected to allocate an array dimensions of size array rank for the duration of function invocation.
-VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensions[])
+VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[])
 {
     TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     for (int i = 0; i < arrayObject->Rank(); i++) {
-        dimensions[i] = arrayObject->GetLength(i);
+        dimensionsLengths[i] = arrayObject->GetLength(i);
     }
 }
 //------------------------------------------------------------
@@ -578,12 +579,12 @@ VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
         STACK_VAR(String, tempReturn);
         returnBuffer = tempReturn.DetachValue();
     } else {
-        returnBuffer->Resize1D(0);
+        returnBuffer->Resize1D(name.Length() + 1);
     }
 
     if (returnBuffer) {
-        returnBuffer->AppendSubString(&name);
-        // Add an explicit nullptr terminator so it looks like a C string.
+        returnBuffer->CopyFromSubString(&name);
+        // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*) returnBuffer->Begin();
     }
@@ -603,12 +604,12 @@ VIREO_EXPORT const char* TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
         STACK_VAR(String, tempReturn);
         returnBuffer = tempReturn.DetachValue();
     } else {
-        returnBuffer->Resize1D(0);
+        returnBuffer->Resize1D(name.Length() + 1);
     }
 
     if (returnBuffer) {
-        returnBuffer->AppendSubString(&name);
-        // Add an explicit nullptr terminator so it looks like a C string.
+        returnBuffer->CopyFromSubString(&name);
+        // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
         return (const char*) returnBuffer->Begin();
     }

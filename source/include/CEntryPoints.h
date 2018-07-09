@@ -23,7 +23,7 @@ typedef enum {
     kEggShellResult_UnableToCreateReturnBuffer = 4,
     kEggShellResult_InvalidTypeRef = 5,
     kEggShellResult_MismatchedArrayRank = 6,
-    kEggSehllResult_UnableToParseData = 7,
+    kEggShellResult_UnableToParseData = 7,
 } EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions
@@ -43,20 +43,20 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeR
         TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef actualType, void* pData, Double value);
 VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result);
-VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* data, const char* format, const char* value);
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);
 VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
 VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm,
         const char* viName, const char* elementName, void** dataPointer, void** typePointer);
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim);
 VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData,
-                                                 Int32 newDimensionsLength, Int32 newDimensions[]);
+                                                 Int32 rank, Int32 dimensionLengths[]);
 VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
         TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
-VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensions[]);
+VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[]);
 VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData);
 VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim);
 VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths);
