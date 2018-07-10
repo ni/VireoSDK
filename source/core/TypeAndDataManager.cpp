@@ -862,11 +862,9 @@ Boolean TypeCommon::IsNumeric()
 {
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32)
-            || t->Name().Compare(&TypeInt64) || t->Name().Compare(&TypeUInt8)
-            || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32)
-            || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeSingle)
-            || t->Name().Compare(&TypeDouble)) {
+        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64)
+            || t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64)
+            || t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
             return true;
         }
         t = t->BaseType();
@@ -878,10 +876,8 @@ Boolean TypeCommon::IsInteger()
 {
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32)
-            || t->Name().Compare(&TypeInt64) || t->Name().Compare(&TypeUInt8)
-            || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32)
-            || t->Name().Compare(&TypeUInt64)) {
+        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64)
+            || t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64)) {
             return true;
         }
         t = t->BaseType();

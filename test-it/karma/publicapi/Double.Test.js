@@ -72,7 +72,7 @@ describe('The Vireo EggShell Double api can', function () {
             expect(readDouble('dataItem_NumericDoubleNegativeZero')).toMatchIEEE754Number(-0);
         });
 
-        it('to read different integer types from memory', function () {
+        it('to read different integer values from memory', function () {
             expect(readDouble('int8MinValue')).toBe(-128);
             expect(readDouble('int8MaxValue')).toBe(127);
             expect(readDouble('int16MinValue')).toBe(-32768);
@@ -95,14 +95,14 @@ describe('The Vireo EggShell Double api can', function () {
             expect(readDouble('uInt64MaxValue')).toBe(18446744073709552000); // Expected precision loss, full value 18446744073709551615
         });
 
-        it('to read different enum types from memory', function () {
+        it('to read different enum values from memory', function () {
             expect(readDouble('enum8alphabet')).toBe(6);
             expect(readDouble('enum16numbers')).toBe(3);
             expect(readDouble('enum32colors')).toBe(2);
             expect(readDouble('enum64releases')).toBe(5);
         });
 
-        it('to read different boolean types from memory', function () {
+        it('to read different boolean values from memory', function () {
             expect(readDouble('booleanTrueValue')).toBe(1);
             expect(readDouble('booleanFalseValue')).toBe(0);
         });
@@ -169,14 +169,14 @@ describe('The Vireo EggShell Double api can', function () {
             expect(expectedCoercedValue(Int8Array, 0)).toBe(0);
         });
 
-        it('to write different enum types to memory', function () {
+        it('to write different enum values to memory', function () {
             testWriteDouble('enum8alphabet', 6, 4);
             testWriteDouble('enum16numbers', 3, 4);
             testWriteDouble('enum32colors', 2, 4);
             testWriteDouble('enum64releases', 5, 4);
         });
 
-        it('to write different boolean types to memory', function () {
+        it('to write different boolean values to memory', function () {
             testWriteDouble('booleanTrueValue', 1, 0);
             testWriteDoubleCoerced('booleanTrueValue', 1, 70, 1);
             testWriteDoubleCoerced('booleanTrueValue', 1, -70, 1);
