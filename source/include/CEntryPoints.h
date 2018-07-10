@@ -24,6 +24,8 @@ typedef enum {
     kEggShellResult_InvalidTypeRef = 5,
     kEggShellResult_MismatchedArrayRank = 6,
     kEggShellResult_UnableToParseData = 7,
+    kEggShellResult_UnableToAllocateData = 8,
+    kEggShellResult_UnableToDeallocateData = 9,
 } EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions
@@ -38,6 +40,8 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, co
                                        Int32 bufferSize, char* buffer);
 VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName,
                                        Int32 bufferSize, char* buffer);
+VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeRef typeRef, void** dataRefLocation);
+VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef);
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef type, void *start, const char* eltName,
         TypeRef* typeRefLocation, void** dataRefLocation);

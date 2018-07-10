@@ -204,6 +204,29 @@
             });
         };
 
+        Module.eggShell.allocateData = publicAPI.eggShell.allocateData = function (valueRef) {
+            var stack = Module.stackSave();
+
+            var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
+            var eggShellResult = Module._EggShell_AllocateData(Module.eggShell.v_userShell, valueRef.typeRef, dataStackPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error();
+            }
+
+            var dataRef = Module.getValue(dataStackPointer, 'i32');
+            var allocatedValueRef = Module.eggShell.createValueRef(valueRef.typeRef, dataRef);
+
+            Module.stackRestore(stack);
+            return allocatedValueRef;
+        };
+
+        Module.eggShell.deallocateData = publicAPI.eggShell.deallocateData = function (valueRef) {
+            var eggShellResult = Module._EggShell_DeallocateData(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error();
+            }
+        };
+
         Module.eggShell.findValueRef = publicAPI.eggShell.findValueRef = function (vi, path) {
             var stack = Module.stackSave();
 

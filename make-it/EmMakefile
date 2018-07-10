@@ -106,6 +106,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_EggShell_REPL',\
     '_EggShell_ExecuteSlices',\
     '_EggShell_Delete',\
+    '_EggShell_AllocateData',\
+    '_EggShell_DeallocateData',\
     '_EggShell_FindValue',\
     '_EggShell_FindSubValue',\
     '_EggShell_ReadDouble',\
