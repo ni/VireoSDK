@@ -1603,6 +1603,15 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
     SubString f(format);
     const Utf8Char* origBegin = input->Begin();
     UInt32 offsetPastScan = 0;
+
+    // if the format string is empty, use the auto format option (%g)
+    SubString withoutWhitespaces(&f);
+    withoutWhitespaces.EatLeadingSpaces();
+    if (withoutWhitespaces.Length() == 0) {
+        const char* autoFormatString = "%g";
+        f.AliasAssignCStr(autoFormatString);
+    }
+
     while (canScan && f.ReadRawChar(&c)) {
         if (isspace(c)) {
             // eat all spaces
@@ -1691,10 +1700,9 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 case '%': {    //%%
                     input->ReadRawChar(&inputChar);
                     ++offsetPastScan;
-                    if (inputChar == '%') {
-                        } else {
-                            canScan = false;
-                        }
+                    if (inputChar != '%') {
+                        canScan = false;
+                    }
                 }
                 break;
                 default: {
