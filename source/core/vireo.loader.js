@@ -89,6 +89,11 @@
         if (typeof createVireoCore !== 'function') {
             throw new Error('createVireoCore could not be found, make sure to build and include vireo.js before using');
         }
+
+        // Save a Vireo class reference on the module instance so the instance can access static functions on the class
+        // TODO(mraj) Instead use the static functions directly when we switch to ES6 modules and can resolve the Vireo class correctly
+        Module.Vireo = Vireo;
+
         createVireoCore(Module);
         moduleBuilders.forEach(function (currBuilder) {
             currBuilder(Module, that);
