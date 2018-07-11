@@ -26,6 +26,7 @@ typedef enum {
     kEggShellResult_UnableToParseData = 7,
     kEggShellResult_UnableToAllocateData = 8,
     kEggShellResult_UnableToDeallocateData = 9,
+    kEggShellResult_NullDataPointer = 10,
 } EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions

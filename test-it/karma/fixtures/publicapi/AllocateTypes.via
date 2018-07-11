@@ -1,0 +1,57 @@
+// Globals
+define(GlobalInt32 Int32)
+define(GlobalString String)
+define(GlobalErrorCluster ErrorCluster)
+define(GlobalClusterOfScalars c(
+    e(.Boolean bool)
+    e(.String string)
+    e(.Double double)
+    e(.Int32 int32)
+    e(.Int64 int64)
+    e(.ComplexDouble complex)
+    e(.Timestamp time)
+))
+
+define(GlobalArrayOfClusters a(c(
+    e(.Boolean bool)
+    e(.String string)
+    e(.Double double)
+    e(.Int32 int32)
+    e(.Int64 int64)
+    e(.ComplexDouble complex)
+    e(.Timestamp time)
+) *))
+
+define(GlobalClusterOfArrays c(
+    e(a(.Boolean *) booleans)
+    e(a(.String *) strings)
+    e(a(.Double *) doubles)
+    e(a(.Int32 *) int32s)
+    e(a(.Int64 *) int64s)
+    e(a(.UInt64 *) uint64s)
+    e(a(.ComplexDouble *) complexes)
+    e(a(.Timestamp *) times)
+))
+
+define(AllocateTypes dv(.VirtualInstrument (
+    Locals: c(
+        e(a(.Boolean *) booleans)
+        e(a(.String *) strings)
+        e(a(.Double *) doubles)
+        e(a(.Int32 *) int32s)
+        e(a(.Int64 *) int64s)
+        e(a(.UInt64 *) uint64s)
+        e(a(.ComplexDouble *) complexes)
+        e(a(.Timestamp *) times)
+
+        e(a(.Boolean 2 2) fixedBooleans)
+        e(.AnalogWaveform<.Double> wave_Double)
+        e(.NIPath nipath)
+        e(dv(Enum16 (zero one two three four) 3) enum16numbers)
+    )
+    clump (1
+    )
+)))
+
+enqueue(AllocateTypes)
+//Finished!! :D

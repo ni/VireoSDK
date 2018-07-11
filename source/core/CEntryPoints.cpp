@@ -118,10 +118,14 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
     }
 }
 //------------------------------------------------------------
-//! 
+//! Allocates enough memory to fit a new object of TypeRef
 VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeRef typeRef, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
+
     *dataRefLocation = nullptr;
     Int32 topSize = typeRef->TopAQSize();
     void* pData = THREAD_TADM()->Malloc(topSize);
@@ -133,15 +137,23 @@ VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeR
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! 
-VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const TypeRef typeRef, void* dataRefLocation)
+//! Deallocates data and frees up memory in dataRef described by typeRef
+VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef)
 {
     TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
 
-    NIError error = typeRef->ClearData(dataRefLocation);
+    if (dataRef == nullptr) {
+        return kEggShellResult_NullDataPointer;
+    }
+
+    NIError error = typeRef->ClearData(dataRef);
     if (error != kNIError_Success) {
         return kEggShellResult_UnableToDeallocateData;
     }
+
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
