@@ -263,10 +263,12 @@
 
             var fieldCount = Module.typeHelpers.subElementCount(typeRef);
 
+            var fieldTypeRef, fieldNameEncoded, fieldName;
             for (var i = 0; i < fieldCount; i += 1) {
-                var fieldTypeRef = Module.typeHelpers.subElementByIndex(typeRef, i);
-                var fieldName = Module.typeHelpers.elementName(fieldTypeRef);
-                valueRefs[fieldName] = Module.eggShell.findSubValueRef(valueRef, fieldName);
+                fieldTypeRef = Module.typeHelpers.subElementByIndex(typeRef, i);
+                fieldNameEncoded = Module.typeHelpers.elementName(fieldTypeRef);
+                fieldName = Module.Vireo.decodeIdentifier(fieldNameEncoded);
+                valueRefs[fieldName] = Module.eggShell.findSubValueRef(valueRef, fieldNameEncoded);
             }
 
             return valueRefs;

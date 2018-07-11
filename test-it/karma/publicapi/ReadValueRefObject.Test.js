@@ -60,6 +60,27 @@ describe('The Vireo EggShell readValueRefObject', function () {
         });
     });
 
+    describe('for a cluster of scalars with encoded field names', function () {
+        var valueRef,
+            clusterOfScalarsPath = 'dataItem_ClusterOfEncodedScalars';
+
+        beforeAll(function () {
+            valueRef = vireo.eggShell.findValueRef(viName, clusterOfScalarsPath);
+        });
+
+        it('returns an object with decoded field names as keys', function () {
+            var objectRef = vireo.eggShell.readValueRefObject(valueRef);
+            expect(objectRef['bool fun']).toBeDefined();
+            expect(objectRef['string fun']).toBeDefined();
+            expect(objectRef['double fun']).toBeDefined();
+            expect(objectRef['int32 fun']).toBeDefined();
+            expect(objectRef['int64 fun']).toBeDefined();
+            expect(objectRef['uint64 fun']).toBeDefined();
+            expect(objectRef['complex fun']).toBeDefined();
+            expect(objectRef['time fun']).toBeDefined();
+        });
+    });
+
     describe('for a timestamp', function () {
         var valueRef,
             timestampPath = 'dataItem_Timestamp';

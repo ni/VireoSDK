@@ -37,6 +37,18 @@ define (MyVI dv(.VirtualInstrument (
         ) dataItem_ClusterOfScalars)
 
         e(dv(c(
+            e(.Boolean bool%20fun)
+            e(.String string%20fun)
+            e(.Double double%20fun)
+            e(.Int32 int32%20fun)
+            e(.Int64 int64%20fun)
+            e(.UInt64 uint64%20fun)
+            e(.ComplexDouble complex%20fun)
+            e(.Timestamp time%20fun)
+        ) (true 'first' 3.14159 42 -72057594037927936 9223372041149743104 (3.4 -5.9) (3564057536 7811758927381448193) )
+        ) dataItem_ClusterOfEncodedScalars)
+
+        e(dv(c(
             e(a(.Boolean *) booleans)
             e(a(.String *) strings)
             e(a(.Double *) doubles)
