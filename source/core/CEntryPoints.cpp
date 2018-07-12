@@ -146,7 +146,7 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
     }
 
     if (dataRef == nullptr) {
-        return kEggShellResult_NullDataPointer;
+        return kEggShellResult_InvalidDataPointer;
     }
 
     NIError error = typeRef->ClearData(dataRef);

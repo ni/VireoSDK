@@ -87,7 +87,7 @@
             UNABLE_TO_PARSE_DATA: 7,
             UNABLE_TO_ALLOCATE_DATA: 8,
             UNABLE_TO_DEALLOCATE_DATA: 9,
-            NULL_DATA_POINTER: 10
+            INVALID_DATA_POINTER: 10
         };
         var eggShellResultEnum = {};
         eggShellResultEnum[EGGSHELL_RESULT.SUCCESS] = 'Success';
@@ -100,7 +100,7 @@
         eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_PARSE_DATA] = 'UnableToParseData';
         eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_ALLOCATE_DATA] = 'UnableToAllocateData';
         eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_DEALLOCATE_DATA] = 'UnableToDeallocateData';
-        eggShellResultEnum[EGGSHELL_RESULT.NULL_DATA_POINTER] = 'NullDataPointer';
+        eggShellResultEnum[EGGSHELL_RESULT.INVALID_DATA_POINTER] = 'InvalidDataPointer';
 
         // Keep in sync with NIError in DataTypes.h
         var niErrorEnum = {

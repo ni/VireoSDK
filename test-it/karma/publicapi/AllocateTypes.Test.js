@@ -89,7 +89,7 @@ describe('Vireo public API allows', function () {
                     dataRef: 0
                 };
 
-                expect(tryDeallocate(invalidValueRef)).toThrowError(/NullDataPointer/);
+                expect(tryDeallocate(invalidValueRef)).toThrowError(/InvalidDataPointer/);
             });
         });
     });
