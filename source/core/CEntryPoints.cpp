@@ -150,6 +150,7 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
     }
 
     NIError error = typeRef->ClearData(dataRef);
+    THREAD_TADM()->Free(dataRef);
     if (error != kNIError_Success) {
         return kEggShellResult_UnableToDeallocateData;
     }
