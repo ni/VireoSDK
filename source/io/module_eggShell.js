@@ -234,7 +234,7 @@
             if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('A ValueRef could not be deallocated for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
-                    ' (typeRef: ' + valueRef.typeRef + ')' + 
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
         };
