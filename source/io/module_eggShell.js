@@ -210,26 +210,25 @@
             });
         };
 
-        Module.eggShell.allocateData = publicAPI.eggShell.allocateData = function (valueRef) {
+        Module.eggShell.allocateData = function (typeRef) {
             var stack = Module.stackSave();
 
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
-            var eggShellResult = Module._EggShell_AllocateData(Module.eggShell.v_userShell, valueRef.typeRef, dataStackPointer);
+            var eggShellResult = Module._EggShell_AllocateData(Module.eggShell.v_userShell, typeRef, dataStackPointer);
             if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('A new ValueRef could not be allocated for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
-                    ' (typeRef: ' + valueRef.typeRef + ')' +
-                    ' (dataRef: ' + valueRef.dataRef + ')');
+                    ' (typeRef: ' + typeRef + ')');
             }
 
             var dataRef = Module.getValue(dataStackPointer, 'i32');
-            var allocatedValueRef = Module.eggShell.createValueRef(valueRef.typeRef, dataRef);
+            var allocatedValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
 
             Module.stackRestore(stack);
             return allocatedValueRef;
         };
 
-        Module.eggShell.deallocateData = publicAPI.eggShell.deallocateData = function (valueRef) {
+        Module.eggShell.deallocateData = function (valueRef) {
             var eggShellResult = Module._EggShell_DeallocateData(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
             if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('A ValueRef could not be deallocated for the following reason: ' + eggShellResultEnum[eggShellResult] +

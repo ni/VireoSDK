@@ -6,6 +6,7 @@ describe('Vireo public API allows', function () {
     var fixtures = window.testHelpers.fixtures;
 
     var vireo = new Vireo();
+    var internalEggShell = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.eggShell;
 
     var publicApiAllocateTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/AllocateTypes.via');
     var viName = 'AllocateTypes';
@@ -19,7 +20,8 @@ describe('Vireo public API allows', function () {
     };
 
     var allocateData = function (viName, path) {
-        return vireo.eggShell.allocateData(vireo.eggShell.findValueRef(viName, path));
+        var valueRef = vireo.eggShell.findValueRef(viName, path);
+        return internalEggShell.allocateData(valueRef.typeRef);
     };
 
     var writeValue = function (valueRef, value) {
@@ -35,7 +37,7 @@ describe('Vireo public API allows', function () {
         expectValidValueRef(dataValueRef);
         writeValue(dataValueRef, value);
         expect(readValue(dataValueRef)).toEqual(value);
-        vireo.eggShell.deallocateData(dataValueRef);
+        internalEggShell.deallocateData(dataValueRef);
     };
 
     beforeAll(function (done) {
@@ -48,27 +50,24 @@ describe('Vireo public API allows', function () {
         vireoRunner.rebootAndLoadVia(vireo, publicApiAllocateTypesViaUrl);
     });
 
-    var tryAllocate = function (valueRef) {
+    var tryAllocate = function (typeRef) {
         return function () {
-            vireo.eggShell.allocateData(valueRef);
+            internalEggShell.allocateData(typeRef);
         };
     };
 
     var tryDeallocate = function (valueRef) {
         return function () {
-            vireo.eggShell.deallocateData(valueRef);
+            internalEggShell.deallocateData(valueRef);
         };
     };
 
     describe('error handling', function () {
         describe('for allocateData throws', function () {
             it('when typeRef is invalid', function () {
-                var invalidValueRef = {
-                    typeRef: 0,
-                    dataRef: 1234
-                };
+                var invalidTypeRef = 1234;
 
-                expect(tryAllocate(invalidValueRef)).toThrowError(/InvalidTypeRef/);
+                expect(tryAllocate(invalidTypeRef)).toThrowError(/InvalidTypeRef/);
             });
         });
 
