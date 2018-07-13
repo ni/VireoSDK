@@ -26,6 +26,39 @@ describe('The Vireo PropertyNode', function () {
         vireo.eggShell.writeJSON(valueRef, JSON.stringify(value));
     };
 
+    var propertyNodeCallbackTest = function (viaPath, viName, expectedControlRefs, propertyName, spy, done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            var callCount = spy.calls.count();
+            expect(callCount).toEqual(expectedControlRefs.length);
+            for (var i = 0; i < callCount; i += 1) {
+                var args = spy.calls.argsFor(i);
+                expect(args[0]).toEqual(viName);
+                expect(args[1]).toEqual(expectedControlRefs[i]);
+                expect(args[2]).toEqual(propertyName);
+                expectValidValueRef(args[3]);
+            }
+
+            done();
+        });
+    };
+
+    var writeErrorTest = function (viaPath, viName, errorSource, done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(1055);
+            expect(viPathParser('error.source')).toMatch(errorSource);
+            done();
+        });
+    };
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             publicApiPropertyNodeRead,
@@ -51,7 +84,6 @@ describe('The Vireo PropertyNode', function () {
     });
 
     describe('propertyRead', function () {
-        var runSlicesAsync;
         var generateReadFunction = function (valuesToRead) {
             var indexToRead = 0;
             return function (viName, fpId, propertyName, valueRef) {
@@ -71,64 +103,14 @@ describe('The Vireo PropertyNode', function () {
             });
 
             it('when controlRef and property var are in the same top VI', function (done) {
-                var expectedControlRefs = [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                    '11',
-                    '12',
-                    '13',
-                    '14',
-                    '15',
-                    '16',
-                    '16',
-                    '1'
-                ];
-                runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);
-                runSlicesAsync(function (rawPrint, rawPrintError) {
-                    expect(rawPrint).toBeEmptyString();
-                    expect(rawPrintError).toBeEmptyString();
-
-                    var callCount = spy.calls.count();
-                    for (var i = 0; i < callCount; i += 1) {
-                        var args = spy.calls.argsFor(i);
-                        expect(args[0]).toEqual(propertyReadVIName);
-                        expect(args[1]).toEqual(expectedControlRefs[i]);
-                        expect(args[2]).toEqual(propertyName);
-                        expectValidValueRef(args[3]);
-                    }
-
-                    done();
-                });
+                var expectedControlRefs = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '16', '1'];
+                propertyNodeCallbackTest(publicApiPropertyNodeRead, propertyReadVIName, expectedControlRefs, propertyName, spy, done);
             });
 
             it('when controlRef is in top VI and property var is in subVI', function (done) {
                 var topVIName = 'TopVI',
                     expectedControlRefs = ['1', '2', '3'];
-
-                runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, topVIControlRefReadViaUrl);
-                runSlicesAsync(function (rawPrint, rawPrintError) {
-                    expect(rawPrint).toBeEmptyString();
-                    expect(rawPrintError).toBeEmptyString();
-
-                    var callCount = spy.calls.count();
-                    for (var i = 0; i < callCount; i += 1) {
-                        var args = spy.calls.argsFor(i);
-
-                        expect(args[0]).toEqual(topVIName);
-                        expect(args[1]).toEqual(expectedControlRefs[i]);
-                        expect(args[2]).toEqual('Value');
-                        expectValidValueRef(args[3]);
-                    }
-                    done();
-                });
+                propertyNodeCallbackTest(topVIControlRefReadViaUrl, topVIName, expectedControlRefs, propertyName, spy, done);
             });
         });
 
@@ -137,17 +119,7 @@ describe('The Vireo PropertyNode', function () {
                 throw new Error('This is not good');
             };
             vireo.propertyNode.setPropertyReadFunction(readFunction);
-
-            runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, propertyReadVIName);
-            runSlicesAsync(function (rawPrint, rawPrintError) {
-                expect(rawPrint).toBeEmptyString();
-                expect(rawPrintError).toBeEmptyString();
-                expect(viPathParser('error.status')).toBeTrue();
-                expect(viPathParser('error.code')).toBe(1055);
-                expect(viPathParser('error.source')).toMatch(/PropertyNodeRead/);
-                done();
-            });
+            writeErrorTest(publicApiPropertyNodeRead, propertyReadVIName, /PropertyNodeRead/, done);
         });
 
         it('callback can use parameters to write back to vireo', function (done) {
@@ -164,7 +136,7 @@ describe('The Vireo PropertyNode', function () {
 
             var readFunction = generateReadFunction(valuesToRead);
             vireo.propertyNode.setPropertyReadFunction(readFunction);
-            runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeRead);
             var viPathParser = vireoRunner.createVIPathParser(vireo, propertyReadVIName);
             runSlicesAsync(function (rawPrint, rawPrintError) {
                 expect(rawPrint).toBeEmptyString();
@@ -225,61 +197,16 @@ describe('The Vireo PropertyNode', function () {
             });
 
             it('when controlRef and property var are in the same top VI', function (done) {
-                var expectedControlRefs = [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                    '11',
-                    '12',
-                    '13',
-                    '14',
-                    '15'
-                ];
-                runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeWrite);
-                runSlicesAsync(function (rawPrint, rawPrintError) {
-                    expect(rawPrint).toBeEmptyString();
-                    expect(rawPrintError).toBeEmptyString();
+                var expectedControlRefs = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'];
 
-                    var callCount = spy.calls.count();
-                    for (var i = 0; i < callCount; i += 1) {
-                        var args = spy.calls.argsFor(i);
-                        expect(args[0]).toEqual(propertyWriteVIName);
-                        expect(args[1]).toEqual(expectedControlRefs[i]);
-                        expect(args[2]).toEqual(propertyName);
-                        expectValidValueRef(args[3]);
-                    }
-
-                    done();
-                });
+                propertyNodeCallbackTest(publicApiPropertyNodeWrite, propertyWriteVIName, expectedControlRefs, propertyName, spy, done);
             });
 
             it('when controlRef is in top vi and property var is in sub VI', function (done) {
                 var topVIName = 'TopVI',
                     expectedControlRefs = ['1', '2', '3'];
 
-                runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, topVIControlRefWriteViaUrl);
-                runSlicesAsync(function (rawPrint, rawPrintError) {
-                    expect(rawPrint).toBeEmptyString();
-                    expect(rawPrintError).toBeEmptyString();
-
-                    var callCount = spy.calls.count();
-                    for (var i = 0; i < callCount; i += 1) {
-                        var args = spy.calls.argsFor(i);
-                        expect(args[0]).toEqual(topVIName);
-                        expect(args[1]).toEqual(expectedControlRefs[i]);
-                        expect(args[2]).toEqual(propertyName);
-                        expectValidValueRef(args[3]);
-                    }
-
-                    done();
-                });
+                propertyNodeCallbackTest(topVIControlRefWriteViaUrl, topVIName, expectedControlRefs, propertyName, spy, done);
             });
         });
 
@@ -288,16 +215,8 @@ describe('The Vireo PropertyNode', function () {
                 throw new Error('This is not good');
             };
             vireo.propertyNode.setPropertyWriteFunction(writeFunction);
-            runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiPropertyNodeWrite);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, propertyWriteVIName);
-            runSlicesAsync(function (rawPrint, rawPrintError) {
-                expect(rawPrint).toBeEmptyString();
-                expect(rawPrintError).toBeEmptyString();
-                expect(viPathParser('error.status')).toBeTrue();
-                expect(viPathParser('error.code')).toBe(1055);
-                expect(viPathParser('error.source')).toMatch(/PropertyNodeWrite/);
-                done();
-            });
+
+            writeErrorTest(publicApiPropertyNodeWrite, propertyWriteVIName, /PropertyNodeWrite/, done);
         });
 
         it('callback function can read from vireo using parameters', function (done) {

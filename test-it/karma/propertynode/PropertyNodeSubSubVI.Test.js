@@ -33,7 +33,6 @@ describe('The Vireo PropertyNode', function () {
             controlRefId = '1',
             propertyName = 'Value';
 
-
         it('callback is invoked with expected parameters', function (done) {
             var spyRead = jasmine.createSpy();
             var spyWrite = jasmine.createSpy();
@@ -57,7 +56,6 @@ describe('The Vireo PropertyNode', function () {
                 expect(writeArgs[2]).toEqual(propertyName);
                 expectValidValueRef(writeArgs[3]);
 
-
                 done();
             });
         });
@@ -68,10 +66,7 @@ describe('The Vireo PropertyNode', function () {
             };
 
             var readFromVireo = function (viName, fpId, propertyName, tempVarValueRef) {
-                // var parser = vireoRunner.createVIPathParser(vireo, propertyVIName);
-                // var readValue = parser(propertyPath);
                 var readValue = vireo.eggShell.readDouble(tempVarValueRef);
-
                 var expectedVal = expectedValues.doubleLocal;
                 expect(readValue).toEqual(expectedVal);
             };
@@ -93,12 +88,10 @@ describe('The Vireo PropertyNode', function () {
         it('callback writes to vireo with passed parameters', function (done) {
             var indexToRead = 0;
             var valuesToRead = [3.14];
-            var writeToVireo = function (viName, fpId, propertyName, tempVarValueRef) {
-                // var writer = vireoRunner.createVIPathWriter(vireo, propertyViName);
+            var writeToVireo = function (viName, controlId, propertyName, tempVarValueRef) {
                 var valueRead = valuesToRead[indexToRead];
                 indexToRead += 1;
                 vireo.eggShell.writeDouble(tempVarValueRef, valueRead);
-                // writer(propertyPath, valueRead);
             };
             var nestSubVIName = 'subSubVI';
 
