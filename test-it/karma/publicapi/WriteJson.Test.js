@@ -11,7 +11,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
 
     var writeTest = function (path, oldVal, newVal) {
-        var oldValJSON = vireo.eggShell.readJSON(viName, path);
+        var valueRef = vireo.eggShell.findValueRef(viName, path);
+        var oldValJSON = vireo.eggShell.readJSON(valueRef);
         var oldValActual = JSON.parse(oldValJSON);
         expect(oldValActual).toMatchIEEE754Number(oldVal);
 
@@ -24,9 +25,10 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             return value;
         });
 
-        vireo.eggShell.writeJSON(viName, path, newValToWriteJSON);
+        vireo.eggShell.writeJSON(valueRef, newValToWriteJSON);
 
-        var newValJSON = vireo.eggShell.readJSON(viName, path);
+        var newValueRef = vireo.eggShell.findValueRef(viName, path);
+        var newValJSON = vireo.eggShell.readJSON(newValueRef);
         var newValActual = JSON.parse(newValJSON);
         if (typeof newValActual === 'string' && typeof newVal === 'number') {
             // we're writing as a JS number, but reading always returns a string.
@@ -35,8 +37,9 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             expect(newValActual).toMatchIEEE754Number(newVal);
         }
 
-        vireo.eggShell.writeJSON(viName, path, oldValJSON);
-        var oldValRewriteJSON = vireo.eggShell.readJSON(viName, path);
+        vireo.eggShell.writeJSON(valueRef, oldValJSON);
+        var newNewValueRef = vireo.eggShell.findValueRef(viName, path);
+        var oldValRewriteJSON = vireo.eggShell.readJSON(newNewValueRef);
         var oldValRewrite = JSON.parse(oldValRewriteJSON);
         expect(oldValRewrite).toMatchIEEE754Number(oldVal);
     };

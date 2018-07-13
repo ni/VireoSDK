@@ -347,8 +347,8 @@ class TypeManager
 // Utility functions to read and write numbers to non aligned memory based on size and encoding
 IntMax ReadIntFromMemory(TypeRef type, void* pData);
 NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
-Double ReadDoubleFromMemory(TypeRef type, void* pData);
-NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value);
+Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult = nullptr);
+NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value);
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
 //------------------------------------------------------------
 //! Banker's rounding for Doubles.
@@ -463,6 +463,8 @@ class TypeCommon
     static const SubString TypeComplexSingle;
     static const SubString TypeComplexDouble;
     static const SubString TypeJavaScriptRefNum;
+    static const SubString TypePath;
+    static const SubString TypeAnalogWaveform;
     static const SubString TypeStaticTypeAndData;
 
     explicit TypeCommon(TypeManagerRef typeManager);
@@ -610,13 +612,17 @@ class TypeCommon
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
     Boolean IsNumeric();
+    Boolean IsInteger();
+    Boolean IsSignedInteger();
     Boolean IsInteger64();
     Boolean IsFloat();
     Boolean IsBoolean();
     Boolean IsString();
+    Boolean IsPath();
     Boolean IsTimestamp();
     Boolean IsComplex();
     Boolean IsJavaScriptRefNum();
+    Boolean IsAnalogWaveform();
     Boolean IsIntrinsicClusterDataType(SubString *foundTypeName);  // Returns true for builtin data types such as Timestamp, Complex, etc
 
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.

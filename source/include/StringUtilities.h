@@ -328,7 +328,7 @@ class SubString : public SubVector<Utf8Char>
     //! based on previously determined token trait.
     void TrimQuotedString(TokenTraits tt);
 
-    IntIndex FindFirstMatch(SubString* searchString, IntIndex offset, Boolean ignoreCase);
+    IntIndex FindFirstMatch(const SubString* searchString, IntIndex offset, Boolean ignoreCase);
 };
 
 //------------------------------------------------------------

@@ -16,6 +16,7 @@
         define(globalName, [
             'NationalInstruments.Vireo.Core.createVireoCore',
             'NationalInstruments.Vireo.Core.assignCoreHelpers',
+            'NationalInstruments.Vireo.Core.assignTypeHelpers',
             'NationalInstruments.Vireo.ModuleBuilders.assignEggShell',
             'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient',
             'NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke',
@@ -33,6 +34,7 @@
         module.exports = factory(
             vireoCore,
             require('../../source/core/module_coreHelpers.js'),
+            require('../../source/core/module_typeHelpers.js'),
             require('../../source/io/module_eggShell.js'),
             require('../../source/io/module_httpClient.js'),
             require('../../source/io/module_javaScriptInvoke.js'),
@@ -44,6 +46,7 @@
         buildGlobalNamespace(
             root.NationalInstruments.Vireo.Core.createVireoCore,
             root.NationalInstruments.Vireo.Core.assignCoreHelpers,
+            root.NationalInstruments.Vireo.Core.assignTypeHelpers,
             root.NationalInstruments.Vireo.ModuleBuilders.assignEggShell,
             root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient,
             root.NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke,
@@ -86,6 +89,11 @@
         if (typeof createVireoCore !== 'function') {
             throw new Error('createVireoCore could not be found, make sure to build and include vireo.js before using');
         }
+
+        // Save a Vireo class reference on the module instance so the instance can access static functions on the class
+        // TODO(mraj) Instead use the static functions directly when we switch to ES6 modules and can resolve the Vireo class correctly
+        Module.Vireo = Vireo;
+
         createVireoCore(Module);
         moduleBuilders.forEach(function (currBuilder) {
             currBuilder(Module, that);

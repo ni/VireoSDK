@@ -21,6 +21,9 @@ typedef enum {
     kEggShellResult_UnexpectedObjectType = 2,
     kEggShellResult_InvalidResultPointer = 3,
     kEggShellResult_UnableToCreateReturnBuffer = 4,
+    kEggShellResult_InvalidTypeRef = 5,
+    kEggShellResult_MismatchedArrayRank = 6,
+    kEggShellResult_UnableToParseData = 7,
 } EggShellResult;
 //------------------------------------------------------------
 //! TypeManager functions
@@ -35,22 +38,26 @@ VIREO_EXPORT Int32 EggShell_PeekMemory(TypeManagerRef tm, const char* viName, co
                                        Int32 bufferSize, char* buffer);
 VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, const char* eltName,
                                        Int32 bufferSize, char* buffer);
-VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d);
-VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName);
-VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm, const char* viName, const char* eltName,
-                                            const char* format, const char* value);
-VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm, const char* viName, const char* eltName,
-                                                  const char* format);
+VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
+VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef type, void *start, const char* eltName,
+        TypeRef* typeRefLocation, void** dataRefLocation);
+VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef actualType, void* pData, Double value);
+VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result);
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
 VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm,
         const char* viName, const char* elementName, void** dataPointer, void** typePointer);
 VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim);
-VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName,
-                                        Int32 rank, Int32* newLengths);
+VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData,
+                                                 Int32 rank, Int32 dimensionLengths[]);
 VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
         TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
+VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
+VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[]);
+VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData);
 VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim);
 VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths);
 VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer,
@@ -69,7 +76,8 @@ VIREO_EXPORT Boolean TypeRef_IsValid(TypeRef typeRef);
 VIREO_EXPORT Boolean TypeRef_HasCustomDefault(TypeRef typeRef);
 VIREO_EXPORT EncodingEnum TypeRef_BitEncoding(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef);
-VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer);
+VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef typeManager, TypeRef typeRef);
+VIREO_EXPORT const char* TypeRef_ElementName(TypeManagerRef typeManager, TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Rank(TypeRef typeRef);
 VIREO_EXPORT PointerTypeEnum TypeRef_PointerType(TypeRef typeRef);
@@ -77,6 +85,18 @@ VIREO_EXPORT TypeRef TypeRef_Next(TypeRef typeRef);
 VIREO_EXPORT UsageTypeEnum TypeRef_ElementUsageType(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef);
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index);
+VIREO_EXPORT Boolean TypeRef_IsCluster(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsArray(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsBoolean(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsInteger(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsSigned(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsEnum(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsFloat(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsString(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsPath(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsTimestamp(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsComplex(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsAnalogWaveform(TypeRef typeRef);
 //------------------------------------------------------------
 //! TypedBlock functions
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object);

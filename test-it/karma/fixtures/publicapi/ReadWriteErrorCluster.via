@@ -1,0 +1,22 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(.ErrorCluster uninitializedError)
+        e(dv(.ErrorCluster (false 0 '')) initializedError)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) expandedError)
+        e(dv(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) (true 12345 'Is this the real life?')) initializedExpandedError)
+    )
+    clump (
+
+    )
+)))
+
+enqueue (MyVI)
+// Finished!

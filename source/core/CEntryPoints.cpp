@@ -118,67 +118,93 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
     }
 }
 //------------------------------------------------------------
-//! Write a numeric value to a symbol. Value will be coerced as needed.
-VIREO_EXPORT void EggShell_WriteDouble(TypeManagerRef tm, const char* viName, const char* eltName, Double d)
+//! Get a reference to the type pointer and data for a symbol.
+VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
 {
-    void *pData = nullptr;
-
+    TypeManagerScope scope(tm);
     SubString objectName(viName);
     SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return;
+    *typeRefLocation = tm->GetObjectElementAddressFromPath(&objectName, &path, dataRefLocation, true);
+    if (*typeRefLocation == nullptr)
+        return kEggShellResult_ObjectNotFoundAtPath;
 
-    WriteDoubleToMemory(actualType, pData, d);
+    return kEggShellResult_Success;
+}
+//------------------------------------------------------------
+//! Get a reference to the type pointer and data for a sub element
+VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm,
+        const TypeRef typeRef, void * pData, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
+{
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
+
+    TypeManagerScope scope(tm);
+    SubString path(eltName);
+    *typeRefLocation = typeRef->GetSubElementAddressFromPath(&path, pData, dataRefLocation, true);
+    if (*typeRefLocation == nullptr)
+        return kEggShellResult_ObjectNotFoundAtPath;
+
+    return kEggShellResult_Success;
+}
+//------------------------------------------------------------
+//! Write a numeric value to a symbol. Value will be coerced as needed.
+VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value)
+{
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
+
+    NIError error = WriteDoubleToMemory(typeRef, pData, value);
+    if (error)
+        return kEggShellResult_UnexpectedObjectType;
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Read a numeric value from a symbol. Value will be coerced as needed.
-VIREO_EXPORT Double EggShell_ReadDouble(TypeManagerRef tm, const char* viName, const char* eltName)
+VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Double* result)
 {
-    void *pData = nullptr;
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return -1;
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
 
-    return ReadDoubleFromMemory(actualType, pData);
+    if (result == nullptr)
+        return kEggShellResult_InvalidResultPointer;
+
+    NIError error = kNIError_Success;
+    *result = ReadDoubleFromMemory(typeRef, pData, &error);
+    if (error)
+        return kEggShellResult_UnexpectedObjectType;
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 // Write a string value to a symbol. Value will be parsed according to format designated.
-VIREO_EXPORT void EggShell_WriteValueString(TypeManagerRef tm,
-        const char* viName, const char* eltName, const char* format, const char* value)
+VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format, const char* value)
 {
     TypeManagerScope scope(tm);
 
-    void *pData = nullptr;
-
-    SubString objectName(viName);
-    SubString path(eltName);
     SubString valueString(value);
 
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return;
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
 
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
     TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
-    parser.ParseData(actualType, pData);
+    Int32 error = parser.ParseData(typeRef, pData);
+    if (error) {
+        return kEggShellResult_UnableToParseData;
+    }
+
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! Read a symbol's value as a string. Value will be formatted according to the format designated.
-VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
-        const char* viName, const char* eltName, const char* format)
+//! Read a symbol's value as a string. Value will be formatted according to designated format.
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format, UInt8** valueString)
 {
     TypeManagerScope scope(tm);
-    void *pData = nullptr;
 
-    SubString objectName(viName);
-    SubString path(eltName);
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr)
-        return nullptr;
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
 
     static StringRef returnBuffer = nullptr;
     if (returnBuffer == nullptr) {
@@ -193,12 +219,14 @@ VIREO_EXPORT const char* EggShell_ReadValueString(TypeManagerRef tm,
     if (returnBuffer) {
         SubString formatss(format);
         TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
-        formatter.FormatData(actualType, pData);
-        // Add an explicit nullptr terminator so it looks like a C string.
+        formatter.FormatData(typeRef, pData);
+        // Add an explicit null terminator so it looks like a C string.
         returnBuffer->Append((Utf8Char)'\0');
-        return (const char*) returnBuffer->Begin();
+        *valueString = returnBuffer->Begin();
+        return kEggShellResult_Success;
     }
-    return "";
+
+    return kEggShellResult_UnableToCreateReturnBuffer;
 }
 void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
 {
@@ -257,20 +285,26 @@ VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viN
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
-//! Returns -1 if the symbols is not found, -2 if was not possible to resize the array and 0 if resizing was successful.
-VIREO_EXPORT Int32 EggShell_ResizeArray(TypeManagerRef tm, const char* viName, const char* eltName, Int32 rank, Int32* newLengths)
+VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef typeRef, const void* pData,
+                                                 Int32 rank, Int32 dimensionLengths[])
 {
-    SubString objectName(viName);
-    SubString path(eltName);
-    void *pData = nullptr;
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
 
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr || !actualType->IsArray()) {
-        return kLVError_ArgError;
+    if (!typeRef->IsArray())
+        return kEggShellResult_UnexpectedObjectType;
+
+    if (typeRef->Rank() != rank)
+        return kEggShellResult_MismatchedArrayRank;
+
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+
+    if (!arrayObject->ResizeDimensions(rank, dimensionLengths, true, false)) {
+        return kEggShellResult_UnableToCreateReturnBuffer;
     }
-
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    return Data_ResizeArray(tm, actualArray, rank, newLengths);
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
@@ -327,6 +361,34 @@ VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
     *arrayBegin = GetArrayBeginAt(arrayObject);
 
     return kEggShellResult_Success;
+}
+//------------------------------------------------------------
+//! Get the starting location of the first element of an Array / String type in memory
+// This function returns the start address of where elements would appear in memory (returns address even if length zero)
+VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
+{
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    return arrayObject->BeginAt(0);
+}
+//------------------------------------------------------------
+//! Get the values for dimensions of the array. Assumes dimensions target is of length equal to rank
+//! Caller is expected to allocate an array dimensions of size array rank for the duration of function invocation.
+VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[])
+{
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    for (int i = 0; i < arrayObject->Rank(); i++) {
+        dimensionsLengths[i] = arrayObject->GetLength(i);
+    }
+}
+//------------------------------------------------------------
+//! Get the total length for an array
+VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData)
+{
+    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
+    return arrayObject->Length();
 }
 //------------------------------------------------------------
 //! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
@@ -505,10 +567,54 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
     return typeRef->AQAlignment();
 }
 //------------------------------------------------------------
-VIREO_EXPORT void TypeRef_Name(TypeRef typeRef, Int32* bufferSize, char* buffer)
+VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
 {
+    TypeManagerScope scope(tm);
     SubString name = typeRef->Name();
-    *bufferSize = name.CopyToBoundedBuffer(*bufferSize, reinterpret_cast<Utf8Char*>(buffer));
+
+    static StringRef returnBuffer = nullptr;
+    if (returnBuffer == nullptr) {
+        // Allocate a string the first time it is used.
+        // After that it will be resized as needed.
+        STACK_VAR(String, tempReturn);
+        returnBuffer = tempReturn.DetachValue();
+    } else {
+        returnBuffer->Resize1D(name.Length() + 1);
+    }
+
+    if (returnBuffer) {
+        returnBuffer->CopyFromSubString(&name);
+        // Add an explicit null terminator so it looks like a C string.
+        returnBuffer->Append((Utf8Char)'\0');
+        return (const char*) returnBuffer->Begin();
+    }
+
+    return "";
+}
+//------------------------------------------------------------
+VIREO_EXPORT const char* TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
+{
+    TypeManagerScope scope(tm);
+    SubString name = typeRef->ElementName();
+
+    static StringRef returnBuffer = nullptr;
+    if (returnBuffer == nullptr) {
+        // Allocate a string the first time it is used.
+        // After that it will be resized as needed.
+        STACK_VAR(String, tempReturn);
+        returnBuffer = tempReturn.DetachValue();
+    } else {
+        returnBuffer->Resize1D(name.Length() + 1);
+    }
+
+    if (returnBuffer) {
+        returnBuffer->CopyFromSubString(&name);
+        // Add an explicit null terminator so it looks like a C string.
+        returnBuffer->Append((Utf8Char)'\0');
+        return (const char*) returnBuffer->Begin();
+    }
+
+    return "";
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)
@@ -544,6 +650,66 @@ VIREO_EXPORT Int32 TypeRef_SubElementCount(TypeRef typeRef)
 VIREO_EXPORT TypeRef TypeRef_GetSubElementByIndex(TypeRef typeRef, Int32 index)
 {
     return typeRef->GetSubElement(index);
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsCluster(TypeRef typeRef)
+{
+    return typeRef->IsCluster();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsArray(TypeRef typeRef)
+{
+    return typeRef->IsArray();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsBoolean(TypeRef typeRef)
+{
+    return typeRef->IsBoolean();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsInteger(TypeRef typeRef)
+{
+    return typeRef->IsInteger();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsSigned(TypeRef typeRef)
+{
+    return typeRef->IsSignedInteger();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsEnum(TypeRef typeRef)
+{
+    return typeRef->IsEnum();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsFloat(TypeRef typeRef)
+{
+    return typeRef->IsFloat();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsString(TypeRef typeRef)
+{
+    return typeRef->IsString();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsPath(TypeRef typeRef)
+{
+    return typeRef->IsPath();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsTimestamp(TypeRef typeRef)
+{
+    return typeRef->IsTimestamp();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsComplex(TypeRef typeRef)
+{
+    return typeRef->IsComplex();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsAnalogWaveform(TypeRef typeRef)
+{
+    return typeRef->IsAnalogWaveform();
 }
 //------------------------------------------------------------
 //------------------------------------------------------------

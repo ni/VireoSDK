@@ -10,14 +10,20 @@ describe('The Vireo EggShell readJSON api can read', function () {
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
     var viName = 'MyVI';
 
+    var readActualJSON = function (viName, path) {
+        var valueRef = vireo.eggShell.findValueRef(viName, path);
+        var valJSON = vireo.eggShell.readJSON(valueRef);
+        return valJSON;
+    };
+
     var readTest = function (path, expectedVal) {
-        var valJSON = vireo.eggShell.readJSON(viName, path);
+        var valJSON = readActualJSON(viName, path);
         var val = JSON.parse(valJSON);
         expect(val).toMatchIEEE754Number(expectedVal);
     };
 
     var readTestWithJSON = function (path, expectedValJSON, expectedVal) {
-        var valJSON = vireo.eggShell.readJSON(viName, path);
+        var valJSON = readActualJSON(viName, path);
         expect(valJSON).toMatchIEEE754Number(expectedValJSON);
 
         var val = JSON.parse(valJSON);
@@ -266,14 +272,14 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Int64', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_Numeric64');
+            var actualJSON = readActualJSON(viName, 'dataItem_Numeric64');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toBe('-1152921504606846976');
         });
 
         it('UInt64', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_NumericU64');
+            var actualJSON = readActualJSON(viName, 'dataItem_NumericU64');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toBe('18446744073709551615');
@@ -287,7 +293,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Timestamp', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_Timestamp');
+            var actualJSON = readActualJSON(viName, 'dataItem_Timestamp');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual({
@@ -315,7 +321,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Int64', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ArrayOfInt64');
+            var actualJSON = readActualJSON(viName, 'dataItem_ArrayOfInt64');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual([
@@ -342,7 +348,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Timestamp', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ArrayOfTimestamp');
+            var actualJSON = readActualJSON(viName, 'dataItem_ArrayOfTimestamp');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual([
@@ -357,7 +363,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Cluster', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ArrayOfClusters');
+            var actualJSON = readActualJSON(viName, 'dataItem_ArrayOfClusters');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual([
@@ -435,7 +441,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Int64', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfInt64');
+            var actualJSON = readActualJSON(viName, 'dataItem_2DArrayOfInt64');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual([
@@ -469,7 +475,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('Timestamp', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_2DArrayOfTimestamp');
+            var actualJSON = readActualJSON(viName, 'dataItem_2DArrayOfTimestamp');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual([
@@ -521,7 +527,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
 
     describe('composite types of', function () {
         it('clusters with scalars', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ClusterOfScalars');
+            var actualJSON = readActualJSON(viName, 'dataItem_ClusterOfScalars');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual({
@@ -543,7 +549,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
         });
 
         it('clusters with 1D arrays', function () {
-            var actualJSON = vireo.eggShell.readJSON(viName, 'dataItem_ClusterOfArrays');
+            var actualJSON = readActualJSON(viName, 'dataItem_ClusterOfArrays');
             var actual = JSON.parse(actualJSON);
 
             expect(actual).toEqual({

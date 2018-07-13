@@ -602,6 +602,8 @@ const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
 const SubString TypeCommon::TypeComplexSingle = SubString("ComplexSingle");
 const SubString TypeCommon::TypeComplexDouble = SubString("ComplexDouble");
 const SubString TypeCommon::TypeJavaScriptRefNum = SubString(tsJavaScriptRefNumToken);
+const SubString TypeCommon::TypePath = SubString("NIPath");
+const SubString TypeCommon::TypeAnalogWaveform = SubString("AnalogWaveform");
 const SubString TypeCommon::TypeStaticTypeAndData = SubString("StaticTypeAndData");
 
 TypeCommon::TypeCommon(TypeManagerRef typeManager)
@@ -860,11 +862,35 @@ Boolean TypeCommon::IsNumeric()
 {
     TypeRef t = this;
     while (t) {
+        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64)
+            || t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64)
+            || t->Name().Compare(&TypeSingle) || t->Name().Compare(&TypeDouble)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsInteger()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32) || t->Name().Compare(&TypeInt64)
+            || t->Name().Compare(&TypeUInt8) || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32) || t->Name().Compare(&TypeUInt64)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsSignedInteger()
+{
+    TypeRef t = this;
+    while (t) {
         if (t->Name().Compare(&TypeInt8) || t->Name().Compare(&TypeInt16) || t->Name().Compare(&TypeInt32)
-            || t->Name().Compare(&TypeInt64) || t->Name().Compare(&TypeUInt8)
-            || t->Name().Compare(&TypeUInt16) || t->Name().Compare(&TypeUInt32)
-            || t->Name().Compare(&TypeUInt64) || t->Name().Compare(&TypeSingle)
-            || t->Name().Compare(&TypeDouble)) {
+            || t->Name().Compare(&TypeInt64)) {
             return true;
         }
         t = t->BaseType();
@@ -923,6 +949,18 @@ Boolean TypeCommon::IsString()
 }
 
 //------------------------------------------------------------
+Boolean TypeCommon::IsPath()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypePath)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
 Boolean TypeCommon::IsTimestamp()
 {
     TypeRef t = this;
@@ -952,6 +990,19 @@ Boolean TypeCommon::IsJavaScriptRefNum()
     TypeRef t = this;
     while (t) {
         if (t->Name().Compare(&TypeJavaScriptRefNum)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsAnalogWaveform()
+{
+    TypeRef t = this;
+    while (t) {
+        SubString typeName = t->Name();
+        if (typeName.FindFirstMatch(&TypeAnalogWaveform, 0, false) == 0) {
             return true;
         }
         t = t->BaseType();
@@ -2640,9 +2691,9 @@ NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value)
 }
 //------------------------------------------------------------
 //! Read a IEEE754 double value from memory converting as necessary.
-Double ReadDoubleFromMemory(TypeRef type, void* pData)
+Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult)
 {
-    Boolean isErr = false;
+    NIError err = kNIError_Success;
     Double value = 0.0;
     EncodingEnum encoding = type->BitEncoding();
     Int32 aqSize = type->TopAQSize();
@@ -2651,55 +2702,61 @@ Double ReadDoubleFromMemory(TypeRef type, void* pData)
             switch (aqSize) {
                 case 4:  value = *(Single*)pData;           break;
                 case 8:  value = *(Double*)pData;           break;
-                default: isErr = true;                      break;
+                default: err = kNIError_kCantDecode;        break;
             }
             break;
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1:  value = *(Int8*)pData;             break;
-                case 2:  value = *(Int16*)pData;            break;
-                case 4:  value = *(Int32*)pData;            break;
-                case 8:  value = static_cast<Double>(*(Int64*)pData);            break;
-                default: isErr = true;                      break;
+                case 1:  value = *(Int8*)pData;                       break;
+                case 2:  value = *(Int16*)pData;                      break;
+                case 4:  value = *(Int32*)pData;                      break;
+                case 8:  value = static_cast<Double>(*(Int64*)pData); break;
+                default: err = kNIError_kCantDecode;                  break;
             }
             break;
         case kEncoding_UInt:
         case kEncoding_Enum:
             switch (aqSize) {
-                case 1:  value = *(UInt8*)pData;            break;
-                case 2:  value = *(UInt16*)pData;           break;
-                case 4:  value = *(UInt32*)pData;           break;
-                case 8:  value = static_cast<Double>(*(UInt64*)pData);           break;
-                default: isErr = true;                      break;
+                case 1:  value = *(UInt8*)pData;                       break;
+                case 2:  value = *(UInt16*)pData;                      break;
+                case 4:  value = *(UInt32*)pData;                      break;
+                case 8:  value = static_cast<Double>(*(UInt64*)pData); break;
+                default: err = kNIError_kCantDecode;                   break;
             }
             break;
         case kEncoding_Boolean:
             switch (aqSize) {
                 case 1:  value = (*(UInt8*)pData) ? 1.0 : 0.0; break;
-                default: isErr = true;                      break;
+                default: err = kNIError_kCantDecode;           break;
             }
             break;
         case kEncoding_Cluster:
             if (type->IsTimestamp()) {
               Timestamp* t = (Timestamp*) pData;
               value = t->ToDouble();
+            } else {
+                err = kNIError_kCantDecode;
             }
             break;
         default:
-            isErr = true;
+            err = kNIError_kCantDecode;
             break;
     }
 
-    if (isErr) {
+    if (err != kNIError_Success) {
         gPlatform.IO.Printf("(Error \"ReadDoubleFromMemory encoding:%d aqSize:%d\")\n", (int)encoding, (int)aqSize);
+    }
+
+    if (errResult != nullptr) {
+        *errResult = err;
     }
 
     return value;
 }
 //------------------------------------------------------------
 //! Write a IEEE754 double value to memory converting as necessary.
-NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
+NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
 {
     NIError err = kNIError_Success;
     EncodingEnum encoding = type->BitEncoding();
@@ -2736,13 +2793,15 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, Double value)
             switch (aqSize) {
                 // Beware that anything that's not exactly 0.0 will be true
                 case 1:  *(UInt8*)pData = value != 0.0 ? 1 : 0;  break;
-                default: err = kNIError_kCantEncode;        break;
+                default: err = kNIError_kCantEncode;             break;
             }
             break;
         case kEncoding_Cluster:
             if (type->IsTimestamp()) {
                 Timestamp* t = (Timestamp*) pData;
                 *t = Timestamp(value);
+            } else {
+                err = kNIError_kCantEncode;
             }
             break;
         default: err = kNIError_kCantDecode; break;
