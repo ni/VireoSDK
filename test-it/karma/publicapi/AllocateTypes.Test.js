@@ -63,16 +63,16 @@ describe('Vireo public API allows', function () {
     };
 
     describe('error handling', function () {
-        describe('for allocateData throws', function () {
-            it('when typeRef is invalid', function () {
+        describe('for allocateData', function () {
+            it('throws an InvalidTypeRef error given an invalid typeRef', function () {
                 var invalidTypeRef = 1234;
 
                 expect(tryAllocate(invalidTypeRef)).toThrowError(/InvalidTypeRef/);
             });
         });
 
-        describe('for deallocateData throws', function () {
-            it('when typeRef is invalid', function () {
+        describe('for deallocateData', function () {
+            it('throws an InvalidTypeRef error given an invalid typeRef', function () {
                 var invalidValueRef = {
                     typeRef: 1234,
                     dataRef: 1234
@@ -81,7 +81,7 @@ describe('Vireo public API allows', function () {
                 expect(tryDeallocate(invalidValueRef)).toThrowError(/InvalidTypeRef/);
             });
 
-            it('when dataRef is null', function () {
+            it('throws an InvalidDataPointer error given an invalid dataRef', function () {
                 var validValueRef = vireo.eggShell.findValueRef(viName, 'times');
                 var invalidValueRef = {
                     typeRef: validValueRef.typeRef,
