@@ -250,5 +250,13 @@ describe('Vireo public API allows', function () {
             });
             allocateTest(viName, 'enum16numbers', 1);
         });
+
+        it('local constants in a VI', function () {
+            allocateTest(viName, 'constint8', -5);
+            allocateTest(viName, 'constuint16', 234);
+            allocateTest(viName, 'constsingle3darray', [
+                [[1, 2], [3, 4]], [[5, 6], [7, 8]]
+            ]);
+        });
     });
 });

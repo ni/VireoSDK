@@ -133,7 +133,7 @@ VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeR
     *dataRefLocation = nullptr;
     Int32 topSize = typeRef->TopAQSize();
     void* pData = THREAD_TADM()->Malloc(topSize);
-    NIError error = typeRef->InitData(pData, (TypeRef)nullptr);
+    NIError error = typeRef->InitData(pData);
     if (error != kNIError_Success) {
         return kEggShellResult_UnableToAllocateData;
     }

@@ -48,6 +48,10 @@ define(AllocateTypes dv(.VirtualInstrument (
         e(.AnalogWaveform<.Double> wave_Double)
         e(.NIPath nipath)
         e(dv(Enum16 (zero one two three four) 3) enum16numbers)
+
+        ce(.Int8 constint8)
+        ce(.UInt16 constuint16)
+        ce(a(.Single * * *) constsingle3darray)
     )
     clump (1
     )
