@@ -948,6 +948,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
             IntIndex step = pSlabs[dimIndex];
             Int32 length = pLengths[dimIndex];
             IntIndex elementCount = 0;
+            Boolean bExtraInitializersFound = false;
             AQBlock1* pEltData = (AQBlock1*) pFirstEltInSlice;
             Int32 errCode = kLVError_NoError;
 
@@ -958,6 +959,9 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 _string.EatChar(Fmt()._itemSeparator);
                 void* pElement = elementCount < length ? pEltData : nullptr;
                 Int32 subErr;
+                if (elementCount >= length) {
+                    bExtraInitializersFound = true;
+                }
                 if (dimIndex == 0) {
                     // For the inner most dimension parse using element type.
 
@@ -979,6 +983,9 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 elementCount++;
             }
 
+            if (bExtraInitializersFound) {
+                LOG_EVENT(kWarning, "Ignoring extra array initializer elements");
+            }
             return errCode;
         } else if (tt == TokenTraits_SymbolName && token.CompareCStr("null")) {
             LOG_EVENT(kSoftDataError, "null encountered");
