@@ -84,7 +84,10 @@
             UNABLE_TO_CREATE_RETURN_BUFFER: 4,
             INVALID_TYPE_REF: 5,
             MISMATCHED_ARRAY_RANK: 6,
-            UNABLE_TO_PARSE_DATA: 7
+            UNABLE_TO_PARSE_DATA: 7,
+            UNABLE_TO_ALLOCATE_DATA: 8,
+            UNABLE_TO_DEALLOCATE_DATA: 9,
+            INVALID_DATA_POINTER: 10
         };
         var eggShellResultEnum = {};
         eggShellResultEnum[EGGSHELL_RESULT.SUCCESS] = 'Success';
@@ -95,6 +98,9 @@
         eggShellResultEnum[EGGSHELL_RESULT.INVALID_TYPE_REF] = 'InvalidTypeRef';
         eggShellResultEnum[EGGSHELL_RESULT.MISMATCHED_ARRAY_RANK] = 'MismatchedArrayRank';
         eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_PARSE_DATA] = 'UnableToParseData';
+        eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_ALLOCATE_DATA] = 'UnableToAllocateData';
+        eggShellResultEnum[EGGSHELL_RESULT.UNABLE_TO_DEALLOCATE_DATA] = 'UnableToDeallocateData';
+        eggShellResultEnum[EGGSHELL_RESULT.INVALID_DATA_POINTER] = 'InvalidDataPointer';
 
         // Keep in sync with NIError in DataTypes.h
         var niErrorEnum = {
@@ -202,6 +208,34 @@
                 typeRef: typeRef,
                 dataRef: dataRef
             });
+        };
+
+        Module.eggShell.allocateData = function (typeRef) {
+            var stack = Module.stackSave();
+
+            var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
+            var eggShellResult = Module._EggShell_AllocateData(Module.eggShell.v_userShell, typeRef, dataStackPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('A new ValueRef could not be allocated for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (typeRef: ' + typeRef + ')');
+            }
+
+            var dataRef = Module.getValue(dataStackPointer, 'i32');
+            var allocatedValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+
+            Module.stackRestore(stack);
+            return allocatedValueRef;
+        };
+
+        Module.eggShell.deallocateData = function (valueRef) {
+            var eggShellResult = Module._EggShell_DeallocateData(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('A ValueRef could not be deallocated for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
         };
 
         Module.eggShell.findValueRef = publicAPI.eggShell.findValueRef = function (vi, path) {
