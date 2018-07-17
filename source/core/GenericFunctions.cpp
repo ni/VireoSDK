@@ -1632,11 +1632,27 @@ AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex*
 static AQBlock1* ArrayToArrayCopyHelperRev(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths,
     AQBlock1 *pSource, IntIndex* sourceDimLengths, IntIndex* sourceSlabLengths, Int32 destRank, Int32 sourceRank) {
     if (sourceRank == 1) {
-        if (elementType->CopyData(pSource, pDest, sourceDimLengths[0]))
-            return nullptr;
-        Int32 copiedLength = sourceDimLengths[0] * elementType->TopAQSize();
-        if (copiedLength < destSlabLengths[1]) {
-            memset(pDest + copiedLength, 0, destSlabLengths[1] - copiedLength);
+        Int32 topAQSize = elementType->TopAQSize();
+        Int32 copyElems = sourceDimLengths[0];
+        Int32 copyLength = copyElems * topAQSize;
+        pDest += copyLength;
+        pSource += copyLength;
+        while (copyElems > 0) {
+            // copy elements in reverse order since the regions may overlap
+            pDest -= topAQSize;
+            pSource -= topAQSize;
+            if (pSource != pDest) {
+                elementType->ClearData(pDest);
+                elementType->InitData(pDest);
+                if (elementType->CopyData(pSource, pDest))
+                    return nullptr;
+            }
+            --copyElems;
+        }
+        // pDest/pSource should be back to original value here
+        if (copyLength < destSlabLengths[1]) {
+            elementType->ClearData(pDest + copyLength, (destSlabLengths[1] - copyLength)/topAQSize);
+            elementType->InitData(pDest + copyLength, (destSlabLengths[1] - copyLength)/topAQSize);
         }
         pDest += destSlabLengths[1];
     } else {

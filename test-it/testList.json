@@ -85,6 +85,7 @@
                 "AllocatedDataValues.via",
                 "ArrayComparison.via",
                 "ArrayConcatBug.via",
+                "ArrayConcatBug2D.via",
                 "ArrayConcatenateND.via",
                 "ArrayDecimate.via",
                 "ArrayDelete.via",
