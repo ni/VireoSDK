@@ -48,6 +48,7 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
         ) timeoutData)
         e(.Boolean local2)
         e(.Boolean local3)
+        e(dv(ControlRefNum ControlReference("18")) controlRef)
     )
         clump(1
 	// Note:  No explicit register is generated here, unlike the JavaScriptRefNum static version.
@@ -56,7 +57,7 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
 	// Since the controlRefnum is a Vireo-side reference, OccurEvent will look up the refnum from the eventOracleIdx
 	// and put it in the EventData; the JS code which calls OccurEvent does not need to supply it.
 
-        _OccurEvent(18 1000 2)  // for testing
+        _OccurEvent(controlRef 1000 2)  // for testing
 
 	// Imagine event loop around this:
         Printf("Waiting on Events\n")
