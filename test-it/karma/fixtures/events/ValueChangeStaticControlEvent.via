@@ -29,6 +29,10 @@ define (UpdateBooleanOnValueChangeEvent dv(.VirtualInstrument (
         ) timeoutData)
         e(.Boolean eventOccurred)
         e(.Boolean eventTimedOut)
+        e(c(
+            e(.Boolean OldValue)
+            e(.Boolean NewValue)
+        ) valueChangedEventDataBool)
     )
     clump(1
         Printf("Waiting on Events\n")

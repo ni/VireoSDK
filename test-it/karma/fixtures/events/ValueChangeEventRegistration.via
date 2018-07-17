@@ -28,6 +28,10 @@ define (ValueChangedEventRegisterAndUnregister dv(.VirtualInstrument (
             e(.UInt32 Index)
         ) timeoutData)
         e(dv(ControlRefNum ControlReference("18")) controlRef)
+        e(c(
+            e(.Boolean OldValue)
+            e(.Boolean NewValue)
+        ) valueChangedEventDataBool)
     )
         clump(1
 
