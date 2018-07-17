@@ -959,7 +959,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
                 _string.EatChar(Fmt()._itemSeparator);
                 void* pElement = elementCount < length ? pEltData : nullptr;
                 Int32 subErr;
-                if (pElement == nullptr) {
+                if (elementCount >= length) {
                     bExtraInitializersFound = true;
                 }
                 if (dimIndex == 0) {
