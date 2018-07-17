@@ -1128,16 +1128,14 @@ void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType, UIn
     EventOracle::TheEventOracle().OccurEvent(eventOracleIndex, eData);
 }
 
-VIREO_EXPORT void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType)
+VIREO_EXPORT void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType, TypeRef eventDataType, void *eventData)
 {
-    // TODO(spathiwa,sid): Add event data arg
-
     RefNum ref = kNotARefNum;
     EventControlUID eventIndexControlID = 0;
     if (eventOracleIndex > kAppEventOracleIdx) {
         EventOracle::TheEventOracle().GetControlInfoForEventOracleIndex(eventOracleIndex, &eventIndexControlID, &ref);
         if (controlID == eventIndexControlID)
-            OccurEvent(eventOracleIndex, controlID, eventType, ref, nullptr, nullptr);
+            OccurEvent(eventOracleIndex, controlID, eventType, ref, eventDataType, eventData);
         else
             THREAD_EXEC()->LogEvent(EventLog::kSoftDataError, "OccurEvent: eventOracleIndex %d does not match controlID %d, expected %d",
                                     eventOracleIndex, controlID, eventIndexControlID);

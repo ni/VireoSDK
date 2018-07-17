@@ -115,6 +115,10 @@ define (MultipleEventStructuresListeningToSameControl dv(.VirtualInstrument (
         ce(dv(.Int32 1)c92)
         ce(dv(.Int32 0)c93)
         ce(dv(.Int32 1)c94)
+        e(c(
+            e(.Boolean OldValue)
+            e(.Boolean NewValue)
+        ) valueChangedEventDataBool)
     )
     clump(1
         Printf("Starting\n")
