@@ -27,7 +27,6 @@
     // Static Private Variables (all vireo instances)
 
     var assignEventHelpers = function (Module, publicAPI) {
-
         Module.eventHelpers = {};
         publicAPI.eventHelpers = {};
 
@@ -39,7 +38,7 @@
         };
         var writeEventData = function () {
             throw new Error('No event data write callback was supplied');
-        }
+        };
 
         Module.eventHelpers.jsRegisterForControlEvent = function (
             viNamePointer,
@@ -85,8 +84,7 @@
             writeEventData = fn;
         };
 
-        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function(eventOracleIndex, controlId, eventType, eventDataTypeValueRef, eventData) {
-
+        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function (eventOracleIndex, controlId, eventType, eventDataTypeValueRef, eventData) {
             var allocatedDataValueRef = Module.eggShell.allocateData(eventDataTypeValueRef.typeRef);
 
             writeEventData(allocatedDataValueRef, eventData);
