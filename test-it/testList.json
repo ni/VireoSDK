@@ -61,6 +61,7 @@
         },
         "events": {
             "tests": [
+                "UserEventAlignmentBug.via",
                 "UserEventsBasic.via",
                 "UserEventsMultiple.via",
                 "UserEventsMultUEMultES.via",
