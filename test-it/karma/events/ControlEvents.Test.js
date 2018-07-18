@@ -11,8 +11,8 @@ describe('ValueChanged event tests', function () {
     var updateBooleanOnValueChangeEvent = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEvent.via');
     var updateMultipleEventStructuresOnValueChange = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEventWithMultipleRegistrations.via');
 
-    var getEventDataValueRef = function(viName) {
-        return vireo.eggShell.findValueRef(viName, "valueChangedEventDataBool");
+    var getEventDataValueRef = function (viName) {
+        return vireo.eggShell.findValueRef(viName, 'valueChangedEventDataBool');
     };
 
     beforeAll(function (done) {
@@ -71,8 +71,11 @@ describe('ValueChanged event tests', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
         setTimeout(function () {
-            const valueRef = getEventDataValueRef("UpdateBooleanOnValueChangeEvent")
-            const data = { OldValue:false, NewValue:true };
+            const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent');
+            const data = {
+                OldValue: false,
+                NewValue: true
+            };
             vireo.eventHelpers.occurEvent(1, 18, 2, valueRef, data);
         }, 20);
 
@@ -90,8 +93,11 @@ describe('ValueChanged event tests', function () {
 
         var unregisteredControlId = 19;
         setTimeout(function () {
-            const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent')
-            const data = { OldValue:false, NewValue:true };
+            const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent');
+            const data = {
+                OldValue: false,
+                NewValue: true
+            };
             vireo.eventHelpers.occurEvent(1, unregisteredControlId, 2, valueRef, data);
         }, 20);
 
@@ -120,8 +126,11 @@ describe('ValueChanged event tests', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MultipleEventStructuresListeningToSameControl');
 
         setTimeout(function () {
-            const valueRef = getEventDataValueRef('MultipleEventStructuresListeningToSameControl')
-            const data = { OldValue:false, NewValue:true };
+            const valueRef = getEventDataValueRef('MultipleEventStructuresListeningToSameControl');
+            const data = {
+                OldValue: false,
+                NewValue: true
+            };
             vireo.eventHelpers.occurEvent(1, 18, 2, valueRef, data);
         }, 20);
 
