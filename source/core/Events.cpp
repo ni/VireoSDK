@@ -1064,14 +1064,45 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                 memcpy(esEventDataNode, &eventData, commonDataSize);
                 *EventIndexFieldPtr(esEventDataNode) = eventIndex;
                 if (eventData.eventDataType) {
-                    Int32 alignment = eventData.eventDataType->AQAlignment();
-                    commonDataSize = TypeManager::AlignAQOffset(commonDataSize, alignment);  // round up to alignment boundary
-                    if (eventData.eventDataType->TopAQSize() == dataNodeSize - commonDataSize) {
-                        // TODO(spathiwa) Should we also verify type of event data node matches event at run-time?
-                        // When we support multiple events with a shared event case, this needs to be smarter
-                        // and copy only common data, using a custom emit proc (which could verify types) and
-                        // generate custom snippets for each event data node cluster.
-                        eventData.eventDataType->CopyData(eventData.pEventData, (AQBlock1*)esEventDataNode + commonDataSize);
+                    const UInt32 numCommonElements = EventCommonData::GetNumberOfCommonElements();
+                    const UInt32 numDestElements = esEventDataNodeType->SubElementCount();
+                    const UInt32 numSourceElements = eventData.eventDataType->SubElementCount();
+                    UInt32 destElementIndex = numCommonElements, sourceElementIndex = 0;
+                    if (numDestElements == numCommonElements + 1
+                        && esEventDataNodeType->GetSubElement(destElementIndex)->IsA(eventData.eventDataType)) {
+                        // Special case, all non-commmon data is encapsulated in a single cluster, for example, when
+                        // User Event use the same cluster type which defined the user event to be to fire it and
+                        // as a data element after the common portion (without inlining its fields).
+                        TypeRef destElemType = esEventDataNodeType->GetSubElement(destElementIndex);
+                        eventData.eventDataType->CopyData((AQBlock1*)eventData.pEventData,
+                                                          (AQBlock1*)esEventDataNode + destElemType->ElementOffset());
+                    } else {
+                        // Loop through all elements in the destination event data cluster, and look for the matching
+                        // source element in the fired event data.  We need to copy one element at a time because the
+                        // alignment of the source and dest might not be the same because of the precense of leading
+                        // common fields, and also to handle shared event cases which only expose event data common
+                        // to all sources.
+                        // Note, although this looks like an O(N^2) nested loop, it's actually O(N+M), the sum of
+                        // the number of fields in the source (fired event data) and dest (cluster).
+                        while (destElementIndex < numDestElements) {
+                            // (TODO(spathiwa) We could use a custom emit proc to verify types and generate
+                            // custom snippets for each event data node cluster so it doesn't have to check at run-time.)
+                            TypeRef destElemType = esEventDataNodeType->GetSubElement(destElementIndex);
+                            IntIndex destOffset = destElemType->ElementOffset();
+                            while (sourceElementIndex < numSourceElements) {
+                                // Find the event source element with the same type and name. If a source element doesn't
+                                // match the current dest name, it was elided so skip it.
+                                TypeRef sourceElemType = eventData.eventDataType->GetSubElement(sourceElementIndex++);
+                                const SubString sourceElemName = sourceElemType->ElementName();
+                                if (destElemType->IsA(sourceElemType) && destElemType->ElementName().Compare(&sourceElemName)) {
+                                    // Both type and element name must match.  On match, copy the element and move to next dest.
+                                    destElemType->CopyData((AQBlock1*)eventData.pEventData + sourceElemType->ElementOffset(),
+                                                           (AQBlock1*)esEventDataNode + destOffset);
+                                    break;
+                                }
+                            }
+                            ++destElementIndex;
+                        }
                     }
                 }
             } else {  // Timeout case eventData node has no ref, so falls through this case.

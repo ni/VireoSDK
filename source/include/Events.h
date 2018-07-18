@@ -74,6 +74,7 @@ struct EventCommonData {
     UInt32 eventSeqIndex;  // This field is a monotonically increasing event sequence number in actual generated events,
                            // but a placeholder for the computed eventIndex event data node field on the diagram (computed by WaitForEvent per event case)
     RefNumVal eventRef;
+    static UInt32 GetNumberOfCommonElements() { return 5; }  // change if fields are added above
 
     void InitEventTime() { eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount())); }
     EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type), eventSeqIndex(0) {
