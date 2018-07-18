@@ -85,12 +85,11 @@
         };
 
         publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function (eventOracleIndex, controlId, eventType, eventDataTypeValueRef, eventData) {
+            // Allocate space for the event data using the type information passed in to occurEvent
             var allocatedDataValueRef = Module.eggShell.allocateData(eventDataTypeValueRef.typeRef);
-
             writeEventData(allocatedDataValueRef, eventData);
-
             Module._OccurEvent(eventOracleIndex, controlId, eventType, allocatedDataValueRef.typeRef, allocatedDataValueRef.dataRef);
-
+            // Now that the data has been passed to Vireo, which should copy it, deallocate the memory
             Module.eggShell.deallocateData(allocatedDataValueRef);
         };
     };
