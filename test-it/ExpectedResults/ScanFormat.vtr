@@ -7,6 +7,8 @@ offset_past:<11>, remaining:()
 offset_past:<9>, remaining:( )
 :<123.500000> <89.000000> err:<(false 0 '')>
 offset_past:<9>, remaining:( )
+:<123.500000> <89.000000> err:<(false 0 '')>
+offset_past:<9>, remaining:( )
 :<123.000000> <89> err:<(false 0 '')>
 ---test scan float------ ( +127.5 .23 )
 offset_past:<11>, remaining:( )
