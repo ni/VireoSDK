@@ -1605,9 +1605,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
     UInt32 offsetPastScan = 0;
 
     // if the format string is empty, use the auto format option (%g)
-    SubString withoutWhitespaces(&f);
-    withoutWhitespaces.EatLeadingSpaces();
-    if (withoutWhitespaces.Length() == 0) {
+    if (f.Length() == 0) {
         const char* autoFormatString = "%g";
         f.AliasAssignCStr(autoFormatString);
     }
