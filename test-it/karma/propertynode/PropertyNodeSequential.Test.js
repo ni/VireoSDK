@@ -4,7 +4,6 @@ describe('The Vireo PropertyNode', function () {
     var Vireo = window.NationalInstruments.Vireo.Vireo;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
-    var spyHelpers = window.testHelpers.spyHelpers;
 
     var vireo, spy, runSlicesAsync;
 
@@ -12,6 +11,14 @@ describe('The Vireo PropertyNode', function () {
     var propertyNodeWriteRead = fixtures.convertToAbsoluteFromFixturesDir('propertynode/WriteRead.via');
     var propertyNodeWriteWrite = fixtures.convertToAbsoluteFromFixturesDir('propertynode/WriteWrite.via');
     var propertyName = 'Value';
+
+    var expectValidValueRef = function (valueRef) {
+        expect(valueRef).toBeObject();
+        expect(valueRef.typeRef).toBeDefined();
+        expect(valueRef.dataRef).toBeDefined();
+        expect(valueRef.typeRef).toBeNumber();
+        expect(valueRef.dataRef).toBeNumber();
+    };
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -26,58 +33,50 @@ describe('The Vireo PropertyNode', function () {
         spy = jasmine.createSpy();
     });
 
-    it('sequential read read operations invoke JavaScript callbacks with correct parameters', function (done) {
-        var viName = '%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AReadRead%2Egviweb';
-        vireo.propertyNode.setPropertyReadFunction(spy);
-
-        var expectedCallArgs = [
-            [viName, '1', propertyName, 'Boolean', viName, 'local3'],
-            [viName, '1', propertyName, 'Boolean', viName, 'local6']
-        ];
-
-        runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, propertyNodeReadRead);
+    var propertyNodeCallbackTest = function (viaPath, viName, controlId, propertyName, done) {
+        runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaPath);
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
+
+            var callCount = spy.calls.count();
+            for (var i = 0; i < callCount; i += 1) {
+                var args = spy.calls.argsFor(i);
+                expect(args[0]).toEqual(viName);
+                expect(args[1]).toEqual(controlId);
+                expect(args[2]).toEqual(propertyName);
+                expectValidValueRef(args[3]);
+            }
+
             done();
         });
+    };
+
+    it('sequential read read operations invoke JavaScript callbacks with correct parameters', function (done) {
+        var viName = '%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AReadRead%2Egviweb',
+            controlId = '1';
+
+        vireo.propertyNode.setPropertyReadFunction(spy);
+
+        propertyNodeCallbackTest(propertyNodeReadRead, viName, controlId, propertyName, done);
     });
 
     it('sequential write write operations invoke JavaScript callbacks with correct parameters', function (done) {
-        var viName = '%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AWriteWrite%2Egviweb';
+        var viName = '%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AWriteWrite%2Egviweb',
+            controlId = '1';
+
         vireo.propertyNode.setPropertyWriteFunction(spy);
 
-        var expectedCallArgs = [
-            [viName, '1', propertyName, 'Boolean', viName, 'c1'],
-            [viName, '1', propertyName, 'Boolean', viName, 'c4']
-        ];
-
-        runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, propertyNodeWriteWrite);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
-            done();
-        });
+        propertyNodeCallbackTest(propertyNodeWriteWrite, viName, controlId, propertyName, done);
     });
 
     it('sequential write read operations invoke JavaScript callbacks with correct parameters', function (done) {
-        var viName = '%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AWriteRead%2Egviweb';
+        var viName = '%3A%3AWeb%20Server%3A%3AInteractive%3A%3AWebApp%3A%3AWriteRead%2Egviweb',
+            controlId = '1';
+
         vireo.propertyNode.setPropertyWriteFunction(spy);
         vireo.propertyNode.setPropertyReadFunction(spy);
 
-        var expectedCallArgs = [
-            [viName, '1', propertyName, 'Boolean', viName, 'c1'],
-            [viName, '1', propertyName, 'Boolean', viName, 'local6']
-        ];
-
-        runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, propertyNodeWriteRead);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            spyHelpers.verifySpyArgumentsForCalls(spy, expectedCallArgs);
-            done();
-        });
+        propertyNodeCallbackTest(propertyNodeWriteRead, viName, controlId, propertyName, done);
     });
 });
