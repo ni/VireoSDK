@@ -36,9 +36,6 @@
         var unRegisterForControlEvent = function () {
             throw new Error('No event un-registration callback was supplied');
         };
-        var writeEventData = function () {
-            throw new Error('No event data write callback was supplied');
-        };
 
         Module.eventHelpers.jsRegisterForControlEvent = function (
             viNamePointer,
@@ -76,18 +73,10 @@
             unRegisterForControlEvent = fn;
         };
 
-        publicAPI.eventHelpers.setWriteEventDataFunction = Module.eventHelpers.setWriteEventDataFunction = function (fn) {
-            if (typeof fn !== 'function') {
-                throw new Error('WriteEventData must be a callable function');
-            }
-
-            writeEventData = fn;
-        };
-
-        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function (eventOracleIndex, controlId, eventType, eventDataTypeValueRef, eventData) {
+        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function (eventOracleIndex, controlId, eventType, typeVisitor, eventDataTypeValueRef, eventData) {
             // Allocate space for the event data using the type information passed in to occurEvent
             var allocatedDataValueRef = Module.eggShell.allocateData(eventDataTypeValueRef.typeRef);
-            writeEventData(allocatedDataValueRef, eventData);
+            Module.eggShell.reflectOnValueRef(typeVisitor, allocatedDataValueRef, eventData);
             Module._OccurEvent(eventOracleIndex, controlId, eventType, allocatedDataValueRef.typeRef, allocatedDataValueRef.dataRef);
             // Now that the data has been passed to Vireo, which should copy it, deallocate the memory
             Module.eggShell.deallocateData(allocatedDataValueRef);
