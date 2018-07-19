@@ -1128,8 +1128,9 @@ void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType, UIn
     EventOracle::TheEventOracle().OccurEvent(eventOracleIndex, eData);
 }
 
-VIREO_EXPORT void OccurEvent(UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType, TypeRef eventDataType, void *eventData)
+VIREO_EXPORT void OccurEvent(TypeManagerRef tm, UInt32 eventOracleIndex, UInt32 controlID, UInt32 eventType, TypeRef eventDataType, void *eventData)
 {
+    TypeManagerScope scope(tm);
     RefNum ref = kNotARefNum;
     EventControlUID eventIndexControlID = 0;
     if (eventOracleIndex > kAppEventOracleIdx) {
