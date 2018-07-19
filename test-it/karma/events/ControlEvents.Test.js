@@ -36,6 +36,10 @@ describe('ValueChanged event tests', function () {
         };
     }());
 
+    var writeData = function (valueRef, data) {
+        vireo.eggShell.reflectOnValueRef(typeVisitor, valueRef, data);
+    };
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             valueChangedEventRegisterAndUnregister,
@@ -95,7 +99,7 @@ describe('ValueChanged event tests', function () {
                 OldValue: false,
                 NewValue: true
             };
-            vireo.eventHelpers.occurEvent(1, 18, 2, typeVisitor, valueRef, data);
+            vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -117,7 +121,7 @@ describe('ValueChanged event tests', function () {
                 OldValue: false,
                 NewValue: true
             };
-            vireo.eventHelpers.occurEvent(1, unregisteredControlId, 2, typeVisitor, valueRef, data);
+            vireo.eventHelpers.occurEvent(1, unregisteredControlId, 2, writeData, valueRef, data);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -150,7 +154,7 @@ describe('ValueChanged event tests', function () {
                 OldValue: false,
                 NewValue: true
             };
-            vireo.eventHelpers.occurEvent(1, 18, 2, typeVisitor, valueRef, data);
+            vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
@@ -173,7 +177,7 @@ describe('ValueChanged event tests', function () {
                 OldValue: oldValue,
                 NewValue: newValue
             };
-            vireo.eventHelpers.occurEvent(1, 18, 2, typeVisitor, valueRef, data);
+            vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
         }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
