@@ -73,10 +73,10 @@
             unRegisterForControlEvent = fn;
         };
 
-        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function (eventOracleIndex, controlId, eventType, typeVisitor, eventDataTypeValueRef, eventData) {
+        publicAPI.eventHelpers.occurEvent = Module.eventHelpers.occurEvent = function (eventOracleIndex, controlId, eventType, writeCallback, eventDataTypeValueRef, eventData) {
             // Allocate space for the event data using the type information passed in to occurEvent
             var allocatedDataValueRef = Module.eggShell.allocateData(eventDataTypeValueRef.typeRef);
-            Module.eggShell.reflectOnValueRef(typeVisitor, allocatedDataValueRef, eventData);
+            writeCallback(allocatedDataValueRef, eventData);
             Module._OccurEvent(eventOracleIndex, controlId, eventType, allocatedDataValueRef.typeRef, allocatedDataValueRef.dataRef);
             // Now that the data has been passed to Vireo, which should copy it, deallocate the memory
             Module.eggShell.deallocateData(allocatedDataValueRef);
