@@ -1,4 +1,4 @@
-describe('ValueChanged event tests', function () {
+describe('The Vireo Control Event', function () {
     'use strict';
 
     var Vireo = window.NationalInstruments.Vireo.Vireo;
@@ -59,7 +59,7 @@ describe('ValueChanged event tests', function () {
         });
     });
 
-    it('Verify registration callback is called on parse and unregister callback on exit', function (done) {
+    it('registration callback is called on parse and unregister callback on exit', function (done) {
         var registerCallbackExecuted = false;
         var unregisterCallbackExecuted = false;
         vireo.eventHelpers.setRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
@@ -89,7 +89,7 @@ describe('ValueChanged event tests', function () {
         });
     });
 
-    it('Verify event occurrence updates boolean terminal value', function (done) {
+    it('occurrence updates boolean terminal value', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEvent);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
@@ -110,7 +110,7 @@ describe('ValueChanged event tests', function () {
         });
     });
 
-    it('Verify value change on an unregistered control does not update boolean terminal value', function (done) {
+    it('on an unregistered control does not update boolean terminal value', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEvent);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
@@ -132,7 +132,7 @@ describe('ValueChanged event tests', function () {
         });
     });
 
-    it('Verify that time out event occurs when value change is not triggered', function (done) {
+    it('time out event occurs when value change is not triggered', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEvent);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
@@ -144,7 +144,7 @@ describe('ValueChanged event tests', function () {
         });
     });
 
-    it('Verify event occurrence notifies all registered event structures', function (done) {
+    it('occurrence notifies all registered event structures', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateMultipleEventStructuresOnValueChange);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MultipleEventStructuresListeningToSameControl');
 
@@ -165,7 +165,7 @@ describe('ValueChanged event tests', function () {
         });
     });
 
-    it('Verify event occurrence passes correct old and new value', function (done) {
+    it('for value change occurrence passes correct old and new value', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateNumericOnValueChangeEvent);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateNumericOnValueChangeEvent');
         var oldValue = 12;
