@@ -1848,11 +1848,11 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
             int whichConvertArg = -int(intptr_t(convertSnippet->_p1));
             snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*)convertSnippet->Next();
             if (whichConvertArg == 1) {
-                convertSnippet->_p0 = snippet->_p0 + (size_t)_ParamPointer(SX);
+                convertSnippet->_p0 += (size_t)_ParamPointer(SX);
                 snippet->_p0 = convertBuffer;
                 snippet->_p1 += (size_t)_ParamPointer(SY);
             } else {
-                convertSnippet->_p0 = snippet->_p0 + (size_t)_ParamPointer(SY);
+                convertSnippet->_p0 += (size_t)_ParamPointer(SY);
                 snippet->_p0 += (size_t)_ParamPointer(SX);
                 snippet->_p1 = convertBuffer;
             }
@@ -1869,7 +1869,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
             }
             snippet->_p2 -= (size_t)_ParamPointer(SDest);
             convertSnippet->_p0 = nullptr;
-            convertSnippet->_p1 = (AQBlock1*)(intptr_t(whichConvertArg) << 24);
+            convertSnippet->_p1 -= whichConvertArg == 1 ? (size_t)_ParamPointer(SX) : (size_t)_ParamPointer(SY);
             snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
         } else {
             snippet->_p0 += (size_t)_ParamPointer(SX);

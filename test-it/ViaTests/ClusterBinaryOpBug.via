@@ -1,0 +1,19 @@
+define(clusterBinaryOpBug dv(.VirtualInstrument (
+	Locals: c(
+		ce(dv(.Single 2) c0)
+		e(dv(c(
+            e(.Double element1)
+            e(.Double element2)
+        ) (10 22 )) cluster)
+		e(dv(c(
+            e(.Double element1)
+            e(.Double element2)
+        ) (0 0 )) result)
+	)
+		clump(1
+        Sub(cluster c0 result)
+		Printf("Sub: %z\n" result)
+	)
+)))
+
+enqueue(clusterBinaryOpBug)
