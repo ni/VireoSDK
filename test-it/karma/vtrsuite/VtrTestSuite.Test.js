@@ -22,10 +22,16 @@ describe('The Vireo VTR test suite', function () {
     describe('can preload files for test', function () {
         viaTestConfigs.forEach(function (viaTestConfig) {
             it(viaTestConfig.testName, function (done) {
+                var preloadFinished = function () {
+                    var vtrText = fixtures.loadAbsoluteUrl(viaTestConfig.vtrFile);
+                    expect(vtrText).toBeString();
+                    done();
+                };
+
                 fixtures.preloadAbsoluteUrls([
                     viaTestConfig.viaFile,
                     viaTestConfig.vtrFile
-                ], done);
+                ], preloadFinished);
             });
         });
     });
