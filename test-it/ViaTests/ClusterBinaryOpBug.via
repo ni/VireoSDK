@@ -1,14 +1,24 @@
 define(clusterBinaryOpBug dv(.VirtualInstrument (
 	Locals: c(
 		ce(dv(.Single 2) c0)
+		ce(dv(c(
+            ce(.Double element1)
+            ce(.Double element2)
+			ce(.Double element3)
+			ce(c(
+				e(.Double element1)
+				e(.Double element2)
+			) element4)
+        ) (10 22 14 (7 9 ) )) cluster)
 		e(dv(c(
             e(.Double element1)
             e(.Double element2)
-        ) (10 22 )) cluster)
-		e(dv(c(
-            e(.Double element1)
-            e(.Double element2)
-        ) (0 0 )) result)
+			e(.Double element3)
+			e(c(
+				e(.Double element1)
+				e(.Double element2)
+			) element4)
+        ) (0 0 0 (0 0 ) )) result)
 	)
 		clump(1
         Sub(cluster c0 result)
