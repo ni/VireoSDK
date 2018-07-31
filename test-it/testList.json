@@ -134,7 +134,7 @@
                 "CheckCoreTypes.via",
                 "ClumpTriggerBug.via",
                 "ClumpTriggerWait.via",
-				"ClusterBinaryOpBug.via",
+                "ClusterBinaryOpBug.via",
                 "ClusterCompareBug2.via",
                 "ClusterCompareBug.via",
                 "ClusterComparison.via",

@@ -1,55 +1,55 @@
 define(clusterBinaryOpBug dv(.VirtualInstrument (
-	Locals: c(
-		ce(dv(.Single 2) c0)
-		ce(dv(c(
+    Locals: c(
+        ce(dv(.Single 2) c0)
+        ce(dv(c(
             ce(.Double element1)
             ce(.Double element2)
-			ce(.Double element3)
-			ce(c(
-				e(.Double element1)
-				e(.Double element2)
-			) element4)
+            ce(.Double element3)
+            ce(c(
+                e(.Double element1)
+                e(.Double element2)
+            ) element4)
         ) (10 22 14 (7 9 ) )) cluster)
-		ce(dv(c(
+        ce(dv(c(
             ce(.Double element1)
             ce(.Int32 element2)
-			ce(.Single element3)
-			ce(c(
-				e(.Int8 element1)
-				e(.Double element2)
-			) element4)
+            ce(.Single element3)
+            ce(c(
+                e(.Int8 element1)
+                e(.Double element2)
+            ) element4)
         ) (5 1 8 (3 2 ) )) cluster2)
-		e(dv(c(
+        e(dv(c(
             e(.Double element1)
             e(.Double element2)
-			e(.Double element3)
-			e(c(
-				e(.Double element1)
-				e(.Double element2)
-			) element4)
+            e(.Double element3)
+            e(c(
+                e(.Double element1)
+                e(.Double element2)
+            ) element4)
         ) (0 0 0 (0 0 ) )) result)
-		e(dv(c(
+        e(dv(c(
             e(.Single element1)
             e(.Single element2)
-			e(.Single element3)
-			e(c(
-				e(.Single element1)
-				e(.Single element2)
-			) element4)
+            e(.Single element3)
+            e(c(
+                e(.Single element1)
+                e(.Single element2)
+            ) element4)
         ) (0 0 0 (0 0 ) )) result2)
-	)
-		clump(1
+    )
+        clump(1
         Sub(cluster c0 result)
-		Printf("Sub: %z\n" result)
-		Sub(c0 cluster result)
-		Printf("Sub: %z\n" result)
-		Sub(cluster cluster2 result)
-		Printf("Sub: %z\n" result)
-		Sub(cluster2 cluster result)
-		Printf("Sub: %z\n" result)
+        Printf("Sub: %z\n" result)
+        Sub(c0 cluster result)
+        Printf("Sub: %z\n" result)
+        Sub(cluster cluster2 result)
+        Printf("Sub: %z\n" result)
+        Sub(cluster2 cluster result)
+        Printf("Sub: %z\n" result)
         Sub(cluster c0 result2)
-		Printf("Sub: %z\n" result2)
-	)
+        Printf("Sub: %z\n" result2)
+    )
 )))
 
 enqueue(clusterBinaryOpBug)
