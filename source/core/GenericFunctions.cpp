@@ -1869,7 +1869,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterBinaryOp, AggregateBinOpInstruction)
             }
             snippet->_p2 -= (size_t)_ParamPointer(SDest);
             convertSnippet->_p0 = nullptr;
-            convertSnippet->_p1 -= whichConvertArg == 1 ? (size_t)_ParamPointer(SX) : (size_t)_ParamPointer(SY);
+            convertSnippet->_p1 = (AQBlock1*)(intptr_t(whichConvertArg) << 24);
             snippet = (Instruction4<AQBlock1, AQBlock1, AQBlock1, AQBlock1>*) next;
         } else {
             snippet->_p0 += (size_t)_ParamPointer(SX);
