@@ -99,7 +99,7 @@ describe('The Vireo Control Event', function () {
             expect(controlId).toBe(18);
             expect(eventId).toBe(2);
             expect(eventOracleIndex).toBe(1);
-            registerCallbackExecutedCount++;
+            registerCallbackExecutedCount += 1;
         });
 
         vireo.eventHelpers.setUnRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
@@ -107,7 +107,7 @@ describe('The Vireo Control Event', function () {
             expect(controlId).toBe(18);
             expect(eventId).toBe(2);
             expect(eventOracleIndex).toBe(1);
-            unregisterCallbackExecutedCount++;
+            unregisterCallbackExecutedCount += 1;
         });
 
         expect(registerCallbackExecutedCount).toBe(0);
