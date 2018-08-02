@@ -8,6 +8,7 @@ describe('The Vireo Control Event', function () {
     var vireo;
 
     var valueChangedEventRegisterAndUnregister = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeEventRegistration.via');
+    var valueChangedMultipleEventRegisterAndUnregister = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeMultipleEventRegistration.via');
     var updateBooleanOnValueChangeEvent = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEvent.via');
     var updateNumericOnValueChangeEvent = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeNumericStaticControlEvent.via');
     var updateMultipleEventStructuresOnValueChange = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEventWithMultipleRegistrations.via');
@@ -43,6 +44,7 @@ describe('The Vireo Control Event', function () {
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             valueChangedEventRegisterAndUnregister,
+            valueChangedMultipleEventRegisterAndUnregister,
             updateBooleanOnValueChangeEvent,
             updateNumericOnValueChangeEvent,
             updateMultipleEventStructuresOnValueChange
@@ -85,6 +87,36 @@ describe('The Vireo Control Event', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
             expect(unregisterCallbackExecuted).toBeTrue();
+            done();
+        });
+    });
+
+    it('registration and unregistration callbacks are called only once for each control/event combination', function (done) {
+        var registerCallbackExecutedCount = 0;
+        var unregisterCallbackExecutedCount = 0;
+        vireo.eventHelpers.setRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+            expect(viName).toBe('ValueChangedMultipleEventRegisterAndUnregister');
+            expect(controlId).toBe(18);
+            expect(eventId).toBe(2);
+            expect(eventOracleIndex).toBe(1);
+            registerCallbackExecutedCount++;
+        });
+
+        vireo.eventHelpers.setUnRegisterForControlEventsFunction(function (viName, controlId, eventId, eventOracleIndex) {
+            expect(viName).toBe('ValueChangedMultipleEventRegisterAndUnregister');
+            expect(controlId).toBe(18);
+            expect(eventId).toBe(2);
+            expect(eventOracleIndex).toBe(1);
+            unregisterCallbackExecutedCount++;
+        });
+
+        expect(registerCallbackExecutedCount).toBe(0);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, valueChangedMultipleEventRegisterAndUnregister);
+        expect(registerCallbackExecutedCount).toBe(1);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrintError).toBeEmptyString();
+            expect(unregisterCallbackExecutedCount).toBe(1);
             done();
         });
     });

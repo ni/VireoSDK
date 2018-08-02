@@ -1,0 +1,76 @@
+define (ValueChangedMultipleEventRegisterAndUnregister dv(.VirtualInstrument (
+    Events: c(
+        e(c( // Event Struct 0
+           e(c(  // Event spec 0
+               e(dv(UInt32 1000) eventSource)  // event source enum
+               e(dv(UInt32 2) eventType)  // ValueChanged
+               e(dv(ControlRefNum ControlReference("18")) controlUID)  // for static control refs
+               e(dv(UInt32 0) dynIndex)    // zero - statically registered
+           ))
+           e(dv(.EventSpec (0 1 0 0)))
+        ))
+        e(c( // Event Struct 1
+           e(c(  // Event spec 0
+               e(dv(UInt32 1000) eventSource)  // event source enum
+               e(dv(UInt32 2) eventType)  // ValueChanged
+               e(dv(ControlRefNum ControlReference("18")) controlUID)  // for static control refs
+               e(dv(UInt32 0) dynIndex)    // zero - statically registered
+           ))
+        ))
+    )
+    Locals: c(   // Data Space
+        e(.ErrorCluster error)
+        e(c(
+            e(.UInt32 Source)
+            e(.UInt32 Type)
+            e(.UInt32 Time)
+            e(.UInt32 Index)
+            e(.ControlRefNum ControlRef)
+            e(.Boolean OldValue)
+            e(.Boolean NewValue)
+        ) eventData)
+        e(c(
+            e(.UInt32 Source)
+            e(.UInt32 Type)
+            e(.UInt32 Time)
+            e(.UInt32 Index)
+        ) timeoutData)
+        e(dv(ControlRefNum ControlReference("18")) controlRef)
+        e(c(
+            e(.Boolean OldValue)
+            e(.Boolean NewValue)
+        ) valueChangedEventDataBool)
+    )
+        clump(1
+
+        // _OccurEvent(controlRef 1000 2)  // Vireo unit test fires here; karma test fires event in JS
+
+        Printf("Waiting on Events\n")
+        WaitForEventsAndDispatch(50 * 0 0 eventData 1 1 timeoutData 2)
+        Branch(0)
+        Perch(1)
+        Printf("Value Changed Event %z %z\n" eventData.Source eventData.Type)
+        Printf("// ControlRef %z\n" eventData.ControlRef)
+        Branch(0)
+        Perch(2)
+        Printf("Timeout Event\n")
+        Perch(0)
+    )
+        clump(1
+
+        // _OccurEvent(controlRef 1000 2)  // Vireo unit test fires here; karma test fires event in JS
+
+        Printf("Waiting on Events\n")
+        WaitForEventsAndDispatch(50 * 0 0 eventData 1 1 timeoutData 2)
+        Branch(0)
+        Perch(1)
+        Printf("Value Changed Event %z %z\n" eventData.Source eventData.Type)
+        Printf("// ControlRef %z\n" eventData.ControlRef)
+        Branch(0)
+        Perch(2)
+        Printf("Timeout Event\n")
+        Perch(0)
+    )
+)))
+
+enqueue(ValueChangedMultipleEventRegisterAndUnregister)

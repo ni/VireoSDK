@@ -317,6 +317,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
         // TODO(spathiwa) -- finish; control should be queried for its cached eventOracleIndex if it previously registered
         // eventOracleIndex = ...
     }
+    bool newEventOracleIndex = true;
     if (eventOracleIndex == kNotAnEventOracleIdx) {  // no eventOracleIndex, allocate a new one
         size_t size = _eventReg.size(), idx = kAppEventOracleIdx+1;
         while (UInt32(idx) < size && !_eventReg[idx]._eRegList.empty() && _eventReg[idx]._controlUID != controlUID) {
@@ -325,6 +326,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
         if (idx < size) {  // we found an unused index, or one already for this control ID
             _eventReg[idx]._controlUID = controlUID;
             _eventReg[idx]._controlRef = ref;
+            newEventOracleIndex = false;
         } else {
             EventOracleObj eo(controlUID, ref);
             _eventReg.push_back(eo);
@@ -334,7 +336,7 @@ bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventT
         if (oracleIdxPtr)
             *oracleIdxPtr = eventOracleIndex;
     }
-    return EventListInsert(eventOracleIndex, EventRegQueueID(qID, ref), eSource, eType);
+    return EventListInsert(eventOracleIndex, EventRegQueueID(qID, ref), eSource, eType) && newEventOracleIndex;
 }
 
 // UnregisterForEvent -- unregister for given event source/type on either a static control (controlUID) or dynamic reference (ref),
@@ -574,10 +576,10 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
                         EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
 
-                        EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef, &eventOracleIdx);
+                        bool newlyAdded = EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef, &eventOracleIdx);
                         // gPlatform.IO.Printf("Static Register for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                         //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
-                        if (eventOracleIdx > kAppEventOracleIdx) {
+                        if (eventOracleIdx > kAppEventOracleIdx && newlyAdded) {
                             eventInfo->controlIDInfoMap[controlRef] = EventControlInfo(eventOracleIdx, controlID);
 #if kVireoOS_emscripten
                             jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
