@@ -53,6 +53,7 @@
                 "QueueRefNumBasic.via",
                 "QueueRefNumCleanup.via",
                 "QueueRefNumEnqueueFront.via",
+                "QueueRefNumEnqueueFrontBug.via",
                 "QueueRefNumGetStatus.via",
                 "QueueRefNumNamed.via",
                 "QueueRefNumSimpleArrayAndCluster.via",

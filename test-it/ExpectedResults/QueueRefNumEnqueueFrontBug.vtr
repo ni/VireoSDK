@@ -1,0 +1,12 @@
+Enqueue with empty unbounded queue
+GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(0)
+Dequeue unbounded queue y=0
+GetQueueStatus: maxsize=-1 numElem=0 remainingElts=()
+EnqueueFront with empty unbounded queue
+GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(1)
+EnqueueFront with queue containing 1 element
+GetQueueStatus: maxsize=-1 numElem=2 remainingElts=(2 1)
+Dequeue y=2
+GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(1)
+Dequeue y=1
+GetQueueStatus: maxsize=-1 numElem=0 remainingElts=()
