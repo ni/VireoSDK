@@ -388,7 +388,8 @@
             } catch (ex) {
                 var newErrorStatus = true;
                 var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
+                var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
+                var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
@@ -408,7 +409,8 @@
                 } else {
                     var newErrorStatus = true;
                     var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                    var newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
+                    var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', returnValue);
+                    var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
                     Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 }
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
@@ -447,12 +449,14 @@
 
             var functionName = Module.eggShell.dataReadString(functionNamePointer);
             var parameters = undefined;
+            var errorMessage;
             try {
                 parameters = createJavaScriptParametersArray(parametersPointer, parametersCount);
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
+                errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\'' + functionName + '\'.', ex);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
@@ -497,7 +501,8 @@
             } catch (ex) {
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
-                newErrorSource = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);
+                errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\'' + functionName + '\'.', ex);
+                newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
                 Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
