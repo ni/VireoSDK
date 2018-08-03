@@ -248,7 +248,8 @@ bool EventOracle::GetControlInfoForEventOracleIndex(EventOracleIndex eventOracle
 }
 
 // EventListInsert -- add registration entry at given eventOracleIndex for event source/type/ref, watching the given QueueID
-EventOracle::EventInsertStatus EventOracle::EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType) {
+EventOracle::EventInsertStatus EventOracle::EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource,
+                                   EventType eType) {
     EventInsertStatus added = kNoChange;
     EventRegList &eRegList = _eventReg[eventOracleIndex]._eRegList;
     EventRegList::iterator eRegIter = eRegList.begin(), eRegIterEnd = eRegList.end();
@@ -576,7 +577,8 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
                         EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
 
-                        EventOracle::EventInsertStatus status = EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef, &eventOracleIdx);
+                        EventOracle::EventInsertStatus status = EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef,
+                                            &eventOracleIdx);
                         // gPlatform.IO.Printf("Static Register for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                         //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
                         if (eventOracleIdx > kAppEventOracleIdx && status == EventOracle::kNewRegistration) {
