@@ -1,5 +1,6 @@
+Obtain new unbounded queue
 Enqueue with empty unbounded queue
-GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(0)
+GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(0) err= (false 0 '')
 Dequeue unbounded queue y=0
 GetQueueStatus: maxsize=-1 numElem=0 remainingElts=()
 EnqueueFront with empty unbounded queue
@@ -10,3 +11,38 @@ Dequeue y=2
 GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(1)
 Dequeue y=1
 GetQueueStatus: maxsize=-1 numElem=0 remainingElts=()
+
+Obtain new fixed size queue [10]
+GetQueueStatus: maxsize=10 numElem=0 remainingElts=() err= (false 0 '')
+Enqueue
+GetQueueStatus: maxsize=10 numElem=1 remainingElts=(10) err= (false 0 '')
+Dequeue y=10
+GetQueueStatus: maxsize=10 numElem=0 remainingElts=() err= (false 0 '')
+EnqueueFront
+GetQueueStatus: maxsize=10 numElem=1 remainingElts=(20) err= (false 0 '')
+Dequeue y=20
+GetQueueStatus: maxsize=10 numElem=0 remainingElts=() err= (false 0 '')
+
+Obtain new fixed size queue [1]
+GetQueueStatus: maxsize=1 numElem=0 remainingElts=() err= (false 0 '')
+EnqueueFront
+GetQueueStatus: maxsize=1 numElem=1 remainingElts=(0) err= (false 0 '')
+Dequeue y=0
+GetQueueStatus: maxsize=1 numElem=0 remainingElts=() err= (false 0 '')
+EnqueueFront
+GetQueueStatus: maxsize=1 numElem=1 remainingElts=(1) err= (false 0 '')
+Dequeue y=1
+GetQueueStatus: maxsize=1 numElem=0 remainingElts=() err= (false 0 '')
+
+Obtain new unbounded queue
+GetQueueStatus: maxsize=-1 numElem=0 remainingElts=() err= (false 0 '')
+Dequeue y=0 timedOut=true err=(false 0 '')
+GetQueueStatus: maxsize=-1 numElem=0 remainingElts=() err= (false 0 '')
+EnqueueFront
+GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(20) err= (false 0 '')
+Enqueue
+GetQueueStatus: maxsize=-1 numElem=2 remainingElts=(20 10) err= (false 0 '')
+Dequeue y=20
+GetQueueStatus: maxsize=-1 numElem=1 remainingElts=(10) err= (false 0 '')
+Dequeue y=10
+GetQueueStatus: maxsize=-1 numElem=0 remainingElts=() err= (false 0 '')
