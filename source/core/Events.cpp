@@ -178,6 +178,8 @@ class EventOracle {
     static EventOracle _s_singleton;
 
  public:
+    typedef enum { kNewRegistration, kAddedToNewQueue, kNoChange } EventInsertStatus;
+
     size_t size(EventQueueID qID) const { return _qObject[qID].size(); }
     void OccurEvent(EventOracleIndex eventOracleIdx, const EventData &eData);
     bool GetControlInfoForEventOracleIndex(EventOracleIndex eventOracleIdx, EventControlUID *controlID, RefNum *controlRef);
@@ -195,10 +197,10 @@ class EventOracle {
             _qObject[qID].DeleteQueue();
     }
     Int32 GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, RefNumVal *dynRegRefs, Int32 *dynIndexBase);
-    bool RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID, RefNum ref,
+    EventInsertStatus RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID, RefNum ref,
                           EventOracleIndex *oracleIdxPtr = nullptr);
     bool UnregisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventOracleIndex eventOracleIndex, RefNum ref);
-    bool EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType);
+    EventInsertStatus EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType);
     bool EventListRemove(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType);
     bool GetNewQueueObject(EventQueueID *qID, OccurrenceCore *occurrence);
 
@@ -246,8 +248,9 @@ bool EventOracle::GetControlInfoForEventOracleIndex(EventOracleIndex eventOracle
 }
 
 // EventListInsert -- add registration entry at given eventOracleIndex for event source/type/ref, watching the given QueueID
-bool EventOracle::EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType) {
-    bool added = false;
+EventOracle::EventInsertStatus EventOracle::EventListInsert(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource,
+                                   EventType eType) {
+    EventInsertStatus added = kNoChange;
     EventRegList &eRegList = _eventReg[eventOracleIndex]._eRegList;
     EventRegList::iterator eRegIter = eRegList.begin(), eRegIterEnd = eRegList.end();
     while (eRegIter != eRegIterEnd && (eRegIter->_eventSource != eSource || eRegIter->_eventType != eType))
@@ -258,13 +261,13 @@ bool EventOracle::EventListInsert(EventOracleIndex eventOracleIndex, EventRegQue
             ++rqIter;
         if (rqIter == rqIterEnd) {  // ref/qID not found, add it
             eRegIter->_qIDList.push_back(eventRegQueueID);
-            added = true;
+            added = kAddedToNewQueue;
         }
     } else {  // first registration for this event source/type
         EventRegInfo eventRegInfo(eSource, eType);
         eventRegInfo._qIDList.push_back(eventRegQueueID);
         eRegList.push_back(eventRegInfo);
-        added = true;
+        added = kNewRegistration;
     }
     return added;
 }
@@ -298,19 +301,19 @@ bool EventOracle::EventListRemove(EventOracleIndex eventOracleIndex, EventRegQue
 // RegisterForEvent -- register for given event source/type on either a static control (controlUID) or dynamic reference (ref),
 // queueing events into the specified event queue [qID].  The event oracle index (bucket) allocated is returned for quicker lookup;
 // all events for the same control are bucketed together.  User events are always in the application index (kAppEventOracleIdx) bucket.
-bool EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID,
+EventOracle::EventInsertStatus EventOracle::RegisterForEvent(EventQueueID qID, EventSource eSource, EventType eType, EventControlUID controlUID,
                                    RefNum ref, EventOracleIndex *oracleIdxPtr) {
     EventOracleIndex eventOracleIndex = kNotAnEventOracleIdx;
     if (oracleIdxPtr)
         *oracleIdxPtr = eventOracleIndex;
     if (UInt32(qID) >= _qObject.size()) {
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents with invalid QueueiD");
-        return false;
+        return kNoChange;
     }
     if (!controlUID) {
         if (!ref) {
             THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "RegisterForEvents must pass either controlUID or dynamic ref");
-            return false;
+            return kNoChange;
         }
         eventOracleIndex = kAppEventOracleIdx;
     } else {
@@ -574,10 +577,11 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
                         EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
 
-                        EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef, &eventOracleIdx);
+                        EventOracle::EventInsertStatus status = EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef,
+                                            &eventOracleIdx);
                         // gPlatform.IO.Printf("Static Register for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
                         //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
-                        if (eventOracleIdx > kAppEventOracleIdx) {
+                        if (eventOracleIdx > kAppEventOracleIdx && status == EventOracle::kNewRegistration) {
                             eventInfo->controlIDInfoMap[controlRef] = EventControlInfo(eventOracleIdx, controlID);
 #if kVireoOS_emscripten
                             jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
