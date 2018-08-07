@@ -44,7 +44,7 @@
 
         kNIUnableToFindFunctionForJavaScriptInvoke: {
             CODE: 44302,
-            MESSAGE: 'Function not found. Verify the function name in the external JavaScript file matches the function name in the JavaScript Library Interface document. Function not found when calling: '
+            MESSAGE: 'Function not found. Verify the function name in the external JavaScript file matches the function name in the JavaScript Library Interface. Function not found when calling: '
         },
 
         kNIUnableToSetReturnValueInJavaScriptInvoke: {
