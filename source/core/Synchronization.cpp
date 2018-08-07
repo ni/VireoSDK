@@ -521,6 +521,7 @@ Boolean QueueCore::PushFront(void* pData)
     IntIndex front = RemoveIndex();
     if (!TryMakeRoom(1, front))
         return false;
+    front = RemoveIndex();  // front may have changed after making room
 
     TypeRef eltType = _elements->ElementType();
     void* pTarget = _elements->BeginAt(front);
