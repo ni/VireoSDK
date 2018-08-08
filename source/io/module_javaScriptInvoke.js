@@ -34,32 +34,32 @@
 
         kNIUnableToInvokeAJavaScriptFunction: {
             CODE: 44300,
-            MESSAGE: 'An exception occurred within the external JavaScript function called by a JavaScript Library Interface node. Verify your JavaScript code is valid. Exception thrown when calling: '
+            MESSAGE: 'An exception occurred within the external JavaScript function called by a JavaScript Library Interface node. Verify your JavaScript code is valid.'
         },
 
         kNIUnsupportedParameterTypeInJavaScriptInvoke: {
             CODE: 44301,
-            MESSAGE: 'JavaScript function contains a parameter of an unsupported data type. Convert unsupported JavaScript types to types supported by the JavaScript Library Interface. Unsupported data type found when calling: '
+            MESSAGE: 'JavaScript function contains a parameter of an unsupported data type. Convert unsupported JavaScript types to types supported by the JavaScript Library Interface.'
         },
 
         kNIUnableToFindFunctionForJavaScriptInvoke: {
             CODE: 44302,
-            MESSAGE: 'Function not found. Verify the function name in the external JavaScript file matches the function name in the JavaScript Library Interface. Function not found when calling: '
+            MESSAGE: 'Function not found. Verify the function name in the external JavaScript file matches the function name in the JavaScript Library Interface.'
         },
 
         kNIUnableToSetReturnValueInJavaScriptInvoke: {
             CODE: 44303,
-            MESSAGE: 'Unable to set return value for JavaScript Library Interface node parameter when calling: '
+            MESSAGE: 'Unable to set return value for JavaScript Library Interface node parameter.'
         },
 
         kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke: {
             CODE: 44305,
-            MESSAGE: 'Unsupported return type for JavaScript Library Interface node parameter when calling: '
+            MESSAGE: 'Unsupported return type for JavaScript Library Interface node parameter.'
         },
 
         kNITypeMismatchForReturnTypeInJavaScriptInvoke: {
             CODE: 44306,
-            MESSAGE: 'Return type mismatch. Verify the return type in the JavaScript Library Interface matches the return type in the external JavaScript function. Mismatch occurred when calling: '
+            MESSAGE: 'Return type mismatch. Verify the return type in the JavaScript Library Interface matches the return type in the external JavaScript function.'
         }
     };
 
