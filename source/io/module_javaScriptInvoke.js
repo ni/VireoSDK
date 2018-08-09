@@ -357,15 +357,19 @@
 
             var typeConfig = typeFunctions[returnTypeName];
 
+            var source;
+            var code;
             if (typeConfig === undefined) {
-                var source2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE;
-                var code2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
-                Module.coreHelpers.mergeErrors(true, code2, source2, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                source = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
+                source = Module.coreHelpers.createSourceFromMessage(source);
+                code = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
+                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             } else if (!typeConfig.isValidReturnType(returnUserValue)) {
-                var source3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE;
-                var code3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
-                Module.coreHelpers.mergeErrors(true, code3, source3, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                source = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
+                source = Module.coreHelpers.createSourceFromMessage(source);
+                code = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
+                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
