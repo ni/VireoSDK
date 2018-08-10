@@ -34,32 +34,32 @@
 
         kNIUnableToInvokeAJavaScriptFunction: {
             CODE: 44300,
-            MESSAGE: 'An exception occurred within the external JavaScript function called by a JavaScript Library Interface Node. Verify the values you wired to the node. Exception thrown when calling: '
+            MESSAGE: 'An exception occurred within the external JavaScript function called by a JavaScript Library Interface node. Verify your JavaScript code is valid.'
         },
 
         kNIUnsupportedParameterTypeInJavaScriptInvoke: {
             CODE: 44301,
-            MESSAGE: 'Unsupported data type for JavaScript Library interface node parameter when calling: '
+            MESSAGE: 'JavaScript function contains a parameter of an unsupported data type. Convert unsupported JavaScript types to types supported by the JavaScript Library Interface.'
         },
 
         kNIUnableToFindFunctionForJavaScriptInvoke: {
             CODE: 44302,
-            MESSAGE: 'The function name for the JavaScript Library interface node cannot be found: '
+            MESSAGE: 'Function not found. Verify the function name in the external JavaScript file matches the function name in the JavaScript Library Interface.'
         },
 
         kNIUnableToSetReturnValueInJavaScriptInvoke: {
             CODE: 44303,
-            MESSAGE: 'Unable to set return value for JavaScript Library interface node parameter when calling: '
+            MESSAGE: 'Unable to set return value for JavaScript Library Interface node parameter.'
         },
 
         kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke: {
             CODE: 44305,
-            MESSAGE: 'Unsupported LabVIEW return type for JavaScript Library interface node parameter when calling: '
+            MESSAGE: 'Unsupported return type for JavaScript Library Interface node parameter.'
         },
 
         kNITypeMismatchForReturnTypeInJavaScriptInvoke: {
             CODE: 44306,
-            MESSAGE: 'Type mismatch in return type for JavaScript Library interface node parameter when calling: '
+            MESSAGE: 'Return type mismatch. Verify the return type in the JavaScript Library Interface matches the return type in the external JavaScript function.'
         }
     };
 
@@ -357,15 +357,19 @@
 
             var typeConfig = typeFunctions[returnTypeName];
 
+            var source;
+            var code;
             if (typeConfig === undefined) {
-                var source2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE;
-                var code2 = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
-                Module.coreHelpers.mergeErrors(true, code2, source2, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                source = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
+                source = Module.coreHelpers.createSourceFromMessage(source);
+                code = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
+                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             } else if (!typeConfig.isValidReturnType(returnUserValue)) {
-                var source3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE;
-                var code3 = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
-                Module.coreHelpers.mergeErrors(true, code3, source3, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                source = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
+                source = Module.coreHelpers.createSourceFromMessage(source);
+                code = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
+                Module.coreHelpers.mergeErrors(true, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 return;
             }
 
