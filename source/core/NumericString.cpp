@@ -918,7 +918,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
     Boolean negative = false;
     char* buffer = bufferBegin;
 
-    // the positive number string always start from the beginning
+    // the positive number string always starts from the beginning
     Int32 numberStart = 0;
     Int32 numberEnd = *pSize - 1;
     Int32 decimalPoint = -1;
@@ -930,13 +930,16 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
         decimalPoint = 0;
         exponentPos = 0;
     }
+
     if (strchr("fF", formatOptions->FormatChar)) {
         exponentPos = 0;
     }
+
     if (*(buffer + numberStart) == '-') {
         negative = true;
         numberStart++;
     }
+
     while (!(decimalPoint >= 0 && exponentPos >= 0) && index < size) {
         char digit = *(buffer+index);
         if (digit == '.') {
@@ -948,6 +951,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
         }
         index++;
     }
+
     if (decimalPoint < 0) {
         decimalPoint = 0;
     }
@@ -1003,12 +1007,14 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
             }
             numberEnd--;
         }
+
         if (formatOptions->RemoveTrailing) {
-            // dont remove the first zero for number 0
-            while ((*(buffer+numberEnd)== '0' || *(buffer+numberEnd)== '.') && numberEnd > numberStart) {
+            // only remove up to decimal point, and if just '0' keep that.
+            while ((*(buffer + numberEnd) == '0' || *(buffer + numberEnd) == '.') && numberEnd > numberStart && numberEnd >= decimalPoint) {
                 numberEnd--;
             }
         }
+
         buffer[1+numberEnd] = 0;
         if (!skipFinal) {
             TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
