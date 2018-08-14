@@ -8,19 +8,6 @@ define (WebApp%3A%3AMain%2Egviweb dv(.VirtualInstrument (
         ce(dv(.Double 10000)c1)
         e(.String local2)
         e(dv(.String '')dataItem_OutputString)
-        e(.String local4)
-        ce(dv(.String '10')c5)
-        e(.Boolean local6)
-        e(dv(.Boolean false)dataItem_Pass)
-        e(.Boolean local8)
-        e(c(
-            e(.String Old%20Value)
-            e(.String New%20Value)
-        ) valueChangedEventDatadataItem_OutputString)
-        e(c(
-            e(.Boolean Old%20Value)
-            e(.Boolean New%20Value)
-        ) valueChangedEventDatadataItem_Pass)
     )
         clump(1
         StringFormatValue(local2 c0 c1 )
