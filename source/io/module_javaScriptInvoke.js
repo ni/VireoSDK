@@ -78,6 +78,7 @@
         publicAPI.javaScriptInvoke = {};
 
         // Private Instance Variables (per vireo instance)
+        var internalFunctionsMap = new Map();
         var JavaScriptInvoke_GetParameterType = Module.cwrap('JavaScriptInvoke_GetParameterType', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetParameterPointer = Module.cwrap('JavaScriptInvoke_GetParameterPointer', 'number', ['number', 'number']);
         var JavaScriptInvoke_GetArrayElementType = Module.cwrap('JavaScriptInvoke_GetArrayElementType', 'number', ['number']);
@@ -306,7 +307,13 @@
             return parameters;
         };
 
-        var findJavaScriptFunctionToCall = function (functionName) {
+        var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
+            if (isInternalFunction) {
+                return {
+                    functionToCall: internalFunctionsMap.get(functionName),
+                    context: undefined
+                };
+            }
             var names = functionName.split('.');
             var jsSelfScope = typeof self !== 'undefined' ? self : {};
             var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
@@ -400,7 +407,7 @@
             }
         };
 
-        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction) {
             var completionCallback = function (returnValue) {
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
                     throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
@@ -411,6 +418,9 @@
                 if (!(returnValue instanceof Error)) {
                     tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
                 } else {
+                    if (isInternalFunction) {
+                        throw returnValue;
+                    }
                     var newErrorStatus = true;
                     var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
                     var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, returnValue);
@@ -422,7 +432,7 @@
             return completionCallback;
         };
 
-        var generateAPI = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus) {
+        var generateAPI = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction) {
             var api = {};
             api.getCompletionCallback = function () {
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
@@ -432,9 +442,24 @@
                     throw new Error('The API being accessed for ' + functionName + ' is not valid anymore.');
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
-                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction);
             };
+
+            if (isInternalFunction) {
+                api.setLabVIEWError = function (statusCode, errorCode, errorMessage) {
+                    Module.coreHelpers.mergeErrors(statusCode, errorCode, errorMessage, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                };
+            }
             return api;
+        };
+
+        publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
+            Object.keys(functionsToAdd).forEach(function (name) {
+                if (internalFunctionsMap.has(name)) {
+                    throw new Error('Private function already registered for name:' + name);
+                }
+                internalFunctionsMap.set(name, functionsToAdd[name]);
+            });
         };
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
@@ -443,7 +468,7 @@
             returnPointer,
             parametersPointer,
             parametersCount,
-            errorCheckingEnabled,
+            isInternalFunction,
             errorStatusPointer,
             errorCodePointer,
             errorSourcePointer) {
@@ -466,7 +491,7 @@
                 return;
             }
 
-            var functionAndContext = findJavaScriptFunctionToCall(functionName);
+            var functionAndContext = findJavaScriptFunctionToCall(functionName, isInternalFunction);
             var functionToCall = functionAndContext.functionToCall;
             var context = functionAndContext.context;
             if (functionToCall === undefined) {
@@ -496,13 +521,16 @@
             var returnValue = undefined;
             var api;
             if (functionToCall.length === parameters.length + 1) {
-                api = generateAPI(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                api = generateAPI(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus, isInternalFunction);
                 parameters.push(api);
             }
 
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
+                if (isInternalFunction) {
+                    throw ex;
+                }
                 newErrorStatus = true;
                 newErrorCode = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
                 errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\nfunction: ' + functionName, ex);
