@@ -1,0 +1,26 @@
+define(MyVI dv(VirtualInstrument (
+    Locals: c(
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error1)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error2)
+        e(dv(.Int32 1) value1)
+        e(dv(.Int32 11) value2)
+        e(dv(.Int32 0) returnValue1)
+        e(dv(.Int32 0) returnValue2)
+        e(.Occurrence occurrence1)
+        e(.Occurrence occurrence2)
+    )
+    clump (
+        JavaScriptInvoke(occurrence1 true error1 'NI_InternalFunction' returnValue1 value1)
+        JavaScriptInvoke(occurrence2 true error2 'NI_InternalFunctionSetsError' returnValue2 value2)
+    )
+) ) )
+
+enqueue(MyVI)

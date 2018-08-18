@@ -415,7 +415,8 @@
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
-                if (!(returnValue instanceof Error)) {
+                var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+                if (!(returnValue instanceof Error) && !errorStatus) {
                     tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
                 } else {
                     if (isInternalFunction) {
@@ -446,8 +447,8 @@
             };
 
             if (isInternalFunction) {
-                api.setLabVIEWError = function (statusCode, errorCode, errorMessage) {
-                    Module.coreHelpers.mergeErrors(statusCode, errorCode, errorMessage, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                api.setLabVIEWError = function (status, code, source) {
+                    Module.coreHelpers.mergeErrors(status, code, source, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 };
             }
             return api;
@@ -456,7 +457,10 @@
         publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
             Object.keys(functionsToAdd).forEach(function (name) {
                 if (internalFunctionsMap.has(name)) {
-                    throw new Error('Private function already registered for name:' + name);
+                    throw new Error('Internal function already registered for name:' + name);
+                }
+                if (functionsToAdd[name] === 'function') {
+                    throw new Error('Cannot add non-function ' + name + ' as a function.');
                 }
                 internalFunctionsMap.set(name, functionsToAdd[name]);
             });
@@ -544,7 +548,10 @@
 
             // assume synchronous invocation since the completion callback was never retrieved
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
-                tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
+                if (!errorStatus) {
+                    tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                }
                 Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;
