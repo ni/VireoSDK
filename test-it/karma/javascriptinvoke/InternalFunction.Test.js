@@ -1,0 +1,69 @@
+describe('A JavaScript function invoke', function () {
+    'use strict';
+    // Reference aliases
+    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoRunner = window.testHelpers.vireoRunner;
+    var fixtures = window.testHelpers.fixtures;
+
+    var vireo;
+
+    var jsInternalFunctionsUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/InternalFunctions.via');
+
+    beforeAll(function (done) {
+        fixtures.preloadAbsoluteUrls([
+            jsInternalFunctionsUrl
+        ], done);
+    });
+
+    beforeEach(function () {
+        vireo = new Vireo();
+    });
+
+    it('internal function succesfully works', function (done) {
+        var runSlices = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+        var called = false;
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: function (inputInteger, jsAPI) {
+                called = true;
+                jsAPI.setLabVIEWError(false, 0, '');
+                return inputInteger + 1;
+            }
+        });
+
+        runSlices(function (rawPrint, rawPrintError) {
+            expect(called).toBeTrue();
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error1.status')).toBeFalse();
+            expect(viPathParser('error1.code')).toBe(0);
+            expect(viPathParser('error1.source')).toBeEmptyString();
+            expect(viPathParser('returnValue1')).toBe(2);
+            done();
+        });
+    });
+
+    it('internal function succesfully sets error and return value is unset', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunctionSetsError: function (inputInteger, jsAPI) {
+                jsAPI.setLabVIEWError(true, 777, 'this is the error message');
+                return inputInteger + 1;
+            }
+        });
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error2.status')).toBeTrue();
+            expect(viPathParser('error2.code')).toBe(777);
+            expect(viPathParser('error2.source')).toContain('this is the error message');
+            expect(viPathParser('returnValue2')).toBe(0);
+            done();
+        });
+    });
+});
