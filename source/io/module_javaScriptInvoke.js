@@ -416,17 +416,19 @@
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
                 var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-                if (!(returnValue instanceof Error) && !errorStatus) {
-                    tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
-                } else {
-                    if (isInternalFunction) {
-                        throw returnValue;
+                if (!errorStatus) {
+                    if (!(returnValue instanceof Error)) {
+                        tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                    } else {
+                        if (isInternalFunction) {
+                            throw returnValue;
+                        }
+                        var newErrorStatus = true;
+                        var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
+                        var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, returnValue);
+                        var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
+                        Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                     }
-                    var newErrorStatus = true;
-                    var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                    var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, returnValue);
-                    var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                    Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 }
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
@@ -459,7 +461,7 @@
                 if (internalFunctionsMap.has(name)) {
                     throw new Error('Internal function already registered for name:' + name);
                 }
-                if (functionsToAdd[name] === 'function') {
+                if (typeof functionsToAdd[name] !== 'function') {
                     throw new Error('Cannot add non-function ' + name + ' as a function.');
                 }
                 internalFunctionsMap.set(name, functionsToAdd[name]);

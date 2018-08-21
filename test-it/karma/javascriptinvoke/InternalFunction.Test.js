@@ -19,7 +19,7 @@ describe('A JavaScript function invoke', function () {
         vireo = new Vireo();
     });
 
-    it('internal function succesfully works', function (done) {
+    it('internal function works', function (done) {
         var runSlices = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -45,7 +45,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('internal function succesfully sets error and return value is unset', function (done) {
+    it('internal function successfully sets error and return value is unset', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -65,5 +65,13 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('returnValue2')).toBe(0);
             done();
         });
+    });
+
+    it('registerInternalFunctions successfully errors if we add non-function', function () {
+        expect(function () {
+            vireo.javaScriptInvoke.registerInternalFunctions({
+                NI_InternalFunctionThatIsNotAFunction: { }
+            });
+        }).toThrow();
     });
 });
