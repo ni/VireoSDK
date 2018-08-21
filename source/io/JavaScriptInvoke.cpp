@@ -24,7 +24,7 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    extern void jsJavaScriptInvoke(OccurrenceRef occurrence, StringRef functionName, void *returnValue, void *parameters, Int32 parametersCount, 
+    extern void jsJavaScriptInvoke(OccurrenceRef occurrence, StringRef functionName, void *returnValue, void *parameters, Int32 parametersCount,
                                     Boolean isInternalFunction, Boolean *errorStatus, Int32 *errorCode, StringRef errorSource);
 }
 #endif
