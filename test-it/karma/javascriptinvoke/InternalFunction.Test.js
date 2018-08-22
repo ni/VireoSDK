@@ -62,7 +62,7 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error2.status')).toBeTrue();
             expect(viPathParser('error2.code')).toBe(777);
             expect(viPathParser('error2.source')).toContain('this is the error message');
-            expect(viPathParser('returnValue2')).toBe(0);
+            expect(viPathParser('returnValue2')).toBe(12);
             done();
         });
     });
@@ -71,6 +71,21 @@ describe('A JavaScript function invoke', function () {
         expect(function () {
             vireo.javaScriptInvoke.registerInternalFunctions({
                 NI_InternalFunctionThatIsNotAFunction: { }
+            });
+        }).toThrow();
+    });
+
+    it('registerInternalFunctions successfully errors if we add a duplicate function', function () {
+        expect(function () {
+            vireo.javaScriptInvoke.registerInternalFunctions({
+                NI_InternalFunctionDuplicate: function () {
+                    return 1;
+                }
+            });
+            vireo.javaScriptInvoke.registerInternalFunctions({
+                NI_InternalFunctionDuplicate: function () {
+                    return 2;
+                }
             });
         }).toThrow();
     });
