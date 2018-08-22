@@ -415,20 +415,17 @@
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
-                var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-                if (!errorStatus) {
-                    if (!(returnValue instanceof Error)) {
-                        tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
-                    } else {
-                        if (isInternalFunction) {
-                            throw returnValue;
-                        }
-                        var newErrorStatus = true;
-                        var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                        var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, returnValue);
-                        var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                        Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                if (!(returnValue instanceof Error)) {
+                    tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
+                } else {
+                    if (isInternalFunction) {
+                        throw returnValue;
                     }
+                    var newErrorStatus = true;
+                    var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
+                    var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, returnValue);
+                    var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
+                    Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
                 }
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
@@ -550,10 +547,7 @@
 
             // assume synchronous invocation since the completion callback was never retrieved
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
-                var errorStatus = Module.eggShell.dataReadBoolean(errorStatusPointer);
-                if (!errorStatus) {
-                    tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
-                }
+                tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorStatusPointer, errorCodePointer, errorSourcePointer, completionCallbackStatus);
                 Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;
