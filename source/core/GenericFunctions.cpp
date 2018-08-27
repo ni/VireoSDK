@@ -280,7 +280,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             SubString convertOpToken(pConvertOpName);
             bool useSnippet = false;
             pInstruction = nullptr;
-            if (destEncoding == kEncoding_S2CInt || destEncoding == kEncoding_IEEE754Binary) {
+            if (destEncoding == kEncoding_S2CInt || destEncoding == kEncoding_UInt || destEncoding == kEncoding_IEEE754Binary) {
                 // If the output type is numeric scalar, and exactly one of the inputs is not the same type as the output, automatically convert
                 // using the destination as a temporary.  (If the destination is inplace to the other input, use an op with a snippet instead
                 // so the op can use a stack local as a temporary argument for the snippet.)
