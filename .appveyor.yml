@@ -33,6 +33,7 @@ build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
   - cmd /c make-it\appveyor-support\setup-env-and-make-vjs.bat
+  - nuget pack VireoSDK.nuspec
 test_script:
   - make testjs
   - make testnative
