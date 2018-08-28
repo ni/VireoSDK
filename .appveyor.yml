@@ -41,13 +41,14 @@ test_script:
   - make testhttpbin
   - npm run test -- --browsers FirefoxHeadless
   - npm run test -- --browsers IE --skip-tags FailsIE
-  # Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html	
+  
+# Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html	
 after_test:	
   - set ESH_i686_DEBUG=esh_%APPVEYOR_REPO_TAG_NAME%_i686-pc-windows-msvc_debug.zip	
   - 7z a %ESH_i686_DEBUG% %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.exe %APPVEYOR_BUILD_FOLDER%\dist\Debug\esh.pdb %APPVEYOR_BUILD_FOLDER%\README.md %APPVEYOR_BUILD_FOLDER%\LICENSE.txt
 artifacts:
   - path: '%ESH_i686_DEBUG%'
-    name: '%ESH_i686_DEBUG%'	
+    name: '%ESH_i686_DEBUG%'
     type: Zip
   - path: '*.nupkg'
 deploy:
