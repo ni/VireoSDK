@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>vireo</id>
+    <version>$version$</version>
+    <title>VireoSDK</title>
+    <authors>https://github.com/ni/VireoSDK/blob/incoming/AUTHORS</authors>
+    <owners>https://github.com/ni/VireoSDK/blob/incoming/AUTHORS</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/ni/VireoSDK/blob/incoming/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/ni/VireoSDK/</projectUrl>
+    <description>VireoSDK provides a subset of LabVIEW runtime functionality for smaller targets.</description>
+  </metadata>
+  <files>
+    <file src="dist/Debug/esh.exe" target="" />
+  </files>
+</package>

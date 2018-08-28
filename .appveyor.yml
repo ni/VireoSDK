@@ -33,6 +33,8 @@ build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
   - cmd /c make-it\appveyor-support\setup-env-and-make-vjs.bat
+  - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
+  - ps: nuget pack VireoSDK.nuspec -properties version="$env:package_version.$env:APPVEYOR_BUILD_NUMBER"
 test_script:
   - make testjs
   - make testnative
@@ -48,12 +50,19 @@ artifacts:
   - path: '%ESH_i686_DEBUG%'
     name: '%ESH_i686_DEBUG%'
     type: Zip
+  - path: '*.nupkg'
 deploy:
-  provider: GitHub
-  description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
-  auth_token:
-    secure: Asuu2xJwFoy8ML6DIsZf2mqlgdO2b1dQRCJALbYpUFNP/3DjuhBPDcWiSxTK6iw/
-  artifact: '%ESH_i686_DEBUG%'
-  force_update: true
-  on:
-    appveyor_repo_tag: true
+  - provider: GitHub
+    description: $(APPVEYOR_REPO_COMMIT_MESSAGE)
+    auth_token:
+      secure: Asuu2xJwFoy8ML6DIsZf2mqlgdO2b1dQRCJALbYpUFNP/3DjuhBPDcWiSxTK6iw/
+    artifact: '%ESH_i686_DEBUG%'
+    force_update: true	
+    tag: $(APPVEYOR_REPO_TAG_NAME)	
+    on:	
+      appveyor_repo_tag: true
+
+  - provider: NuGet
+    artifact: '/.*\.nupkg/'
+    api_key:
+      secure: +HxCQLCj0U9w1/MNf7waD7PrbcC8KEM3ZNanofeyLt1j7kU0DbszxasZXtHWtSSE
