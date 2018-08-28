@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>vireo</id>
-    <version>1.1.0</version>
+    <version>$version$</version>
     <title>VireoSDK</title>
     <authors>https://github.com/ni/VireoSDK/blob/incoming/AUTHORS</authors>
     <owners>https://github.com/ni/VireoSDK/blob/incoming/AUTHORS</owners>

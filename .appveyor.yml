@@ -20,6 +20,8 @@ install:
   - cd emsdk && git checkout 2da530aa5e6d6bcaf994ed1b2613a98872a428c8 && cd ..
   - ps: emsdk\emsdk install sdk-1.37.36-64bit
   - ps: emsdk\emsdk activate sdk-1.37.36-64bit
+  - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
+  - ps: Update-AppveyorBuild -Version "$env:package_version-$env:APPVEYOR_BUILD_NUMBERtest"
 platform:
   - Win32
 configuration:
