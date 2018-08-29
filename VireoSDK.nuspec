@@ -12,6 +12,6 @@
     <description>VireoSDK provides a subset of LabVIEW runtime functionality for smaller targets.</description>
   </metadata>
   <files>
-    <file src="dist/Debug/esh.exe" target="content" />
+    <file src="dist/Debug/esh.exe" target="content/TestFiles" />
   </files>
 </package>
