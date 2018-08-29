@@ -84,6 +84,7 @@
             "include": ["queue", "events"],
             "tests": [
                 "2HelloWorlds.via",
+                "AddClusterScalar.via",
                 "AllocatedDataValues.via",
                 "ArrayComparison.via",
                 "ArrayConcatBug.via",

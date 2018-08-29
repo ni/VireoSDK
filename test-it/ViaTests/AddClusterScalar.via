@@ -1,0 +1,58 @@
+
+define (AddClusterScalar dv(.VirtualInstrument (
+    Locals: c(   // Data Space
+        ce(dv(.UInt16 30)c0)
+        ce(dv(c(
+            ce(.UInt32 e_U32)
+            ce(.UInt16 e_U16)
+        ) (100 200 ))c3)
+        e(dv(c(
+            e(.UInt32 e_U32)
+            e(.UInt16 e_U16)
+        ) (0 0 ))dataItem_Sum_3)
+        ce(dv(.Int8 -100)c13)
+        ce(dv(a(c(
+            e(.Double e_Dbl)
+            e(.Int16 e_I16)
+        ) *) ((300 -100 ) (200 100 )))c16)
+        e(a(c(
+            e(.Double e_Dbl)
+            e(.Int16 e_I16)
+        ) *) dataItem_Sum_4)
+        ce(dv(.UInt16 1)c26)
+        ce(dv(c(
+            ce(.Double e_Dbl)
+            ce(.Int16 e_I16)
+        ) (-200 -2 ))c29)
+        e(c(
+            e(.Double e_Dbl)
+            e(.UInt16 e_I16)
+        ) local32)
+        e(dv(c(
+            e(.Double e_Dbl)
+            e(.UInt16 e_I16)
+        ) (0 0 ))dataItem_Sum_2)
+        ce(dv(.UInt16 30)c42)
+        ce(dv(c(
+            ce(.UInt32 e_U32)
+            ce(.UInt16 e_U16)
+        ) (100 200 ))c45)
+        e(dv(c(
+            e(.UInt32 e_U32)
+            e(.UInt16 e_U16)
+        ) (0 0 ))dataItem_Sum_1)
+    )
+        clump(1
+        Add(c45 c42 dataItem_Sum_1)
+        Convert(c29 local32)
+        Add(c26 local32 dataItem_Sum_2)
+        Add(c3 c0 dataItem_Sum_3)
+        Add(c16 c13 dataItem_Sum_4)
+        Println(dataItem_Sum_1)
+        Println(dataItem_Sum_2)
+        Println(dataItem_Sum_3)
+        Println(dataItem_Sum_4)
+/* Clump Ended. */    )
+)))
+enqueue (AddClusterScalar)
+//Finished!! :D
