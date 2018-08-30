@@ -13,6 +13,6 @@
   </metadata>
   <files>
     <file src="dist/Debug/esh.exe" target="content/TestFiles" />
-    <file src="vireoSDK.props" target="build">
+    <file src="vireoSDK.props" target="build" />
   </files>
 </package>
