@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
-  <metadata>
+  <metadata minClientVersion="2.5">
     <id>vireo</id>
     <version>$version$</version>
     <title>VireoSDK</title>
@@ -13,5 +13,6 @@
   </metadata>
   <files>
     <file src="dist/Debug/esh.exe" target="content/TestFiles" />
+    <file src="vireoSDK.props" target="build">
   </files>
 </package>
