@@ -34,7 +34,7 @@ build:
 after_build:
   - cmd /c make-it\appveyor-support\setup-env-and-make-vjs.bat
   - ps: $env:package_version = (Get-Content -Raw -Path package.json | ConvertFrom-Json).version
-  - ps: nuget pack VireoSDK.nuspec -properties version="$env:package_version
+  - ps: nuget pack VireoSDK.nuspec -properties version="$env:package_version"
 test_script:
   - make testjs
   - make testnative
