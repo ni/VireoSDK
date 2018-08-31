@@ -66,3 +66,5 @@ deploy:
     artifact: '/.*\.nupkg/'
     api_key:
       secure: +HxCQLCj0U9w1/MNf7waD7PrbcC8KEM3ZNanofeyLt1j7kU0DbszxasZXtHWtSSE
+    on:	
+      appveyor_repo_tag: true
