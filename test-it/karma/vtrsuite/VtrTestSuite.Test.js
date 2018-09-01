@@ -19,35 +19,21 @@ describe('The Vireo VTR test suite', function () {
         };
     });
 
-    describe('can preload files for test', function () {
-        viaTestConfigs.forEach(function (viaTestConfig) {
-            it(viaTestConfig.testName, function (done) {
-                var preloadFinished = function () {
-                    var vtrText = fixtures.loadAbsoluteUrl(viaTestConfig.vtrFile);
-                    expect(vtrText).toBeString();
-                    done();
-                };
+    // To disable a test add a key for the test name set to true, ie:
+    // {'AwesomeDisabledTest': true}
+    var focusTests = {};
+    var disabledTests = {};
 
-                fixtures.preloadAbsoluteUrls([
-                    viaTestConfig.viaFile,
-                    viaTestConfig.vtrFile
-                ], preloadFinished);
-            });
-        });
-    });
+    viaTestConfigs.forEach(function (viaTestConfig) {
+        var testName = viaTestConfig.testName;
+        var viaFile = viaTestConfig.viaFile;
+        var vtrFile = viaTestConfig.vtrFile;
 
-    describe('can run test', function () {
-        // To disable a test add a key for the test name set to true, ie:
-        // {'AwesomeDisabledTest': true}
-        var focusTests = {};
-        var disabledTests = {};
-
-        viaTestConfigs.forEach(function (viaTestConfig) {
-            /* eslint no-restricted-globals: 'off' */
-
+        describe('can preload ' + testName, function () {
+            var testDescription = 'and run ' + testName;
             var test = function (done) {
-                var vtrText = fixtures.loadAbsoluteUrl(viaTestConfig.vtrFile);
-                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaTestConfig.viaFile);
+                var vtrText = fixtures.loadAbsoluteUrl(vtrFile);
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaFile);
 
                 runSlicesAsync(function (results, errorText) {
                     expect(errorText).toBeEmptyString();
@@ -56,13 +42,19 @@ describe('The Vireo VTR test suite', function () {
                 });
             };
 
-            var testName = viaTestConfig.testName;
+            beforeEach(function (done) {
+                fixtures.preloadAbsoluteUrls([
+                    viaFile,
+                    vtrFile
+                ], done);
+            });
+
             if (focusTests[testName] === true) {
-                fit(testName, test);
+                fit(testDescription, test); // eslint-disable-line no-restricted-globals
             } else if (disabledTests[testName] === true) {
-                xit(testName, test);
+                xit(testDescription, test);
             } else {
-                it(testName, test);
+                it(testDescription, test);
             }
         });
     });
