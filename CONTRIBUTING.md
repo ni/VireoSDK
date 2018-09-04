@@ -175,6 +175,25 @@ This can happen if you perform development on a different machine, pushed them t
 It is encouraged before submission to rebase your changes on top of master and to remove extraneous commits to improve the commit history.
 However, if multiple developers are doing development in a branch it requires coordination before rewriting history using rebase.
 
+
+## Creating hotfix releases
+To create and release hotfixes, annotated git tags are used; no release branches are created and maintained. To create a hotfix release, follow the steps below:
+
+* Goto https://github.com/ni/VireoSDK in your browser, click "Branch:master" and select "Tags" and choose an existing tag (say v10.1.7) on top of which you want to create a hotfix.
+
+* Click the Tag dropdown, select 'Branches', and type a new name for the branch (for example, 'hotfix'), hit Enter. This will create a new branch 'hotfix' in ni/VireoSDk on the chosen tag (v10.1.7)
+
+* Now, create a local branch (say 'myHotfix') and pick apporpriate commits that should be cherry-picked into the hotfix release.
+```console
+git remote update -p
+git checkout -b myHotfix v10.1.7
+git cherry-pick <Commit-ID1 Commit-ID2>
+git push
+```
+* Create a PR from your branch 'myHotfix' to 'hotfix' branch in ni/VireoSDK
+
+* Maintainer will merge the PR into 'hotfix' branch and push a new annotated tag (for instance, 'v10.1.7-hotfix.0') to create the hotfix release. Once tags are pushed, the branch 'hotfix' in ni/VireoSDK may be deleted.
+
 # Testing local Vireo changes
 The [README.md](README.md) describes how to test your Vireo changes locally on your development machine with the tests in VireoSDK.
 This section will instead focus on testing your local Vireo changes in other applications that consume Vireo.
