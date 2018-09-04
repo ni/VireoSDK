@@ -81,7 +81,9 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 }
                 extraParam = (void*)(uintptr_t)destType->GetEnumItemCount();
             } else if (destType->BitEncoding() == kEncoding_RefNum) {
-                    copyOpName = "CopyRefnum";
+                copyOpName = "CopyRefnum";
+            } else if (destType->Name().Compare(&TypeCommon::TypeVariant)) {
+                copyOpName = "CopyVariant";
             } else {
                 copyOpName = GetCopyOpName(pSource, pDest, sourceType);
                 if (!copyOpName) {

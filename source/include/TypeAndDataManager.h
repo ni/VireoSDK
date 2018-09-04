@@ -90,6 +90,7 @@ typedef TypeCommon StaticType;
 #define tsInt64Type         "Int64"
 #define tsDoubleType        "Double"
 #define tsStringType        "String"
+#define tsVariantType       "Variant"
 #define tsTypeType          "Type"
 #define tsStringArrayType   "StringArray1D"
 #define tsWildCard          "*"
@@ -189,6 +190,7 @@ struct StaticTypeAndData
     TypeRef  _paramType;
     void*    _pData;
 };
+typedef StaticTypeAndData* StaticTypeAndDataPointer;
 
 #ifdef STL_MAP
 #else
@@ -460,6 +462,7 @@ class TypeCommon
     static const SubString TypeSingle;
     static const SubString TypeBoolean;
     static const SubString TypeString;
+    static const SubString TypeVariant;
     static const SubString TypeTimestamp;
     static const SubString TypeComplexSingle;
     static const SubString TypeComplexDouble;
@@ -1304,6 +1307,26 @@ class StackVar
         }
     }
 };
+
+struct StringRefCmp {
+    bool operator()(const StringRef& a, const StringRef &b) const {
+        Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
+        if (cmp < 0) {
+            return true;
+        } else if (cmp > 0) {
+            return false;
+        } else if (a->Length() < b->Length()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+bool inline IsStringEmpty(StringRef str)
+{
+    return (!str || str->Length() == 0);
+}
 
 //! Declare a variable using a Vireo type.
 #define STACK_VAR(_t_, _v_) StackVar<_t_> _v_(#_t_)

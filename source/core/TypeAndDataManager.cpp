@@ -602,6 +602,7 @@ const SubString TypeCommon::TypeSingle = SubString("Single");
 const SubString TypeCommon::TypeDouble = SubString(tsDoubleType);
 const SubString TypeCommon::TypeBoolean = SubString(tsBooleanType);
 const SubString TypeCommon::TypeString = SubString(tsStringType);
+const SubString TypeCommon::TypeVariant = SubString(tsVariantType);
 const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
 const SubString TypeCommon::TypeComplexSingle = SubString("ComplexSingle");
 const SubString TypeCommon::TypeComplexDouble = SubString("ComplexDouble");

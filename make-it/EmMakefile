@@ -148,6 +148,7 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/TypeDefiner.bc\
 	$(OBJS)/TypeTemplates.bc\
 	$(OBJS)/UnitTest.bc\
+	$(OBJS)/Variants.bc\
 	$(OBJS)/VirtualInstrument.bc\
 	$(OBJS)/RefNumTest.bc\
 	$(OBJS)/FileIO.bc\

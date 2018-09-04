@@ -573,21 +573,6 @@ class QueueRefNumManager : public RefNumManager {
  private:
     typedef TypedRefNum<QueueRef, true> QueueRefNumType;
     QueueRefNumType _QueueRefNumTypeStorage;  // manages refnum storage
-
-    struct StringRefCmp {
-        bool operator()(const StringRef& a, const StringRef &b) const {
-            Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
-            if (cmp < 0) {
-                return true;
-            } else if (cmp > 0) {
-                return false;
-            } else if (a->Length() < b->Length()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    };
     static QueueRefNumManager _s_singleton;
 
  public:

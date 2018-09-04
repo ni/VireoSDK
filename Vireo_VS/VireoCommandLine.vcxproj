@@ -42,6 +42,7 @@
     <ClCompile Include="..\source\core\TypeDefiner.cpp" />
     <ClCompile Include="..\source\core\TypeTemplates.cpp" />
     <ClCompile Include="..\source\core\UnitTest.cpp" />
+    <ClCompile Include="..\source\core\Variants.cpp" />
     <ClCompile Include="..\source\core\VirtualInstrument.cpp" />
     <ClCompile Include="..\source\core\Waveform.cpp" />
     <ClCompile Include="..\source\io\DebugGPIO.cpp" />
