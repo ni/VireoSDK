@@ -8,13 +8,15 @@ SDG
 */
 
 /*! \file
-    \brief Native Verio VIA functions.
+    \brief Native Vireo VIA functions.
  */
 
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <algorithm>
+#include <string>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
@@ -1291,6 +1293,38 @@ IntMax ScanIntValues(char formatChar, char* beginPointer, char** endPointer)
     return intValue;
 }
 
+char validTrueValues[5][10] = { "y", "t", "true", "on", "yes" };
+char validFalseValues[5][10] = { "n", "f", "false", "off", "no" };
+
+Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
+{
+    SubString s(beginPointer);
+    *endPointer = beginPointer;
+
+    for (const char* trueValue : validTrueValues) {
+        if (s.CompareCStrIgnoreCase(trueValue)) {
+            *endPointer += strlen(trueValue);
+            return true;
+        }
+    }
+
+    for (const char* falseValue : validFalseValues) {
+        if (s.CompareCStrIgnoreCase(falseValue)) {
+            *endPointer += strlen(falseValue);
+            return false;
+        }
+    }
+
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+void BooleanScanString(StaticTypeAndData* argument, TypeRef argumentType, char* beginPointer, char** endPointer)
+{
+    IntMax intValue = ScanBooleanValue(beginPointer, endPointer);
+    WriteIntToMemory(argumentType, argument->_pData, intValue);
+}
+
 //----------------------------------------------------------------------------------------------------
 void IntScanString(StaticTypeAndData* argument, TypeRef argumentType, char formatChar, char* beginPointer, char** endPointer)
 {
@@ -1448,6 +1482,9 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     char* endPointer = nullptr;
 
     switch (argumentType->BitEncoding()) {
+        case kEncoding_Boolean:
+            BooleanScanString(argument, argumentType, inpBegin, &endPointer);
+            break;
         case kEncoding_UInt:
             IntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
@@ -1490,15 +1527,15 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                             // reach the end of the input
                             i--;
                         }
-                        if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
+                        if (formatOptions->MinimumFieldWidth > 0 && i + 1 - stringStart > formatOptions->MinimumFieldWidth) {
                             i = stringStart + formatOptions->MinimumFieldWidth - 1;
                         }
-                        endPointer = inpBegin + i+1;
-                        (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
+                        endPointer = inpBegin + i + 1;
+                        (*pArray)->Replace1D(0, i + 1 - stringStart, in.Begin()+stringStart, true);
                     }
                 } else if (formatOptions->FormatChar == '[') {
                     SubString* charSet = (SubString*) &(formatOptions->FmtSubString);
-                    charSet->AliasAssign(charSet->Begin()+1, charSet->End()-1);
+                    charSet->AliasAssign(charSet->Begin() + 1, charSet->End() - 1);
                     if (charSet->Length() == 0) {
                         return false;
                     } else if (*((char *)charSet->Begin()) == '^') {
@@ -1527,11 +1564,11 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                                 // reach the end of the input
                                     i--;
                                 }
-                                if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
+                                if (formatOptions->MinimumFieldWidth > 0 && i + 1-stringStart > formatOptions->MinimumFieldWidth) {
                                     i = stringStart + formatOptions->MinimumFieldWidth - 1;
                                 }
-                                endPointer = inpBegin + i+1;
-                                (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
+                                endPointer = inpBegin + i + 1;
+                                (*pArray)->Replace1D(0, i + 1-stringStart, in.Begin()+stringStart, true);
                             }
                         }
                     } else {
@@ -1554,14 +1591,14 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                             return false;
                         } else {
                             if (i == in.Length()) {
-                            // reach the end of the input
+                                // reach the end of the input
                                 i--;
                             }
-                            if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
+                            if (formatOptions->MinimumFieldWidth > 0 && (i + 1 - stringStart > formatOptions->MinimumFieldWidth)) {
                                 i = stringStart + formatOptions->MinimumFieldWidth - 1;
                             }
-                            endPointer = inpBegin + i+1;
-                            (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
+                            endPointer = inpBegin + i + 1;
+                            (*pArray)->Replace1D(0, i + 1-stringStart, in.Begin()+stringStart, true);
                         }
                     }
                 }
@@ -1585,7 +1622,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     if (endPointer == nullptr || (endPointer == inpBegin)) {
         return false;
     }
-    *endToken = (IntIndex)(endPointer-inpBegin);
+    *endToken = (IntIndex)(endPointer - inpBegin);
     return true;
 }
 //---------------------------------------------------------------------------------------------
@@ -2140,6 +2177,7 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     pOption->OriginalFormatChar = pOption->FormatChar;
     pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
+
 char abbrWeekDayName[7][10] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 char weekDayName[7][10] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 char abbrMonthName[12][10] = { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
