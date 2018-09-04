@@ -133,6 +133,9 @@
     <ClCompile Include="..\source\core\JavaScriptRef.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\Variants.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">

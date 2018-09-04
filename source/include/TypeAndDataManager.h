@@ -188,6 +188,7 @@ struct StaticTypeAndData
     TypeRef  _paramType;
     void*    _pData;
 };
+typedef StaticTypeAndData* StaticTypeAndDataPointer;
 
 #ifdef STL_MAP
 #else
@@ -1300,6 +1301,21 @@ class StackVar
     ~StackVar() {
         if (Value) {
             Value->Type()->ClearData(&Value);
+        }
+    }
+};
+
+struct StringRefCmp {
+    bool operator()(const StringRef& a, const StringRef &b) const {
+        Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
+        if (cmp < 0) {
+            return true;
+        } else if (cmp > 0) {
+            return false;
+        } else if (a->Length() < b->Length()) {
+            return true;
+        } else {
+            return false;
         }
     }
 };

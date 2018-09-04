@@ -1,0 +1,68 @@
+//VI Definition: Variant.via
+define(TestSetVariantAttributes dv(.VirtualInstrument (
+    Params:c(
+    )
+    Locals: c(
+        e(dv(.Int32 255) myInt)
+        e(.Variant myVar)
+        e(dv(.Boolean false) replaced)
+        e(dv(.ErrorCluster (false 0 '' )) noError)
+        e(.ErrorCluster error)
+    )
+    clump (1 // top level
+        Printf("TestSetVariantAttributes()\n")
+        Copy(noError error)
+        DataToVariant(myInt myVar)
+        SetVariantAttributes(myVar "aaa" "xxx" replaced error)
+        Printf("Set: myVar=%z, replaced=%z error=(%z %z)\n" myVar replaced error.status error.code)
+        SetVariantAttributes(myVar "aaa" "yyy" replaced error)
+        Printf("Set: myVar=%z, replaced=%z error=(%z %z)\n" myVar replaced error.status error.code)
+        SetVariantAttributes(myVar "bbb" "yyy" replaced error)
+        Printf("Set: myVar=%z, replaced=%z error=(%z %z)\n" myVar replaced error.status error.code)
+        SetVariantAttributes(myVar "bbb" "zzz" replaced error)
+        Printf("Set: myVar=%z, replaced=%z error=(%z %z)\n" myVar replaced error.status error.code)
+        Printf("\n")
+    )
+)))
+
+define(TestGetVariantAttributes dv(.VirtualInstrument (
+    Params:c(
+    )
+    Locals: c(
+        e(dv(.Int32 255) myInt)
+        e(.Variant myVar)
+        e(.Variant myVar2)
+        e(dv(.String 'Hello World') myStr)
+        e(dv(.Boolean false) replaced)
+        e(dv(.Boolean false) found)
+        e(dv(.ErrorCluster (false 0 '' )) noError)
+        e(.ErrorCluster error)
+    )
+    clump (1 // top level
+        Printf("TestGetVariantAttributes()\n")
+        Copy(noError error)
+        DataToVariant(myInt myVar)
+        SetVariantAttributes(myVar "aaa" "xxx" replaced error)
+        Printf("Set: myVar=%z, replaced=%z error=(%z %z)\n" myVar replaced error.status error.code)
+        GetVariantAttributes(myVar  "aaa" myStr found error)
+        Printf("Get: myVar=%z, found=%z myStr=%z error=(%z %z)\n" myVar found myStr error.status error.code)
+        Copy(noError error)
+        GetVariantAttributes(myVar  "aaa" myInt found error)
+        Printf("Get: myVar=%z, found=%z myInt=%z error=(%z %z)\n" myVar found myInt error.status error.code)
+        Copy(noError error)
+        GetVariantAttributes(myVar2  "aaa" myInt found error)
+        Printf("Get: myVar=%z, found=%z myInt=%z error=(%z %z)\n" myVar found myInt error.status error.code)
+        Printf("\n")
+    )
+)))
+
+define(videf1 dv(.VirtualInstrument (
+    c(
+    )
+    clump(1
+        TestSetVariantAttributes()
+        TestGetVariantAttributes()
+//--- end of vi
+    )
+)))
+enqueue(videf1)
