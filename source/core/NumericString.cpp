@@ -1595,13 +1595,13 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                             return false;
                         } else {
                             if (i == in.Length()) {
-                                // reach the end of the input
+                            // reach the end of the input
                                 i--;
                             }
                             if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
                                 i = stringStart + formatOptions->MinimumFieldWidth - 1;
                             }
-                            endPointer = inpBegin +i+1;
+                            endPointer = inpBegin + i+1;
                             (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
                         }
                     }
