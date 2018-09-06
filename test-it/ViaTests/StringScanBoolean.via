@@ -18,6 +18,7 @@ define (WebApp%3A%3AMain%2Egviweb dv(.VirtualInstrument (
         e(dv(.String 'OFF')false4)
         e(dv(.String 'FALSE')false5)
         e(dv(.String 'oFf')false6)
+        e(dv(.String 'err')invalidInput)
         e(.String remaining)
         e(.UInt32 local5)
         e(.UInt32 offset_past)
@@ -81,6 +82,10 @@ define (WebApp%3A%3AMain%2Egviweb dv(.VirtualInstrument (
         Copy(noErr err)
 
         StringScan(empty remaining "" local5 offset_past err local9)
+        Printf("offset_past:<%d>, remaining:(%s)\n:<%z> err:<%z>\n" offset_past remaining local9 err)
+        Copy(noErr err)
+
+        StringScan(invalidInput remaining "" local5 offset_past err local9)
         Printf("offset_past:<%d>, remaining:(%s)\n:<%z> err:<%z>\n" offset_past remaining local9 err)
         Copy(noErr err)
 

@@ -15,7 +15,6 @@ SDG
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <algorithm>
 #include <string>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
@@ -1293,10 +1292,10 @@ IntMax ScanIntValues(char formatChar, char* beginPointer, char** endPointer)
     return intValue;
 }
 
-char validTrueValues[5][10] = { "y", "t", "true", "on", "yes" };
-char validFalseValues[5][10] = { "n", "f", "false", "off", "no" };
+static const char *validTrueValues[] = { "y", "t", "true", "on", "yes" };
+static const char *validFalseValues[] = { "n", "f", "false", "off", "no" };
 
-Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
+Boolean TryScanBooleanValue(char* beginPointer, char** endPointer, Boolean* value)
 {
     SubString s(beginPointer);
     *endPointer = beginPointer;
@@ -1304,6 +1303,7 @@ Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
     for (const char* trueValue : validTrueValues) {
         if (s.CompareCStrIgnoreCase(trueValue)) {
             *endPointer += strlen(trueValue);
+            *value = true;
             return true;
         }
     }
@@ -1311,7 +1311,8 @@ Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
     for (const char* falseValue : validFalseValues) {
         if (s.CompareCStrIgnoreCase(falseValue)) {
             *endPointer += strlen(falseValue);
-            return false;
+            *value = false;
+            return true;
         }
     }
 
@@ -1321,8 +1322,12 @@ Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
 //----------------------------------------------------------------------------------------------------
 void BooleanScanString(StaticTypeAndData* argument, TypeRef argumentType, char* beginPointer, char** endPointer)
 {
-    IntMax intValue = ScanBooleanValue(beginPointer, endPointer);
-    WriteIntToMemory(argumentType, argument->_pData, intValue);
+    Boolean boolValue;
+    Boolean success = TryScanBooleanValue(beginPointer, endPointer, &boolValue);
+    if (success)
+    {
+        WriteIntToMemory(argumentType, argument->_pData, (IntMax)boolValue);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------
