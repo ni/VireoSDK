@@ -1528,7 +1528,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                         return false;
                     } else {
                         if (i == in.Length()) {
-                        // reach the end of the input
+                            // reach the end of the input
                             i--;
                         }
                         if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
@@ -2181,7 +2181,6 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     pOption->OriginalFormatChar = pOption->FormatChar;
     pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
-
 char abbrWeekDayName[7][10] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 char weekDayName[7][10] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 char abbrMonthName[12][10] = { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
