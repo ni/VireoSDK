@@ -15,7 +15,6 @@ SDG
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <string>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
@@ -1529,18 +1528,18 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                         return false;
                     } else {
                         if (i == in.Length()) {
-                            // reach the end of the input
+                        // reach the end of the input
                             i--;
                         }
-                        if (formatOptions->MinimumFieldWidth > 0 && i + 1 - stringStart > formatOptions->MinimumFieldWidth) {
+                        if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
                             i = stringStart + formatOptions->MinimumFieldWidth - 1;
                         }
-                        endPointer = inpBegin + i + 1;
-                        (*pArray)->Replace1D(0, i + 1 - stringStart, in.Begin()+stringStart, true);
+                        endPointer = inpBegin + i+1;
+                        (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
                     }
                 } else if (formatOptions->FormatChar == '[') {
                     SubString* charSet = (SubString*) &(formatOptions->FmtSubString);
-                    charSet->AliasAssign(charSet->Begin() + 1, charSet->End() - 1);
+                    charSet->AliasAssign(charSet->Begin()+1, charSet->End()-1);
                     if (charSet->Length() == 0) {
                         return false;
                     } else if (*((char *)charSet->Begin()) == '^') {
@@ -1569,11 +1568,11 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                                 // reach the end of the input
                                     i--;
                                 }
-                                if (formatOptions->MinimumFieldWidth > 0 && i + 1-stringStart > formatOptions->MinimumFieldWidth) {
+                                if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
                                     i = stringStart + formatOptions->MinimumFieldWidth - 1;
                                 }
-                                endPointer = inpBegin + i + 1;
-                                (*pArray)->Replace1D(0, i + 1-stringStart, in.Begin()+stringStart, true);
+                                endPointer = inpBegin + i+1;
+                                (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
                             }
                         }
                     } else {
@@ -1599,11 +1598,11 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                                 // reach the end of the input
                                 i--;
                             }
-                            if (formatOptions->MinimumFieldWidth > 0 && (i + 1 - stringStart > formatOptions->MinimumFieldWidth)) {
+                            if (formatOptions->MinimumFieldWidth > 0 && i+1-stringStart > formatOptions->MinimumFieldWidth) {
                                 i = stringStart + formatOptions->MinimumFieldWidth - 1;
                             }
-                            endPointer = inpBegin + i + 1;
-                            (*pArray)->Replace1D(0, i + 1-stringStart, in.Begin()+stringStart, true);
+                            endPointer = inpBegin +i+1;
+                            (*pArray)->Replace1D(0, i+1-stringStart, in.Begin()+stringStart, true);
                         }
                     }
                 }
@@ -1627,7 +1626,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     if (endPointer == nullptr || (endPointer == inpBegin)) {
         return false;
     }
-    *endToken = (IntIndex)(endPointer - inpBegin);
+    *endToken = (IntIndex)(endPointer-inpBegin);
     return true;
 }
 //---------------------------------------------------------------------------------------------
