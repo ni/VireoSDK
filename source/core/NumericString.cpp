@@ -1312,6 +1312,8 @@ Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
             return false;
         }
     }
+
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
