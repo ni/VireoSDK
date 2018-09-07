@@ -1294,7 +1294,7 @@ IntMax ScanIntValues(char formatChar, char* beginPointer, char** endPointer)
 static const char *validTrueValues[] = { "y", "t", "true", "on", "yes" };
 static const char *validFalseValues[] = { "n", "f", "false", "off", "no" };
 
-Boolean TryScanBooleanValue(char* beginPointer, char** endPointer, Boolean* value)
+Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
 {
     SubString s(beginPointer);
     *endPointer = beginPointer;
@@ -1302,7 +1302,6 @@ Boolean TryScanBooleanValue(char* beginPointer, char** endPointer, Boolean* valu
     for (const char* trueValue : validTrueValues) {
         if (s.CompareCStrIgnoreCase(trueValue)) {
             *endPointer += strlen(trueValue);
-            *value = true;
             return true;
         }
     }
@@ -1310,23 +1309,16 @@ Boolean TryScanBooleanValue(char* beginPointer, char** endPointer, Boolean* valu
     for (const char* falseValue : validFalseValues) {
         if (s.CompareCStrIgnoreCase(falseValue)) {
             *endPointer += strlen(falseValue);
-            *value = false;
-            return true;
+            return false;
         }
     }
-
-    return false;
 }
 
 //----------------------------------------------------------------------------------------------------
 void BooleanScanString(StaticTypeAndData* argument, TypeRef argumentType, char* beginPointer, char** endPointer)
 {
-    Boolean boolValue;
-    Boolean success = TryScanBooleanValue(beginPointer, endPointer, &boolValue);
-    if (success)
-    {
-        WriteIntToMemory(argumentType, argument->_pData, (IntMax)boolValue);
-    }
+    Boolean boolValue = ScanBooleanValue(beginPointer, endPointer);
+    WriteIntToMemory(argumentType, argument->_pData, (IntMax)boolValue);
 }
 
 //----------------------------------------------------------------------------------------------------
