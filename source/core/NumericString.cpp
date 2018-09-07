@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Native Verio VIA functions.
+    \brief Native Vireo VIA functions.
  */
 
 #include <stdarg.h>
@@ -1291,6 +1291,38 @@ IntMax ScanIntValues(char formatChar, char* beginPointer, char** endPointer)
     return intValue;
 }
 
+static const char *validTrueValues[] = { "y", "t", "true", "on", "yes" };
+static const char *validFalseValues[] = { "n", "f", "false", "off", "no" };
+
+Boolean ScanBooleanValue(char* beginPointer, char** endPointer)
+{
+    SubString s(beginPointer);
+    *endPointer = beginPointer;
+
+    for (const char* trueValue : validTrueValues) {
+        if (s.CompareCStrIgnoreCase(trueValue)) {
+            *endPointer += strlen(trueValue);
+            return true;
+        }
+    }
+
+    for (const char* falseValue : validFalseValues) {
+        if (s.CompareCStrIgnoreCase(falseValue)) {
+            *endPointer += strlen(falseValue);
+            return false;
+        }
+    }
+
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+void BooleanScanString(StaticTypeAndData* argument, TypeRef argumentType, char* beginPointer, char** endPointer)
+{
+    Boolean boolValue = ScanBooleanValue(beginPointer, endPointer);
+    WriteIntToMemory(argumentType, argument->_pData, (IntMax)boolValue);
+}
+
 //----------------------------------------------------------------------------------------------------
 void IntScanString(StaticTypeAndData* argument, TypeRef argumentType, char formatChar, char* beginPointer, char** endPointer)
 {
@@ -1448,6 +1480,9 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     char* endPointer = nullptr;
 
     switch (argumentType->BitEncoding()) {
+        case kEncoding_Boolean:
+            BooleanScanString(argument, argumentType, inpBegin, &endPointer);
+            break;
         case kEncoding_UInt:
             IntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
