@@ -259,6 +259,7 @@ class SubString : public SubVector<Utf8Char>
     Boolean Compare(const Utf8Char* begin, IntIndex length) const;
     Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
     Boolean CompareCStr(ConstCStr begin) const;
+    Boolean CompareCStrIgnoreCase(ConstCStr begin) const { return Compare((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin), true); }
     Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const;
     Boolean ComparePrefixIgnoreCase(const Utf8Char* begin, Int32 length) const;
     Boolean ComparePrefix(char asciiChar) const { return (_begin != _end) && (*_begin == asciiChar); }
