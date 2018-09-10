@@ -87,7 +87,7 @@ ifeq ($(TARGET), wasm32-unknown-emscripten)
 endif
 
 # NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
-EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1
+EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(CORESOURCEDIR)/library_eventHelpers.js \
@@ -97,7 +97,6 @@ EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(IOSOURCEDIR)/library_propertyNode.js
 PREJS = $(OBJS)/vireo.preamble.js
 POSTJS = $(OBJS)/vireo.postamble.js
-EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -182,7 +181,7 @@ EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
 	'getValue', \
 	'setValue', \
 	'Pointer_stringify', \
-	'writeArrayToMemory', \
+	'writeArrayToMemory' \
     ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
@@ -239,12 +238,9 @@ $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
 	@$(MKDIR) -p $(OBJS)
 
-$(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
-	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
-
 vjs: $(DIST)/vireo.js
 
-$(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
-	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
+$(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) | $(DIST)
+	$(EMCC) $(EM_OPT) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
 $(DIST):
 	@$(MKDIR) -p $(DIST)

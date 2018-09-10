@@ -34,9 +34,9 @@ install:
 - (cd emsdk-tools && ar xv libstdc++6_5.1.0-0ubuntu11~10.04.2_amd64.deb)
 - tar -xzf emsdk-tools/data.tar.gz -C emsdk-tools
 - git clone https://github.com/juj/emsdk.git
-- (cd emsdk && git checkout 2da530aa5e6d6bcaf994ed1b2613a98872a428c8)
-- emsdk/emsdk install sdk-1.37.36-64bit > emsdk-tools/emsdk_install_log.txt
-- emsdk/emsdk activate sdk-1.37.36-64bit
+- (cd emsdk && git checkout 0d8576c0e8f5ee09a36120b9d44184b5da2f2e7a)
+- emsdk/emsdk install sdk-1.38.12-64bit > emsdk-tools/emsdk_install_log.txt
+- emsdk/emsdk activate sdk-1.38.12-64bit
 - cat ~/.emscripten
 - (source make-it/travis-support/setup-env.sh && emcc -v)
 before_script:

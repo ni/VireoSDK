@@ -17,9 +17,9 @@ install:
   - pip install tox
   - ps: Start-Process npm "run httpbin" -PassThru
   - git clone https://github.com/juj/emsdk.git
-  - cd emsdk && git checkout 2da530aa5e6d6bcaf994ed1b2613a98872a428c8 && cd ..
-  - ps: emsdk\emsdk install sdk-1.37.36-64bit
-  - ps: emsdk\emsdk activate sdk-1.37.36-64bit
+  - cd emsdk && git checkout 0d8576c0e8f5ee09a36120b9d44184b5da2f2e7a && cd ..
+  - ps: emsdk\emsdk install sdk-1.38.12-64bit
+  - ps: emsdk\emsdk activate sdk-1.38.12-64bit
 platform:
   - Win32
 configuration:
