@@ -75,7 +75,13 @@
             Module = {};
         }
 
+        // TODO https://github.com/kripken/emscripten/pull/6756
+        // Module.print behavior has changed. Not sure if impacted
         // Functions that must be on Module prior to construction
+        // I think we need to replace Module.print with our own function. If we need to swap it (like during vireo load) that is our new functions behavior to proxy output.
+        // Also to pass file locations to vireo use Module.locateFile: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.locateFile
+        // Maybe instead use instantiateWasm so we keep control over how the file is fetched: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.instantiateWasm
+        // Yea looks good: https://github.com/kripken/emscripten/blob/incoming/tests/manual_wasm_instantiate.html#L170
         var ttyout = [];
         Module.stdout = function (val) {
             if (val === null || val === 0x0A) {
