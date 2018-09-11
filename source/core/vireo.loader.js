@@ -1,106 +1,30 @@
-// Using a modified UMD module format. Specifically a modified returnExports (with dependencies) version
-(function (root, globalName, factory) {
-    'use strict';
-    var vireoCore;
 
-    var buildGlobalNamespace = function () {
-        var buildArgs = Array.prototype.slice.call(arguments);
-        return globalName.split('.').reduce(function (currObj, subNamespace, currentIndex, globalNameParts) {
-            var nextValue = currentIndex === globalNameParts.length - 1 ? factory.apply(undefined, buildArgs) : {};
-            return currObj[subNamespace] === undefined ? (currObj[subNamespace] = nextValue) : currObj[subNamespace];
-        }, root);
-    };
+import createVireoCore from '../../dist/asmjs-unknown-emscripten/release/vireo.js';
+import assignCoreHelpers from '../../source/core/module_coreHelpers.js';
+import assignTypeHelpers from '../../source/core/module_typeHelpers.js';
+import assignEggShell from '../../source/io/module_eggShell.js';
+import assignHttpClient from '../../source/io/module_httpClient.js';
+import assignJavaScriptInvoke from '../../source/io/module_javaScriptInvoke.js';
+import assignPropertyNode from '../../source/io/module_propertyNode.js';
+import assignEventHelpers from '../../source/core/module_eventHelpers.js';
 
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as a named module.
-        define(globalName, [
-            'NationalInstruments.Vireo.Core.createVireoCore',
-            'NationalInstruments.Vireo.Core.assignCoreHelpers',
-            'NationalInstruments.Vireo.Core.assignTypeHelpers',
-            'NationalInstruments.Vireo.ModuleBuilders.assignEggShell',
-            'NationalInstruments.Vireo.ModuleBuilders.assignHttpClient',
-            'NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke',
-            'NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode',
-            'NationalInstruments.Vireo.ModuleBuilders.assignEventHelpers'
-        ], factory);
-    } else if (typeof module === 'object' && module.exports) {
-        // Node. "CommonJS-like" for environments like Node but not strict CommonJS
-        try {
-            vireoCore = require('../../dist/asmjs-unknown-emscripten/release/vireo.js');
-        } catch (ex) {
-            console.error('\n\nFailed to load Vireo core, make sure that vireo.js is built first\n\n');
-            throw ex;
-        }
-        module.exports = factory(
-            vireoCore,
-            require('../../source/core/module_coreHelpers.js'),
-            require('../../source/core/module_typeHelpers.js'),
-            require('../../source/io/module_eggShell.js'),
-            require('../../source/io/module_httpClient.js'),
-            require('../../source/io/module_javaScriptInvoke.js'),
-            require('../../source/io/module_propertyNode.js'),
-            require('../../source/core/module_eventHelpers.js')
-        );
-    } else {
-        // Browser globals (root is window)
-        buildGlobalNamespace(
-            root.NationalInstruments.Vireo.Core.createVireoCore,
-            root.NationalInstruments.Vireo.Core.assignCoreHelpers,
-            root.NationalInstruments.Vireo.Core.assignTypeHelpers,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignEggShell,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignHttpClient,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignJavaScriptInvoke,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignPropertyNode,
-            root.NationalInstruments.Vireo.ModuleBuilders.assignEventHelpers
-        );
-    }
-}(this, 'NationalInstruments.Vireo.Vireo', function () {
-    'use strict';
+var requestVireoInstance;
+(function () {
     // Static Private Variables (all vireo instances)
-    var createVireoCore = arguments[0];
-    var moduleBuilders = Array.prototype.slice.call(arguments, 1);
+    var moduleBuilders = [
+        assignCoreHelpers,
+        assignTypeHelpers,
+        assignEggShell,
+        assignHttpClient,
+        assignJavaScriptInvoke,
+        assignPropertyNode,
+        assignEventHelpers
+    ];
 
     // Vireo Class
-    var Vireo = function (config) {
+    var Vireo = function (Module) {
         var that = this;
 
-        var isObject = function (obj) {
-            return typeof obj === 'object' && obj !== null;
-        };
-
-        var Module;
-        if (isObject(config) && isObject(config.customModule)) {
-            Module = config.customModule;
-        } else {
-            Module = {};
-        }
-
-        // TODO https://github.com/kripken/emscripten/pull/6756
-        // Module.print behavior has changed. Not sure if impacted
-        // Functions that must be on Module prior to construction
-        // I think we need to replace Module.print with our own function. If we need to swap it (like during vireo load) that is our new functions behavior to proxy output.
-        // Also to pass file locations to vireo use Module.locateFile: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.locateFile
-        // Maybe instead use instantiateWasm so we keep control over how the file is fetched: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.instantiateWasm
-        // Yea looks good: https://github.com/kripken/emscripten/blob/incoming/tests/manual_wasm_instantiate.html#L170
-        var ttyout = [];
-        Module.stdout = function (val) {
-            if (val === null || val === 0x0A) {
-                Module.print(Module.coreHelpers.sizedUtf8ArrayToJSString(ttyout, 0, ttyout.length));
-                ttyout = [];
-            } else {
-                ttyout.push(val);
-            }
-        };
-
-        if (typeof createVireoCore !== 'function') {
-            throw new Error('createVireoCore could not be found, make sure to build and include vireo.js before using');
-        }
-
-        // Save a Vireo class reference on the module instance so the instance can access static functions on the class
-        // TODO(mraj) Instead use the static functions directly when we switch to ES6 modules and can resolve the Vireo class correctly
-        Module.Vireo = Vireo;
-
-        createVireoCore(Module);
         moduleBuilders.forEach(function (currBuilder) {
             currBuilder(Module, that);
         });
@@ -146,5 +70,69 @@
         return decodeURIComponent(str);
     };
 
-    return Vireo;
-}));
+
+    var createModuleBase = function (config) {
+        var isObject = function (obj) {
+            return typeof obj === 'object' && obj !== null;
+        };
+
+        var Module;
+        if (isObject(config) && isObject(config.customModule)) {
+            Module = config.customModule;
+        } else {
+            Module = {};
+        }
+
+        // TODO https://github.com/kripken/emscripten/pull/6756
+        // Module.print behavior has changed. Not sure if impacted
+        // Functions that must be on Module prior to construction
+        // I think we need to replace Module.print with our own function. If we need to swap it (like during vireo load) that is our new functions behavior to proxy output.
+        // Also to pass file locations to vireo use Module.locateFile: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.locateFile
+        // Maybe instead use instantiateWasm so we keep control over how the file is fetched: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.instantiateWasm
+        // Yea looks good: https://github.com/kripken/emscripten/blob/incoming/tests/manual_wasm_instantiate.html#L170
+        var ttyout = [];
+        Module.stdout = function (val) {
+            if (val === null || val === 0x0A) {
+                Module.print(Module.coreHelpers.sizedUtf8ArrayToJSString(ttyout, 0, ttyout.length));
+                ttyout = [];
+            } else {
+                ttyout.push(val);
+            }
+        };
+
+        if (typeof createVireoCore !== 'function') {
+            throw new Error('createVireoCore could not be found, make sure to build and include vireo.js before using');
+        }
+
+        // Save a Vireo class reference on the module instance so the instance can access static functions on the class
+        // TODO(mraj) Instead use the static functions directly when we switch to ES6 modules and can resolve the Vireo class correctly
+        Module.Vireo = Vireo;
+
+        return Module;
+    };
+
+    requestVireoInstance = function (config) {
+        return new Promise(function (resolve, reject) {
+            // DO NOT USE the then method exposed on createVireoCore()
+            // See https://github.com/kripken/emscripten/issues/5820
+            try {
+                let Module = createModuleBase(config);
+                Module.onRuntimeInitialized = function () {
+                    // If you dont resolve with a wrapper you end up stuck in a loop
+                    // https://github.com/kripken/emscripten/issues/5820#issuecomment-390946487
+                    let wrappedModule = {
+                        wrapped: Module
+                    };
+                    resolve(wrappedModule);
+                };
+                createVireoCore(Module);
+            } catch (ex) {
+                reject(ex);
+            }
+        }).then(function (wrappedModule) {
+            return new Vireo(wrappedModule.wrapped);
+        });
+    };
+}());
+
+export default requestVireoInstance;

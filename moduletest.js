@@ -1,9 +1,9 @@
-<html>
-<head>
-<script>
-import('./source/core/vireo.loader.js').then(result => {
-    result.default({
-        customModule:{
+import requestVireoInstance from './source/core/vireo.loader.js';
+
+
+(async function () {
+    let config = {
+        customModule: {
             locateFile: (path, prefix) => {
                 if (path.endsWith('.wasm')) {
                     return './dist/asmjs-unknown-emscripten/release/vireo.wasm';
@@ -11,13 +11,9 @@ import('./source/core/vireo.loader.js').then(result => {
                 return prefix + path;
             }
         }
-    });
-}).then(result => console.log(result));
-
-</script>
-</head>
-
-<body>
-
-</body>
-</html>
+    };
+    
+    var vireo = await requestVireoInstance(config);
+    
+    console.log(vireo);
+}());

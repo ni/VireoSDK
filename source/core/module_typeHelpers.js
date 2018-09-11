@@ -1,28 +1,6 @@
-// Using a modified UMD module format. Specifically a modified returnExports (no dependencies) version
-(function (root, globalName, factory) {
-    'use strict';
-    var buildGlobalNamespace = function () {
-        var buildArgs = Array.prototype.slice.call(arguments);
-        return globalName.split('.').reduce(function (currObj, subNamespace, currentIndex, globalNameParts) {
-            var nextValue = currentIndex === globalNameParts.length - 1 ? factory.apply(undefined, buildArgs) : {};
-            return currObj[subNamespace] === undefined ? (currObj[subNamespace] = nextValue) : currObj[subNamespace];
-        }, root);
-    };
-
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as a named module.
-        define(globalName, [], factory);
-    } else if (typeof module === 'object' && module.exports) {
-        // Node. "CommonJS-like" for environments like Node but not strict CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals (root is window)
-        buildGlobalNamespace();
-    }
-}(this, 'NationalInstruments.Vireo.Core.assignTypeHelpers', function () {
-    'use strict';
-
-    var assignTypeHelpers = function (Module) {
+var assignTypeHelpers;
+(function () {
+    assignTypeHelpers = function (Module) {
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
             'TypeRef_Name',
@@ -342,6 +320,5 @@
             return undefined;
         };
     };
-
-    return assignTypeHelpers;
-}));
+}());
+export default assignTypeHelpers;
