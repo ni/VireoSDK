@@ -77,8 +77,17 @@ var requestVireoInstance;
         };
 
         var Module;
-        if (isObject(config) && isObject(config.customModule)) {
-            Module = config.customModule;
+        if (isObject(config)) {
+            Module = isObject(config.customModule) ? config.customModule : {};
+
+            if (typeof config.wasmUrl === 'string') {
+                Module.locateFile = function (path, prefix) {
+                    if (path.endsWith('.wasm')) {
+                        return config.wasmUrl;
+                    }
+                    return prefix + path;
+                };
+            }
         } else {
             Module = {};
         }
