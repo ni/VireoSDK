@@ -168,7 +168,8 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_JavaScriptInvoke_GetParameterType',\
     '_JavaScriptInvoke_GetParameterPointer',\
     '_JavaScriptInvoke_GetArrayElementType',\
-    '_TypeRef_Rank'\
+    '_TypeRef_Rank',\
+	'_free' \
     ]"
 
 EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\

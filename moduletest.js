@@ -2,18 +2,13 @@ import requestVireoInstance from './source/core/vireo.loader.js';
 
 
 (async function () {
-    let config = {
-        customModule: {
-            locateFile: (path, prefix) => {
-                if (path.endsWith('.wasm')) {
-                    return './dist/asmjs-unknown-emscripten/release/vireo.wasm';
-                }
-                return prefix + path;
-            }
-        }
-    };
-    
-    var vireo = await requestVireoInstance(config);
-    
-    console.log(vireo);
+    var vireo = await requestVireoInstance({
+        wasmUrl: './dist/asmjs-unknown-emscripten/release/vireo.wasm'
+    });
+
+    var viaCode = document.getElementById('viacode').textContent;
+    vireo.eggShell.loadVia(viaCode);
+    vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+        console.log('finished :D');
+    });
 }());

@@ -4,6 +4,85 @@
 </head>
 
 <body>
+<script type="text/via" id="viacode">
+define(Mandelbrot dv(.VirtualInstrument (
+    // Parameter list
+    c(
+        i(.ComplexDouble a)
+        o(.ComplexDouble z)
+    )
+    // Dataspace
+    c(
+        e(.Int32 i)
+    )
+    clump (1
+        Init(i)
+        Init(z)
+        Perch(0)
+            Mul(z z z)
+            Add(z a z)
+            Add(i 1 i)
+        BranchIfLT(0 i 50)
+    )
+)))
 
+define(MandelbrotMain dv(.VirtualInstrument (
+    // Dataspace
+    c(
+        e(.StdOut file)
+        e(.Int32 err)
+        e(dv(.String '.')    char1)
+        e(dv(.String '#')    char2)
+        e(dv(.String '\n')   lineFeed)
+
+        e(dv(.Double 1.0)    y)
+        e(dv(.Double 1.0)    yFirst)
+        e(dv(.Double -1.0)   yLast)
+        e(dv(.Double -0.05)  yDelta)
+
+        e(.Double   x)
+        e(dv(.Double -2.0)   xFirst)
+        e(dv(.Double 0.5)    xLast)
+        e(dv(.Double 0.0315) xDelta)
+
+        e(dv(.Double 2)      two)
+        e(.ComplexDouble    cmplxIn)
+        e(.ComplexDouble    cmplxOut)
+        e(.Double           abs)
+
+        e(.Int64            tStart)
+        e(.Int64            tDone)
+        )
+    clump (1
+        GetMicrosecondTickCount(tStart)
+
+        Perch(0)
+            Copy(xFirst x)
+            Perch(1)
+                // Explicit constructor for simple cluster types is not needed
+                // fields can be set directly
+                Copy(x cmplxIn.real)
+                Copy(y cmplxIn.imaginary)
+                Mandelbrot(cmplxIn cmplxOut)
+                Absolute(cmplxOut abs)
+                BranchIfLT(2 abs two)
+                    StreamWrite(file char1 err)
+                    Branch(3)
+                Perch(2)
+                    StreamWrite(file char2 err)
+                Perch(3)
+            Add(x  xDelta  x)
+            BranchIfLE(1 x xLast)
+        StreamWrite(file lineFeed err)
+        Add(y yDelta y)
+        BranchIfGE(0 y yLast)
+
+        GetMicrosecondTickCount(tDone)
+        Sub(tDone tStart tDone)
+        Printf("Time to calculate Mandelbrot: %s microseconds" tDone)
+    )
+) ) )
+enqueue(MandelbrotMain)
+</script>
 </body>
 </html>
