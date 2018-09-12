@@ -184,7 +184,7 @@ The vireo.js build is packaged as an npm package to make it consumeable in JavaS
 There are two primary workflows for testing your local Vireo changes in other npm based applications:
 
 ### Testing on your local machine
-If you have a JavaScript application on your local machine that relies on vireo as a dependency you can do the following:
+If you have a JavaScript application on your local machine that depends on Vireo you can do the following:
 - Checkout / make sure the package.json and package-lock.json are editable
 - In the directory with the package.json file run:
   ```console
@@ -195,6 +195,15 @@ The VireoSDK directory will be symlinked to the `node_modules` folder of your ap
 This allows you to make changes to your local vireo and have them be instantly available to the consuming application.
 
 **WARNING** Since the local VireoSDK is symlinked to the JavaScript application be aware of tooling that could accidently delete or modify your local development files unexpectedly.
+
+If you have a .NET application that depends on Vireo you can do the following (you must have nuget.exe available)
+- In the directory with the `VireoSDK.nuspec` file run:
+  ```console
+  nuget pack VireoSDK.nuspec -properties version="[version]"
+  ```
+  
+  replacing \[version\] with some version.
+- See [installing a nuget package](https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package) for the various ways to install the created package to your .NET application.
 
 ### Testing on a different machine / CI
 If you want to test your local vireo changes on a separate machine from your local machine (a CI or test machine) without publishing to the npm registry you can do the following:
