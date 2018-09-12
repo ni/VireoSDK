@@ -2,7 +2,7 @@ import vireoHelpers from './source/core/vireo.loader.js';
 
 
 (async function () {
-    var vireo = await vireoHelpers.requestInstance({
+    var vireo = await vireoHelpers.createInstance({
         wasmUrl: './dist/wasm32-unknown-emscripten/release/vireo.wasm'
     });
 

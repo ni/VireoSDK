@@ -127,7 +127,7 @@ const createModuleBase = function (config) {
     return Module;
 };
 
-const requestInstance = function (config) {
+const createInstance = function (config) {
     const Module = createModuleBase(config);
     createVireoCore(Module);
 
@@ -137,7 +137,7 @@ const requestInstance = function (config) {
 };
 
 export default {
-    requestInstance,
+    createInstance,
     encodeIdentifier,
     decodeIdentifier
 };
