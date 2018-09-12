@@ -175,6 +175,48 @@ This can happen if you perform development on a different machine, pushed them t
 It is encouraged before submission to rebase your changes on top of master and to remove extraneous commits to improve the commit history.
 However, if multiple developers are doing development in a branch it requires coordination before rewriting history using rebase.
 
+### Creating hotfix releases
+To create and release hotfixes, annotated git tags are used; no release branches are created and maintained. To create a hotfix release, follow the steps below:
+
+#### Maintainer will create a hotfix branch from the desired tag in ni/VireoSDK
+* Goto https://github.com/ni/VireoSDK in your browser, click the "Branch:master" button and select the "Tags" tab in the pop-up that appears.
+* Choose the tag (say v10.1.7) on top of which you want to create a hotfix. The button should now say something like "Tag:v10.1.7".
+* Click on the button again, select 'Branches', and type a new name for the branch (for example, 'hotfix'), hit Enter. This will create a new 'hotfix' branch in ni/VireoSDk from the chosen tag (v10.1.7).
+
+#### Contributor will create a local branch with the desired fixes and do a pull request
+* Synchronize your local master to head.
+```console
+git remote update -p
+git merge --ff-only upstream/master
+git push
+```	
+* Create a local branch (say 'myHotfix') using the same tag as the 'hotfix' ni/VireoSDK branch.
+```console
+git checkout -b myHotfix v10.1.7
+```
+* Then pick appropriate commits that should be cherry-picked into the hotfix release.
+```console
+git cherry-pick ec64f3296e5ee858dbe088768f0ff4fb4afad221
+```
+* **NOTICE**: The selected commits will apply directly, 'git status' will not return pending changes.
+* Submit your branch to your remote repository.
+* Create a PR from your branch 'myHotfix' to 'hotfix' in ni/VireoSDK.
+
+#### Maintainer will merge the changes
+* Once your PR has been reviewed and approved, the Maintainer will merge your PR into the main hotfix release
+
+#### Maintainer will push a new annotated tag to create the hotfix release
+* If this is the first hotfix for the tag, we need to switch to prerelease first. 
+  * Manually update the package.json file, append '-hotfix' to the version (10.1.7 becomes 10.1.7-hotfix). Save the file.
+  * Run 'npm install' to update the package-lock.json
+  * Commit just this change with just package.json and package-lock.json updates.
+* Create new hotfix version with the following commands:
+```console
+npm version prerelease -m "%s Bug fix for ScanToString with booleans"
+git push --follow-tags
+```
+* Once the tags are pushed, delete the 'hotfix' branch in ni/VireoSDK
+
 # Testing local Vireo changes
 The [README.md](README.md) describes how to test your Vireo changes locally on your development machine with the tests in VireoSDK.
 This section will instead focus on testing your local Vireo changes in other applications that consume Vireo.
