@@ -986,7 +986,14 @@ var assignEggShell;
             };
 
             var runExecuteSlicesAsync = function () {
-                var execSlicesResult = Module.eggShell.executeSlicesUntilWait(SLICE_SETS_PER_TIME_CHECK, MAXIMUM_VIREO_EXECUTION_TIME_MS);
+                var execSlicesResult;
+                try {
+                    execSlicesResult = Module.eggShell.executeSlicesUntilWait(SLICE_SETS_PER_TIME_CHECK, MAXIMUM_VIREO_EXECUTION_TIME_MS);
+                } catch (ex) {
+                    execSlicesResult = 0;
+                    // TODO mraj we should find a better way to report exceptions that occur. Maybe by rejecting the promise?
+                    console.error(ex);
+                }
                 if (execSlicesResult > 0) {
                     timerToken = setTimeout(runExecuteSlicesAsync, execSlicesResult);
                 } else if (execSlicesResult < 0) {

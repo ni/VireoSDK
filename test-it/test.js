@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-/* global Set */
-(function () {
+(async function () {
     'use strict';
     // Node Test runner for *.via files against Vireo Targets
     // Config file: testList.json
@@ -279,9 +278,9 @@
     };
 
     // Setup the vireo.js runtime for instruction execution
-    var setupVJS = function () {
-        var Vireo = require('../');
-        vireo = new Vireo();
+    var setupVJS = async function () {
+        var vireoHelpers = require('../');
+        vireo = await vireoHelpers.requestInstance();
         vireo.httpClient.setXMLHttpRequestImplementation(xhr2);
     };
 
@@ -329,7 +328,7 @@
     // -------------------- Main Function
     // TODO mraj this needs to be refactored, complexity 38 is too high
     /* eslint complexity: ["error", 40]*/
-    (function () {
+    (async function () {
         var configFile = 'testList.json',
             testMap = loadTests(configFile),
             testCategory = '',
@@ -356,7 +355,7 @@
         while (argv.length > 0) {
             arg = argv[0];
             if (arg === '-j') {
-                setupVJS();
+                await setupVJS();
                 tester = JSTester;
             } else if (arg === '-n') {
                 tester = NativeTester;
@@ -419,7 +418,7 @@
         }
         // If no tester listed in the arguments, assume vireo.js
         if (!tester) {
-            setupVJS();
+            await setupVJS();
             tester = JSTester;
         }
 
@@ -484,7 +483,7 @@
 
         // If no tester listed in the arguments, assume vireo.js
         if (!tester) {
-            setupVJS();
+            await setupVJS();
             tester = JSTester;
         }
 
