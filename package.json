@@ -27,6 +27,7 @@
     "xhr2": "^0.1.4"
   },
   "scripts": {
+    "build": "rollup source/core/vireo.loader.js --format umd --name \"vireoHelpers\" --file dist/wasm32-unknown-emscripten/release/vireo.umd.js",
     "test": "karma start --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
     "test-dev": "karma start --browsers ChromeHeadlessNoSandbox --skip-tags Slow",
     "test-manual": "karma start --no-single-run",
@@ -52,6 +53,6 @@
     "url": "https://github.com/NI/VireoSDK/issues"
   },
   "homepage": "https://github.com/NI/VireoSDK#readme",
-  "main": "source/core/vireo.loader.js",
+  "main": "dist/wasm32-unknown-emscripten/release/vireo.umd.js",
   "dependencies": {}
 }
