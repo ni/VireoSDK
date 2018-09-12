@@ -1,4 +1,3 @@
-/* global Module, mergeInto, LibraryManager */
 (function () {
     'use strict';
     var eventHelpersCAPI = {

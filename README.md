@@ -108,7 +108,7 @@ To create a profile build of vireo.js:
 make js BUILD=profile
 ```
 
-Notice that vireo.js is created in the `dist` folder based on the `BUILD` type. For example, a default vireo.js build equivalent to `BUILD=release` will be located at: `dist/asmjs-unknown-emscripten/release/vireo.js`
+Notice that vireo.js is created in the `dist` folder based on the `BUILD` type. For example, a default vireo.js build equivalent to `BUILD=release` will be located at: `dist/wasm32-unknown-emscripten/release/vireo.js`
 
 ## Vireo Windows Native target
 

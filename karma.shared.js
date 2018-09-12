@@ -23,7 +23,7 @@
             'node_modules/diff/dist/diff.js',
 
             // Source files
-            'dist/asmjs-unknown-emscripten/release/vireo.js',
+            'dist/wasm32-unknown-emscripten/release/vireo.umd.js',
             'source/core/module_*.js',
             'source/io/module_*.js',
             'source/core/vireo.loader.js',

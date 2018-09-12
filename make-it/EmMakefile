@@ -6,8 +6,8 @@ MKDIR="mkdir"
 
 VIREO_SDK=..
 
-TARGETS_SUPPORTED=asmjs-unknown-emscripten wasm32-unknown-emscripten
-TARGET=asmjs-unknown-emscripten
+TARGETS_SUPPORTED=wasm32-unknown-emscripten
+TARGET=wasm32-unknown-emscripten
 
 ifeq ($(filter $(TARGET), $(TARGETS_SUPPORTED)),)
 $(error invalid TARGET value, TARGET=$(TARGET) not supported, supported targets are $(TARGETS_SUPPORTED))
