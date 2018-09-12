@@ -1,13 +1,12 @@
-(function () {
+(async function () {
     'use strict';
-    var Vireo = require('../../');
+    var vireoHelper = require('../../');
     var fs = require('fs');
 
     var viaCode = fs.readFileSync('./loadernode.via', 'utf8');
 
-    var vireo = new Vireo();
+    var vireo = await vireoHelper.requestInstance();
     vireo.eggShell.loadVia(viaCode);
-    vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
-        console.log('done :D');
-    });
+    await vireo.eggShell.executeSlicesUntilClumpsFinished();
+    console.log('done :D');
 }());
