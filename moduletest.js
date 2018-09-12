@@ -8,7 +8,6 @@ import vireoHelpers from './source/core/vireo.loader.js';
 
     var viaCode = document.getElementById('viacode').textContent;
     vireo.eggShell.loadVia(viaCode);
-    vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
-        console.log('finished :D');
-    });
+    await vireo.eggShell.executeSlicesUntilClumpsFinished();
+    console.log('finished :D');
 }());

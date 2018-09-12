@@ -7,6 +7,9 @@ module.exports = {
         'jasmine': true,
         'es6': true
     },
+    'parserOptions': {
+        'ecmaVersion': 2017
+    },
     'rules': {
         'no-console': 'off',
 

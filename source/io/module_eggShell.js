@@ -958,7 +958,7 @@ var assignEggShell;
         // Runs synchronously for a maximum of 4ms at a time to cooperate with browser and node.js execution environments
         // A good starting point for most vireo uses but can be copied and modified as needed
         // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
-        Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (callback) {
+        Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (originalCallback) {
             // These numbers may still need tuning.  They should also match the numbers in native
             // in CommandLine/main.cpp.  SLICE_SETS was lowered from 100000 because that was starving
             // other clumps and running too long before checking the timer.
@@ -966,6 +966,16 @@ var assignEggShell;
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
             var timerToken;
             var origExecuteSlicesWakeUpCallback = Module.eggShell.executeSlicesWakeUpCallback;
+
+            var callback;
+            var executeSlicesUntilClumpsFinishedPromise;
+            if (originalCallback === undefined) {
+                executeSlicesUntilClumpsFinishedPromise = new Promise(function (resolve) {
+                    callback = resolve;
+                });
+            } else {
+                callback = originalCallback;
+            }
 
             var vireoFinished = function () {
                 Module.eggShell.executeSlicesWakeUpCallback = origExecuteSlicesWakeUpCallback;
@@ -998,7 +1008,11 @@ var assignEggShell;
                 }
             };
 
-            runExecuteSlicesAsync();
+            Promise.resolve().then(function () {
+                runExecuteSlicesAsync();
+            });
+
+            return executeSlicesUntilClumpsFinishedPromise;
         };
 
         Module.eggShell.setOccurrenceAsync = function (occurrence) {
