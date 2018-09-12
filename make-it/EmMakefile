@@ -97,6 +97,7 @@ EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(IOSOURCEDIR)/library_propertyNode.js
 PREJS = $(OBJS)/vireo.preamble.js
 POSTJS = $(OBJS)/vireo.postamble.js
+EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_Vireo_Version', \
@@ -240,9 +241,13 @@ $(EM_BC_FILES): | $(OBJS)
 $(OBJS):
 	@$(MKDIR) -p $(OBJS)
 
+$(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
+	node splitVireoWrapper.js $(CORESOURCEDIR)/vireo.wrapper.js $(PREJS) $(POSTJS)
+
 vjs: $(DIST)/vireo.js
 
-$(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) | $(DIST)
-	$(EMCC) $(EM_OPT) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
+$(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
+	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
+
 $(DIST):
 	@$(MKDIR) -p $(DIST)
