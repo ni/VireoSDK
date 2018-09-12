@@ -280,7 +280,7 @@
     // Setup the vireo.js runtime for instruction execution
     var setupVJS = async function () {
         var vireoHelpers = require('../');
-        vireo = await vireoHelpers.requestInstance();
+        vireo = await vireoHelpers.createInstance();
         vireo.httpClient.setXMLHttpRequestImplementation(xhr2);
     };
 

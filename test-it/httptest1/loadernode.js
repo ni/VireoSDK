@@ -5,7 +5,7 @@
 
     var viaCode = fs.readFileSync('./loadernode.via', 'utf8');
 
-    var vireo = await vireoHelper.requestInstance();
+    var vireo = await vireoHelper.createInstance();
     vireo.eggShell.loadVia(viaCode);
     await vireo.eggShell.executeSlicesUntilClumpsFinished();
     console.log('done :D');
