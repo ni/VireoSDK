@@ -1,4 +1,4 @@
-describe('Performing a POST request #FailsIE', function () {
+describe('Performing a POST request', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;

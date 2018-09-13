@@ -14,9 +14,7 @@
         // list of files / patterns to load in the browser
         files: [
             // Polyfills
-            // core.js and fetch.js are used for IE11 testing
-            'node_modules/core-js/client/core.js',
-            'node_modules/whatwg-fetch/fetch.js',
+            // None
 
             // Test infrastructure
             'node_modules/jasmine-expect/dist/jasmine-matchers.js',
@@ -76,7 +74,7 @@
         browsers: [],
 
         // Hostname to be used when capturing browsers.
-        // This seems to reduce intermittent hangs on Windows 7 using IE 11
+        // This seems to reduce intermittent hangs on Windows 7 with legacy browsers, no longer needed.
         hostname: '127.0.0.1',
 
         // Aliases for launchers that provide custom settings

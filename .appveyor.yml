@@ -40,7 +40,6 @@ test_script:
   - make testnative
   - make testhttpbin
   - npm run test -- --browsers FirefoxHeadless
-  - npm run test -- --browsers IE --skip-tags FailsIE
 
 # Using the same naming convention as rust https://forge.rust-lang.org/platform-support.html
 after_test:

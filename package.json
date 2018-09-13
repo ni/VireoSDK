@@ -4,7 +4,6 @@
   "description": "SDK for an experimental vireo runtime engine.",
   "devDependencies": {
     "colors": "^1.3.2",
-    "core-js": "^2.5.7",
     "diff": "^3.5.0",
     "eslint": "^5.5.0",
     "jasmine-core": "^3.2.1",
@@ -14,7 +13,6 @@
     "karma-coverage": "^1.1.2",
     "karma-edge-launcher": "^0.4.2",
     "karma-firefox-launcher": "^1.1.0",
-    "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^1.3.1",
     "karma-jasmine-spec-tags": "^1.0.1",
@@ -23,7 +21,6 @@
     "requirejs": "^2.3.6",
     "rollup": "^0.65.2",
     "shx": "^0.3.2",
-    "whatwg-fetch": "^2.0.4",
     "xhr2": "^0.1.4"
   },
   "scripts": {
@@ -31,7 +28,7 @@
     "test": "karma start --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
     "test-dev": "karma start --browsers ChromeHeadlessNoSandbox --skip-tags Slow",
     "test-manual": "karma start --no-single-run",
-    "test-win": "karma start --browsers Chrome,Firefox,Edge && karma start --browsers IE --skip-tags FailsIE",
+    "test-win": "karma start --browsers Chrome,Firefox,Edge",
     "test-coverage": "karma start karma.coverage.conf.js",
     "lint": "eslint .",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",

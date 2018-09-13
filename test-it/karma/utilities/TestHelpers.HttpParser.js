@@ -35,7 +35,7 @@
     var parseUrlElement = document.createElement('a');
 
     var parseUrl = function (url) {
-        // Add and remove the element to workaround IE https://connect.microsoft.com/IE/Feedback/Details/1002846
+        // Add and remove the element to workaround behavior in legacy browsers, no longer required
         document.body.appendChild(parseUrlElement);
         parseUrlElement.href = url;
 
