@@ -1,6 +1,7 @@
 describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () {
     'use strict';
 
+    var vireoHelpers = window.vireoHelpers;
     var fixtures = window.testHelpers.fixtures;
     var publicApiExecuteManyHTTPGetUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ExecuteManyHTTPGet.via');
     var publicApiExecuteLongWaitUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ExecuteLongWait.via');
@@ -42,11 +43,13 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         ], done);
     });
 
-    it('can run many HTTP requests quickly when HTTP is resolved immediately', function (done) {
-        var Vireo = window.NationalInstruments.Vireo.Vireo;
-        var viaCode = fixtures.loadAbsoluteUrl(publicApiExecuteManyHTTPGetUrl);
+    var vireo;
+    beforeEach(async function () {
+        vireo = await vireoHelpers.createInstance();
+    });
 
-        var vireo = new Vireo();
+    it('can run many HTTP requests quickly when HTTP is resolved immediately', function (done) {
+        var viaCode = fixtures.loadAbsoluteUrl(publicApiExecuteManyHTTPGetUrl);
         vireo.httpClient.setXMLHttpRequestImplementation(XHRShimResolveImmediatelyAsync);
         var result = '';
         vireo.eggShell.setPrintFunction(function (text) {
@@ -75,10 +78,7 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
     });
 
     it('can run executeSlicesUntilWait slowly while performing a long wait', function (done) {
-        var Vireo = window.NationalInstruments.Vireo.Vireo;
         var viaCode = fixtures.loadAbsoluteUrl(publicApiExecuteLongWaitUrl);
-
-        var vireo = new Vireo();
         var result = '';
         vireo.eggShell.setPrintFunction(function (text) {
             result += text + '\n';

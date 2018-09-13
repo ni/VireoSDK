@@ -1,12 +1,15 @@
 describe('Cluster test suite', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
     // Sharing Vireo instances across tests make them run soooo much faster
-    var vireo = new Vireo();
+    var vireo;
+    beforeAll(async function () {
+        vireo = await vireoHelpers.createInstance();
+    });
 
     var publicApiErrorClusterViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ErrorCluster.via');
 

@@ -280,7 +280,7 @@ var assignEggShell;
             for (var i = 0; i < fieldCount; i += 1) {
                 fieldTypeRef = Module.typeHelpers.subElementByIndex(typeRef, i);
                 fieldNameEncoded = Module.typeHelpers.elementName(fieldTypeRef);
-                fieldName = Module.Vireo.decodeIdentifier(fieldNameEncoded);
+                fieldName = Module.staticVireoHelpers.decodeIdentifier(fieldNameEncoded);
                 valueRefs[fieldName] = Module.eggShell.findSubValueRef(valueRef, fieldNameEncoded);
             }
 

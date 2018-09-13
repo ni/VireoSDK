@@ -1,7 +1,7 @@
 describe('Timeout test suite #Slow #FailsIE', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
@@ -28,10 +28,10 @@ describe('Timeout test suite #Slow #FailsIE', function () {
         httpBinHelpers.forceHttpBinQuery('get?show_env=1', done);
     });
 
-    beforeEach(function () {
+    beforeEach(async function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
         // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
-        vireo = new Vireo();
+        vireo = await vireoHelpers.createInstance();
     });
 
     it('GET method with timeout 0s times out with httpbin delay of 10s', function (done) {

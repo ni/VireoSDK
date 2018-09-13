@@ -124,6 +124,12 @@ const createModuleBase = function (config) {
             return undefined;
         }
     });
+
+    Module.staticVireoHelpers = {
+        encodeIdentifier,
+        decodeIdentifier
+    };
+
     return Module;
 };
 

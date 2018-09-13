@@ -1,7 +1,7 @@
 describe('The Vireo PropertyNode', function () {
     'use strict';
 
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
@@ -68,8 +68,8 @@ describe('The Vireo PropertyNode', function () {
         ], done);
     });
 
-    beforeEach(function () {
-        vireo = new Vireo();
+    beforeEach(async function () {
+        vireo = await vireoHelpers.createInstance();
     });
 
     it('setPropertyReadFunction when trying to set not a function throws', function () {

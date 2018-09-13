@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Simple command line Vireo shell
-(function () {
+(async function () {
     'use strict';
-    var Vireo = require('../');
+    var vireoHelpers = require('../');
     var fs = require('fs');
     var xhr2 = require('xhr2');
 
@@ -22,8 +22,8 @@
         process.exit(1);
     }
 
-    var vireo = new Vireo();
+    var vireo = await vireoHelpers.createInstance();
     vireo.httpClient.setXMLHttpRequestImplementation(xhr2);
     vireo.eggShell.loadVia(text);
-    vireo.eggShell.executeSlicesUntilClumpsFinished();
+    await vireo.eggShell.executeSlicesUntilClumpsFinished();
 }());

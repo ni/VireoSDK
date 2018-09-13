@@ -1,12 +1,16 @@
 describe('Vireo public API allows', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    var vireo = new Vireo();
-    var internalEggShell = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.eggShell;
+    var vireo;
+    var internalEggShell;
+    beforeAll(async function () {
+        vireo = await vireoHelpers.createInstance();
+        internalEggShell = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.eggShell;
+    });
 
     var publicApiAllocateTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/AllocateTypes.via');
     var viName = 'AllocateTypes';
