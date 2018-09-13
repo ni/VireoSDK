@@ -1,4 +1,4 @@
-describe('Performing a GET request #FailsIE', function () {
+describe('Performing a GET request', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;

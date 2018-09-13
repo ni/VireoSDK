@@ -1,4 +1,4 @@
-describe('Performing a PUT request #FailsIE', function () {
+describe('Performing a PUT request', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;

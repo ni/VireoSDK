@@ -216,11 +216,12 @@ var assignHttpClient;
             var eventListeners = {};
 
             // Even though we are rigorous with removing event listeners there is at least one case where completeRequest will be run twice
-            // In PhantomJS 2.0.1 if a bad url is provided the send() function will throw an error triggering a catch statement in addition to the error event handler
-            // However, only in PhantomJS will the error event handler run before the catch statement
+            // In legacy browsers if a bad url is provided the send() function will throw an error triggering a catch statement in addition to the error event handler
+            // However, only in legacy browsers will the error event handler run before the catch statement
             // So while most browsers will completeRequest in the catch statement and remove the event handlers to prevent further triggers,
-            // PhantomJS will run the error event handler first to completeRequest and then attempt to completeRequest again in the catch statement
+            // legacy browsers will run the error event handler first to completeRequest and then attempt to completeRequest again in the catch statement
             // So begrudgingly a requestCompleted flag is added to prevent multiple calls of completeRequest.
+            // This flag is no longer required.
             var requestCompleted = false;
 
             var completeRequest = function (responseData) {
@@ -245,7 +246,7 @@ var assignHttpClient;
             // See https://xhr.spec.whatwg.org/#suggested-names-for-events-using-the-progressevent-interface
             eventListeners.load = function () {
                 // A status code of 0 is an invalid status code and indicative of a failure
-                // So far the only browser returning status codes of 0 is PhantomJS
+                // So far only legacy browsers return a status codes of 0, so this check is no longer needed.
                 if (request.status === 0) {
                     completeRequest({
                         header: '',
@@ -373,12 +374,13 @@ var assignHttpClient;
             // Receive the response as an ArrayBuffer. Relies on the server to send data as UTF-8 encoded text for text transmission.
             request.responseType = 'arraybuffer';
 
-            // In IE 11 the timeout property may only be set after calling open and before calling send
+            // In legacy browsers timeout property may only be set after calling open and before calling send, no longer required
             request.timeout = requestData.xhrTimeout;
 
             // Send request
-            // IE11 and PhatomJS will both throw on send() if an invalid url is provided. Spec compliant browsers throw on open() for invalid urls.
-            // Not sure if this is the only reason for send to throw in IE11, so using more generic network error
+            // Legacy browsers throw on send() if an invalid url is provided. Spec compliant browsers throw on open() for invalid urls.
+            // Not sure if this is the only reason for send to throw, so using more generic network error
+            // The exception handling is likely no longer required.
             try {
                 if (requestData.buffer === undefined) {
                     request.send();
@@ -692,8 +694,8 @@ var assignHttpClient;
                 if (typeof Blob === 'undefined') {
                     buffer = typedArrayBuffer;
                 } else {
-                    // TODO(mraj) would like to use the typed array in all browsers but not supported in iOS and PhantomJS with XHR.send
-                    // Blob type property not set to determine Content-Type for XHR as IE and Edge seem to ignore it.
+                    // TODO(mraj) would like to use the typed array in all browsers but not supported in iOS with XHR.send
+                    // Blob type property not set to determine Content-Type for XHR as Edge seem to ignore it.
                     buffer = new Blob([typedArrayBuffer]);
                 }
             }

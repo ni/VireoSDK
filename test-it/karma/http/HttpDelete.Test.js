@@ -1,4 +1,4 @@
-describe('Performing a DELETE request #FailsIE', function () {
+describe('Performing a DELETE request', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
