@@ -1,7 +1,7 @@
 describe('Performing a CORS request #FailsIE', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
@@ -20,9 +20,9 @@ describe('Performing a CORS request #FailsIE', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
-    beforeEach(function () {
+    beforeEach(async function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
-        vireo = new Vireo();
+        vireo = await vireoHelpers.createInstance();
     });
 
     beforeEach(function (done) {

@@ -1,7 +1,7 @@
 describe('Performing a DELETE request #FailsIE', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var httpBinHelpers = window.testHelpers.httpBinHelpers;
@@ -34,10 +34,10 @@ describe('Performing a DELETE request #FailsIE', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
-    beforeEach(function () {
+    beforeEach(async function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
         // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
-        vireo = new Vireo();
+        vireo = await vireoHelpers.createInstance();
     });
 
     it('with a simple 200 response', function (done) {

@@ -24,9 +24,10 @@
 
             // Source files
             'dist/wasm32-unknown-emscripten/release/vireo.umd.js',
-            'source/core/module_*.js',
-            'source/io/module_*.js',
-            'source/core/vireo.loader.js',
+            {
+                pattern: 'dist/wasm32-unknown-emscripten/release/vireo.wasm',
+                included: false
+            },
 
             // Test specs and assets
             'test-it/karma/utilities/TestHelpers.*.js',

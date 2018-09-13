@@ -1,7 +1,7 @@
 describe('A JavaScript function invoke', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
@@ -117,8 +117,8 @@ describe('A JavaScript function invoke', function () {
         Object.assign(window, javaScriptInvokeFixtures);
     });
 
-    beforeEach(function () {
-        vireo = new Vireo();
+    beforeEach(async function () {
+        vireo = await vireoHelpers.createInstance();
     });
 
     afterAll(function () {

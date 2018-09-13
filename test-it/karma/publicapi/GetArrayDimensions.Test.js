@@ -1,7 +1,7 @@
 describe('The Vireo EggShell getArrayDimensions api', function () {
     'use strict';
     // Reference aliases
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
@@ -24,8 +24,8 @@ describe('The Vireo EggShell getArrayDimensions api', function () {
         ], done);
     });
 
-    beforeEach(function () {
-        vireo = new Vireo();
+    beforeEach(async function () {
+        vireo = await vireoHelpers.createInstance();
     });
 
     it('can expose array lengths', function (done) {

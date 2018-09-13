@@ -1,11 +1,14 @@
 describe('The Vireo EggShell Reflection API', function () {
     'use strict';
 
-    var Vireo = window.NationalInstruments.Vireo.Vireo;
+    var vireoHelpers = window.vireoHelpers;
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    var vireo = new Vireo();
+    var vireo;
+    beforeAll(async function () {
+        vireo = await vireoHelpers.createInstance();
+    });
 
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
     var viName = 'MyVI';
