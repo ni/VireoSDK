@@ -21,9 +21,9 @@
             'node_modules/diff/dist/diff.js',
 
             // Source files
-            'dist/wasm32-unknown-emscripten/release/vireo.umd.js',
+            'dist/wasm32-unknown-emscripten/release/vireo.js',
             {
-                pattern: 'dist/wasm32-unknown-emscripten/release/vireo.wasm',
+                pattern: 'dist/wasm32-unknown-emscripten/release/vireo.core.wasm',
                 included: false
             },
 
