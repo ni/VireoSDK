@@ -28,6 +28,8 @@ CORESOURCEDIR=$(VIREO_SDK)/source/core
 IOSOURCEDIR=$(VIREO_SDK)/source/io
 UTSOURCEDIR=$(VIREO_SDK)/source/unittest
 
+JS_SOURCE_FILES=$(wildcard $(CORESOURCEDIR)/*.js) $(wildcard $(IOSOURCEDIR)/*.js)
+
 .PHONY: clean install help vjs dox
 .DEFAULT_GOAL=help
 
@@ -246,9 +248,11 @@ $(PREJS) $(POSTJS): $(CORESOURCEDIR)/vireo.wrapper.js
 
 vjs: $(DIST)/vireo.js
 
-$(DIST)/vireo.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
+$(DIST)/vireo.core.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $(DIST)
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
-	npm run build
+
+$(DIST)/vireo.js: $(DIST)/vireo.core.js $(JS_SOURCE_FILES)
+	npm run rollup -- $(CORESOURCEDIR)/vireo.loader.$(BUILD).js --format umd --name vireoHelpers --file $@
 
 $(DIST):
 	@$(MKDIR) -p $(DIST)

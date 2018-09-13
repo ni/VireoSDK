@@ -1124,7 +1124,7 @@ Boolean PercentEncodedSubString::IsReservedChar(Utf8Char c) {
     // We are using a custom encoding mechanism based on percent-encoding
     // which does not encode the following characters: + * _ - $
     // if this ever changes make sure to also update LabVIEW editor (C# side)
-    // and Vireo.encodeVireoIdentifier in vireo.loader.js
+    // and Vireo.encodeVireoIdentifier in vireo.loader.staticHelpers.js
     return (c == '+' || c == '*' || c == '_' || c == '-' || c == '$');
 }
 //------------------------------------------------------------

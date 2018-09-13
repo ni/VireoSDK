@@ -1,53 +1,10 @@
-
-import createVireoCore from '../../dist/wasm32-unknown-emscripten/release/vireo.js';
-import assignCoreHelpers from '../../source/core/module_coreHelpers.js';
-import assignTypeHelpers from '../../source/core/module_typeHelpers.js';
-import assignEggShell from '../../source/io/module_eggShell.js';
-import assignHttpClient from '../../source/io/module_httpClient.js';
-import assignJavaScriptInvoke from '../../source/io/module_javaScriptInvoke.js';
-import assignPropertyNode from '../../source/io/module_propertyNode.js';
-import assignEventHelpers from '../../source/core/module_eventHelpers.js';
-
-const encodeIdentifier = function (str) {
-    if (typeof str !== 'string' || str === '') {
-        throw new Error('Identifier must be a non-empty string. Found: ' + str);
-    }
-
-    let encoded = '',
-        codePoint = str.charCodeAt(0),
-        ch = str.charAt(0);
-
-    // First character must be encoded if is not a letter [A-Za-z]
-    if (!(codePoint >= 0x41 && codePoint <= 0x5A) && !(codePoint >= 0x61 && codePoint <= 0x7A)) {
-        encoded += '%' + codePoint.toString(16).toUpperCase();
-    } else {
-        encoded += ch;
-    }
-
-    for (let i = 1; i < str.length; i += 1) {
-        codePoint = str.charCodeAt(i);
-        ch = str.charAt(i);
-
-        // Do not encode if it is a number [0-9] or uppercase letter [A-Z] or lowercase [a-z] or any of these [*+_-$] or a non-ascii character.
-        if ((codePoint >= 0x30 && codePoint <= 0x39) || (codePoint >= 0x41 && codePoint <= 0x5A) || (codePoint >= 0x61 && codePoint <= 0x7A) ||
-            codePoint === 0x24 || codePoint === 0x2A || codePoint === 0x2B || codePoint === 0x2D || codePoint === 0x5F || codePoint > 0x7F) {
-            encoded += ch;
-        } else {
-            encoded += '%' + codePoint.toString(16).toUpperCase();
-        }
-    }
-
-    return encoded;
-};
-
-const decodeIdentifier = function (str) {
-    if (typeof str !== 'string' || str === '') {
-        throw new Error('Identifier must be a non-empty string. Found: ' + str);
-    }
-
-    return decodeURIComponent(str);
-};
-
+import assignCoreHelpers from '../core/module_coreHelpers.js';
+import assignTypeHelpers from '../core/module_typeHelpers.js';
+import assignEggShell from '../io/module_eggShell.js';
+import assignHttpClient from '../io/module_httpClient.js';
+import assignJavaScriptInvoke from '../io/module_javaScriptInvoke.js';
+import assignPropertyNode from '../io/module_propertyNode.js';
+import assignEventHelpers from '../core/module_eventHelpers.js';
 
 const moduleBuilders = [
     assignCoreHelpers,
@@ -125,15 +82,10 @@ const createModuleBase = function (config) {
         }
     });
 
-    Module.staticVireoHelpers = {
-        encodeIdentifier,
-        decodeIdentifier
-    };
-
     return Module;
 };
 
-const createInstance = function (config) {
+const createInstance = function (createVireoCore, config) {
     const Module = createModuleBase(config);
     createVireoCore(Module);
 
@@ -142,8 +94,4 @@ const createInstance = function (config) {
     });
 };
 
-export default {
-    createInstance,
-    encodeIdentifier,
-    decodeIdentifier
-};
+export default createInstance;

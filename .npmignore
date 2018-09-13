@@ -8,6 +8,10 @@
 !/dist/wasm32-unknown-emscripten/release/*.*
 !/dist/wasm32-unknown-emscripten/debug/*.*
 !/dist/wasm32-unknown-emscripten/profile/*.*
-!/source/core/vireo.loader.js
-!/source/core/module_*.js
-!/source/io/module_*.js
+
+!/source/core/*.js
+/source/core/library_*.js
+/source/core/vireo.wrapper.js
+
+!/source/io/*.js
+/source/io/library_*.js

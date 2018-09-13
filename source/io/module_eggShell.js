@@ -1,3 +1,5 @@
+import staticHelpers from '../core/vireo.loader.staticHelpers.js';
+
 var assignEggShell;
 (function () {
     // Static Private Variables (all vireo instances)
@@ -280,7 +282,7 @@ var assignEggShell;
             for (var i = 0; i < fieldCount; i += 1) {
                 fieldTypeRef = Module.typeHelpers.subElementByIndex(typeRef, i);
                 fieldNameEncoded = Module.typeHelpers.elementName(fieldTypeRef);
-                fieldName = Module.staticVireoHelpers.decodeIdentifier(fieldNameEncoded);
+                fieldName = staticHelpers.decodeIdentifier(fieldNameEncoded);
                 valueRefs[fieldName] = Module.eggShell.findSubValueRef(valueRef, fieldNameEncoded);
             }
 
