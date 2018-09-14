@@ -30,10 +30,16 @@ const isObject = function (obj) {
 };
 
 const createModuleBase = function (config) {
-    let Module = {};
-    if (isObject(config)) {
-        Module = isObject(config.customModule) ? config.customModule : Module;
+    const Module = (isObject(config) && isObject(config.customModule)) ? config.customModule : {};
 
+    // If the size of TOTAL_MEMORY does not match compile size then Emscripten aborts asynchronously
+    // Because the asynchronous abort can be observed but the default behavior cannot be stopped
+    // we instead detect this case early to provide a better message
+    if (Module.TOTAL_MEMORY !== undefined) {
+        throw new Error('Vireo no longer supports configuration of TOTAL_MEMORY. As growable memory is always enabled, configuration of TOTAL_MEMORY is no longer allowed.');
+    }
+
+    if (isObject(config)) {
         if (typeof config.wasmUrl === 'string') {
             Module.locateFile = function (path, prefix) {
                 if (path.endsWith('.wasm')) {
@@ -44,13 +50,6 @@ const createModuleBase = function (config) {
         }
     }
 
-    // TODO https://github.com/kripken/emscripten/pull/6756
-    // Module.print behavior has changed. Not sure if impacted
-    // Functions that must be on Module prior to construction
-    // I think we need to replace Module.print with our own function. If we need to swap it (like during vireo load) that is our new functions behavior to proxy output.
-    // Also to pass file locations to vireo use Module.locateFile: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.locateFile
-    // Maybe instead use instantiateWasm so we keep control over how the file is fetched: https://kripken.github.io/emscripten-site/docs/api_reference/module.html#Module.instantiateWasm
-    // Yea looks good: https://github.com/kripken/emscripten/blob/incoming/tests/manual_wasm_instantiate.html#L170
     let ttyout = [];
     Module.stdout = function (val) {
         if (val === null || val === 0x0A) {
@@ -61,11 +60,18 @@ const createModuleBase = function (config) {
         }
     };
 
-    Module.vireoWasmReady = new Promise(function (resolve) {
+    Module.vireoWasmReady = new Promise(function (resolve, reject) {
         Module.onRuntimeInitialized = function () {
-            // If you dont resolve with a wrapper you end up stuck in a loop
+            Module.onAbort = undefined;
+            // DO NOT resolve with the Module object. The default behavior will cause an infinite Promise resolve loop
             // https://github.com/kripken/emscripten/issues/5820#issuecomment-390946487
             resolve();
+        };
+
+        // The lifetime of this abort handler is only until onRuntimeInitialized
+        // After onRuntimeInitialized different operations should register their own onAbort handler as needed
+        Module.onAbort = function () {
+            reject();
         };
     });
 
@@ -73,6 +79,8 @@ const createModuleBase = function (config) {
     // When createVireoCore is run on Module it tries to set a then method
     // The then method when used with Promises can easily get stuck in a loop:
     // See https://github.com/kripken/emscripten/issues/5820
+    // We avoid resolving promises with the Module object so this shouldn't be necessary
+    // but added as a guard to prevent the behavior from being introduced unexpectedly
     Object.defineProperty(Module, 'then', {
         set: function () {
             // intentionally blank

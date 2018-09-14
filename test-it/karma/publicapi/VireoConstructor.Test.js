@@ -10,12 +10,17 @@ describe('The Vireo constructor', function () {
 
     it('can execute with a custom module to create a 32 MB Heap', async function () {
         var vireoHelpers = window.vireoHelpers;
-        var vireo = await vireoHelpers.createInstance({
-            customModule: {
-                TOTAL_MEMORY: 32 * 1024 * 1024
-            }
-        });
-        var heapLength = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.HEAP8.length;
-        expect(heapLength).toBe(32 * 1024 * 1024);
+        var errorMessage = '';
+        try {
+            await vireoHelpers.createInstance({
+                customModule: {
+                    TOTAL_MEMORY: 32 * 1024 * 1024
+                }
+            });
+        } catch (ex) {
+            errorMessage = ex.message;
+        }
+
+        expect(errorMessage).toMatch(/no longer supports configuration of TOTAL_MEMORY/);
     });
 });

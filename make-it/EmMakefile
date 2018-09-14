@@ -89,7 +89,7 @@ ifeq ($(TARGET), wasm32-unknown-emscripten)
 endif
 
 # NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
-EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1 --minify 0 -s BINARYEN_TRAP_MODE=clamp
+EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1 --minify 0 -s BINARYEN_TRAP_MODE=js
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(CORESOURCEDIR)/library_eventHelpers.js \
