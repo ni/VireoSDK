@@ -135,13 +135,19 @@ describe('The Vireo EggShell Double api can', function () {
             testWriteDoubleCoerced('int8MinValue', -128, -812, expectedCoercedValue(Int8Array, -812));
             testWriteDoubleCoerced('int16MinValue', -32768, 81234, expectedCoercedValue(Int16Array, 81234));
             testWriteDoubleCoerced('int16MinValue', -32768, -81234, expectedCoercedValue(Int16Array, -81234));
+            // #wasmmath #wasm
+            // behavior in different trap modes https://kripken.github.io/emscripten-site/docs/compiling/WebAssembly.html#trap-mode
+            // Expected -2147483648 to match i e e e754 number -466477803 when using clamped mode
             testWriteDoubleCoerced('int32MinValue', -2147483648, 8123456789, expectedCoercedValue(Int32Array, 8123456789));
+            // Expected -2147483648 to match i e e e754 number 466477803 when using clamped mode
             testWriteDoubleCoerced('int32MinValue', -2147483648, -8123456789, expectedCoercedValue(Int32Array, -8123456789));
             testWriteDoubleCoerced('uInt8MinValue', 0, 812, expectedCoercedValue(Uint8Array, 812));
             testWriteDoubleCoerced('uInt8MinValue', 0, -812, expectedCoercedValue(Uint8Array, -812));
             testWriteDoubleCoerced('uInt16MinValue', 0, 81234, expectedCoercedValue(Uint16Array, 81234));
             testWriteDoubleCoerced('uInt16MinValue', 0, -81234, expectedCoercedValue(Uint16Array, -81234));
+            // Expected 0 to match i e e e754 number 3828489493 when using clamped mode
             testWriteDoubleCoerced('uInt32MinValue', 0, 8123456789, expectedCoercedValue(Uint32Array, 8123456789));
+            // Expected 0 to match i e e e754 number 466477803 when using clamped mode
             testWriteDoubleCoerced('uInt32MinValue', 0, -8123456789, expectedCoercedValue(Uint32Array, -8123456789));
 
             expect(expectedCoercedValue(Int8Array, 812)).toBe(44);
