@@ -18,12 +18,13 @@ define(MyVI dv(VirtualInstrument (
                 e(.String test)
             ) args)
         ) clusterRepresentation)
+        e(a(.String *) path)
     )
     clump (
         HttpClientGet(handle url outputFile timeout headers body statusCode error)
 
         // string lvtype pathIntoJSON lvExtensionsBool strictValidationBool defaultNullBool errorCluster
-        UnflattenFromJSON(body clusterRepresentation * false false false error)
+        UnflattenFromJSON(body clusterRepresentation path false false false error)
         Println(clusterRepresentation)
         Println(error)
     )

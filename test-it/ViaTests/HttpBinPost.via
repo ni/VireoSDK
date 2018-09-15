@@ -18,12 +18,14 @@ define(MyVI dv(VirtualInstrument (
                 e(.String test)
             ) form)
         ) clusterRepresentation)
+        // Seems like UnflattenFromJSON is not handling unwired paths
+        e(a(.String *) path)
     )
     clump (
         HttpClientPost(handle url outputFile buffer timeout headers body statusCode error)
 
         // string lvtype pathIntoJSON lvExtensionsBool strictValidationBool defaultNullBool errorCluster
-        UnflattenFromJSON(body clusterRepresentation * false false false error)
+        UnflattenFromJSON(body clusterRepresentation path false false false error)
         Println(clusterRepresentation)
         Println(error)
     )
