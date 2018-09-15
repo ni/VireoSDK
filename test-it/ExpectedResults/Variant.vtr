@@ -1,0 +1,11 @@
+myInt2=255, error=(false 0)
+myStr2=Hello World, error=(false 0)
+myInt3=23, error=(true 91)
+SubVI: myInt=255, error=(false 0)
+SubVI: myStr=xxx, error2=(true 91)
+SubVI: myInt=255, error=(true 91)
+SubVI: myStr=Hello World, error2=(false 0)
+SubVI2: myVar3=^Variant, error=(false 0)
+SubVI2: myInt2=23, error2=(false 0)
+SubVI3: myVar1_out=^Variant, error=(false 0) myInt1_out=255
+SubVI3: myVar2_out=^Variant, error2=(false 0) myInt2_out=254
