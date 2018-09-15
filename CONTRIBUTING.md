@@ -179,7 +179,7 @@ However, if multiple developers are doing development in a branch it requires co
 To create and release hotfixes, annotated git tags are used; no release branches are created and maintained. To create a hotfix release, follow the steps below:
 
 #### Maintainer will create a hotfix branch from the desired tag in ni/VireoSDK
-* Goto https://github.com/ni/VireoSDK in your browser, click the "Branch:master" button and select the "Tags" tab in the pop-up that appears.
+* Go to https://github.com/ni/VireoSDK in your browser, click the "Branch:master" button and select the "Tags" tab in the pop-up that appears.
 * Choose the tag (say v10.1.7) on top of which you want to create a hotfix. The button should now say something like "Tag:v10.1.7".
 * Click on the "Tag:v10.1.7" button, select 'Branches', and type a new name for the branch (for example, 'hotfix'), hit Enter. This will create a new 'hotfix' branch in ni/VireoSDk from the chosen tag (v10.1.7).
 
