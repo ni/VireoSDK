@@ -55,6 +55,9 @@ script:
 - make testnative
 - make testhttpbin
 - npm run test
+- npm run test-min
+- npm run test-debug
+- npm run test-coverage
 after_failure:
 - cat emsdk-tools/emsdk_install_log.txt
 before_deploy:
@@ -96,6 +99,7 @@ after_script:
 - kill $!
 - wait
 - cat ./nohup.out
+- cat ./coverage/report.txt
 notifications:
  webhooks: 
    - https://outlook.office.com/webhook/6ee4efaa-986e-4b8e-8d6b-cfa47c89f4b0@87ba1f9a-44cd-43a6-b008-6fdb45a5204e/TravisCI/9ad1eb07cda7411db33e74c3d676774e/0ad415e3-d66a-425c-9914-e9e52f2b81e1
