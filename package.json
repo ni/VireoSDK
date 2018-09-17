@@ -21,14 +21,17 @@
     "requirejs": "^2.3.6",
     "rollup": "^0.65.2",
     "shx": "^0.3.2",
+    "terser": "^3.8.2",
     "xhr2": "^0.1.4"
   },
   "scripts": {
     "rollup": "cd make-it && rollup",
+    "terser": "cd make-it && terser",
     "test": "karma start --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
+    "test-min": "karma start karma.min.conf.js --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
+    "test-debug": "karma start karma.debug.conf.js --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
     "test-dev": "karma start --browsers ChromeHeadlessNoSandbox --skip-tags Slow",
     "test-manual": "karma start --no-single-run",
-    "test-win": "karma start --browsers Chrome,Firefox,Edge",
     "test-coverage": "karma start karma.coverage.conf.js",
     "lint": "eslint .",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",

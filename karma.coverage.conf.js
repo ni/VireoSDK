@@ -3,23 +3,12 @@
     'use strict';
 
     module.exports = function (config) {
-        var sharedConfig = require('./karma.shared.js');
+        var getSharedConfig = require('./karma.shared.js');
+        var sharedConfig = getSharedConfig(config);
 
-        sharedConfig.files = sharedConfig.files.concat([
-            // test assets
-            'test-it/karma/utilities/ExtendJasmineTimeout.js',
-
-            // test specs
-            'test-it/karma/helloworld/*.Test.js',
-            'test-it/karma/publicapi/*.Test.js',
-            'test-it/karma/vtrsuite/*.Test.js',
-            'test-it/karma/http/*.Test.js',
-            'test-it/karma/javascriptinvoke/*.Test.js'
-        ]);
-
-        // level of logging
-        // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        sharedConfig.logLevel = config.LOG_INFO;
+        sharedConfig.files = [
+            'dist/wasm32-unknown-emscripten/release/vireo.js'
+        ].concat(sharedConfig.files);
 
         sharedConfig.browsers = [
             'Firefox'
@@ -30,8 +19,7 @@
             'coverage'
         ];
 
-        sharedConfig.preprocessors['source/core/*.js'] = ['coverage'];
-        sharedConfig.preprocessors['source/io/*.js'] = ['coverage'];
+        sharedConfig.preprocessors['dist/wasm32-unknown-emscripten/release/vireo.js'] = ['coverage'];
 
         sharedConfig.coverageReporter = {
             dir: 'coverage',
