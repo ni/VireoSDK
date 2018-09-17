@@ -11,7 +11,7 @@
         ].concat(sharedConfig.files);
 
         sharedConfig.browsers = [
-            'Firefox'
+            'FirefoxHeadless'
         ];
 
         sharedConfig.reporters = [
