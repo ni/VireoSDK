@@ -252,7 +252,7 @@ $(DIST)/vireo.core.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
 
 $(DIST)/vireo.js: $(DIST)/vireo.core.js $(JS_SOURCE_FILES)
-	npm run rollup -- $(CORESOURCEDIR)/vireo.loader.$(BUILD).js --format umd --name vireoHelpers --file $@
+	npm run rollup -- $(CORESOURCEDIR)/vireo.loader.$(BUILD).js --format umd --name vireoHelpers --amd.id vireoHelpers --file $@
 
 $(DIST)/vireo.min.js: $(DIST)/vireo.js
 	npm run terser -- $(DIST)/vireo.js -o $@
