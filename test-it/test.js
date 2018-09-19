@@ -252,7 +252,7 @@
             return;
         }
 
-        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+        vireo.eggShell.executeSlicesUntilClumpsFinished().then(function () {
             testFinishedCB(testOutput);
         });
     };

@@ -983,50 +983,53 @@ var assignEggShell;
         // Pumps vireo asynchronously until the currently loaded via has finished all clumps
         // Runs synchronously for a maximum of 4ms at a time to cooperate with browser and node.js execution environments
         // A good starting point for most vireo uses but can be copied and modified as needed
-        // If a callback (stdout, stderr) is provided, it will be run asynchronously to completion
+        // Returns a Promise that is resolved when execution has completed or reject when an error has occurred
         Module.eggShell.executeSlicesUntilClumpsFinished = publicAPI.eggShell.executeSlicesUntilClumpsFinished = function (originalCallback) {
+            if (originalCallback !== undefined) {
+                throw new Error('The executeSlicesUntilClumpsFinished function no longer takes a callback and instead returns a Promise');
+            }
             // These numbers may still need tuning.  They should also match the numbers in native
             // in CommandLine/main.cpp.  SLICE_SETS was lowered from 100000 because that was starving
             // other clumps and running too long before checking the timer.
             var SLICE_SETS_PER_TIME_CHECK = 10000;
             var MAXIMUM_VIREO_EXECUTION_TIME_MS = 4;
-            var timerToken;
             var origExecuteSlicesWakeUpCallback = Module.eggShell.executeSlicesWakeUpCallback;
 
-            var callback;
-            var executeSlicesUntilClumpsFinishedPromise;
-            if (originalCallback === undefined) {
-                executeSlicesUntilClumpsFinishedPromise = new Promise(function (resolve) {
-                    callback = resolve;
-                });
-            } else {
-                callback = originalCallback;
-            }
+            var vireoResolve, vireoReject;
+            var executionFinishedPromise = new Promise(function (resolve, reject) {
+                var cleanup = function () {
+                    Module.eggShell.executeSlicesWakeUpCallback = origExecuteSlicesWakeUpCallback;
+                };
 
-            var vireoFinished = function () {
-                Module.eggShell.executeSlicesWakeUpCallback = origExecuteSlicesWakeUpCallback;
+                vireoResolve = function () {
+                    cleanup();
+                    resolve.apply(undefined, arguments);
+                };
 
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            };
+                vireoReject = function () {
+                    cleanup();
+                    reject.apply(undefined, arguments);
+                };
+            });
 
+            var timerToken;
             var runExecuteSlicesAsync = function () {
                 var execSlicesResult;
                 try {
                     execSlicesResult = Module.eggShell.executeSlicesUntilWait(SLICE_SETS_PER_TIME_CHECK, MAXIMUM_VIREO_EXECUTION_TIME_MS);
                 } catch (ex) {
-                    execSlicesResult = 0;
-                    // TODO mraj we should find a better way to report exceptions that occur. Maybe by rejecting the promise?
-                    console.error(ex);
+                    timerToken = undefined;
+                    setTimeout(vireoReject, 0, ex);
+                    return;
                 }
+
                 if (execSlicesResult > 0) {
                     timerToken = setTimeout(runExecuteSlicesAsync, execSlicesResult);
                 } else if (execSlicesResult < 0) {
                     timerToken = setTimeout(runExecuteSlicesAsync, 0);
                 } else {
                     timerToken = undefined;
-                    setTimeout(vireoFinished, 0);
+                    setTimeout(vireoResolve, 0);
                 }
             };
 
@@ -1041,11 +1044,12 @@ var assignEggShell;
                 }
             };
 
+            // Queue a microtask for starting execution
             Promise.resolve().then(function () {
                 runExecuteSlicesAsync();
             });
 
-            return executeSlicesUntilClumpsFinishedPromise;
+            return executionFinishedPromise;
         };
 
         Module.eggShell.setOccurrenceAsync = function (occurrence) {
