@@ -94,6 +94,10 @@ const createModuleBase = function (config) {
 };
 
 const createInstance = function (createVireoCore, config) {
+    if (config !== undefined && !isObject(config)) {
+        throw new Error('Configuration object provided for initialization must be absent or a configuration object');
+    }
+
     const Module = createModuleBase(config);
     createVireoCore(Module);
 
