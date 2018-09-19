@@ -68,7 +68,7 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         vireo.eggShell.setExecuteSlicesWakeUpCallback(wakeUpSpy);
 
         var startTime = performance.now();
-        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+        vireo.eggShell.executeSlicesUntilClumpsFinished().then(function () {
             var totalTime = performance.now() - startTime;
             expect(totalTime).toBeLessThan(maxTimewithBuffer);
             expect(result).toBeEmptyString();
@@ -94,7 +94,7 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         var internalModule = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired;
         spyOn(internalModule.eggShell, 'executeSlicesUntilWait').and.callThrough();
         var startTime = performance.now();
-        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+        vireo.eggShell.executeSlicesUntilClumpsFinished().then(function () {
             var totalTime = performance.now() - startTime;
 
             expect(result).toBeEmptyString();
