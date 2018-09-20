@@ -303,37 +303,40 @@
             return currentFPS;
         };
 
-        var writeNewError = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
-            Module.eggShell.dataWriteBoolean(existingErrorStatusPointer, newErrorStatus);
-            Module.eggShell.dataWriteInt32(existingErrorCodePointer, newErrorCode);
-            Module.eggShell.dataWriteString(exisitingErrorSourcePointer, newErrorSource);
+        var writeNewError = function (errorValueRef, newError) {
+            Module.eggShell.writeJSON(errorValueRef, JSON.stringify(newError));
         };
 
-        Module.coreHelpers.mergeErrors = function (newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer) {
+        Module.coreHelpers.mergeErrors = function (errorValueRef, newError) {
             // Follows behavior of merge errors function: https://zone.ni.com/reference/en-XX/help/371361N-01/glang/merge_errors_function/
+            if (errorValueRef === undefined) {
+                return;
+            }
 
-            var existingErrorStatus = Module.eggShell.dataReadBoolean(existingErrorStatusPointer);
+            var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
+            var existingErrorStatus = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
             var isExistingError = existingErrorStatus;
-            var isNewError = newErrorStatus;
+            var isNewError = newError.status;
 
             if (isExistingError) {
                 return;
             }
 
             if (isNewError) {
-                writeNewError(newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer);
+                writeNewError(errorValueRef, newError);
                 return;
             }
 
-            var existingErrorCode = Module.eggShell.dataReadInt32(existingErrorCodePointer);
+            var existingErrorCodeValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'code');
+            var existingErrorCode = Module.eggShell.readDouble(existingErrorCodeValueRef);
             var isExistingWarning = existingErrorCode !== CODES.NO_ERROR;
-            var isNewWarning = newErrorCode !== CODES.NO_ERROR;
+            var isNewWarning = newError.code !== CODES.NO_ERROR;
             if (isExistingWarning) {
                 return;
             }
 
             if (isNewWarning) {
-                writeNewError(newErrorStatus, newErrorCode, newErrorSource, existingErrorStatusPointer, existingErrorCodePointer, exisitingErrorSourcePointer);
+                writeNewError(errorValueRef, newError);
                 return;
             }
 
