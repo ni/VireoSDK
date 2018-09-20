@@ -12,27 +12,29 @@
     var main = function () {
         var viaCode = document.getElementById('viacode').textContent;
         var viaCodeHttp = document.getElementById('viacodehttp').textContent;
-        var worker = new Worker('hostwebworker.js');
+        var worker = new Worker('loaderwebworker_workerhost.js');
 
         worker.postMessage({
-            type: 'init',
-            data: [
-                '../../dist/asmjs-unknown-emscripten/release/vireo.js',
-                '../../source/core/module_coreHelpers.js',
-                '../../source/io/module_eggShell.js',
-                '../../source/io/module_httpClient.js',
-                '../../source/core/vireo.loader.js'
+            fn: 'init',
+            params: [
+                '../../dist/wasm32-unknown-emscripten/release/vireo.js'
             ]
         });
 
         worker.postMessage({
-            type: 'loadAndRun',
-            data: viaCode
+            fn: 'loadAndRun',
+            params: [
+                '../../dist/wasm32-unknown-emscripten/release/vireo.core.wasm',
+                viaCode
+            ]
         });
 
         worker.postMessage({
-            type: 'loadAndRun',
-            data: viaCodeHttp
+            fn: 'loadAndRun',
+            params: [
+                '../../dist/wasm32-unknown-emscripten/release/vireo.core.wasm',
+                viaCodeHttp
+            ]
         });
     };
 

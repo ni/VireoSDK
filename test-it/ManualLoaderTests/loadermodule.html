@@ -1,15 +1,8 @@
 <html>
 <head>
-<!-- In this test the user loads require.js but it has nothing to do with vireo usage.
-The existing loaderglobal code should still be able to function -->
-<script data-main="loaderamdenvglobalmain" src="../../node_modules/requirejs/require.js"></script>
-<script src="../../dist/asmjs-unknown-emscripten/release/vireo.js"></script>
-<script src="../../source/core/module_coreHelpers.js"></script>
-<script src="../../source/io/module_eggShell.js"></script>
-<script src="../../source/io/module_httpClient.js"></script>
-<script src="../../source/core/vireo.loader.js"></script>
-<script src="loaderglobal.js"></script>
+<script type="module" src="./loadermodule.js"></script>
 </head>
+
 <body>
 <script type="text/via" id="viacode">
 define(Mandelbrot dv(.VirtualInstrument (
