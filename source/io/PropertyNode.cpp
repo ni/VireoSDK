@@ -29,10 +29,10 @@ enum { kNIError_ObjectReferenceIsInvalid = 1055 };  // TODO(spathiwa) move to co
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    // Parameters: controlRefVIName, controlId, propertyName, tempVariableType, tempVariableDataPtr, errorStatus*, errorCode*, errorSource*
-    extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, TypeRef, void *, Boolean *, Int32 *, StringRef);
-    // Parameters: controlRefVIName, controlId, propertyName, tempVariableType, tempVariableDataPtr, errorStatus*, errorCode*, errorSource*
-    extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, TypeRef, void *, Boolean *, Int32 *, StringRef);
+    // Parameters: controlRefVIName, controlId, propertyName, tempVariableType, tempVariableDataPtr, errorType, errorData
+    extern void jsPropertyNodeWrite(StringRef, StringRef, StringRef, TypeRef, void *, TypeRef, ErrorCluster*);
+    // Parameters: controlRefVIName, controlId, propertyName, tempVariableType, tempVariableDataPtr, errorType, errorData
+    extern void jsPropertyNodeRead(StringRef, StringRef, StringRef, TypeRef, void *, TypeRef, ErrorCluster*);
 }
 #endif
 
@@ -86,6 +86,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
     if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
 
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!errorClusterPtr->status) {
         jsPropertyNodeWrite(
             controlRefVIName,
@@ -93,9 +95,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
             propertyName,
             value->_paramType,
             value->_pData,
-            &errorClusterPtr->status,
-            &errorClusterPtr->code,
-            errorClusterPtr->source);
+            typeRefErrorCluster,
+            errorClusterPtr);
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeWriteName);
     }
 #else
@@ -135,6 +136,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
 
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");        
+
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
             controlRefVIName,
@@ -142,9 +145,8 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
             propertyName,
             value->_paramType,
             value->_pData,
-            &errorClusterPtr->status,
-            &errorClusterPtr->code,
-            errorClusterPtr->source);
+            typeRefErrorCluster,
+            errorClusterPtr);
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeReadName);
     }
 #else
