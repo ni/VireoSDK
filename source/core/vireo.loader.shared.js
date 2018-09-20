@@ -95,7 +95,7 @@ const createModuleBase = function (config) {
 
 const createInstance = function (createVireoCore, config) {
     if (config !== undefined && !isObject(config)) {
-        throw new Error('Configuration object provided for initialization must be absent or a configuration object');
+        throw new Error('The createInstance config parameter must be a valid configuration object or ommitted altogether, received: ' + config);
     }
 
     const Module = createModuleBase(config);

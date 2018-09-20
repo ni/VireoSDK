@@ -158,11 +158,5 @@ module.exports = {
         'spaced-comment': 'error',
         'unicode-bom': 'error',
         'wrap-regex': 'error'
-    },
-    'overrides': [{
-        'files': ['moduletest.js'],
-        'parserOptions': {
-            'sourceType': 'module'
-        }
-    }]
+    }
 };

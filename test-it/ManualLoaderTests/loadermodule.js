@@ -1,9 +1,9 @@
-import vireoHelpers from './source/core/vireo.loader.release.js';
+import vireoHelpers from '../../source/core/vireo.loader.release.js';
 
 
 (async function () {
     var vireo = await vireoHelpers.createInstance({
-        wasmUrl: './dist/wasm32-unknown-emscripten/release/vireo.core.wasm'
+        wasmUrl: '../../dist/wasm32-unknown-emscripten/release/vireo.core.wasm'
     });
 
     var viaCode = document.getElementById('viacode').textContent;

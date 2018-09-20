@@ -11,9 +11,10 @@
 
     var runTest = function () {
         var viaCode = document.getElementById('viacode').textContent;
-        var vireo = new window.NationalInstruments.Vireo.Vireo();
-        vireo.eggShell.loadVia(viaCode);
-        vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+        window.vireoHelpers.createInstance().then(function (vireo) {
+            vireo.eggShell.loadVia(viaCode);
+            return vireo.eggShell.executeSlicesUntilClumpsFinished();
+        }).then(function () {
             console.log('finished :D');
         });
     };
