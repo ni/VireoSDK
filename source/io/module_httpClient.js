@@ -527,13 +527,18 @@
 
         var METHOD_NAMES = ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'];
 
-        var findhttpClientOrWriteError = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        var findhttpClientOrWriteError = function (handle, errorValueRef) {
             var httpClient = httpClientManager.get(handle);
-            var newErrorSource;
+            var newError;
 
             if (httpClient === undefined) {
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.mgArgErr.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.mgArgErr.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newError = {
+                    status: true,
+                    code: ERRORS.mgArgErr.CODE,
+                    source: Module.coreHelpers.createSourceFromMessage(ERRORS.mgArgErr.MESSAGE)
+                };
+
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
             }
 
             return httpClient;
@@ -550,42 +555,75 @@
 
         // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
         // unless otherwise stated in the function below
-        Module.httpClient.jsHttpClientOpen = function (cookieFilePointer, usernamePointer, passwordPointer, verifyServerInt32, handlePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientOpen = function (
+            cookieFileTypeRef, cookieFileDataRef,
+            usernameTypeRef, usernameDataRef,
+            passwordTypeRef, passwordDataRef,
+            verifyServerTypeRef, verifyServerDataRef,
+            handleTypeRef, handleDataRef,
+            errorTypeRef, errorDataRef) {
+            var cookieFileValueRef = Module.eggShell.createValueRef(cookieFileTypeRef, cookieFileDataRef);
+            var usernameValueRef = Module.eggShell.createValueRef(usernameTypeRef, usernameDataRef);
+            var passwordValueRef = Module.eggShell.createValueRef(passwordTypeRef, passwordDataRef);
+            var verifyServerValueRef = Module.eggShell.createValueRef(verifyServerTypeRef, verifyServerDataRef);
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+
             var setDefaultOutputs = function () {
-                Module.eggShell.dataWriteUInt32(handlePointer, DEFAULT_INVALID_HANDLE);
+                Module.eggShell.writeDouble(handleValueRef, DEFAULT_INVALID_HANDLE);
             };
 
-            var newErrorSource;
-            var cookieFile = Module.eggShell.dataReadString(cookieFilePointer);
+            var newError;
+            var cookieFile = Module.eggShell.readString(cookieFileValueRef);
             if (cookieFile !== '') {
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVICookieFileUnsupported.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVICookieFileUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newError = {
+                    status: true,
+                    code: ERRORS.kNIHttpWebVICookieFileUnsupported.CODE,
+                    source: Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVICookieFileUnsupported.MESSAGE)
+                };
+
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
                 setDefaultOutputs();
                 return;
             }
 
-            var verifyServer = verifyServerInt32 !== FALSE;
+            var verifyServer = Module.eggShell.readDouble(verifyServerValueRef) !== FALSE;
             if (verifyServer !== true) {
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVIVerifyServerUnsupported.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVIVerifyServerUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newError = {
+                    status: true,
+                    code: ERRORS.kNIHttpWebVIVerifyServerUnsupported.CODE,
+                    source: Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVIVerifyServerUnsupported.MESSAGE)
+                };
+
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
                 setDefaultOutputs();
                 return;
             }
 
-            var username = Module.eggShell.dataReadString(usernamePointer);
-            var password = Module.eggShell.dataReadString(passwordPointer);
+            var username = Module.eggShell.readString(usernameValueRef);
+            var password = Module.eggShell.readString(passwordValueRef);
             var newHandle = httpClientManager.create(username, password);
-            Module.eggShell.dataWriteUInt32(handlePointer, newHandle);
+            Module.eggShell.writeDouble(handleValueRef, newHandle);
         };
 
-        Module.httpClient.jsHttpClientClose = function (handle, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientClose = function (
+            handleTypeRef, handleDataRef,
+            errorTypeRef, errorDataRef) {
             // This function should be called irregardless of an existing error to clean-up resources
-            var newErrorSource;
+            var newError;
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+            var handle = Module.eggShell.readDouble(handleValueRef);
             var handleExists = httpClientManager.get(handle) !== undefined;
 
             if (handleExists === false) {
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.InvalidRefnum.MESSAGE);
-                Module.coreHelpers.mergeErrors(true, ERRORS.InvalidRefnum.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newError = {
+                    status: true,
+                    code: ERRORS.InvalidRefnum.CODE,
+                    source: Module.coreHelpers.createSourceFromMessage(ERRORS.InvalidRefnum.MESSAGE)
+                };
+
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
                 // Do not return if an error is written, need to still destroy any existing handles
             }
 
@@ -593,64 +631,104 @@
             httpClientManager.destroy(handle);
         };
 
-        Module.httpClient.jsHttpClientAddHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+        Module.httpClient.jsHttpClientAddHeader = function (
+            handleTypeRef, handleDataRef,
+            headerTypeRef, headerDataRef,
+            valueTypeRef, valueDataRef,
+            errorTypeRef, errorDataRef) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var headerValueRef = Module.eggShell.createValueRef(headerTypeRef, headerDataRef);
+            var valueValueRef = Module.eggShell.createValueRef(valueTypeRef, valueDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+
+            var handle = Module.eggShell.readDouble(handleValueRef);
+            var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 return;
             }
 
-            var header = Module.eggShell.dataReadString(headerPointer);
-            var value = Module.eggShell.dataReadString(valuePointer);
+            var header = Module.eggShell.readString(headerValueRef);
+            var value = Module.eggShell.readString(valueValueRef);
             httpClient.addHeader(header, value);
         };
 
-        Module.httpClient.jsHttpClientRemoveHeader = function (handle, headerPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+        Module.httpClient.jsHttpClientRemoveHeader = function (
+            handleTypeRef, handleDataRef,
+            headerTypeRef, headerDataRef,
+            errorTypeRef, errorDataRef) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var headerValueRef = Module.eggShell.createValueRef(headerTypeRef, headerDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+            var handle = Module.eggShell.readDouble(handleValueRef);
+            var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 return;
             }
 
-            var header = Module.eggShell.dataReadString(headerPointer);
+            var header = Module.eggShell.readString(headerValueRef);
             httpClient.removeHeader(header);
         };
 
-        Module.httpClient.jsHttpClientGetHeader = function (handle, headerPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientGetHeader = function (
+            handleTypeRef, handleDataRef,
+            headerTypeRef, headerDataRef,
+            valueTypeRef, valueDataRef,
+            errorTypeRef, errorDataRef) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var headerValueRef = Module.eggShell.createValueRef(headerTypeRef, headerDataRef);
+            var valueValueRef = Module.eggShell.createValueRef(valueTypeRef, valueDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var setDefaultOutputs = function () {
-                Module.eggShell.dataWriteString(valuePointer, '');
+                Module.eggShell.writeString(valueValueRef, '');
             };
-
-            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var handle = Module.eggShell.readDouble(handleValueRef);
+            var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 setDefaultOutputs();
                 return;
             }
 
-            var newErrorSource;
-            var header = Module.eggShell.dataReadString(headerPointer);
+            var newError;
+            var header = Module.eggShell.readString(headerValueRef);
             var value = httpClient.getHeaderValue(header);
             if (value === undefined) {
-                newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpResultRequestHeaderDoesNotExist.MESSAGE + '\nheader:' + header);
-                Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpResultRequestHeaderDoesNotExist.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                newError = {
+                    status: true,
+                    code: ERRORS.kNIHttpResultRequestHeaderDoesNotExist.CODE,
+                    source: Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpResultRequestHeaderDoesNotExist.MESSAGE + '\nheader:' + header)
+                };
+
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
                 setDefaultOutputs();
                 return;
             }
 
-            Module.eggShell.dataWriteString(valuePointer, value);
+            Module.eggShell.writeString(valueValueRef, value);
         };
 
-        Module.httpClient.jsHttpClientHeaderExists = function (handle, headerPointer, headerExistsPointer, valuePointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientHeaderExists = function (
+            handleTypeRef, handleDataRef,
+            headerTypeRef, headerDataRef,
+            headerExistsTypeRef, headerExistsDataRef,
+            valueTypeRef, valueDataRef,
+            errorTypeRef, errorDataRef) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var headerValueRef = Module.eggShell.createValueRef(headerTypeRef, headerDataRef);
+            var headerExistsValueRef = Module.eggShell.createValueRef(headerExistsTypeRef, headerExistsDataRef);
+            var valueValueRef = Module.eggShell.createValueRef(valueTypeRef, valueDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var setDefaultOutputs = function () {
-                Module.eggShell.dataWriteUInt32(headerExistsPointer, FALSE);
-                Module.eggShell.dataWriteString(valuePointer, '');
+                Module.eggShell.writeDouble(headerExistsValueRef, FALSE);
+                Module.eggShell.writeString(valueValueRef, '');
             };
-
-            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var handle = Module.eggShell.readDouble(handleValueRef);
+            var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 setDefaultOutputs();
                 return;
             }
 
-            var header = Module.eggShell.dataReadString(headerPointer);
+            var header = Module.eggShell.readString(headerValueRef);
             var valueOrUndefined = httpClient.getHeaderValue(header);
             var headerExists = valueOrUndefined !== undefined;
             if (headerExists === false) {
@@ -658,50 +736,81 @@
                 return;
             }
 
-            Module.eggShell.dataWriteUInt32(headerExistsPointer, TRUE);
-            Module.eggShell.dataWriteString(valuePointer, valueOrUndefined);
+            Module.eggShell.writeDouble(headerExistsValueRef, TRUE);
+            Module.eggShell.writeString(valueValueRef, valueOrUndefined);
         };
 
-        Module.httpClient.jsHttpClientListHeaders = function (handle, listPointer, errorStatusPointer, errorCodePointer, errorSourcePointer) {
+        Module.httpClient.jsHttpClientListHeaders = function (
+            handleTypeRef, handleDataRef,
+            headerListTypeRef, headerListDataRef,
+            errorTypeRef, errorDataRef) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var headerListValueRef = Module.eggShell.createValueRef(headerListTypeRef, headerListDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var setDefaultOutputs = function () {
-                Module.eggShell.dataWriteString(listPointer, '');
+                Module.eggShell.writeString(headerListValueRef, '');
             };
-
-            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+            var handle = Module.eggShell.readDouble(handleValueRef);
+            var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 setDefaultOutputs();
                 return;
             }
 
             var list = httpClient.listHeaders();
-            Module.eggShell.dataWriteString(listPointer, list);
+            Module.eggShell.writeString(headerListValueRef, list);
         };
 
-        Module.httpClient.jsHttpClientMethod = function (methodId, handle, urlPointer, outputFilePointer, bufferTypeRef, bufferDataRef, timeoutPointer, headersPointer, bodyPointer, statusCodePointer, errorStatusPointer, errorCodePointer, errorSourcePointer, occurrencePointer) {
+        Module.httpClient.jsHttpClientMethod = function (
+            methodId,
+            handleTypeRef, handleDataRef,
+            urlTypeRef, urlDataRef,
+            outputFilePathTypeRef, outputFilePathDataRef,
+            bufferTypeRef, bufferDataRef,
+            timeoutTypeRef, timeoutDataRef,
+            headersTypeRef, headersDataRef,
+            bodyTypeRef, bodyDataRef,
+            statusCodeTypeRef, statusCodeDataRef,
+            errorTypeRef, errorDataRef,
+            occurrencePointer) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var urlValueRef = Module.eggShell.createValueRef(urlTypeRef, urlDataRef);
+            var outputFilePathValueRef = Module.eggShell.createValueRef(outputFilePathTypeRef, outputFilePathDataRef);
+            var timeoutValueRef = Module.eggShell.createValueRef(timeoutTypeRef, timeoutDataRef);
+            var headersValueRef = Module.eggShell.createValueRef(headersTypeRef, headersDataRef);
+            var bodyValueRef = Module.eggShell.createValueRef(bodyTypeRef, bodyDataRef);
+            var statusCodeValueRef = Module.eggShell.createValueRef(statusCodeTypeRef, statusCodeDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+            var handle = Module.eggShell.readDouble(handleValueRef);
             var setDefaultOutputs = function () {
-                Module.eggShell.dataWriteString(headersPointer, '');
-                Module.eggShell.dataWriteUInt32(statusCodePointer, 0);
+                Module.eggShell.writeString(headersValueRef, '');
+                Module.eggShell.writeDouble(statusCodeValueRef, 0);
 
-                if (bodyPointer !== NULL) {
-                    Module.eggShell.dataWriteString(bodyPointer, '');
+                if (bodyValueRef !== undefined) {
+                    Module.eggShell.writeString(bodyValueRef, '');
                 }
 
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
 
-            var newErrorSource, errorMessage;
+            var newError;
             var method = METHOD_NAMES[methodId];
 
             // Nullable input parameters: handle, outputFile, buffer
             // Nullable output parameter: body
 
             var outputFile;
-            if (outputFilePointer !== NULL) {
-                outputFile = Module.eggShell.dataReadString(outputFilePointer);
+            if (outputFilePathValueRef !== undefined) {
+                outputFile = Module.eggShell.readString(outputFilePathValueRef);
 
                 if (outputFile !== '') {
-                    newErrorSource = Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVIOutputFileUnsupported.MESSAGE);
-                    Module.coreHelpers.mergeErrors(true, ERRORS.kNIHttpWebVIOutputFileUnsupported.CODE, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                    newError = {
+                        status: true,
+                        code: ERRORS.kNIHttpWebVIOutputFileUnsupported.CODE,
+                        source: Module.coreHelpers.createSourceFromMessage(ERRORS.kNIHttpWebVIOutputFileUnsupported.MESSAGE)
+                    };
+
+                    Module.coreHelpers.mergeErrors(errorValueRef, newError);
                     setDefaultOutputs();
                     return;
                 }
@@ -726,7 +835,7 @@
             if (handle === NULL) {
                 httpClient = httpClientManager.createHttpClientWithoutHandle('', '');
             } else {
-                httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                httpClient = findhttpClientOrWriteError(handle, errorValueRef);
                 if (httpClient === undefined) {
                     setDefaultOutputs();
                     return;
@@ -736,10 +845,10 @@
             var xhrTimeout;
             var timeout;
 
-            if (timeoutPointer === NULL) {
+            if (timeoutValueRef === undefined) {
                 xhrTimeout = DEFAULT_TIMEOUT_MS;
             } else {
-                timeout = Module.eggShell.dataReadInt32(timeoutPointer);
+                timeout = Module.eggShell.readDouble(timeoutValueRef);
 
                 // In LabVIEW timeout -1 means wait forever, in xhr timeout 0 means wait forever
                 if (timeout < 0) {
@@ -751,7 +860,7 @@
                 }
             }
 
-            var url = Module.eggShell.dataReadString(urlPointer);
+            var url = Module.eggShell.readString(urlValueRef);
             var requestData = {
                 method: method,
                 url: url,
@@ -760,24 +869,36 @@
             };
 
             httpClient.createRequest(requestData, function (responseData) {
-                Module.eggShell.dataWriteString(headersPointer, responseData.header);
-                Module.eggShell.dataWriteUInt32(statusCodePointer, responseData.status);
+                Module.eggShell.writeString(headersValueRef, responseData.header);
+                Module.eggShell.writeDouble(statusCodeValueRef, responseData.status);
 
-                if (bodyPointer !== NULL) {
-                    Module.eggShell.dataWriteStringFromArray(bodyPointer, responseData.body);
+                if (bodyValueRef !== undefined) {
+                    // TODO this function is depracated we need to swap it out.
+                    Module.eggShell.dataWriteStringFromArray(bodyDataRef, responseData.body);
                 }
 
-                var newErrorStatus = responseData.labviewCode !== ERRORS.NO_ERROR.CODE;
-                var newErrorCode = responseData.labviewCode;
-                errorMessage = Module.coreHelpers.formatMessageWithException(responseData.errorMessage, responseData.requestException);
-                var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                Module.coreHelpers.mergeErrors(newErrorStatus, newErrorCode, newErrorSource, errorStatusPointer, errorCodePointer, errorSourcePointer);
+                var errorMessage = Module.coreHelpers.formatMessageWithException(responseData.errorMessage, responseData.requestException);
+                var newError = {
+                    status: responseData.labviewCode !== ERRORS.NO_ERROR.CODE,
+                    code: responseData.labviewCode,
+                    source: Module.coreHelpers.createSourceFromMessage(errorMessage)
+                };
+
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             });
         };
 
-        Module.httpClient.jsHttpClientConfigCORS = function (handle, includeCredentialsDuringCORS, errorStatusPointer, errorCodePointer, errorSourcePointer) {
-            var httpClient = findhttpClientOrWriteError(handle, errorStatusPointer, errorCodePointer, errorSourcePointer);
+        Module.httpClient.jsHttpClientConfigCORS = function (
+            handleTypeRef, handleDataRef,
+            includeCredentialsDuringCORSTypeRef, includeCredentialsDuringCORSDataRef,
+            errorTypeRef, errorDataRef) {
+            var handleValueRef = Module.eggShell.createValueRef(handleTypeRef, handleDataRef);
+            var includeCredentialsDuringCORSValueRef = Module.eggShell.createValueRef(includeCredentialsDuringCORSTypeRef, includeCredentialsDuringCORSDataRef);
+            var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+            var handle = Module.eggShell.readDouble(handleValueRef);
+            var includeCredentialsDuringCORS = Module.eggShell.readDouble(includeCredentialsDuringCORSValueRef);
+            var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 return;
             }

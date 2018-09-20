@@ -204,6 +204,10 @@
         };
 
         Module.eggShell.createValueRef = function (typeRef, dataRef) {
+            if (typeof typeRef !== 'number' || typeof dataRef !== 'number' ||
+                typeRef <= 0 || dataRef <= 0) {
+                return undefined;
+            }
             return Object.freeze({
                 typeRef: typeRef,
                 dataRef: dataRef
