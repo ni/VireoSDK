@@ -30,16 +30,63 @@ enum HttpClientMethodId {
 #define HTTP_REQUIRED_INPUTS_MESSAGE "All inputs and outputs must be provided for HTTP functions"
 
 extern "C" {
-    extern void jsHttpClientOpen(StringRef, StringRef, StringRef, UInt32, UInt32 *, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientClose(UInt32, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientAddHeader(UInt32, StringRef, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientRemoveHeader(UInt32, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientGetHeader(UInt32, StringRef, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientHeaderExists(UInt32, StringRef, UInt32 *, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientListHeaders(UInt32, StringRef, Boolean *, Int32 *, StringRef);
-    extern void jsHttpClientMethod(HttpClientMethodId, UInt32, StringRef, StringRef, TypeRef, StringRef*,
-                Int32 *, StringRef, StringRef, UInt32 *, Boolean *, Int32 *, StringRef, OccurrenceRef);
-    extern void jsHttpClientConfigCORS(UInt32, UInt32, Boolean *, Int32 *, StringRef);
+    extern void jsHttpClientOpen(
+        TypeRef cookieType, StringRef * cookieFile,
+        TypeRef userNameType, StringRef * userName,
+        TypeRef passwordType, StringRef * password,
+        TypeRef verifyServerType, UInt32 * verifyServer,
+        TypeRef handleType, UInt32 * handle,
+        TypeRef errorType, ErrorCluster * errorData);
+
+    extern void jsHttpClientClose(
+        TypeRef handleType, UInt32* handle,
+        TypeRef errorType, ErrorCluster* errorData);
+
+    extern void jsHttpClientAddHeader(
+        TypeRef handleType, UInt32* handle,
+        TypeRef headerType, StringRef* headerData,
+        TypeRef valueType, StringRef* valueData, 
+        TypeRef errorType, ErrorCluster* errorData);
+
+    extern void jsHttpClientRemoveHeader(
+        TypeRef handleType, UInt32* handle,
+        TypeRef headerType, StringRef* headerData,
+        TypeRef errorType, ErrorCluster* errorData);
+
+    extern void jsHttpClientGetHeader(
+        TypeRef handleType, UInt32* handle,
+        TypeRef headerType, StringRef* headerData,
+        TypeRef valueType, StringRef* valueData,
+        TypeRef errorType, ErrorCluster* errorData);
+
+    extern void jsHttpClientHeaderExists(
+        TypeRef handleType, UInt32* handle,
+        TypeRef headerType, StringRef* headerData,
+        TypeRef headerExistsType, UInt32 * headerExistsData,
+        TypeRef valueType, StringRef* valueData,
+        TypeRef errorType, ErrorCluster* errorData);
+
+    extern void jsHttpClientListHeaders(
+        TypeRef handleType, UInt32* handle,
+        TypeRef headerListType, StringRef* headerList,
+        TypeRef errorCluster, ErrorCluster* errorData);
+
+    extern void jsHttpClientMethod(HttpClientMethodId methodId, 
+        TypeRef handleType, UInt32* handle,
+        TypeRef urlType, StringRef* urlData,
+        TypeRef outputFilePathType, StringRef* outputFilePathData,
+        TypeRef bufferType, StringRef* bufferData,
+        TypeRef timeoutType, Int32 * timeoutData,
+        TypeRef headersType, StringRef* headersData,
+        TypeRef bodyType, StringRef * bodyData,
+        TypeRef statusCodeType, UInt32 * statusCodeData,
+        TypeRef errorType, ErrorCluster * errorData,
+        OccurrenceRef occurence);
+
+    extern void jsHttpClientConfigCORS(
+        TypeRef handleType, UInt32 * handle,
+        TypeRef includeCrendentialsDuringCORSType, UInt32 * includeCredentialsDuringCORSData,
+        TypeRef errorType, ErrorCluster* erroData);
 }
 #endif
 
@@ -88,16 +135,17 @@ VIREO_FUNCTION_SIGNATURE6(HttpClientOpen, StringRef, StringRef, StringRef, UInt3
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(5).status) {
         jsHttpClientOpen(
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            _Param(3),
-            _ParamPointer(4),
-            &_Param(5).status,
-            &_Param(5).code,
-            _Param(5).source);
+            _Param(0)->Type(), _ParamPointer(0),
+            _Param(1)->Type(), _ParamPointer(1),
+            _Param(2)->Type(), _ParamPointer(2),
+            typeRefUInt32, _ParamPointer(3),
+            typeRefUInt32, _ParamPointer(4),
+            typeRefErrorCluster, _ParamPointer(5));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(5), "HttpClientOpen");
     }
 #else
@@ -118,13 +166,14 @@ VIREO_FUNCTION_SIGNATURE2(HttpClientClose, UInt32, ErrorCluster)
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     // Run close regardless of an existing error to clean-up resources
     Boolean existingStatus = _Param(1).status;
     jsHttpClientClose(
-        _Param(0),
-        &_Param(1).status,
-        &_Param(1).code,
-        _Param(1).source);
+        typeRefUInt32, _ParamPointer(0),
+        typeRefErrorCluster, _ParamPointer(1));
     if (!existingStatus) {
         AddCallChainToSourceIfErrorPresent(_ParamPointer(1), "HttpClientClose");
     }
@@ -145,14 +194,15 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientAddHeader, UInt32, StringRef, StringRef, Err
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(3).status) {
         jsHttpClientAddHeader(
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            &_Param(3).status,
-            &_Param(3).code,
-            _Param(3).source);
+            typeRefUInt32, _ParamPointer(0),
+            _Param(1)->Type(), _ParamPointer(1),
+            _Param(2)->Type(), _ParamPointer(2),
+            typeRefErrorCluster, _ParamPointer(3));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(3), "HttpClientAddHeader");
     }
 #else
@@ -172,13 +222,14 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientRemoveHeader, UInt32, StringRef, ErrorCluste
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(2).status) {
         jsHttpClientRemoveHeader(
-            _Param(0),
-            _Param(1),
-            &_Param(2).status,
-            &_Param(2).code,
-            _Param(2).source);
+            typeRefUInt32, _ParamPointer(0),
+            _Param(1)->Type(), _ParamPointer(1),
+            typeRefErrorCluster, _ParamPointer(2));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientRemoveHeader");
     }
 #else
@@ -198,14 +249,15 @@ VIREO_FUNCTION_SIGNATURE4(HttpClientGetHeader, UInt32, StringRef, StringRef, Err
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(3).status) {
         jsHttpClientGetHeader(
-            _Param(0),
-            _Param(1),
-            _Param(2),
-            &_Param(3).status,
-            &_Param(3).code,
-            _Param(3).source);
+            typeRefUInt32, _ParamPointer(0),
+            _Param(1)->Type(), _ParamPointer(1),
+            _Param(2)->Type(), _ParamPointer(2),
+            typeRefErrorCluster, _ParamPointer(3));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(3), "HttpClientGetHeader");
     }
 #else
@@ -225,15 +277,16 @@ VIREO_FUNCTION_SIGNATURE5(HttpClientHeaderExists, UInt32, StringRef, UInt32, Str
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(4).status) {
         jsHttpClientHeaderExists(
-            _Param(0),
-            _Param(1),
-            _ParamPointer(2),
-            _Param(3),
-            &_Param(4).status,
-            &_Param(4).code,
-            _Param(4).source);
+            typeRefUInt32, _ParamPointer(0),
+            _Param(1)->Type(), _ParamPointer(1),
+            typeRefUInt32, _ParamPointer(2),
+            _Param(3)->Type(), _ParamPointer(3),
+            typeRefErrorCluster, _ParamPointer(4));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(4), "HttpClientHeaderExists");
     }
 #else
@@ -253,13 +306,14 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientListHeaders, UInt32, StringRef, ErrorCluster
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(2).status) {
         jsHttpClientListHeaders(
-            _Param(0),
-            _Param(1),
-            &_Param(2).status,
-            &_Param(2).code,
-            _Param(2).source);
+            typeRefUInt32, _ParamPointer(0),
+            _Param(1)->Type(), _ParamPointer(1),
+            typeRefErrorCluster, _ParamPointer(2));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientListHeaders");
     }
 #else
@@ -281,6 +335,10 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     OccurrenceCore *pOcc = _Param(8)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -289,18 +347,16 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
             // This is the initial call, call the js function
             jsHttpClientMethod(
                 kGet,
-                _Param(0),
-                _Param(1),
-                _Param(2),
+                typeRefUInt32, _ParamPointer(0),
+                _Param(1)->Type(), _ParamPointer(1), 
+                _Param(2)->Type(), _ParamPointer(2),
                 nullptr,
                 nullptr,
-                _ParamPointer(3),
-                _Param(4),
-                _Param(5),
-                _ParamPointer(6),
-                &_Param(7).status,
-                &_Param(7).code,
-                _Param(7).source,
+                typeRefInt32, _ParamPointer(3),
+                _Param(4)->Type(), _ParamPointer(4),
+                _Param(5)->Type(), _ParamPointer(5),
+                typeRefUInt32, _ParamPointer(6),
+                typeRefErrorCluster, _ParamPointer(7),
                 _Param(8));
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
@@ -333,6 +389,10 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     OccurrenceCore *pOcc = _Param(6)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -341,18 +401,15 @@ VIREO_FUNCTION_SIGNATURE7(HttpClientHead, UInt32, StringRef, Int32, StringRef, U
             // This is the initial call, call the js function
             jsHttpClientMethod(
                 kHead,
-                _Param(0),
-                _Param(1),
-                nullptr,
-                nullptr,
-                nullptr,
-                _ParamPointer(2),
-                _Param(3),
-                nullptr,
-                _ParamPointer(4),
-                &_Param(5).status,
-                &_Param(5).code,
-                _Param(5).source,
+                typeRefUInt32, _ParamPointer(0),
+                _Param(1)->Type(), _ParamPointer(1),
+                nullptr, nullptr,
+                nullptr, nullptr,
+                typeRefInt32, _ParamPointer(2),
+                _Param(3)->Type(), _ParamPointer(3),
+                nullptr, nullptr,
+                typeRefUInt32, _ParamPointer(4),
+                typeRefErrorCluster, _ParamPointer(5),
                 _Param(6));
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
@@ -386,6 +443,10 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     OccurrenceCore *pOcc = _Param(9)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -394,18 +455,15 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
             // This is the initial call, call the js function
             jsHttpClientMethod(
                 kPut,
-                _Param(0),
-                _Param(1),
-                _Param(2),
-                _Param(3)->Type(),
-                _ParamPointer(3),
-                _ParamPointer(4),
-                _Param(5),
-                _Param(6),
-                _ParamPointer(7),
-                &_Param(8).status,
-                &_Param(8).code,
-                _Param(8).source,
+                typeRefUInt32, _ParamPointer(0),
+                _Param(1)->Type(), _ParamPointer(1),
+                _Param(2)->Type(), _ParamPointer(2),
+                _Param(3)->Type(), _ParamPointer(3),
+                typeRefInt32, _ParamPointer(4),
+                _Param(5)->Type(), _ParamPointer(5),
+                _Param(6)->Type(), _ParamPointer(6),
+                typeRefUInt32 ,_ParamPointer(7),
+                typeRefErrorCluster, _ParamPointer(8),
                 _Param(9));
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
@@ -439,6 +497,10 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     OccurrenceCore *pOcc = _Param(8)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -447,18 +509,15 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientDelete, UInt32, StringRef, StringRef, Int32,
             // This is the initial call, call the js function
             jsHttpClientMethod(
                 kDelete,
-                _Param(0),
-                _Param(1),
-                _Param(2),
-                nullptr,
-                nullptr,
-                _ParamPointer(3),
-                _Param(4),
-                _Param(5),
-                _ParamPointer(6),
-                &_Param(7).status,
-                &_Param(7).code,
-                _Param(7).source,
+                typeRefUInt32, _ParamPointer(0),
+                _Param(1)->Type(), _ParamPointer(1),
+                _Param(2)->Type(), _ParamPointer(2),
+                nullptr, nullptr,
+                typeRefInt32, _ParamPointer(3),
+                _Param(4)->Type(), _ParamPointer(4),
+                _Param(5)->Type(), _ParamPointer(5),
+                typeRefUInt32, _ParamPointer(6),
+                typeRefErrorCluster, _ParamPointer(7),
                 _Param(8));
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
@@ -492,6 +551,10 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     OccurrenceCore *pOcc = _Param(9)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
@@ -500,18 +563,15 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPost, UInt32, StringRef, StringRef, StringR
             // This is the initial call, call the js function
             jsHttpClientMethod(
                 kPost,
-                _Param(0),
-                _Param(1),
-                _Param(2),
-                _Param(3)->Type(),
-                _ParamPointer(3),
-                _ParamPointer(4),
-                _Param(5),
-                _Param(6),
-                _ParamPointer(7),
-                &_Param(8).status,
-                &_Param(8).code,
-                _Param(8).source,
+                typeRefUInt32, _ParamPointer(0),
+                _Param(1)->Type(), _ParamPointer(1),
+                _Param(2)->Type(), _ParamPointer(2),
+                _Param(3)->Type(), _ParamPointer(3),
+                typeRefInt32, _ParamPointer(4),
+                _Param(5)->Type(), _ParamPointer(5),
+                _Param(6)->Type(), _ParamPointer(6),
+                typeRefUInt32, _ParamPointer(7),
+                typeRefErrorCluster, _ParamPointer(8),
                 _Param(9));
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
@@ -543,13 +603,15 @@ VIREO_FUNCTION_SIGNATURE3(HttpClientConfigCORS, UInt32, UInt32, ErrorCluster)
         return THREAD_EXEC()->Stop();
     }
 
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+    TypeRef typeRefUInt32 = TypeManagerScope::Current()->FindType("UInt32");
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
     if (!_Param(2).status) {
         jsHttpClientConfigCORS(
-             _Param(0),
-             _Param(1),
-             &_Param(2).status,
-             &_Param(2).code,
-             _Param(2).source);
+            typeRefUInt32, _ParamPointer(0),
+            typeRefUInt32, _ParamPointer(1),
+            typeRefErrorCluster, _ParamPointer(2));
         AddCallChainToSourceIfErrorPresent(_ParamPointer(2), "HttpClientConfigCORS");
     }
 #else
