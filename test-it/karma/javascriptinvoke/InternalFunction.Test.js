@@ -68,6 +68,43 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
+    it('internal function is invoked even when no error cluster is wired', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunctionNoCluster: function (inputInteger) {
+                return inputInteger + 1;
+            }
+        });
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('returnValue3')).toBe(112);
+            done();
+        });
+    });
+
+    it('internal function is invoked even when no error cluster is wired and it sets error', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunctionNoClusterSetsError: function (inputInteger, jsAPI) {
+                jsAPI.setLabVIEWError(true, 777, 'this is the error message');
+                return inputInteger + 1;
+            }
+        });
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('returnValue4')).toBe(1112);
+            done();
+        });
+    });
+
     it('registerInternalFunctions successfully errors if we add non-function', function () {
         expect(function () {
             vireo.javaScriptInvoke.registerInternalFunctions({
