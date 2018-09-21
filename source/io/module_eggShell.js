@@ -483,6 +483,27 @@
             }
         };
 
+        Module.eggShell.writeStringFromArray = publicAPI.eggShell.writeStringFromArray = function (valueRef, inputArray) {
+            if (Module.typeHelpers.isString(valueRef.typeRef) === false) {
+                throw new Error('Performing writeStringFromArray failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+
+            if (inputArray instanceof Uint8Array === false) {
+                throw new Error('Expected input array to be of type Uint8Array, instead got:' + inputArray);
+            }
+
+            var strLength = inputArray.length;
+            Module.eggShell.resizeArray(valueRef, [strLength]);
+            var typedArray = Module.eggShell.readTypedArray(valueRef);
+            if (typedArray.length !== inputArray.length) {
+                throw new Error('Could not write typed array to memory');
+            }
+            typedArray.set(inputArray);
+        };
+
         var findCompatibleTypedArrayConstructor = function (typeRef) {
             var subTypeRef, isSigned, size;
             // String will go down the Array code path a bit as is so check before array checks
