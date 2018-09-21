@@ -136,7 +136,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeRead, PropertyNodeReadParamBlock)
     if (!errorClusterPtr)
         errorClusterPtr = &internalErrorCluster;
 
-    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");        
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
 
     if (!errorClusterPtr->status) {
         jsPropertyNodeRead(
