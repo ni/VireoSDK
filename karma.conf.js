@@ -6,9 +6,15 @@
     module.exports = function (config) {
         var getSharedConfig = require('./karma.shared.js');
         var sharedConfig = getSharedConfig(config);
+
         sharedConfig.files = [
-            'dist/wasm32-unknown-emscripten/release/vireo.js'
-        ].concat(sharedConfig.files);
+            ...sharedConfig.filesPolyfills,
+            ...sharedConfig.filesInfrastructure,
+            'dist/wasm32-unknown-emscripten/release/vireo.js',
+            ...sharedConfig.filesSource,
+            ...sharedConfig.filesFixtures,
+            ...sharedConfig.filesSpecs
+        ];
 
         config.set(sharedConfig);
     };
