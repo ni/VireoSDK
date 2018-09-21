@@ -231,6 +231,7 @@
             var that = this;
             var XMLHttpRequestImplementation = that._xmlHttpRequestImplementation;
             var errorMessage;
+            var emptyBody = new Uint8Array(0);
             var request = new XMLHttpRequestImplementation();
 
             // Save a reference to the request
@@ -273,7 +274,7 @@
                 if (request.status === 0) {
                     completeRequest({
                         header: '',
-                        body: [],
+                        body: emptyBody,
                         status: 0,
                         labviewCode: ERRORS.kNIHttpResultInternalUndefinedError.CODE,
                         errorMessage: ERRORS.kNIHttpResultInternalUndefinedError.MESSAGE,
@@ -302,7 +303,7 @@
             eventListeners.error = function () {
                 completeRequest({
                     header: '',
-                    body: [],
+                    body: emptyBody,
                     status: 0,
                     labviewCode: ERRORS.kNIHttpWebVINetworkError.CODE,
                     errorMessage: ERRORS.kNIHttpWebVINetworkError.MESSAGE,
@@ -314,7 +315,7 @@
             eventListeners.timeout = function () {
                 completeRequest({
                     header: '',
-                    body: [],
+                    body: emptyBody,
                     status: 0,
                     labviewCode: ERRORS.ncTimeOutErr.CODE,
                     errorMessage: ERRORS.ncTimeOutErr.MESSAGE,
@@ -325,7 +326,7 @@
             eventListeners.abort = function () {
                 completeRequest({
                     header: '',
-                    body: [],
+                    body: emptyBody,
                     status: 0,
                     labviewCode: ERRORS.kNIHttpResultAbortedByCallback.CODE,
                     errorMessage: ERRORS.kNIHttpResultAbortedByCallback.MESSAGE,
@@ -346,7 +347,7 @@
                 // Instead of trying to detect, always say invalid url and add message to source
                 completeRequest({
                     header: '',
-                    body: [],
+                    body: emptyBody,
                     status: 0,
                     labviewCode: ERRORS.kNIHttpResultCouldNotConnect.CODE,
                     errorMessage: ERRORS.kNIHttpResultCouldNotConnect.MESSAGE,
@@ -374,7 +375,7 @@
                 errorMessage = ERRORS.kNIHttpWebVIHeaderInvalid.MESSAGE + '\nheader:' + currentHeaderName + '\nvalue:' + currentHeaderValue;
                 completeRequest({
                     header: '',
-                    body: [],
+                    body: emptyBody,
                     status: 0,
                     labviewCode: ERRORS.kNIHttpWebVIHeaderInvalid.CODE,
                     errorMessage: errorMessage,
@@ -412,7 +413,7 @@
             } catch (ex) {
                 completeRequest({
                     header: '',
-                    body: [],
+                    body: emptyBody,
                     status: 0,
                     labviewCode: ERRORS.kNIHttpWebVINetworkError.CODE,
                     errorMessage: ERRORS.kNIHttpWebVINetworkError.MESSAGE,
@@ -873,8 +874,7 @@
                 Module.eggShell.writeDouble(statusCodeValueRef, responseData.status);
 
                 if (bodyValueRef !== undefined) {
-                    // TODO this function is depracated we need to swap it out.
-                    Module.eggShell.dataWriteStringFromArray(bodyDataRef, responseData.body);
+                    Module.eggShell.writeStringFromArray(bodyValueRef, responseData.body);
                 }
 
                 var errorMessage = Module.coreHelpers.formatMessageWithException(responseData.errorMessage, responseData.requestException);
