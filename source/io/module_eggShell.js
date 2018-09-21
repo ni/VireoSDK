@@ -483,7 +483,7 @@
             }
         };
 
-        Module.eggShell.writeStringFromArray = publicAPI.eggShell.writeStringFromArray = function (valueRef, inputArray) {
+        Module.eggShell.writeStringFromArray = function (valueRef, inputArray) {
             if (Module.typeHelpers.isString(valueRef.typeRef) === false) {
                 throw new Error('Performing writeStringFromArray failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
                     ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
