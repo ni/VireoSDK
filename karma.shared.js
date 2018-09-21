@@ -13,23 +13,23 @@
             frameworks: ['jasmine', 'jasmine-spec-tags'],
 
             // list of files / patterns to load in the browser
-            files: [
-                // Polyfills
-                // None
+            filesPolyfills: [
+            ],
 
-                // Test infrastructure
+            filesInfrastructure: [
                 'node_modules/jasmine-expect/dist/jasmine-matchers.js',
                 'node_modules/diff/dist/diff.js',
+                'test-it/karma/utilities/TestHelpers.*.js'
+            ],
 
-                // Source files
+            filesSource: [
                 {
                     pattern: 'dist/wasm32-unknown-emscripten/*/vireo.core.wasm',
                     included: false
-                },
+                }
+            ],
 
-                // Test specs and assets
-                'test-it/karma/utilities/ExtendJasmineTimeout.js',
-                'test-it/karma/utilities/TestHelpers.*.js',
+            filesFixtures: [
                 {
                     pattern: 'test-it/ViaTests/*.via',
                     included: false
@@ -45,17 +45,11 @@
                 {
                     pattern: 'test-it/testList.json',
                     included: false
-                },
+                }
+            ],
 
-                // Test specs
-                'test-it/karma/helloworld/*.Test.js',
-                'test-it/karma/publicapi/*.Test.js',
-                'test-it/karma/vtrsuite/*.Test.js',
-                'test-it/karma/http/*.Test.js',
-                'test-it/karma/javascriptinvoke/*.Test.js',
-                'test-it/karma/propertynode/*.Test.js',
-                'test-it/karma/events/*.Test.js',
-                'test-it/karma/static/*.Test.js'
+            filesSpecs: [
+                'test-it/karma/**/*.Test.js'
             ],
 
             // list of files to exclude
@@ -118,7 +112,7 @@
             // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
             logLevel: config.LOG_INFO,
 
-            // Timeout for jasmine set to 50000 in ExtendJasmineTimeout.js so warn if test time getting close
+            // Timeout for jasmine set to 50000 in TestHelpers.ExtendJasmineTimeout.js so warn if test time getting close
             reportSlowerThan: 40000
         };
     };
