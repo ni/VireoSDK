@@ -45,7 +45,7 @@ extern "C" {
     extern void jsHttpClientAddHeader(
         TypeRef handleType, UInt32* handle,
         TypeRef headerType, StringRef* headerData,
-        TypeRef valueType, StringRef* valueData, 
+        TypeRef valueType, StringRef* valueData,
         TypeRef errorType, ErrorCluster* errorData);
 
     extern void jsHttpClientRemoveHeader(
@@ -71,7 +71,7 @@ extern "C" {
         TypeRef headerListType, StringRef* headerList,
         TypeRef errorCluster, ErrorCluster* errorData);
 
-    extern void jsHttpClientMethod(HttpClientMethodId methodId, 
+    extern void jsHttpClientMethod(HttpClientMethodId methodId,
         TypeRef handleType, UInt32* handle,
         TypeRef urlType, StringRef* urlData,
         TypeRef outputFilePathType, StringRef* outputFilePathData,
@@ -348,7 +348,7 @@ VIREO_FUNCTION_SIGNATURE9(HttpClientGet, UInt32, StringRef, StringRef, Int32, St
             jsHttpClientMethod(
                 kGet,
                 typeRefUInt32, _ParamPointer(0),
-                _Param(1)->Type(), _ParamPointer(1), 
+                _Param(1)->Type(), _ParamPointer(1),
                 _Param(2)->Type(), _ParamPointer(2),
                 nullptr,
                 nullptr,
@@ -462,7 +462,7 @@ VIREO_FUNCTION_SIGNATURE10(HttpClientPut, UInt32, StringRef, StringRef, StringRe
                 typeRefInt32, _ParamPointer(4),
                 _Param(5)->Type(), _ParamPointer(5),
                 _Param(6)->Type(), _ParamPointer(6),
-                typeRefUInt32 ,_ParamPointer(7),
+                typeRefUInt32 , _ParamPointer(7),
                 typeRefErrorCluster, _ParamPointer(8),
                 _Param(9));
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);

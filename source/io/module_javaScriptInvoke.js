@@ -483,7 +483,6 @@
             isInternalFunction,
             errorTypeRef,
             errorDataRef) {
-
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
 
             var newError = {
