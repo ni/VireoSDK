@@ -25,7 +25,7 @@ namespace Vireo {
 extern "C" {
     // JavaScript function prototypes
     extern void jsJavaScriptInvoke(OccurrenceRef occurrence, StringRef functionName, void *returnValue, void *parameters, Int32 parametersCount,
-                                    Boolean isInternalFunction, Boolean *errorStatus, Int32 *errorCode, StringRef errorSource);
+                                    Boolean isInternalFunction, TypeRef errorClusterType, ErrorCluster* errorClusterData);
 }
 #endif
 
@@ -124,6 +124,8 @@ extern void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, Cons
 VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+
 #if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(occurrence)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
@@ -137,7 +139,9 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
         StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
         StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
 
-        if (!errorClusterPtr->status) {
+        bool shouldInvoke = errorClusterPtr == nullptr ? true : !errorClusterPtr->status;
+
+        if (shouldInvoke) {
             pObserver = clump->ReserveObservationStatesWithTimeout(2, 0);
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             jsJavaScriptInvoke(
@@ -147,9 +151,8 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
                 parametersPtr,
                 userParametersCount,
                 isInternalFunction,
-                &errorClusterPtr->status,
-                &errorClusterPtr->code,
-                errorClusterPtr->source);
+                typeRefErrorCluster,
+                errorClusterPtr);
 
             if (isInternalFunction) {
                 AddCallChainToSourceIfErrorPresent(errorClusterPtr, (const char*)functionName->Begin());
