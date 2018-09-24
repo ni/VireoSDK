@@ -62,6 +62,7 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error2.status')).toBeTrue();
             expect(viPathParser('error2.code')).toBe(777);
             expect(viPathParser('error2.source')).toContain('this is the error message');
+            expect(viPathParser('error2.source')).toContain('in MyVI');
             expect(viPathParser('returnValue2')).toBe(12);
             done();
         });
