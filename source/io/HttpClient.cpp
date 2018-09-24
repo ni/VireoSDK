@@ -71,7 +71,8 @@ extern "C" {
         TypeRef headerListType, StringRef* headerList,
         TypeRef errorCluster, ErrorCluster* errorData);
 
-    extern void jsHttpClientMethod(HttpClientMethodId methodId,
+    extern void jsHttpClientMethod(
+        HttpClientMethodId methodId,
         TypeRef handleType, UInt32* handle,
         TypeRef urlType, StringRef* urlData,
         TypeRef outputFilePathType, StringRef* outputFilePathData,
@@ -86,7 +87,7 @@ extern "C" {
     extern void jsHttpClientConfigCORS(
         TypeRef handleType, UInt32 * handle,
         TypeRef includeCrendentialsDuringCORSType, UInt32 * includeCredentialsDuringCORSData,
-        TypeRef errorType, ErrorCluster* erroData);
+        TypeRef errorType, ErrorCluster* errorData);
 }
 #endif
 
