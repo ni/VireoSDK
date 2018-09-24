@@ -874,7 +874,7 @@
                 Module.eggShell.writeDouble(statusCodeValueRef, responseData.status);
 
                 if (bodyValueRef !== undefined) {
-                    Module.eggShell.writeStringFromArray(bodyValueRef, responseData.body);
+                    Module.eggShell.writeTypedArray(bodyValueRef, responseData.body);
                 }
 
                 var errorMessage = Module.coreHelpers.formatMessageWithException(responseData.errorMessage, responseData.requestException);
@@ -897,12 +897,12 @@
             var includeCredentialsDuringCORSValueRef = Module.eggShell.createValueRef(includeCredentialsDuringCORSTypeRef, includeCredentialsDuringCORSDataRef);
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var handle = Module.eggShell.readDouble(handleValueRef);
-            var includeCredentialsDuringCORS = Module.eggShell.readDouble(includeCredentialsDuringCORSValueRef);
+            var includeCredentialsDuringCORS = Module.eggShell.readDouble(includeCredentialsDuringCORSValueRef) !== FALSE;
             var httpClient = findhttpClientOrWriteError(handle, errorValueRef);
             if (httpClient === undefined) {
                 return;
             }
-            httpClient.setIncludeCredentialsDuringCORS(includeCredentialsDuringCORS !== FALSE);
+            httpClient.setIncludeCredentialsDuringCORS(includeCredentialsDuringCORS);
         };
     };
 

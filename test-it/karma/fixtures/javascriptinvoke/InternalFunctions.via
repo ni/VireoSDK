@@ -26,8 +26,8 @@ define(MyVI dv(VirtualInstrument (
     clump (
         JavaScriptInvoke(occurrence1 true error1 'NI_InternalFunction' returnValue1 value1)
         JavaScriptInvoke(occurrence2 true error2 'NI_InternalFunctionSetsError' returnValue2 value2)
-        JavaScriptInvoke(occurrence3 true * 'NI_InternalFunctionNoCluster' returnValue3 value3)
-        JavaScriptInvoke(occurrence4 true * 'NI_InternalFunctionNoClusterSetsError' returnValue4 value4)
+        JavaScriptInvoke(occurrence3 true * 'NI_InternalFunctionNoErrorCluster' returnValue3 value3)
+        JavaScriptInvoke(occurrence4 true * 'NI_InternalFunctionNoErrorClusterSetsError' returnValue4 value4)
     )
 ) ) )
 
