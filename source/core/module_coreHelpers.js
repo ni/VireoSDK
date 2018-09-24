@@ -304,7 +304,9 @@
         };
 
         var writeNewError = function (errorValueRef, newError) {
-            Module.eggShell.writeJSON(errorValueRef, JSON.stringify(newError));
+            Module.eggShell.writeDouble(Module.eggShell.findSubValueRef(errorValueRef, 'status'), newError.status ? 1 : 0);
+            Module.eggShell.writeDouble(Module.eggShell.findSubValueRef(errorValueRef, 'code'), newError.code);
+            Module.eggShell.writeString(Module.eggShell.findSubValueRef(errorValueRef, 'source'), newError.source);
         };
 
         Module.coreHelpers.mergeErrors = function (errorValueRef, newError) {
@@ -314,14 +316,12 @@
             }
 
             var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
-            var existingErrorStatus = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
-            var isExistingError = existingErrorStatus;
-            var isNewError = newError.status;
-
+            var isExistingError = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
             if (isExistingError) {
                 return;
             }
 
+            var isNewError = newError.status;
             if (isNewError) {
                 writeNewError(errorValueRef, newError);
                 return;

@@ -73,7 +73,7 @@ describe('A JavaScript function invoke', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunctionNoCluster: function (inputInteger) {
+            NI_InternalFunctionNoErrorCluster: function (inputInteger) {
                 return inputInteger + 1;
             }
         });
@@ -91,7 +91,7 @@ describe('A JavaScript function invoke', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunctionNoClusterSetsError: function (inputInteger, jsAPI) {
+            NI_InternalFunctionNoErrorClusterSetsError: function (inputInteger, jsAPI) {
                 jsAPI.setLabVIEWError(true, 777, 'this is the error message');
                 return inputInteger + 1;
             }
