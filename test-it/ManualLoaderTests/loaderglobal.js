@@ -10,15 +10,13 @@
         }
     };
 
-    var createAndRun = function (vireoHelpers, viaCode) {
-        vireoHelpers.createInstance({
+    var createAndRun = async function (vireoHelpers, viaCode) {
+        var vireo = await vireoHelpers.createInstance({
             wasmUrl: '../../dist/wasm32-unknown-emscripten/release/vireo.core.wasm'
-        }).then(function (vireo) {
-            vireo.eggShell.loadVia(viaCode);
-            return vireo.eggShell.executeSlicesUntilClumpsFinished();
-        }).then(function () {
-            console.log('finished :D');
         });
+        vireo.eggShell.loadVia(viaCode);
+        await vireo.eggShell.executeSlicesUntilClumpsFinished();
+        console.log('finished :D');
     };
 
     var runTest = function () {

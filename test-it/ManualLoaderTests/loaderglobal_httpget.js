@@ -9,17 +9,13 @@
         }
     };
 
-    var createAndRun = function (vireoHelpers, viaCode) {
-        var vireo;
-        vireoHelpers.createInstance().then(function (vireoInstance) {
-            vireo = vireoInstance;
-            vireo.eggShell.loadVia(viaCode);
-            return vireo.eggShell.executeSlicesUntilClumpsFinished();
-        }).then(function () {
-            var valueRef = vireo.eggShell.findValueRef('MyVI', 'body');
-            console.log(JSON.parse(vireo.eggShell.readJSON(valueRef)));
-            console.log('finished :D');
-        });
+    var createAndRun = async function (vireoHelpers, viaCode) {
+        var vireo = await vireoHelpers.createInstance();
+        vireo.eggShell.loadVia(viaCode);
+        await vireo.eggShell.executeSlicesUntilClumpsFinished();
+        var valueRef = vireo.eggShell.findValueRef('MyVI', 'body');
+        console.log(JSON.parse(vireo.eggShell.readJSON(valueRef)));
+        console.log('finished :D');
     };
 
     var runTest = function () {
