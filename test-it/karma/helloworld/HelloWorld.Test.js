@@ -28,7 +28,7 @@ describe('Vireo loaded as a global in the browser', function () {
         expect(result).toBe('Hello, sky. I can fly.\n');
     });
 
-    it('can run HelloWorld async using a callback', async function () {
+    it('throws when running HelloWorld async using a callback', async function () {
         var vireo = await window.vireoHelpers.createInstance();
         var viaCode = 'start( VI<( clump( Println("Hello, sky. I can fly.") ) ) > )';
 
