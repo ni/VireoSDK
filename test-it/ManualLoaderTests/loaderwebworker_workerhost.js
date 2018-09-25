@@ -7,13 +7,12 @@
         self.importScripts.apply(self, arguments);
     };
 
-    handlers.loadAndRun = function (wasmUrl, viaCode) {
-        self.vireoHelpers.createInstance({
+    handlers.loadAndRun = async function (wasmUrl, viaCode) {
+        var vireo = await self.vireoHelpers.createInstance({
             wasmUrl: wasmUrl
-        }).then(function (vireo) {
-            vireo.eggShell.loadVia(viaCode);
-            return vireo.eggShell.executeSlicesUntilClumpsFinished();
         });
+        vireo.eggShell.loadVia(viaCode);
+        await vireo.eggShell.executeSlicesUntilClumpsFinished();
     };
 
     self.addEventListener('message', function (evt) {

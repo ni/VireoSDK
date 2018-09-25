@@ -9,14 +9,12 @@
         }
     };
 
-    var runTest = function () {
+    var runTest = async function () {
         var viaCode = document.getElementById('viacode').textContent;
-        window.vireoHelpers.createInstance().then(function (vireo) {
-            vireo.eggShell.loadVia(viaCode);
-            return vireo.eggShell.executeSlicesUntilClumpsFinished();
-        }).then(function () {
-            console.log('finished :D');
-        });
+        var vireo = await window.vireoHelpers.createInstance();
+        vireo.eggShell.loadVia(viaCode);
+        await vireo.eggShell.executeSlicesUntilClumpsFinished();
+        console.log('finished :D');
     };
 
     domReady(runTest);
