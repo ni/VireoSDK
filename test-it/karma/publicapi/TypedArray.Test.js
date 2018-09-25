@@ -26,6 +26,23 @@ describe('The Vireo EggShell Typed Array api', function () {
         return typedArray;
     };
 
+    var writeTypedArray = function (path, typedArrayValue) {
+        var valueRef = vireo.eggShell.findValueRef(viName, path);
+        vireo.eggShell.writeTypedArray(valueRef, typedArrayValue);
+    };
+
+    var writeTypedArrayTest = function (path, value) {
+        writeTypedArray(path, value);
+        var valueRead = readTypedArray(path);
+        expect(valueRead).toEqual(value);
+    };
+
+    var tryWriteTypedArrayTest = function (path, value) {
+        return function () {
+            writeTypedArray(path, value);
+        };
+    };
+
     it('can read arrays for specific optimized types', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiArrayTypesOptimizedViaUrl);
 
@@ -94,6 +111,70 @@ describe('The Vireo EggShell Typed Array api', function () {
                 readTypedArray('scalarUInt32');
             }).toThrowError(/UnexpectedObjectType/);
 
+            done();
+        });
+    });
+
+    it('can write arrays for specific optimized types', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiArrayTypesOptimizedViaUrl);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            writeTypedArrayTest('arrayInt8', new Int8Array([8, 6, 7, 0, -128, 127]));
+            writeTypedArrayTest('arrayInt16', new Int16Array([8, 6, 7, 5, 3, 0, 9, 5, 3, 0, 9, 0, -32768, 32767]));
+            writeTypedArrayTest('arrayInt32', new Int32Array([-2147483648, 2147483647, 5, 3, 0, 9, 0]));
+            writeTypedArrayTest('arrayUInt8', new Uint8Array([255, 8, 6, 7, 5, 3, 0, 9, 0, 255]));
+            writeTypedArrayTest('arrayUInt16', new Uint16Array([1, 2, 3, 8, 6, 7, 5, 3, 0, 9, 0, 65535]));
+            writeTypedArrayTest('arrayUInt32', new Uint32Array([8, 6, 7, 7, 9, 111, 5, 3, 0, 9, 0, 4294967295]));
+            writeTypedArrayTest('arraySingle', new Float32Array([Infinity, NaN, -Infinity, -16777216, 16777216, Math.fround(1.1), Math.fround(2.2), +0, -0, 0]));
+            writeTypedArrayTest('arrayDouble', new Float64Array([+0, -0, Infinity, NaN, -Infinity, -9007199254740992, 9007199254740992]));
+            writeTypedArrayTest('arrayInt8Empty', new Int8Array([0, 1, 2, 3]));
+            writeTypedArrayTest('arrayEnum8', new Uint8Array([3, 2, 1, 255]));
+            writeTypedArrayTest('arrayEnum16', new Uint16Array([5, 4, 3, 2, 1, 0]));
+            writeTypedArrayTest('arrayEnum32', new Uint32Array([0, 1, 2, 3, 4, 5]));
+            writeTypedArrayTest('arrayBoolean', new Uint8Array([1, 0, 1, 0, 1, 1, 1]));
+            writeTypedArrayTest('stringHello', new Uint8Array([0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64]));
+            writeTypedArrayTest('stringControlCharacters', new Uint8Array([31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]));
+
+            done();
+        });
+    });
+
+    it('errors when writing mismatched types', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiArrayTypesOptimizedViaUrl);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(tryWriteTypedArrayTest('arrayInt8', [])).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayInt8', new Int16Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayInt16', new Uint16Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayInt32', new Int8Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayUInt8', new Int16Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayUInt16', new Int32Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayUInt32', new Uint16Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arraySingle', new Int16Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayDouble', new Float32Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayEnum8', new Float32Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayEnum16', new Int16Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayEnum32', new Float64Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('arrayBoolean', new Int32Array())).toThrowError(/UnexpectedObjectType/);
+            expect(tryWriteTypedArrayTest('stringHello', new Uint16Array())).toThrowError(/UnexpectedObjectType/);
+            done();
+        });
+    });
+
+    it('errors when writing arrays where rank > 1', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiArrayTypesOptimizedViaUrl);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+
+            expect(tryWriteTypedArrayTest('array2DInt32', new Int32Array())).toThrowError(/MismatchedArrayRank/);
+            expect(tryWriteTypedArrayTest('array3DInt32', new Int32Array())).toThrowError(/MismatchedArrayRank/);
             done();
         });
     });

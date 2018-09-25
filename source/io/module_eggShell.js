@@ -573,18 +573,16 @@
             return typedArray;
         };
 
-        Module.eggShell.writeTypedArray = function (valueRef, typedArrayValue) {
+        Module.eggShell.writeTypedArray = publicAPI.eggShell.writeTypedArray = function (valueRef, typedArrayValue) {
             var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
-
-            // TODO: (gleon) For now this function will only work for writing to strings
-            // we can support more types by modifying this function moving forward.
-            if (TypedArrayConstructor === undefined || Module.typeHelpers.isString(valueRef.typeRef) === false) {
+            if (TypedArrayConstructor === undefined || !(typedArrayValue instanceof TypedArrayConstructor)) {
                 throw new Error('Performing writeTypedArray failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
                     ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
                     ' (typeRef: ' + valueRef.typeRef + ')' +
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
+            // TODO: (gleon) For now this function will only work for 1D arrays
             var totalLength = typedArrayValue.length;
             Module.eggShell.resizeArray(valueRef, [totalLength]);
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
