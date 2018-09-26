@@ -49,12 +49,14 @@ before_script:
 - (source make-it/travis-support/setup-env.sh && make vjs)
 - (source make-it/travis-support/setup-env.sh && make vjs BUILD=debug)
 - (source make-it/travis-support/setup-env.sh && make vjs BUILD=profile)
+- (source make-it/travis-support/setup-env.sh && make vjs BUILD=release TARGET=asmjs-unknown-emscripten)
 - tar -tf $(npm pack)
 script:
 - make testjs
 - make testnative
 - make testhttpbin
 - npm run test-min
+- npm run test-asmjs
 after_failure:
 - cat emsdk-tools/emsdk_install_log.txt
 before_deploy:

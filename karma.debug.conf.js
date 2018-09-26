@@ -11,6 +11,10 @@
             ...sharedConfig.filesPolyfills,
             ...sharedConfig.filesInfrastructure,
             'dist/wasm32-unknown-emscripten/debug/vireo.js',
+            {
+                pattern: 'dist/wasm32-unknown-emscripten/debug/vireo.core.wasm',
+                included: false
+            },
             ...sharedConfig.filesSource,
             ...sharedConfig.filesFixtures,
             ...sharedConfig.filesSpecs

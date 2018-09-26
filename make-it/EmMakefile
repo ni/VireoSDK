@@ -6,7 +6,7 @@ MKDIR="mkdir"
 
 VIREO_SDK=..
 
-TARGETS_SUPPORTED=wasm32-unknown-emscripten
+TARGETS_SUPPORTED=asmjs-unknown-emscripten wasm32-unknown-emscripten
 TARGET=wasm32-unknown-emscripten
 
 ifeq ($(filter $(TARGET), $(TARGETS_SUPPORTED)),)
@@ -84,12 +84,16 @@ endif
 EM_OPTFLAGS ?= $(EM_OPTFLAG)
 EM_ANALYSIS_OPT_FLAG = $(EM_OPTFLAG)
 
+ifeq ($(TARGET), asmjs-unknown-emscripten)
+   TARGET_FLAG = -s WASM=0
+endif
+
 ifeq ($(TARGET), wasm32-unknown-emscripten)
-   WASM_FLAG = -s WASM=1
+   TARGET_FLAG = -s WASM=1 -s BINARYEN_TRAP_MODE=js -s ALLOW_MEMORY_GROWTH=1
 endif
 
 # NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
-EM_OPT = $(EM_OPTFLAGS) $(WASM_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1 --minify 0 -s BINARYEN_TRAP_MODE=js -s ALLOW_MEMORY_GROWTH=1
+EM_OPT = $(EM_OPTFLAGS) $(TARGET_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1 --minify 0
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(CORESOURCEDIR)/library_eventHelpers.js \
@@ -252,7 +256,7 @@ $(DIST)/vireo.core.js: $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(PREJS) $(POSTJS) | $
 	$(EMCC) $(EM_OPT) $(EM_WRAP) $(EMLIBRARY) $(EM_BC_FILES) $(ANALYSIS_LIBRARY) $(EM_EXPORTS) $(EM_RUNTIME_EXPORTS) -o $@
 
 $(DIST)/vireo.js: $(DIST)/vireo.core.js $(JS_SOURCE_FILES)
-	npm run rollup -- $(CORESOURCEDIR)/vireo.loader.$(BUILD).js --format umd --name vireoHelpers --amd.id vireoHelpers --file $@
+	npm run rollup -- $(CORESOURCEDIR)/vireo.loader.$(TARGET).$(BUILD).js --format umd --name vireoHelpers --amd.id vireoHelpers --file $@
 
 $(DIST)/vireo.min.js: $(DIST)/vireo.js
 	npm run terser -- $(DIST)/vireo.js -o $@

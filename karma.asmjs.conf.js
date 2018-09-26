@@ -10,11 +10,7 @@
         sharedConfig.files = [
             ...sharedConfig.filesPolyfills,
             ...sharedConfig.filesInfrastructure,
-            'dist/wasm32-unknown-emscripten/release/vireo.min.js',
-            {
-                pattern: 'dist/wasm32-unknown-emscripten/release/vireo.core.wasm',
-                included: false
-            },
+            'dist/asmjs-unknown-emscripten/release/vireo.min.js',
             ...sharedConfig.filesSource,
             ...sharedConfig.filesFixtures,
             ...sharedConfig.filesSpecs

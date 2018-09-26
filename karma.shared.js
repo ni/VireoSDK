@@ -23,10 +23,6 @@
             ],
 
             filesSource: [
-                {
-                    pattern: 'dist/wasm32-unknown-emscripten/*/vireo.core.wasm',
-                    included: false
-                }
             ],
 
             filesFixtures: [

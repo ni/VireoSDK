@@ -33,6 +33,7 @@
     "test-dev": "karma start --browsers ChromeHeadlessNoSandbox --skip-tags Slow",
     "test-manual": "karma start --no-single-run",
     "test-coverage": "karma start karma.coverage.conf.js",
+    "test-asmjs": "karma start karma.asmjs.conf.js --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
     "lint": "eslint .",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",
     "httpbin": "tox",
