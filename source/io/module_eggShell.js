@@ -582,9 +582,12 @@
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
-            // TODO: (gleon) For now this function will only work for 1D arrays
+            var arrayTotalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
             var totalLength = typedArrayValue.length;
-            Module.eggShell.resizeArray(valueRef, [totalLength]);
+            if (totalLength !== arrayTotalLength) {
+                throw new Error('TypedArray total length must be ' + arrayTotalLength + ' instead got ' + totalLength);
+            }
+
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
             typedArray.set(typedArrayValue);
