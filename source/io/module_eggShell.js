@@ -232,16 +232,19 @@ var assignEggShell;
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
 
             var eggShellResult = Module._EggShell_FindValue(Module.eggShell.v_userShell, viStackPointer, pathStackPointer, typeStackPointer, dataStackPointer);
-            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS && eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
                 throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (vi name: ' + vi + ')' +
                     ' (path: ' + path + ')');
             }
 
-            var typeRef = Module.getValue(typeStackPointer, 'i32');
-            var dataRef = Module.getValue(dataStackPointer, 'i32');
-            var valueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            var typeRef, dataRef, valueRef;
+            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+                typeRef = Module.getValue(typeStackPointer, 'i32');
+                dataRef = Module.getValue(dataStackPointer, 'i32');
+                valueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            }
 
             Module.stackRestore(stack);
             return valueRef;
@@ -255,16 +258,19 @@ var assignEggShell;
             var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
 
             var eggShellResult = Module._EggShell_FindSubValue(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, subPathStackPointer, typeStackPointer, dataStackPointer);
-            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS && eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
                 throw new Error('A ValueRef could not be made for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
                     ' (subpath: ' + subPath + ')');
             }
 
-            var typeRef = Module.getValue(typeStackPointer, 'i32');
-            var dataRef = Module.getValue(dataStackPointer, 'i32');
-            var subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            var typeRef, dataRef, subValueRef;
+            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+                typeRef = Module.getValue(typeStackPointer, 'i32');
+                dataRef = Module.getValue(dataStackPointer, 'i32');
+                subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            }
 
             Module.stackRestore(stack);
             return subValueRef;

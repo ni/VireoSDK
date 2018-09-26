@@ -59,12 +59,9 @@ describe('The Vireo EggShell findSubValueRef', function () {
             expect(invalidValueRef).toThrow();
         });
 
-        it('throws for a nonexistant path', function () {
-            var invalidPath = function () {
-                vireo.eggShell.findSubValueRef(valueRef, 'nonexistantpath');
-            };
-
-            expect(invalidPath).toThrow();
+        it('return undefined for a nonexistant path', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, 'nonexistantpath');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
         it('finds values of cluster elements', function () {
@@ -87,20 +84,14 @@ describe('The Vireo EggShell findSubValueRef', function () {
             valueRef = vireo.eggShell.findValueRef(viName, arrayOfBooleansPath);
         });
 
-        it('throws for invalid index', function () {
-            var invalidIndex = function () {
-                vireo.eggShell.findSubValueRef(valueRef, '-1');
-            };
-
-            expect(invalidIndex).toThrow();
+        it('return undefined for invalid index', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, '-1');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
-        it('throws for index out of bounds', function () {
-            var invalidIndex = function () {
-                vireo.eggShell.findSubValueRef(valueRef, '10');
-            };
-
-            expect(invalidIndex).toThrow();
+        it('return undefined for index out of bounds', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, '10');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
         it('finds a value', function () {
@@ -116,20 +107,14 @@ describe('The Vireo EggShell findSubValueRef', function () {
             valueRef = vireo.eggShell.findValueRef(viName, ndimArrayPath);
         });
 
-        it('throws for an invalid path format', function () {
-            var invalidPathFormat = function () {
-                vireo.eggShell.findSubValueRef(valueRef, '0,0.0');
-            };
-
-            expect(invalidPathFormat).toThrow();
+        it('return undefined for an invalid path format', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, '0,0.0');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
-        it('throws for index out of bounds', function () {
-            var indexOutOfBounds = function () {
-                vireo.eggShell.findSubValueRef(valueRef, '2,0,0');
-            };
-
-            expect(indexOutOfBounds).toThrow();
+        it('return undefined for index out of bounds', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, '2,0,0');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
         it('finds values for comma-separated indexes', function () {
@@ -150,12 +135,9 @@ describe('The Vireo EggShell findSubValueRef', function () {
             valueRef = vireo.eggShell.findValueRef(viName, arrayOfClustersPath);
         });
 
-        it('throws for invalid path format', function () {
-            var invalidPathFormat = function () {
-                vireo.eggShell.findSubValueRef(valueRef, '0,bool');
-            };
-
-            expect(invalidPathFormat).toThrow();
+        it('return undefined for invalid path format', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, '0,bool');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
         it('finds values for indexes followed by "." field name', function () {
@@ -177,20 +159,14 @@ describe('The Vireo EggShell findSubValueRef', function () {
             valueRef = vireo.eggShell.findValueRef(viName, clusterOfArraysPath);
         });
 
-        it('throws for invalid path format', function () {
-            var invalidPathFormat = function () {
-                vireo.eggShell.findSubValueRef(valueRef, 'booleans,0');
-            };
-
-            expect(invalidPathFormat).toThrow();
+        it('return undefined for invalid path format', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, 'booleans,0');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
-        it('throws for index out of bounds', function () {
-            var indexOutOfBounds = function () {
-                vireo.eggShell.findSubValueRef(valueRef, 'booleans.3');
-            };
-
-            expect(indexOutOfBounds).toThrow();
+        it('return undefined for index out of bounds', function () {
+            var nonExistantValueRef = vireo.eggShell.findSubValueRef(valueRef, 'booleans.3');
+            expect(nonExistantValueRef).toBeUndefined();
         });
 
         it('finds values for fields followed by "." index', function () {

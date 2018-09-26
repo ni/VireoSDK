@@ -33,25 +33,19 @@ describe('The Vireo EggShell findValueRef api can', function () {
         expect(valueRef.dataRef).not.toBe(0);
     });
 
-    it('to throw for a nonexistant vi name', function () {
-        var invalidViName = function () {
-            vireo.eggShell.findValueRef('nonexistantvi', pathName);
-        };
-        expect(invalidViName).toThrowError(/ObjectNotFoundAtPath/);
+    it('to return undefined for a nonexistant vi name', function () {
+        var valueRef = vireo.eggShell.findValueRef('nonexistantvi', pathName);
+        expect(valueRef).toBeUndefined();
     });
 
-    it('to throw for an empty vi name', function () {
-        var invalidViName = function () {
-            vireo.eggShell.findValueRef('', pathName);
-        };
-        expect(invalidViName).toThrowError(/ObjectNotFoundAtPath/);
+    it('to return undefined for an empty vi name', function () {
+        var valueRef = vireo.eggShell.findValueRef('', pathName);
+        expect(valueRef).toBeUndefined();
     });
 
-    it('to throw for a nonexistant path', function () {
-        var invalidPath = function () {
-            vireo.eggShell.findValueRef(viName, 'nonexistantvalue');
-        };
-        expect(invalidPath).toThrowError(/ObjectNotFoundAtPath/);
+    it('to return undefined for a nonexistant path', function () {
+        var valueRef = vireo.eggShell.findValueRef(viName, 'nonexistantvalue');
+        expect(valueRef).toBeUndefined();
     });
 
     it('to return a typeRef for the the local scope of a VI for an empty path', function () {
