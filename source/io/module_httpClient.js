@@ -874,6 +874,7 @@
                 Module.eggShell.writeDouble(statusCodeValueRef, responseData.status);
 
                 if (bodyValueRef !== undefined) {
+                    Module.eggShell.resizeArray(bodyValueRef, [responseData.body.length]);
                     Module.eggShell.writeTypedArray(bodyValueRef, responseData.body);
                 }
 
