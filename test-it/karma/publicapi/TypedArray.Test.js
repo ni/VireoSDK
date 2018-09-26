@@ -86,9 +86,7 @@ describe('The Vireo EggShell Typed Array api', function () {
                 readTypedArray('arrayString');
             }).toThrowError(/UnexpectedObjectType/);
 
-            expect(function () {
-                readTypedArray('nonExistantPath');
-            }).toThrowError(/ObjectNotFoundAtPath/);
+            expect(vireo.eggShell.findValueRef(viName, 'nonExistantPath')).toBeUndefined();
 
             expect(function () {
                 readTypedArray('scalarUInt32');

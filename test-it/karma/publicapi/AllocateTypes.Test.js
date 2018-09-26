@@ -67,10 +67,8 @@ describe('Vireo public API allows', function () {
     };
 
     describe('error handling', function () {
-        // Use a memory aligned invalid addess to avoid alignment warnings in debug builds
-        // Debug builds enable SAFE_HEAP which warns on unaligned access: https://kripken.github.io/emscripten-site/docs/porting/guidelines/portability_guidelines.html#other-issues
-        // Wasm supports unaligned memory access, although it may cause performance degradation
-        var invalidAddress = 1024;
+        // Use null pointer for an invalid address. Random values can have unexpected results.
+        var invalidAddress = 0;
         describe('for allocateData', function () {
             it('throws an InvalidTypeRef error given an invalid typeRef', function () {
                 var invalidTypeRef = invalidAddress;
