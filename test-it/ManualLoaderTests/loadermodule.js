@@ -1,4 +1,4 @@
-import vireoHelpers from '../../source/core/vireo.loader.release.js';
+import vireoHelpers from '../../source/core/vireo.loader.wasm32-unknown-emscripten.release.js';
 
 
 (async function () {

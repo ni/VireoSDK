@@ -55,6 +55,6 @@
   },
   "homepage": "https://github.com/NI/VireoSDK#readme",
   "main": "dist/wasm32-unknown-emscripten/release/vireo.js",
-  "module": "source/core/vireo.loader.release.js",
+  "module": "source/core/vireo.loader.wasm32-unknown-emscripten.release.js",
   "dependencies": {}
 }
