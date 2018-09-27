@@ -73,7 +73,7 @@ The emsdk toolchain is used to cross-compile Vireo to Vireo.js to run in Node.js
    ```console
    emsdk install sdk-1.38.12-64bit
    emsdk activate sdk-1.38.12-64bit
-   emcc -v # should say emcc version 1.37.36
+   emcc -v # should say emcc version 1.38.12
    ```
 
 NOTE: The above commands only add `emcc` to the path for your current shell session. The emsdk tool provides the `emsdk activate SOME_SDK_VERSION --global` option but there is a known issue where using the `--global` flag [hangs on Windows](https://github.com/juj/emsdk/issues/138).
