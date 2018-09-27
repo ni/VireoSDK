@@ -608,7 +608,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
     vi->SetEventInfo(eventInfo);
 }
 
-void ConfigureEventSpecForJSRef(VirtualInstrument *vi, UInt32 eventStructIndex, UInt32 eventSpecIndex, JavaScriptRefNum jsReference) {
+void ConfigureEventSpecForJSRef(VirtualInstrument *vi, Int32 eventStructIndex, Int32 eventSpecIndex, JavaScriptRefNum jsReference) {
     TypedObjectRef eventStructSpecsRef = vi->EventSpecs();
     Int32 numEventStructs = eventStructSpecsRef->ElementType()->SubElementCount();
     EventInfo *eventInfo = vi->GetEventInfo();
@@ -1210,10 +1210,10 @@ VIREO_FUNCTION_SIGNATURE3(_OccurEvent, RefNumVal, UInt32, UInt32)
     return _NextInstruction();
 }
 
-VIREO_FUNCTION_SIGNATURE3(ConfigureEventSpecJSRef, UInt32, UInt32, JavaScriptRefNum)
+VIREO_FUNCTION_SIGNATURE3(ConfigureEventSpecJSRef, Int32, Int32, JavaScriptRefNum)
 {
-    UInt32 eventStructIndex = _Param(0);
-    UInt32 eventSpecIndex = _Param(1);
+    Int32 eventStructIndex = _Param(0);
+    Int32 eventSpecIndex = _Param(1);
     JavaScriptRefNum jsRefNum = _Param(2);
     VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
     ConfigureEventSpecForJSRef(owningVI, eventStructIndex, eventSpecIndex, jsRefNum);
@@ -1294,8 +1294,8 @@ DEFINE_VIREO_BEGIN(Events)
     DEFINE_VIREO_FUNCTION(WaitForEventsAndDispatch, "p(i(VarArgCount) i(Int32 timeOut) i(StaticTypeAndData ref) i(Int32 esIndex) "
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
 
-    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(JavaScriptRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
-    DEFINE_VIREO_FUNCTION(ConfigureEventSpecJSRef, "p(i(UInt32 eStructIndex) i(UInt32 eSpecIndex) i(JavaScriptRefNum jsReference))")
+    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(ControlRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
+    DEFINE_VIREO_FUNCTION(ConfigureEventSpecJSRef, "p(i(Int32 eStructIndex) i(Int32 eSpecIndex) i(JavaScriptRefNum jsReference))")
     DEFINE_VIREO_FUNCTION(RegisterForJSEvent, "p(i(JavaScriptRefNum jsReference) i(UInt32 eType))")
 
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAUserEventRefnum, "p(i(UserEventRefNum) o(Boolean))")
