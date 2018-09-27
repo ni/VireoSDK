@@ -555,7 +555,8 @@ void GetVIName(VirtualInstrument *vi, StringRef viName) {
     viName->AppendSubString(&encodedSubstr);
 }
 
-void RegisterForControlEvent(EventInfo *eventInfo, EventSpec eventSpec, StringRef viName, EventQueueID qID, UInt32 controlID, RefNum reference, bool registerControlEvent) {
+void RegisterForControlEvent(EventInfo *eventInfo, EventSpec eventSpec, StringRef viName, EventQueueID qID, UInt32 controlID, RefNum reference,
+                        bool registerControlEvent) {
     EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
     EventType eventType = eventSpec.eventType;
     EventSource eSource = eventSpec.eventSource;
@@ -624,7 +625,6 @@ void ConfigureEventSpecForJSRef(VirtualInstrument *vi, UInt32 eventStructIndex, 
                 StringRef viName = viNameVar.Value;
                 GetVIName(vi, viName);
 
-                eventInfo->controlRefNumMap[controlID] = jsReference;
                 eventSpecRef[eventSpecIndex].eventControlRef = jsReference;
                 RegisterForControlEvent(eventInfo, eventSpecRef[eventSpecIndex], viName, qID, controlID, jsReference, false);
             }
@@ -654,17 +654,6 @@ void UnregisterForStaticEvents(VirtualInstrument *vi) {
                 if (controlRef) {
                     EventInfo::ControlIDInfoMap::iterator ciIter = eventInfo->controlIDInfoMap.find(controlRef);
                     EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
-                    if (ciIter == eventInfo->controlIDInfoMap.end()) {
-                        // If we couldn't find the control ref in the controlIDInfoMap it means we're
-                        // likely using a JavaScriptRefNum, which we can look up in the controlRefNumMap
-                        EventControlUID controlID = (EventControlUID)controlRef;
-                        controlRef = 0;
-                        EventInfo::ControlRefNumMap::iterator cRefIter = eventInfo->controlRefNumMap.find(controlID);
-                        if (cRefIter != eventInfo->controlRefNumMap.end()) {
-                            controlRef = cRefIter->second;
-                            ciIter = eventInfo->controlIDInfoMap.find(controlRef);
-                        }
-                    }
 
                     if (ciIter != eventInfo->controlIDInfoMap.end()) {
                         eventOracleIdx = ciIter->second.eventOracleIndex;

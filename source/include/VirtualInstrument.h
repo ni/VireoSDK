@@ -59,11 +59,9 @@ struct EventControlInfo {
 
 struct EventInfo {
     typedef std::map<RefNum, EventControlInfo> ControlIDInfoMap;
-    typedef std::map<EventControlUID, RefNum> ControlRefNumMap;
 
     EventStructInfo *eventStructInfo;
     ControlIDInfoMap controlIDInfoMap;
-    ControlRefNumMap controlRefNumMap;
 
     EventInfo() : eventStructInfo(nullptr) { }
     explicit EventInfo(Int32 numEventStruct) : eventStructInfo(nullptr) { eventStructInfo = new EventStructInfo[numEventStruct]; }
