@@ -172,7 +172,10 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_TypeRef_IsTimestamp',\
     '_TypeRef_IsComplex',\
     '_TypeRef_IsAnalogWaveform',\
-    '_JavaScriptInvoke_GetParameterType',\
+    '_TypeRef_IsJavascriptRefnum',\
+    '_JavaScriptInvoke_GetParameterTypeName',\
+    '_JavaScriptInvoke_GetParameterTypeRef',\
+    '_JavaScriptInvoke_GetParameterDataRef',\
     '_JavaScriptInvoke_GetParameterPointer',\
     '_JavaScriptInvoke_GetArrayElementType',\
     '_TypeRef_Rank',\

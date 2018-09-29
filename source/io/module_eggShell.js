@@ -51,6 +51,15 @@ var assignEggShell;
         publicAPI.eggShell = {};
 
         // Private Instance Variables (per vireo instance)
+
+        Module.eggShell.readJavaScriptRefNum = function (valueRef) {
+            return Module.javaScriptInvoke.dataReadJavaScriptRefNum(valueRef);
+        };
+
+        Module.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
+            return Module.javaScriptInvoke.dataWriteJavaScriptRefNum(valueRef, data);
+        };
+
         var NULL = 0;
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
@@ -186,7 +195,7 @@ var assignEggShell;
 
         Module.eggShell.createValueRef = function (typeRef, dataRef) {
             if (typeof typeRef !== 'number' || typeof dataRef !== 'number' ||
-                typeRef <= 0 || dataRef <= 0) {
+                (typeRef <= 0 && dataRef <= 0)) {
                 return undefined;
             }
             return Object.freeze({
@@ -574,7 +583,6 @@ var assignEggShell;
             if (totalLength !== arrayTotalLength) {
                 throw new Error('TypedArray total length must be ' + arrayTotalLength + ' instead got ' + totalLength);
             }
-
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
             typedArray.set(typedArrayValue);
