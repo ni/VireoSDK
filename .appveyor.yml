@@ -67,3 +67,38 @@ deploy:
       secure: O5sZ6nRPlF2WbhTUSvrSTou7s6Pdg7G4PClfzvlGTU2XGwErDYRNyayAsUzjFsTl
     on:	
       appveyor_repo_tag: true
+notifications:
+  - provider: Webhook
+    url: https://outlook.office.com/webhook/6ee4efaa-986e-4b8e-8d6b-cfa47c89f4b0@87ba1f9a-44cd-43a6-b008-6fdb45a5204e/IncomingWebhook/48bf1f46af764a2ea8cb38acd029bb5a/0ad415e3-d66a-425c-9914-e9e52f2b81e1
+    on_build_success: false
+    on_build_failure: true
+    on_build_status_changed: true
+    body: >-
+      {
+        "title": "AppVeyor Build {{#passed}}passed{{/passed}}{{#failed}}failed{{/failed}}",
+        "summary": "Build {{projectName}} {{buildVersion}} {{status}}",
+        "themeColor": "{{#passed}}00FF00{{/passed}}{{#failed}}FF0000{{/failed}}",
+        "sections": [
+            {
+                "activityTitle": "{{commitAuthor}} on {{commitDate}} ( {{repositoryProvider}}/{{repositoryName}} )",
+                "activityText": "[Build {{projectName}} {{buildVersion}} {{status}}]({{buildUrl}})"
+            },
+            {
+                "title": "Details",
+                "facts": [
+                    {
+                        "name": "Commit",
+                        "value": "[{{commitId}} by {{commitAuthor}} on {{branch}} at {{commitDate}}]({{commitUrl}})"
+                    },
+                    {
+                        "name": "Message",
+                        "value": "{{commitMessage}}"
+                    },
+                    {
+                        "name": "Duration",
+                        "value": "{{duration}} ({{started}} - {{finished}})"
+                    }
+                ]
+            }
+        ]
+      }
