@@ -152,25 +152,15 @@ var assignJavaScriptInvoke;
                 return Module.eggShell.readDouble(valueRef);
             };
 
-            var visitNumeric64 = function (valueRef) {
-                return JSON.parse(Module.eggShell.readJSON(valueRef));
-            };
-
             return {
                 visitInt8: visitNumeric,
                 visitInt16: visitNumeric,
                 visitInt32: visitNumeric,
-                visitInt64: visitNumeric64,
                 visitUInt8: visitNumeric,
                 visitUInt16: visitNumeric,
                 visitUInt32: visitNumeric,
-                visitUInt64: visitNumeric64,
                 visitSingle: visitNumeric,
                 visitDouble: visitNumeric,
-                visitEnum8: visitNumeric,
-                visitEnum16: visitNumeric,
-                visitEnum32: visitNumeric,
-
                 visitBoolean: function (valueRef) {
                     return Module.eggShell.readDouble(valueRef) !== 0;
                 },
@@ -212,10 +202,6 @@ var assignJavaScriptInvoke;
                 visitUInt32: visitNumeric,
                 visitSingle: visitNumeric,
                 visitDouble: visitNumeric,
-                visitEnum8: visitNumeric,
-                visitEnum16: visitNumeric,
-                visitEnum32: visitNumeric,
-
                 visitBoolean: function (valueRef, data) {
                     if (typeof data.userValue !== 'boolean') {
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
