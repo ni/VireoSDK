@@ -1295,6 +1295,7 @@ DEFINE_VIREO_BEGIN(Events)
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
 
     DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(ControlRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
+    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(JavaScriptRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
     DEFINE_VIREO_FUNCTION(ConfigureEventSpecJSRef, "p(i(Int32 eStructIndex) i(Int32 eSpecIndex) i(JavaScriptRefNum jsReference))")
     DEFINE_VIREO_FUNCTION(RegisterForJSEvent, "p(i(JavaScriptRefNum jsReference) i(UInt32 eType))")
 

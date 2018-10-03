@@ -12,6 +12,7 @@ describe('The Vireo Control Event', function () {
     var updateBooleanOnValueChangeEvent = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEvent.via');
     var updateNumericOnValueChangeEvent = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeNumericStaticControlEvent.via');
     var updateMultipleEventStructuresOnValueChange = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEventWithMultipleRegistrations.via');
+    var updateBooleanOnValueChangeEventJavaScriptRefNum = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEventJavaScriptRefNum.via');
 
     var getEventDataValueRef = function (viName, controlName) {
         return vireo.eggShell.findValueRef(viName, 'valueChangedEventData' + controlName);
@@ -47,7 +48,8 @@ describe('The Vireo Control Event', function () {
             valueChangedMultipleEventRegisterAndUnregister,
             updateBooleanOnValueChangeEvent,
             updateNumericOnValueChangeEvent,
-            updateMultipleEventStructuresOnValueChange
+            updateMultipleEventStructuresOnValueChange,
+            updateBooleanOnValueChangeEventJavaScriptRefNum
         ], done);
     });
 
@@ -58,6 +60,11 @@ describe('The Vireo Control Event', function () {
         });
         vireo.eventHelpers.setUnRegisterForControlEventsFunction(function () {
             // no-op
+        });
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            GetJSRef: function () {
+                return 5;
+            }
         });
     });
 
@@ -217,6 +224,27 @@ describe('The Vireo Control Event', function () {
             expect(viPathParser('eventOccurred')).toEqual(true);
             expect(viPathParser('oldValueInEvent')).toEqual(oldValue);
             expect(viPathParser('newValueInEvent')).toEqual(newValue);
+            expect(viPathParser('eventTimedOut')).toEqual(false);
+            done();
+        });
+    });
+
+    it('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventJavaScriptRefNum);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
+
+        setTimeout(function () {
+            const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent', 'Bool');
+            const data = {
+                OldValue: false,
+                NewValue: true
+            };
+            vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
+        }, 20);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('eventOccurred')).toEqual(true);
             expect(viPathParser('eventTimedOut')).toEqual(false);
             done();
         });
