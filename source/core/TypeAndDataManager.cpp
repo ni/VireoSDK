@@ -128,16 +128,15 @@ size_t gAllocNumWatch = 0;
 void* TypeManager::Malloc(size_t countAQ)
 {
     VIREO_ASSERT(countAQ != 0);
+    size_t allocationCount = 1;
+
+#ifdef VIREO_TRACK_MEMORY_QUANTITY
     if ((_totalAQAllocated + countAQ) > _allocationLimit) {
         _totalAllocationFailures++;
         THREAD_EXEC()->ClearBreakout();
         gPlatform.IO.Print("Exceeded allocation limit\n");
         return nullptr;
     }
-
-    size_t allocationCount = 1;
-
-#ifdef VIREO_TRACK_MEMORY_QUANTITY
     // Task is charged size of MallocInfo
     countAQ += sizeof(MallocInfo);
     allocationCount = countAQ;
@@ -157,8 +156,13 @@ void* TypeManager::Malloc(size_t countAQ)
 #endif
         pBuffer = (MallocInfo*)pBuffer + 1;
 #endif
+        return pBuffer;
+    } else {
+        _totalAllocationFailures++;
+        THREAD_EXEC()->ClearBreakout();
+        gPlatform.IO.Printf("Failed to perform allocation: %5zu\n", countAQ);
+        return nullptr;
     }
-    return pBuffer;
 }
 //------------------------------------------------------------
 //! Private static Realloc used by TM.

@@ -31,9 +31,31 @@
             loadErrorOccurred = true;
         }
 
+        // If a cb is provided we will execute the cb when finished running, cannot detect runtime failures (deprecated)
+        // If a cb is not provided we will return a Promise that can detect runtime failures. Should be used for new tests.
         var runSlicesAsync = function (cb) {
-            // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
-            expect(typeof cb).toBe('function');
+            if (cb !== undefined && typeof cb !== 'function') {
+                throw new Error('runSlicesAsync must be called without parameters when using Promises or with a callback if using deprecated behaviors');
+            }
+
+            if (cb === undefined) {
+                return new Promise(function (resolve, reject) {
+                    if (loadErrorOccurred) {
+                        resolve({rawPrint, rawPrintError});
+                    } else {
+                        vireo.eggShell.executeSlicesUntilClumpsFinished()
+                            .then(function () {
+                                resolve({rawPrint, rawPrintError});
+                            })
+                            .catch(function (ex) {
+                                // Mutating the error is not great, used specifically for tests crashing the runtime in certain conditions
+                                ex.rawPrint = rawPrint;
+                                ex.rawPrintError = rawPrintError;
+                                reject(ex);
+                            });
+                    }
+                });
+            }
 
             var complete = function () {
                 cb(rawPrint, rawPrintError);
@@ -44,6 +66,8 @@
             } else {
                 vireo.eggShell.executeSlicesUntilClumpsFinished().then(complete);
             }
+
+            return undefined;
         };
 
         return runSlicesAsync;

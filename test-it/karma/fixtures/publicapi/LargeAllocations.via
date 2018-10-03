@@ -1,0 +1,13 @@
+
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        ce(dv(.Double 0) doubleValue)
+        e(a(.Double *) arrayOut)
+        e(a(.Double *) arrayOut2)
+    )
+    clump(1
+        // Make an array of size 2GB / 8 bytes per double = 268435456
+        ArrayFillNDV(arrayOut doubleValue 268435456)
+    )
+)))
+enqueue (MyVI)

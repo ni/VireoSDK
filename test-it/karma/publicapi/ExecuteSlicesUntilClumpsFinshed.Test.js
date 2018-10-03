@@ -2,9 +2,11 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
     'use strict';
 
     var vireoHelpers = window.vireoHelpers;
+    var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
     var publicApiExecuteManyHTTPGetUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ExecuteManyHTTPGet.via');
     var publicApiExecuteLongWaitUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ExecuteLongWait.via');
+    var publicApiLargeAllocationUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/LargeAllocations.via');
 
     var XHRShimResolveImmediatelyAsync = function () {
         var noop = function () {
@@ -39,7 +41,8 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             publicApiExecuteManyHTTPGetUrl,
-            publicApiExecuteLongWaitUrl
+            publicApiExecuteLongWaitUrl,
+            publicApiLargeAllocationUrl
         ], done);
     });
 
@@ -102,5 +105,13 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
             expect(internalModule.eggShell.executeSlicesUntilWait.calls.count()).toBeNear(maxExecuteSlicesCalls, maxExecuteSlicesCalls * 10);
             done();
         });
+    });
+
+    it('reports error when the Vireo runtime stops execution', async function () {
+        const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiLargeAllocationUrl);
+
+        const {rawPrint, rawPrintError} = await runSlicesAsync();
+        expect(rawPrint).toMatch(/Failed to perform allocation/);
+        expect(rawPrintError).toBeEmptyString();
     });
 });
