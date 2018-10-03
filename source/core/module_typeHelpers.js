@@ -268,6 +268,7 @@ var assignTypeHelpers;
 
         var typeHandlers = [
             {
+                // JSObjectRefnum is Integer, so it should be before Integer
                 typeChecker: Module.typeHelpers.isJSObjectRefnum,
                 dispatcher: dispatchVisitJSObjectRefnum
             },

@@ -45,40 +45,6 @@ StringRef AllocateReturnBuffer()
 }
 
 //------------------------------------------------------------
-//! Return parameter type name for the given element(index) in the parameters array
-VIREO_EXPORT const char* JavaScriptInvoke_GetParameterTypeName(StaticTypeAndData *parameters, Int32 index)
-{
-    TypeRef parameterType = parameters[index]._paramType;
-    StringRef returnBuffer = AllocateReturnBuffer();
-
-    if (returnBuffer) {
-        SubString typeName = parameterType->Name();
-        returnBuffer->Append(typeName.Length(), (Utf8Char*)typeName.Begin());
-
-        // Add an explicit nullptr terminator so it looks like a C string.
-        returnBuffer->Append((Utf8Char)'\0');
-        return (const char*)returnBuffer->Begin();
-    }
-
-    return nullptr;
-}
-
-VIREO_EXPORT const char* JavaScriptInvoke_GetArrayElementType(TypedArrayCoreRef arrayObject)
-{
-    StringRef returnBuffer = AllocateReturnBuffer();
-    if (returnBuffer) {
-        SubString elementTypeName = arrayObject->ElementType()->Name();
-        returnBuffer->Append(elementTypeName.Length(), (Utf8Char*)elementTypeName.Begin());
-
-        // Add an explicit nullptr terminator so it looks like a C string.
-        returnBuffer->Append((Utf8Char)'\0');
-        return (const char*)returnBuffer->Begin();
-    }
-
-    return nullptr;
-}
-
-//------------------------------------------------------------
 //! Return dataRef of the parameter that is at the given index in the parameters array
 VIREO_EXPORT void* JavaScriptInvoke_GetParameterDataRef(StaticTypeAndData *parameters, Int32 index)
 {

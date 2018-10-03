@@ -43,11 +43,8 @@ var assignJavaScriptInvoke;
     assignJavaScriptInvoke = function (Module, publicAPI) {
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-            'JavaScriptInvoke_GetParameterPointer',
-            'JavaScriptInvoke_GetParameterTypeName',
             'JavaScriptInvoke_GetParameterTypeRef',
             'JavaScriptInvoke_GetParameterDataRef',
-            'JavaScriptInvoke_GetArrayElementType',
             'Data_ReadJavaScriptRefNum',
             'Data_WriteJavaScriptRefNum'
         ]}], */
@@ -57,14 +54,24 @@ var assignJavaScriptInvoke;
 
         // Private Instance Variables (per vireo instance)
         var internalFunctionsMap = new Map();
-        var JavaScriptInvoke_GetParameterTypeRef = Module.cwrap('JavaScriptInvoke_GetParameterTypeRef', 'number', ['number', 'number']);
-        var JavaScriptInvoke_GetParameterDataRef = Module.cwrap('JavaScriptInvoke_GetParameterDataRef', 'number', ['number', 'number']);
-        var Data_ReadJavaScriptRefNum = Module.cwrap('Data_ReadJavaScriptRefNum', 'number', ['number']);
-        var Data_WriteJavaScriptRefNum = Module.cwrap('Data_WriteJavaScriptRefNum', 'void', ['number', 'number']);
+        var JavaScriptInvoke_GetParameterTypeRef = function (pointerArray, index) {
+            return Module._JavaScriptInvoke_GetParameterTypeRef(pointerArray, index);
+        };
+        var JavaScriptInvoke_GetParameterDataRef = function (pointerArray, index) {
+            return Module._JavaScriptInvoke_GetParameterDataRef(pointerArray, index);
+        };
+        var Data_ReadJavaScriptRefNum = function (jsRefnumDataRef) {
+            return Module._Data_ReadJavaScriptRefNum(jsRefnumDataRef);
+        };
+        var Data_WriteJavaScriptRefNum = function (jsRefnumDataRef, cookie) {
+            return Module._Data_WriteJavaScriptRefNum(jsRefnumDataRef, cookie);
+        };
 
         var mergeNewError = function (errorValueRef, functionName, errorToSet, exception) {
             var newError = {
-                status: true
+                status: true,
+                code: undefined,
+                source: undefined
             };
             newError.source = Module.coreHelpers.formatMessageWithException(errorToSet.MESSAGE + '\nfunction: ' + functionName, exception);
             newError.source = Module.coreHelpers.createSourceFromMessage(newError.source);
@@ -115,12 +122,12 @@ var assignJavaScriptInvoke;
             return jsRefNumCookieCounter;
         };
 
-        Module.javaScriptInvoke.dataReadJavaScriptRefNum = function (javaScriptValueRef) {
+        Module.javaScriptInvoke.readJavaScriptRefNum = function (javaScriptValueRef) {
             var cookie = Data_ReadJavaScriptRefNum(javaScriptValueRef.dataRef);
             return jsRefNumToJsValueMap.get(cookie);
         };
 
-        Module.javaScriptInvoke.dataWriteJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
+        Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
             var cookie = Data_ReadJavaScriptRefNum(javaScriptValueRef.dataRef);
             if (hasCachedRefNum(cookie)) { // refnum was already set to something
                 if (getCachedJsValue(cookie) !== jsValue) {
@@ -140,17 +147,7 @@ var assignJavaScriptInvoke;
             cacheRefNum(newCookie, jsValue);
         };
 
-        var jsInvokePeeker = function () {
-            var PeekVisitor = function () {
-                // Nothing here. Refer prototype
-            };
-
-            var proto = PeekVisitor.prototype;
-
-            proto.visitBoolean = function (valueRef) {
-                return Module.eggShell.readDouble(valueRef) !== 0;
-            };
-
+        var createJavaScriptInvokePeeker = function () {
             var visitNumeric = function (valueRef) {
                 return Module.eggShell.readDouble(valueRef);
             };
@@ -159,115 +156,106 @@ var assignJavaScriptInvoke;
                 return JSON.parse(Module.eggShell.readJSON(valueRef));
             };
 
-            proto.visitInt8 = visitNumeric;
-            proto.visitInt16 = visitNumeric;
-            proto.visitInt32 = visitNumeric;
-            proto.visitInt64 = visitNumeric64;
-            proto.visitUInt8 = visitNumeric;
-            proto.visitUInt16 = visitNumeric;
-            proto.visitUInt32 = visitNumeric;
-            proto.visitUInt64 = visitNumeric64;
-            proto.visitSingle = visitNumeric;
-            proto.visitDouble = visitNumeric;
-            proto.visitEnum8 = visitNumeric;
-            proto.visitEnum16 = visitNumeric;
-            proto.visitEnum32 = visitNumeric;
+            return {
+                visitInt8: visitNumeric,
+                visitInt16: visitNumeric,
+                visitInt32: visitNumeric,
+                visitInt64: visitNumeric64,
+                visitUInt8: visitNumeric,
+                visitUInt16: visitNumeric,
+                visitUInt32: visitNumeric,
+                visitUInt64: visitNumeric64,
+                visitSingle: visitNumeric,
+                visitDouble: visitNumeric,
+                visitEnum8: visitNumeric,
+                visitEnum16: visitNumeric,
+                visitEnum32: visitNumeric,
 
-            proto.visitString = function (valueRef) {
-                return Module.eggShell.readString(valueRef);
-            };
+                visitBoolean: function (valueRef) {
+                    return Module.eggShell.readDouble(valueRef) !== 0;
+                },
 
-            proto.visitArray = function (valueRef) {
-                return Module.eggShell.readTypedArray(valueRef);
-            };
+                visitString: function (valueRef) {
+                    return Module.eggShell.readString(valueRef);
+                },
 
-            proto.visitJSObjectRefnum = function (valueRef) {
-                return Module.eggShell.readJavaScriptRefNum(valueRef);
-            };
+                visitArray: function (valueRef) {
+                    return Module.eggShell.readTypedArray(valueRef);
+                },
 
-            var peekVisitor = new PeekVisitor();
-
-            return function (valueRef) {
-                return Module.eggShell.reflectOnValueRef(peekVisitor, valueRef);
+                visitJSObjectRefnum: function (valueRef) {
+                    return Module.eggShell.readJavaScriptRefNum(valueRef);
+                }
             };
         };
 
-        var peekValueRef = jsInvokePeeker();
+        var jsInvokePeeker = createJavaScriptInvokePeeker();
+        var peekValueRef = function (valueRef) {
+            return Module.eggShell.reflectOnValueRef(jsInvokePeeker, valueRef);
+        };
 
-        var jsInvokePoker = function () {
-            var PokeVisitor = function () {
-                // Nothing here. Refer prototype
-            };
-
-            var proto = PokeVisitor.prototype;
-
-            proto.visitBoolean = function (valueRef, data) {
-                if (typeof data.userValue !== 'boolean') {
-                    mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
-                    return;
-                }
-                Module.eggShell.writeDouble(valueRef, data.userValue ? 1 : 0);
-            };
-
+        var createJavaScriptInvokePoker = function () {
             var visitNumeric = function (valueRef, data) {
-                // TODO-san anything to do for this?
-                // Looks like the data-grid ends up pushing the string value "-Infinity"
-                // instead of the numeric value -Infinity to the model so perform parseFloat
-                // in-case a string is passed instead of a number
                 if (typeof data.userValue !== 'number') {
                     mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
                     return;
                 }
-                var dataNum = parseFloat(data.userValue);
-                Module.eggShell.writeDouble(valueRef, dataNum);
+                Module.eggShell.writeDouble(valueRef, data.userValue);
             };
 
-            proto.visitInt8 = visitNumeric;
-            proto.visitInt16 = visitNumeric;
-            proto.visitInt32 = visitNumeric;
-            proto.visitUInt8 = visitNumeric;
-            proto.visitUInt16 = visitNumeric;
-            proto.visitUInt32 = visitNumeric;
-            proto.visitSingle = visitNumeric;
-            proto.visitDouble = visitNumeric;
-            proto.visitEnum8 = visitNumeric;
-            proto.visitEnum16 = visitNumeric;
-            proto.visitEnum32 = visitNumeric;
+            return {
+                visitInt8: visitNumeric,
+                visitInt16: visitNumeric,
+                visitInt32: visitNumeric,
+                visitUInt8: visitNumeric,
+                visitUInt16: visitNumeric,
+                visitUInt32: visitNumeric,
+                visitSingle: visitNumeric,
+                visitDouble: visitNumeric,
+                visitEnum8: visitNumeric,
+                visitEnum16: visitNumeric,
+                visitEnum32: visitNumeric,
 
-            proto.visitString = function (valueRef, data) {
-                if (typeof data.userValue !== 'string') {
-                    mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
-                    return;
+                visitBoolean: function (valueRef, data) {
+                    if (typeof data.userValue !== 'boolean') {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                        return;
+                    }
+                    Module.eggShell.writeDouble(valueRef, data.userValue ? 1 : 0);
+                },
+
+                visitString: function (valueRef, data) {
+                    if (typeof data.userValue !== 'string') {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                        return;
+                    }
+                    Module.eggShell.writeString(valueRef, data.userValue);
+                },
+
+                visitArray: function (valueRef, data) {
+                    try {
+                        Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
+                        Module.eggShell.writeTypedArray(valueRef, data.userValue);
+                    } catch (ex) {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke, ex);
+                    }
+                },
+
+                visitJSObjectRefnum: function (valueRef, data) {
+                    try {
+                        Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
+                    } catch (ex) {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
+                    }
                 }
-                Module.eggShell.writeString(valueRef, data.userValue);
-            };
-
-            proto.visitArray = function (valueRef, data) {
-                try {
-                    Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
-                    Module.eggShell.writeTypedArray(valueRef, data.userValue);
-                    return;
-                } catch (ex) {
-                    mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke, ex);
-                }
-            };
-
-            proto.visitJSObjectRefnum = function (valueRef, data) {
-                try {
-                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
-                } catch (ex) {
-                    mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
-                }
-            };
-
-            var pokeVisitor = new PokeVisitor();
-
-            return function (valueRef, data) {
-                return Module.eggShell.reflectOnValueRef(pokeVisitor, valueRef, data);
             };
         };
 
-        var pokeValueRef = jsInvokePoker();
+        var jsInvokePoker = createJavaScriptInvokePoker();
+
+        var pokeValueRef = function (valueRef, data) {
+            return Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
+        };
 
         var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
             if (isInternalFunction) {
@@ -301,13 +289,13 @@ var assignJavaScriptInvoke;
         };
 
         var createJavaScriptParametersArray = function (isInternalFunction, parametersPointer, parametersCount) {
-            var parameters = new Array(parametersCount);
+            var parameters = [];
             for (var index = 0; index < parametersCount; index += 1) {
                 var parameterValueRef = createValueRefFromPointerArray(parametersPointer, index);
-                if (!isInternalFunction) {
-                    parameters[index] = peekValueRef(parameterValueRef);
-                } else {
+                if (isInternalFunction) {
                     parameters[index] = parameterValueRef;
+                } else {
+                    parameters[index] = peekValueRef(parameterValueRef);
                 }
             }
             return parameters;
@@ -325,7 +313,7 @@ var assignJavaScriptInvoke;
         };
 
         var updateReturnValue = function (functionName, returnValueRef, returnUserValue, errorValueRef) {
-            if (returnValueRef.dataRef === 0) {
+            if (returnValueRef === undefined) {
                 // User doesn't want to return value. We get here, if we're passing '*' for return parameter in VIA code
                 return;
             }
@@ -402,10 +390,6 @@ var assignJavaScriptInvoke;
             });
         };
 
-        var shouldUpdateReturnValue = function (isInternalFunction, returnTypeRef) {
-            return !isInternalFunction || Module.typeHelpers.isJSObjectRefnum(returnTypeRef);
-        };
-
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
             occurrencePointer,
             functionNamePointer,
@@ -417,11 +401,10 @@ var assignJavaScriptInvoke;
             errorDataRef) {
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var functionName = Module.eggShell.dataReadString(functionNamePointer);
-            var parameters = new Array(0);
+            var parameters = [];
 
             var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
-            var shouldReturnValueBeUpdated = shouldUpdateReturnValue(isInternalFunction, returnValueRef.typeRef);
-            if (!shouldReturnValueBeUpdated) {
+            if (isInternalFunction) {
                 parameters = parameters.concat(returnValueRef);
             }
 
@@ -470,7 +453,7 @@ var assignJavaScriptInvoke;
 
             // assume synchronous invocation since the completion callback was never retrieved
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
-                if (shouldReturnValueBeUpdated) {
+                if (!isInternalFunction) {
                     tryUpdateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus);
                 }
                 Module.eggShell.setOccurrence(occurrencePointer);
