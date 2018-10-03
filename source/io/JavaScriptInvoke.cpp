@@ -24,7 +24,7 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     // JavaScript function prototypes
-    extern void jsJavaScriptInvoke(OccurrenceRef occurrence, StringRef functionName, void *returnValue, void *parameters, Int32 parametersCount,
+    extern void jsJavaScriptInvoke(OccurrenceRef occurrence, TypeRef functionNameTypeRef, StringRef *functionNameDataRef, void *returnValue, void *parameters, Int32 parametersCount,
                                     Boolean isInternalFunction, TypeRef errorClusterType, ErrorCluster* errorClusterData);
 }
 #endif
@@ -89,7 +89,7 @@ struct JavaScriptInvokeParamBlock : public VarArgInstruction
     _ParamDef(OccurrenceRef, occurrence);
     _ParamDef(Boolean, isInternalFunction);
     _ParamDef(ErrorCluster, errorCluster);
-    _ParamDef(StringRef, functionName);
+    _ParamDef(StringRef, FunctionName);
     _ParamImmediateDef(StaticTypeAndData, returnValue[1]);
     _ParamImmediateDef(StaticTypeAndData, parameters[1]);
     NEXT_INSTRUCTION_METHODV()
@@ -110,13 +110,14 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
     if (!pObserver) {
-        StringRef functionName = _Param(functionName);
+        StringRef functionName = _Param(FunctionName);
         Boolean isInternalFunction = _Param(isInternalFunction);
         const Int32 configurationParameters = 4;  // occurrence, isInternalFunction, errorCluster and functionName
         const Int32 staticTypeAndDataParameters = 2;  // Two parameters are inserted, one for type another for data. See StaticTypeAndData definition.
         Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
         StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
         StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
+        TypeRef typeRefString = TypeManagerScope::Current()->FindType(tsStringType);
 
         bool shouldInvoke = errorClusterPtr == nullptr ? true : !errorClusterPtr->status;
 
@@ -125,7 +126,8 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
             pOcc->InsertObserver(pObserver + 1, pOcc->Count() + 1);
             jsJavaScriptInvoke(
                 _Param(occurrence),
-                functionName,
+                _Param(FunctionName)->Type(),
+                _ParamPointer(FunctionName),
                 returnValuePtr,
                 parametersPtr,
                 userParametersCount,

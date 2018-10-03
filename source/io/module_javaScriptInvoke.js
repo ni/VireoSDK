@@ -392,7 +392,8 @@ var assignJavaScriptInvoke;
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
             occurrencePointer,
-            functionNamePointer,
+            functionNameTypeRef,
+            functionNameDataRef,
             returnPointer,
             parametersPointer,
             parametersCount,
@@ -400,7 +401,8 @@ var assignJavaScriptInvoke;
             errorTypeRef,
             errorDataRef) {
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
-            var functionName = Module.eggShell.dataReadString(functionNamePointer);
+            var functionNameValueRef = Module.eggShell.createValueRef(functionNameTypeRef, functionNameDataRef);
+            var functionName = Module.eggShell.readString(functionNameValueRef);
             var parameters = [];
 
             var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
