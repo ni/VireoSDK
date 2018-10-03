@@ -50,8 +50,6 @@ var assignEggShell;
         Module.eggShell = {};
         publicAPI.eggShell = {};
 
-        // Private Instance Variables (per vireo instance)
-
         Module.eggShell.readJavaScriptRefNum = publicAPI.eggShell.readJavaScriptRefNum = function (valueRef) {
             return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
         };
@@ -59,6 +57,8 @@ var assignEggShell;
         Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
             return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
         };
+
+        // Private Instance Variables (per vireo instance)
 
         var NULL = 0;
         var POINTER_SIZE = 4;
