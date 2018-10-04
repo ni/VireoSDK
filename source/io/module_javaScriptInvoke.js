@@ -185,6 +185,15 @@ var assignJavaScriptInvoke;
         };
 
         var createJavaScriptInvokePoker = function () {
+            var callVisitFuncAndSetError = function (fn) {
+                return function (valueRef, data) {
+                    try {
+                        fn(valueRef, data);
+                    } catch (ex) {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
+                    }
+                };
+            };
             var visitNumeric = function (valueRef, data) {
                 if (typeof data.userValue !== 'number') {
                     mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
@@ -194,53 +203,49 @@ var assignJavaScriptInvoke;
             };
 
             return {
-                visitInt8: visitNumeric,
-                visitInt16: visitNumeric,
-                visitInt32: visitNumeric,
-                visitUInt8: visitNumeric,
-                visitUInt16: visitNumeric,
-                visitUInt32: visitNumeric,
-                visitSingle: visitNumeric,
-                visitDouble: visitNumeric,
-                visitBoolean: function (valueRef, data) {
+                visitInt8: callVisitFuncAndSetError(visitNumeric),
+                visitInt16: callVisitFuncAndSetError(visitNumeric),
+                visitInt32: callVisitFuncAndSetError(visitNumeric),
+                visitUInt8: callVisitFuncAndSetError(visitNumeric),
+                visitUInt16: callVisitFuncAndSetError(visitNumeric),
+                visitUInt32: callVisitFuncAndSetError(visitNumeric),
+                visitSingle: callVisitFuncAndSetError(visitNumeric),
+                visitDouble: callVisitFuncAndSetError(visitNumeric),
+                visitBoolean: callVisitFuncAndSetError(function (valueRef, data) {
                     if (typeof data.userValue !== 'boolean') {
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
                         return;
                     }
                     Module.eggShell.writeDouble(valueRef, data.userValue ? 1 : 0);
-                },
+                }),
 
-                visitString: function (valueRef, data) {
+                visitString: callVisitFuncAndSetError(function (valueRef, data) {
                     if (typeof data.userValue !== 'string') {
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
                         return;
                     }
                     Module.eggShell.writeString(valueRef, data.userValue);
-                },
+                }),
 
-                visitArray: function (valueRef, data) {
+                visitArray: callVisitFuncAndSetError(function (valueRef, data) {
                     if (!Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.userValue)) {
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
                         return;
                     }
                     Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
                     Module.eggShell.writeTypedArray(valueRef, data.userValue);
-                },
+                }),
 
-                visitJSObjectRefnum: function (valueRef, data) {
+                visitJSObjectRefnum: callVisitFuncAndSetError(function (valueRef, data) {
                     Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
-                }
+                })
             };
         };
 
         var jsInvokePoker = createJavaScriptInvokePoker();
 
         var pokeValueRef = function (valueRef, data) {
-            try {
-                Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
-            } catch (ex) {
-                mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
-            }
+            Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
         };
 
         var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
@@ -397,7 +402,6 @@ var assignJavaScriptInvoke;
             }
 
             try {
-                // Array.prototype.push.apply(parameters, addToJavaScriptParametersArray (isInternalFunction, parametersPointer, parametersCount));
                 addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
             } catch (ex) {
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke, ex);

@@ -47,7 +47,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('internal function successfully sets error and return value is unset', function (done) { // TODO
+    it('internal function successfully sets error and return value is unset', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
