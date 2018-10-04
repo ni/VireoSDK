@@ -274,7 +274,7 @@ var assignJavaScriptInvoke;
             };
         };
 
-        var addToJavaScriptParametersArray  = function (parameters, isInternalFunction, parametersPointer, parametersCount) {
+        var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount) {
             var parametersArraySize = parameters.length;
             for (var index = 0; index < parametersCount; index += 1) {
                 var parameterValueRef = createValueRefFromPointerArray(parametersPointer, index);
@@ -398,7 +398,7 @@ var assignJavaScriptInvoke;
 
             try {
                 // Array.prototype.push.apply(parameters, addToJavaScriptParametersArray (isInternalFunction, parametersPointer, parametersCount));
-                addToJavaScriptParametersArray (parameters, isInternalFunction, parametersPointer, parametersCount);
+                addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
             } catch (ex) {
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke, ex);
                 Module.eggShell.setOccurrence(occurrencePointer);
