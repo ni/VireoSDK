@@ -549,6 +549,7 @@ static inline EventSource GetEventSourceForEventType(EventType eType) {
     return eSource;
 }
 
+// TODO(segaljared): Move this to a more convenient location for general use in the future
 void GetVIName(VirtualInstrument *vi, StringRef viName) {
     PercentEncodedSubString encodedStr(vi->VIName(), true, false);
     SubString encodedSubstr = encodedStr.GetSubString();
