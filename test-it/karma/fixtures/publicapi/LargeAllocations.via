@@ -1,0 +1,13 @@
+
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        ce(dv(.Double 0) doubleValue)
+        e(a(.Double *) arrayOut)
+    )
+    clump(1
+        // Make an array of size 2GB / 8 bytes per double = 268435456
+        // So far no browser supports allocating over 2GB for wasm, we can bump this if it changes in the future
+        ArrayFillNDV(arrayOut doubleValue 268435456)
+    )
+)))
+enqueue (MyVI)
