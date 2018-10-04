@@ -26,10 +26,12 @@ describe('A JavaScript function invoke', function () {
         var called = false;
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunction: function (inputInteger, jsAPI) {
+            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
                 called = true;
                 jsAPI.setLabVIEWError(false, 0, '');
-                return inputInteger + 1;
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
             }
         });
 
@@ -50,9 +52,11 @@ describe('A JavaScript function invoke', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunctionSetsError: function (inputInteger, jsAPI) {
+            NI_InternalFunctionSetsError: function (returnValueRef, inputIntegerValueRef, jsAPI) {
                 jsAPI.setLabVIEWError(true, 777, 'this is the error message');
-                return inputInteger + 1;
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
             }
         });
 
@@ -73,8 +77,10 @@ describe('A JavaScript function invoke', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunctionNoErrorCluster: function (inputInteger) {
-                return inputInteger + 1;
+            NI_InternalFunctionNoErrorCluster: function (returnValueRef, inputIntegerValueRef) {
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
             }
         });
 
@@ -91,9 +97,11 @@ describe('A JavaScript function invoke', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunctionNoErrorClusterSetsError: function (inputInteger, jsAPI) {
+            NI_InternalFunctionNoErrorClusterSetsError: function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
                 jsAPI.setLabVIEWError(true, 777, 'this is the error message');
-                return inputInteger + 1;
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
             }
         });
 

@@ -50,7 +50,16 @@ var assignEggShell;
         Module.eggShell = {};
         publicAPI.eggShell = {};
 
+        Module.eggShell.readJavaScriptRefNum = publicAPI.eggShell.readJavaScriptRefNum = function (valueRef) {
+            return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
+        };
+
+        Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
+            return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
+        };
+
         // Private Instance Variables (per vireo instance)
+
         var NULL = 0;
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
@@ -186,7 +195,7 @@ var assignEggShell;
 
         Module.eggShell.createValueRef = function (typeRef, dataRef) {
             if (typeof typeRef !== 'number' || typeof dataRef !== 'number' ||
-                typeRef <= 0 || dataRef <= 0) {
+                (typeRef <= 0 || dataRef <= 0)) {
                 return undefined;
             }
             return Object.freeze({
@@ -560,6 +569,11 @@ var assignEggShell;
             return typedArray;
         };
 
+        Module.eggShell.isSupportedAndCompatibleArrayType = function (valueRef, typedArrayValue) {
+            var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
+            return (TypedArrayConstructor !== undefined && typedArrayValue instanceof TypedArrayConstructor);
+        };
+
         Module.eggShell.writeTypedArray = publicAPI.eggShell.writeTypedArray = function (valueRef, typedArrayValue) {
             var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
             if (TypedArrayConstructor === undefined || !(typedArrayValue instanceof TypedArrayConstructor)) {
@@ -574,7 +588,6 @@ var assignEggShell;
             if (totalLength !== arrayTotalLength) {
                 throw new Error('TypedArray total length must be ' + arrayTotalLength + ' instead got ' + totalLength);
             }
-
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
             typedArray.set(typedArrayValue);

@@ -43,9 +43,8 @@ var assignJavaScriptInvoke;
     assignJavaScriptInvoke = function (Module, publicAPI) {
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-            'JavaScriptInvoke_GetParameterPointer',
-            'JavaScriptInvoke_GetParameterType',
-            'JavaScriptInvoke_GetArrayElementType',
+            'JavaScriptInvoke_GetParameterTypeRef',
+            'JavaScriptInvoke_GetParameterDataRef',
             'Data_ReadJavaScriptRefNum',
             'Data_WriteJavaScriptRefNum'
         ]}], */
@@ -55,28 +54,36 @@ var assignJavaScriptInvoke;
 
         // Private Instance Variables (per vireo instance)
         var internalFunctionsMap = new Map();
-        var JavaScriptInvoke_GetParameterType = Module.cwrap('JavaScriptInvoke_GetParameterType', 'number', ['number', 'number']);
-        var JavaScriptInvoke_GetParameterPointer = Module.cwrap('JavaScriptInvoke_GetParameterPointer', 'number', ['number', 'number']);
-        var JavaScriptInvoke_GetArrayElementType = Module.cwrap('JavaScriptInvoke_GetArrayElementType', 'number', ['number']);
-        var Data_ReadJavaScriptRefNum = Module.cwrap('Data_ReadJavaScriptRefNum', 'number', ['number']);
-        var Data_WriteJavaScriptRefNum = Module.cwrap('Data_WriteJavaScriptRefNum', 'void', ['number', 'number']);
-
-        var getParameterTypeString = function (parametersPointer, index) {
-            var typeNamePointer = JavaScriptInvoke_GetParameterType(parametersPointer, index);
-            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, typeNamePointer);
-            var typeName = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, typeNamePointer, responseLength);
-            return typeName;
+        var JavaScriptInvoke_GetParameterTypeRef = function (pointerArray, index) {
+            return Module._JavaScriptInvoke_GetParameterTypeRef(pointerArray, index);
+        };
+        var JavaScriptInvoke_GetParameterDataRef = function (pointerArray, index) {
+            return Module._JavaScriptInvoke_GetParameterDataRef(pointerArray, index);
+        };
+        var Data_ReadJavaScriptRefNum = function (jsRefnumDataRef) {
+            return Module._Data_ReadJavaScriptRefNum(jsRefnumDataRef);
+        };
+        var Data_WriteJavaScriptRefNum = function (jsRefnumDataRef, cookie) {
+            return Module._Data_WriteJavaScriptRefNum(jsRefnumDataRef, cookie);
         };
 
-        var getArrayElementTypeString = function (arrayPointer) {
-            var typeNamePointer = JavaScriptInvoke_GetArrayElementType(arrayPointer);
-            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, typeNamePointer);
-            var typeName = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, typeNamePointer, responseLength);
-            return typeName;
+        var mergeNewError = function (errorValueRef, functionName, errorToSet, exception) {
+            var newError = {
+                status: true,
+                code: undefined,
+                source: undefined
+            };
+            newError.source = Module.coreHelpers.formatMessageWithException(errorToSet.MESSAGE + '\nfunction: ' + functionName, exception);
+            newError.source = Module.coreHelpers.createSourceFromMessage(newError.source);
+            newError.code = errorToSet.CODE;
+            Module.coreHelpers.mergeErrors(errorValueRef, newError);
         };
 
-        var isJavaScriptNumber = function (value) {
-            return typeof value === 'number';
+        var createValueRefFromPointerArray = function (pointerArray, index) {
+            var typeRef = JavaScriptInvoke_GetParameterTypeRef(pointerArray, index);
+            var dataRef = JavaScriptInvoke_GetParameterDataRef(pointerArray, index);
+            var returnValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            return returnValueRef;
         };
 
         var jsRefNumToJsValueMap = new Map();
@@ -115,13 +122,13 @@ var assignJavaScriptInvoke;
             return jsRefNumCookieCounter;
         };
 
-        var dataReadJavaScriptRefNum = function (javaScriptRefNumPointer) {
-            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+        Module.javaScriptInvoke.readJavaScriptRefNum = function (javaScriptValueRef) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptValueRef.dataRef);
             return jsRefNumToJsValueMap.get(cookie);
         };
 
-        var dataWriteJavaScriptRefNum = function (javaScriptRefNumPointer, jsValue) {
-            var cookie = Data_ReadJavaScriptRefNum(javaScriptRefNumPointer);
+        Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
+            var cookie = Data_ReadJavaScriptRefNum(javaScriptValueRef.dataRef);
             if (hasCachedRefNum(cookie)) { // refnum was already set to something
                 if (getCachedJsValue(cookie) !== jsValue) {
                     throw new Error('JavaScriptRefNum[' + cookie + '] already set to ' + getCachedJsValue(cookie) + ' and can not be set to new value' + jsValue);
@@ -131,156 +138,114 @@ var assignJavaScriptInvoke;
 
             var cachedCookie = getCachedRefNum(jsValue);
             if (cachedCookie !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
-                Data_WriteJavaScriptRefNum(javaScriptRefNumPointer, cachedCookie); // set the VIA local to be this refnum value
+                Data_WriteJavaScriptRefNum(javaScriptValueRef.dataRef, cachedCookie); // set the VIA local to be this refnum value
                 return;
             }
 
             var newCookie = generateUniqueRefNumCookie();
-            Data_WriteJavaScriptRefNum(javaScriptRefNumPointer, newCookie);
+            Data_WriteJavaScriptRefNum(javaScriptValueRef.dataRef, newCookie);
             cacheRefNum(newCookie, jsValue);
         };
 
-        var typeFunctions = {
-            Int8: {
-                reader: Module.eggShell.dataReadInt8,
-                writer: Module.eggShell.dataWriteInt8,
-                isValidReturnType: isJavaScriptNumber
-            },
-            Int16: {
-                reader: Module.eggShell.dataReadInt16,
-                writer: Module.eggShell.dataWriteInt16,
-                isValidReturnType: isJavaScriptNumber
-            },
-            Int32: {
-                reader: Module.eggShell.dataReadInt32,
-                writer: Module.eggShell.dataWriteInt32,
-                isValidReturnType: isJavaScriptNumber
-            },
-            UInt8: {
-                reader: Module.eggShell.dataReadUInt8,
-                writer: Module.eggShell.dataWriteUInt8,
-                isValidReturnType: isJavaScriptNumber
-            },
-            UInt16: {
-                reader: Module.eggShell.dataReadUInt16,
-                writer: Module.eggShell.dataWriteUInt16,
-                isValidReturnType: isJavaScriptNumber
-            },
-            UInt32: {
-                reader: Module.eggShell.dataReadUInt32,
-                writer: Module.eggShell.dataWriteUInt32,
-                isValidReturnType: isJavaScriptNumber
-            },
-            Single: {
-                reader: Module.eggShell.dataReadSingle,
-                writer: Module.eggShell.dataWriteSingle,
-                isValidReturnType: isJavaScriptNumber
-            },
-            Double: {
-                reader: Module.eggShell.dataReadDouble,
-                writer: Module.eggShell.dataWriteDouble,
-                isValidReturnType: isJavaScriptNumber
-            },
-            String: {
-                reader: Module.eggShell.dataReadString,
-                writer: Module.eggShell.dataWriteString,
-                isValidReturnType: function (value) {
-                    return typeof value === 'string';
+        var createJavaScriptInvokePeeker = function () {
+            var visitNumeric = function (valueRef) {
+                return Module.eggShell.readDouble(valueRef);
+            };
+
+            return {
+                visitInt8: visitNumeric,
+                visitInt16: visitNumeric,
+                visitInt32: visitNumeric,
+                visitUInt8: visitNumeric,
+                visitUInt16: visitNumeric,
+                visitUInt32: visitNumeric,
+                visitSingle: visitNumeric,
+                visitDouble: visitNumeric,
+                visitBoolean: function (valueRef) {
+                    return Module.eggShell.readDouble(valueRef) !== 0;
+                },
+
+                visitString: function (valueRef) {
+                    return Module.eggShell.readString(valueRef);
+                },
+
+                visitArray: function (valueRef) {
+                    return Module.eggShell.readTypedArray(valueRef);
+                },
+
+                visitJSObjectRefnum: function (valueRef) {
+                    return Module.eggShell.readJavaScriptRefNum(valueRef);
                 }
-            },
-            Boolean: {
-                reader: Module.eggShell.dataReadBoolean,
-                writer: Module.eggShell.dataWriteBoolean,
-                isValidReturnType: function (value) {
-                    return typeof value === 'boolean';
-                }
-            },
-            ArrayInt8: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Int8Array;
-                }
-            },
-            ArrayInt16: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Int16Array;
-                }
-            },
-            ArrayInt32: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Int32Array;
-                }
-            },
-            ArrayUInt8: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Uint8Array;
-                }
-            },
-            ArrayUInt16: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Uint16Array;
-                }
-            },
-            ArrayUInt32: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Uint32Array;
-                }
-            },
-            ArraySingle: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Float32Array;
-                }
-            },
-            ArrayDouble: {
-                reader: Module.eggShell.dataReadTypedArray,
-                writer: Module.eggShell.dataWriteTypedArray,
-                isValidReturnType: function (value) {
-                    return value instanceof Float64Array;
-                }
-            },
-            JavaScriptRefNum: {
-                reader: dataReadJavaScriptRefNum,
-                writer: dataWriteJavaScriptRefNum,
-                isValidReturnType: function () {
-                    return true;
-                }
-            }
+            };
         };
 
-        var createJavaScriptParametersArray = function (parametersPointer, parametersCount) {
-            var parameters = new Array(parametersCount);
-            for (var index = 0; index < parametersCount; index += 1) {
-                var typeName = getParameterTypeString(parametersPointer, index);
-                var parameterPointer = JavaScriptInvoke_GetParameterPointer(parametersPointer, index);
-                if (typeName === 'Array') {
-                    typeName += getArrayElementTypeString(parameterPointer);
+        var jsInvokePeeker = createJavaScriptInvokePeeker();
+        var peekValueRef = function (valueRef) {
+            return Module.eggShell.reflectOnValueRef(jsInvokePeeker, valueRef);
+        };
+
+        var createJavaScriptInvokePoker = function () {
+            var callVisitFuncAndSetError = function (fn) {
+                return function (valueRef, data) {
+                    try {
+                        fn(valueRef, data);
+                    } catch (ex) {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
+                    }
+                };
+            };
+            var visitNumeric = function (valueRef, data) {
+                if (typeof data.userValue !== 'number') {
+                    mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                    return;
                 }
+                Module.eggShell.writeDouble(valueRef, data.userValue);
+            };
 
-                var parameterValue = undefined;
-                var readFunction = typeFunctions[typeName].reader;
-                if (readFunction === undefined) {
-                    throw new Error(' Unsupported type = ' + typeName + ' for parameter with index = ' + index);
-                } else {
-                    parameterValue = readFunction(parameterPointer);
-                }
+            return {
+                visitInt8: callVisitFuncAndSetError(visitNumeric),
+                visitInt16: callVisitFuncAndSetError(visitNumeric),
+                visitInt32: callVisitFuncAndSetError(visitNumeric),
+                visitUInt8: callVisitFuncAndSetError(visitNumeric),
+                visitUInt16: callVisitFuncAndSetError(visitNumeric),
+                visitUInt32: callVisitFuncAndSetError(visitNumeric),
+                visitSingle: callVisitFuncAndSetError(visitNumeric),
+                visitDouble: callVisitFuncAndSetError(visitNumeric),
+                visitBoolean: callVisitFuncAndSetError(function (valueRef, data) {
+                    if (typeof data.userValue !== 'boolean') {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                        return;
+                    }
+                    Module.eggShell.writeDouble(valueRef, data.userValue ? 1 : 0);
+                }),
 
-                parameters[index] = parameterValue;
-            }
+                visitString: callVisitFuncAndSetError(function (valueRef, data) {
+                    if (typeof data.userValue !== 'string') {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                        return;
+                    }
+                    Module.eggShell.writeString(valueRef, data.userValue);
+                }),
 
-            return parameters;
+                visitArray: callVisitFuncAndSetError(function (valueRef, data) {
+                    if (!Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.userValue)) {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                        return;
+                    }
+                    Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
+                    Module.eggShell.writeTypedArray(valueRef, data.userValue);
+                }),
+
+                visitJSObjectRefnum: callVisitFuncAndSetError(function (valueRef, data) {
+                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
+                })
+            };
+        };
+
+        var jsInvokePoker = createJavaScriptInvokePoker();
+
+        var pokeValueRef = function (valueRef, data) {
+            Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
         };
 
         var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
@@ -314,6 +279,19 @@ var assignJavaScriptInvoke;
             };
         };
 
+        var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount) {
+            var parametersArraySize = parameters.length;
+            for (var index = 0; index < parametersCount; index += 1) {
+                var parameterValueRef = createValueRefFromPointerArray(parametersPointer, index);
+                if (isInternalFunction) {
+                    parameters[parametersArraySize + index] = parameterValueRef;
+                } else {
+                    parameters[parametersArraySize + index] = peekValueRef(parameterValueRef);
+                }
+            }
+            return parameters;
+        };
+
         var completionCallbackRetrievalEnum = {
             AVAILABLE: 'AVAILABLE',
             RETRIEVED: 'RETRIEVED',
@@ -325,65 +303,26 @@ var assignJavaScriptInvoke;
             REJECTED: 'REJECTED'
         };
 
-        var updateReturnValue = function (
-            functionName,
-            returnTypeName,
-            returnValuePointer,
-            returnUserValue,
-            errorValueRef) {
-            if (returnTypeName === 'StaticTypeAndData') {
-                // User doesn't want return value. If we're passing '*' for the return in VIA code, we get StaticTypeAndData
+        var updateReturnValue = function (functionName, returnValueRef, returnUserValue, errorValueRef) {
+            if (returnValueRef === undefined) {
+                // User doesn't want to return value. We get here, if we're passing '*' for return parameter in VIA code
                 return;
             }
-
-            var typeConfig = typeFunctions[returnTypeName];
-            var newError = {
-                status: true
+            var valueAndError = {
+                userValue: returnUserValue,
+                errorValueRef: errorValueRef,
+                functionName: functionName
             };
-
-            if (typeConfig === undefined) {
-                newError.source = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
-                newError.source = Module.coreHelpers.createSourceFromMessage(newError.source);
-                newError.code = ERRORS.kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke.CODE;
-                Module.coreHelpers.mergeErrors(errorValueRef, newError);
-                return;
-            } else if (!typeConfig.isValidReturnType(returnUserValue)) {
-                newError.source = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
-                newError.source = Module.coreHelpers.createSourceFromMessage(newError.source);
-                newError.code = ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke.CODE;
-                Module.coreHelpers.mergeErrors(errorValueRef, newError);
-                return;
-            }
-
-            typeConfig.writer(returnValuePointer, returnUserValue);
+            pokeValueRef(returnValueRef, valueAndError);
         };
 
-        var tryUpdateReturnValue = function (
-            functionName,
-            returnTypeName,
-            returnValuePointer,
-            returnValue,
-            errorValueRef,
-            completionCallbackStatus) {
-            try {
-                updateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorValueRef);
-                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
-                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
-            } catch (ex) {
-                var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, ex);
-                var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                var newError = {
-                    status: true,
-                    code: ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE,
-                    source: newErrorSource
-                };
-                Module.coreHelpers.mergeErrors(errorValueRef, newError);
-                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
-                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
-            }
+        var tryUpdateReturnValue = function (functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus) {
+            updateReturnValue(functionName, returnValueRef, returnValue, errorValueRef);
+            completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+            completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
         };
 
-        var generateCompletionCallback = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorValueRef, completionCallbackStatus, isInternalFunction) {
+        var generateCompletionCallback = function (occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction) {
             var completionCallback = function (returnValue) {
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
                     throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
@@ -392,27 +331,19 @@ var assignJavaScriptInvoke;
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
                 if (!(returnValue instanceof Error)) {
-                    tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorValueRef, completionCallbackStatus);
+                    tryUpdateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus);
                 } else {
                     if (isInternalFunction) {
                         throw returnValue;
                     }
-                    var newErrorCode = ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.CODE;
-                    var errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, returnValue);
-                    var newErrorSource = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                    var newError = {
-                        status: true,
-                        code: newErrorCode,
-                        source: newErrorSource
-                    };
-                    Module.coreHelpers.mergeErrors(errorValueRef, newError);
+                    mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, returnValue);
                 }
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
             };
             return completionCallback;
         };
 
-        var generateAPI = function (occurrencePointer, functionName, returnTypeName, returnValuePointer, errorValueRef, completionCallbackStatus, isInternalFunction) {
+        var generateAPI = function (occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction) {
             var api = {};
             api.getCompletionCallback = function () {
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
@@ -422,7 +353,7 @@ var assignJavaScriptInvoke;
                     throw new Error('The API being accessed for ' + functionName + ' is not valid anymore.');
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
-                return generateCompletionCallback(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorValueRef, completionCallbackStatus, isInternalFunction);
+                return generateCompletionCallback(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
             };
 
             if (isInternalFunction) {
@@ -452,7 +383,8 @@ var assignJavaScriptInvoke;
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
             occurrencePointer,
-            functionNamePointer,
+            functionNameTypeRef,
+            functionNameDataRef,
             returnPointer,
             parametersPointer,
             parametersCount,
@@ -460,24 +392,19 @@ var assignJavaScriptInvoke;
             errorTypeRef,
             errorDataRef) {
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+            var functionNameValueRef = Module.eggShell.createValueRef(functionNameTypeRef, functionNameDataRef);
+            var functionName = Module.eggShell.readString(functionNameValueRef);
+            var parameters = [];
 
-            var newError = {
-                status: false,
-                code: ERRORS.NO_ERROR.CODE,
-                source: ERRORS.NO_ERROR.MESSAGE
-            };
+            var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
+            if (isInternalFunction) {
+                parameters.push(returnValueRef);
+            }
 
-            var errorMessage = '';
-            var functionName = Module.eggShell.dataReadString(functionNamePointer);
-            var parameters = undefined;
             try {
-                parameters = createJavaScriptParametersArray(parametersPointer, parametersCount);
+                addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
             } catch (ex) {
-                newError.status = true;
-                newError.code = ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.CODE;
-                errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName, ex);
-                newError.source = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                Module.coreHelpers.mergeErrors(errorValueRef, newError);
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke, ex);
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
@@ -486,22 +413,9 @@ var assignJavaScriptInvoke;
             var functionToCall = functionAndContext.functionToCall;
             var context = functionAndContext.context;
             if (functionToCall === undefined) {
-                newError.status = true;
-                newError.code = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.CODE;
-                newError.source = ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke.MESSAGE + '\nfunction: ' + functionName;
-                Module.coreHelpers.mergeErrors(errorValueRef, newError);
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke);
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
-            }
-
-            var returnTypeName = getParameterTypeString(returnPointer, 0);
-            var returnValuePointer = undefined;
-            if (returnTypeName !== 'StaticTypeAndData') {
-                // User doesn't want return value. We're passing '*' for the return in VIA code, we get StaticTypeAndData
-                returnValuePointer = JavaScriptInvoke_GetParameterPointer(returnPointer, 0);
-            }
-            if (returnTypeName === 'Array') {
-                returnTypeName += getArrayElementTypeString(returnValuePointer);
             }
 
             var completionCallbackStatus = {
@@ -512,7 +426,7 @@ var assignJavaScriptInvoke;
             var returnValue = undefined;
             var api;
             if (functionToCall.length === parameters.length + 1) {
-                api = generateAPI(occurrencePointer, functionName, returnTypeName, returnValuePointer, errorValueRef, completionCallbackStatus, isInternalFunction);
+                api = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
                 parameters.push(api);
             }
 
@@ -522,11 +436,8 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     throw ex;
                 }
-                newError.status = true;
-                newError.code = ERRORS.kNIUnableToInvokeAJavaScriptFunction.CODE;
-                errorMessage = Module.coreHelpers.formatMessageWithException(ERRORS.kNIUnableToInvokeAJavaScriptFunction.MESSAGE + '\nfunction: ' + functionName, ex);
-                newError.source = Module.coreHelpers.createSourceFromMessage(errorMessage);
-                Module.coreHelpers.mergeErrors(errorValueRef, newError);
+
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, ex);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
                 Module.eggShell.setOccurrence(occurrencePointer);
@@ -535,7 +446,9 @@ var assignJavaScriptInvoke;
 
             // assume synchronous invocation since the completion callback was never retrieved
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
-                tryUpdateReturnValue(functionName, returnTypeName, returnValuePointer, returnValue, errorValueRef, completionCallbackStatus);
+                if (!isInternalFunction) {
+                    tryUpdateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus);
+                }
                 Module.eggShell.setOccurrence(occurrencePointer);
             }
             return;

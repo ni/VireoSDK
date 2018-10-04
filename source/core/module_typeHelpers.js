@@ -177,6 +177,12 @@ var assignTypeHelpers;
             return visitFn.call(typeVisitor, valueRef, data);
         };
 
+        var dispatchVisitJSObjectRefnum = function (typeVisitor, valueRef, data) {
+            var visitFn = typeVisitor.visitJSObjectRefnum;
+            validateVisitMethod(visitFn, 'visitJSObjectRefnum');
+            return visitFn.call(typeVisitor, valueRef, data);
+        };
+
         var dispatchVisitCluster = function (typeVisitor, valueRef, data) {
             var visitFn = typeVisitor.visitCluster;
             validateVisitMethod(visitFn, 'visitCluster');
@@ -256,7 +262,16 @@ var assignTypeHelpers;
             return Module._TypeRef_IsAnalogWaveform(typeRef) !== 0;
         };
 
+        Module.typeHelpers.isJSObjectRefnum = function (typeRef) {
+            return Module._TypeRef_IsJavascriptRefnum(typeRef) !== 0;
+        };
+
         var typeHandlers = [
+            {
+                // JSObjectRefnum is Integer, so it should be before Integer
+                typeChecker: Module.typeHelpers.isJSObjectRefnum,
+                dispatcher: dispatchVisitJSObjectRefnum
+            },
             {
                 typeChecker: Module.typeHelpers.isBoolean,
                 dispatcher: dispatchVisitBoolean
