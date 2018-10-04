@@ -117,8 +117,6 @@ VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
         Int32 userParametersCount = (_ParamVarArgCount() - configurationParameters - staticTypeAndDataParameters) / staticTypeAndDataParameters;
         StaticTypeAndData *returnValuePtr = _ParamImmediate(returnValue);
         StaticTypeAndData *parametersPtr = _ParamImmediate(parameters);
-        TypeRef typeRefString = TypeManagerScope::Current()->FindType(tsStringType);
-
         bool shouldInvoke = errorClusterPtr == nullptr ? true : !errorClusterPtr->status;
 
         if (shouldInvoke) {

@@ -415,8 +415,8 @@ describe('A JavaScript function invoke', function () {
         vireo.eggShell.loadVia('enqueue(ExceptionInUpdateReturnValue)');
         runSlicesAsync(function () {
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44306);
-            expect(viPathParser('error.source')).toMatch(/Return type mismatch/);
+            expect(viPathParser('error.code')).toBe(44303);
+            expect(viPathParser('error.source')).toMatch(/Unable to set return value/);
             done();
         });
     });

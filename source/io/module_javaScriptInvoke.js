@@ -219,11 +219,15 @@ var assignJavaScriptInvoke;
                 },
 
                 visitArray: function (valueRef, data) {
+                    if (!Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.userValue)) {
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                        return;
+                    }
                     try {
                         Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
                         Module.eggShell.writeTypedArray(valueRef, data.userValue);
                     } catch (ex) {
-                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke, ex);
+                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
                     }
                 },
 

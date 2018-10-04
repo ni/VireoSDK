@@ -569,6 +569,11 @@ var assignEggShell;
             return typedArray;
         };
 
+        Module.eggShell.isSupportedAndCompatibleArrayType = function (valueRef, typedArrayValue) {
+            var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
+            return (TypedArrayConstructor !== undefined && typedArrayValue instanceof TypedArrayConstructor);
+        };
+
         Module.eggShell.writeTypedArray = publicAPI.eggShell.writeTypedArray = function (valueRef, typedArrayValue) {
             var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
             if (TypedArrayConstructor === undefined || !(typedArrayValue instanceof TypedArrayConstructor)) {
