@@ -586,7 +586,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
         UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
         EventQueueID qID = kNotAQueueID;
         EventOracle::TheEventOracle().GetNewQueueObject(&qID, nullptr);
-        // TODO (segaljared) remove this when we no longer use ControlRefNum
+        // TODO(segaljared): remove this when we no longer use ControlRefNum
         for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
             ControlRefNum controlRef = (ControlRefNum)eventSpecRef[eventSpecIndex].eventControlRef;
             if (controlRef) {
@@ -1295,7 +1295,7 @@ DEFINE_VIREO_BEGIN(Events)
     DEFINE_VIREO_FUNCTION(WaitForEventsAndDispatch, "p(i(VarArgCount) i(Int32 timeOut) i(StaticTypeAndData ref) i(Int32 esIndex) "
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
 
-    // TODO (segaljared) remove this when we no longer use ControlRefNum
+    // TODO(segaljared): remove this when we no longer use ControlRefNum
     DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(ControlRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
     DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(JavaScriptRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
     DEFINE_VIREO_FUNCTION(ConfigureEventSpecJSRef, "p(i(Int32 eStructIndex) i(Int32 eSpecIndex) i(JavaScriptRefNum jsReference))")
