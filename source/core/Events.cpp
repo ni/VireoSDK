@@ -18,6 +18,7 @@
 #include "RefNum.h"
 #include "Events.h"
 #include "ControlRef.h"
+#include "JavaScriptRef.h"
 #include <deque>
 #include <vector>
 #include <list>
@@ -533,7 +534,7 @@ Int32 EventOracle::GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, 
 struct EventSpec {  // Specifier for Event structure configuration data
     EventSource eventSource;
     EventType eventType;
-    ControlRefNum eventControlRef;  // 0 == no control (App or VI event, or dynamic)
+    RefNum eventControlRef;  // 0 == no control (App or VI event, or dynamic)
     UInt32 dynIndex;  // 0 == not dynamic
 };
 typedef EventSpec *EventSpecRef;
@@ -548,6 +549,32 @@ static inline EventSource GetEventSourceForEventType(EventType eType) {
     return eSource;
 }
 
+// TODO(segaljared): Move this to a more convenient location for general use in the future
+void GetVIName(VirtualInstrument *vi, StringRef viName) {
+    PercentEncodedSubString encodedStr(vi->VIName(), true, false);
+    SubString encodedSubstr = encodedStr.GetSubString();
+    viName->AppendSubString(&encodedSubstr);
+}
+
+void RegisterForControlEvent(EventInfo *eventInfo, EventSpec eventSpec, StringRef viName, EventQueueID qID, UInt32 controlID, RefNum reference,
+                        bool registerControlEvent) {
+    EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
+    EventType eventType = eventSpec.eventType;
+    EventSource eSource = eventSpec.eventSource;
+    EventOracle::EventInsertStatus status = EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, reference,
+                                &eventOracleIdx);
+    // gPlatform.IO.Printf("Static Register for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
+    //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
+    if (eventOracleIdx > kAppEventOracleIdx && status == EventOracle::kNewRegistration) {
+        eventInfo->controlIDInfoMap[reference] = EventControlInfo(eventOracleIdx, controlID);
+#if kVireoOS_emscripten
+        if (registerControlEvent) {
+            jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
+        }
+#endif
+    }
+}
+
 void RegisterForStaticEvents(VirtualInstrument *vi) {
     TypedObjectRef eventStructSpecsRef = vi->EventSpecs();
     Int32 numEventStructs = eventStructSpecsRef->ElementType()->SubElementCount();
@@ -560,33 +587,19 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
         UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
         EventQueueID qID = kNotAQueueID;
         EventOracle::TheEventOracle().GetNewQueueObject(&qID, nullptr);
+        // TODO(segaljared): remove this when we no longer use ControlRefNum
         for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
-            ControlRefNum controlRef = eventSpecRef[eventSpecIndex].eventControlRef;
+            ControlRefNum controlRef = (ControlRefNum)eventSpecRef[eventSpecIndex].eventControlRef;
             if (controlRef) {
                 StringRef tag = nullptr;
-                STACK_VAR(String, viNameVar);
-                StringRef viName = viNameVar.Value;
                 if (ControlReferenceLookup(controlRef, nullptr, &tag) == kNIError_Success) {
-                    PercentEncodedSubString encodedStr(vi->VIName(), true, false);
-                    SubString encodedSubstr = encodedStr.GetSubString();
-                    viName->AppendSubString(&encodedSubstr);
+                    STACK_VAR(String, viNameVar);
+                    StringRef viName = viNameVar.Value;
+                    GetVIName(vi, viName);
                     char *tagBegin = reinterpret_cast<char*>(tag->Begin()), *tagEnd = reinterpret_cast<char*>(tag->End());
                     EventControlUID controlID = Int32(strtol(tagBegin, &tagEnd, 10));
                     if (controlID) {
-                        EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
-                        EventType eventType = eventSpecRef[eventSpecIndex].eventType;
-                        EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
-
-                        EventOracle::EventInsertStatus status = EventOracle::TheEventOracle().RegisterForEvent(qID, eSource, eventType, controlID, controlRef,
-                                            &eventOracleIdx);
-                        // gPlatform.IO.Printf("Static Register for VI %*s controlID %d, event %d, eventOracleIdx %d\n",
-                        //                     viName->Length(), viName->Begin(), controlID, eventType, eventOracleIdx);
-                        if (eventOracleIdx > kAppEventOracleIdx && status == EventOracle::kNewRegistration) {
-                            eventInfo->controlIDInfoMap[controlRef] = EventControlInfo(eventOracleIdx, controlID);
-#if kVireoOS_emscripten
-                            jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
-#endif
-                        }
+                        RegisterForControlEvent(eventInfo, eventSpecRef[eventSpecIndex], viName, qID, controlID, controlRef, true);
                     }
                 }
             }
@@ -595,6 +608,30 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
         eventInfo->eventStructInfo[eventStructIndex].setCount = 0;
     }
     vi->SetEventInfo(eventInfo);
+}
+
+void ConfigureEventSpecForJSRef(VirtualInstrument *vi, Int32 eventStructIndex, Int32 eventSpecIndex, JavaScriptRefNum jsReference) {
+    TypedObjectRef eventStructSpecsRef = vi->EventSpecs();
+    Int32 numEventStructs = eventStructSpecsRef->ElementType()->SubElementCount();
+    EventInfo *eventInfo = vi->GetEventInfo();
+    if (eventStructIndex < numEventStructs) {
+        TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
+        AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
+        EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
+        UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
+        if (eventSpecIndex < eventSpecCount) {
+            EventQueueID qID = eventInfo->eventStructInfo[eventStructIndex].staticQID;
+            EventControlUID controlID = (EventControlUID)eventSpecRef[eventSpecIndex].eventControlRef;
+            if (controlID) {
+                STACK_VAR(String, viNameVar);
+                StringRef viName = viNameVar.Value;
+                GetVIName(vi, viName);
+
+                eventSpecRef[eventSpecIndex].eventControlRef = jsReference;
+                RegisterForControlEvent(eventInfo, eventSpecRef[eventSpecIndex], viName, qID, controlID, jsReference, false);
+            }
+        }
+    }
 }
 
 void UnregisterForStaticEvents(VirtualInstrument *vi) {
@@ -615,11 +652,13 @@ void UnregisterForStaticEvents(VirtualInstrument *vi) {
             UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
             EventQueueID qID =  eventInfo->eventStructInfo[eventStructIndex].staticQID;
             for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
-                ControlRefNum controlRef = eventSpecRef[eventSpecIndex].eventControlRef;
+                RefNum controlRef = eventSpecRef[eventSpecIndex].eventControlRef;
                 if (controlRef) {
                     EventInfo::ControlIDInfoMap::iterator ciIter = eventInfo->controlIDInfoMap.find(controlRef);
+                    EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
+
                     if (ciIter != eventInfo->controlIDInfoMap.end()) {
-                        EventOracleIndex eventOracleIdx = ciIter->second.eventOracleIndex;
+                        eventOracleIdx = ciIter->second.eventOracleIndex;
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
                         EventSource eSource = eventSpecRef[eventSpecIndex].eventSource;
 
@@ -1173,6 +1212,41 @@ VIREO_FUNCTION_SIGNATURE3(_OccurEvent, RefNumVal, UInt32, UInt32)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURE3(ConfigureEventSpecJSRef, Int32, Int32, JavaScriptRefNum)
+{
+    Int32 eventStructIndex = _Param(0);
+    Int32 eventSpecIndex = _Param(1);
+    JavaScriptRefNum jsRefNum = _Param(2);
+    VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
+    ConfigureEventSpecForJSRef(owningVI, eventStructIndex, eventSpecIndex, jsRefNum);
+
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURE2(RegisterForJSEvent, JavaScriptRefNum, UInt32)
+{
+    JavaScriptRefNum jsRefNum = _Param(0);
+    UInt32 eventType = _Param(1);
+    VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
+    STACK_VAR(String, viNameVar);
+    StringRef viName = viNameVar.Value;
+    GetVIName(owningVI, viName);
+    EventInfo *eventInfo = owningVI->GetEventInfo();
+    EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
+    EventControlUID controlID = 0;
+    if (eventInfo) {
+        EventControlInfo *ecInfo = &eventInfo->controlIDInfoMap[jsRefNum];
+        eventOracleIdx = ecInfo->eventOracleIndex;
+        controlID = ecInfo->controlID;
+
+#if kVireoOS_emscripten
+        jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
+#endif
+    }
+
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURE2(IsNotAUserEventRefnum, RefNumVal, Boolean)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
@@ -1222,7 +1296,11 @@ DEFINE_VIREO_BEGIN(Events)
     DEFINE_VIREO_FUNCTION(WaitForEventsAndDispatch, "p(i(VarArgCount) i(Int32 timeOut) i(StaticTypeAndData ref) i(Int32 esIndex) "
                           "i(VarArgRepeat) i(Int32 specIndex)i(StaticTypeAndData)i(BranchTarget))")
 
+    // TODO(segaljared): remove this when we no longer use ControlRefNum
     DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(ControlRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
+    DEFINE_VIREO_FUNCTION(_OccurEvent, "p(i(JavaScriptRefNum controlRef) i(UInt32 eSource) i(UInt32 eType))")
+    DEFINE_VIREO_FUNCTION(ConfigureEventSpecJSRef, "p(i(Int32 eStructIndex) i(Int32 eSpecIndex) i(JavaScriptRefNum jsReference))")
+    DEFINE_VIREO_FUNCTION(RegisterForJSEvent, "p(i(JavaScriptRefNum jsReference) i(UInt32 eType))")
 
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAUserEventRefnum, "p(i(UserEventRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(UserEventRefNum) i(UserEventRefNum) o(Boolean))")
