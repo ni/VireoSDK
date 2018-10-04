@@ -393,11 +393,11 @@ var assignJavaScriptInvoke;
 
             var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
             if (isInternalFunction) {
-                parameters = parameters.concat(returnValueRef);
+                parameters.push(returnValueRef);
             }
 
             try {
-                parameters = parameters.concat(createJavaScriptParametersArray(isInternalFunction, parametersPointer, parametersCount));
+                Array.prototype.push.apply(parameters, createJavaScriptParametersArray(isInternalFunction, parametersPointer, parametersCount));
             } catch (ex) {
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke, ex);
                 Module.eggShell.setOccurrence(occurrencePointer);
