@@ -223,20 +223,12 @@ var assignJavaScriptInvoke;
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
                         return;
                     }
-                    try {
-                        Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
-                        Module.eggShell.writeTypedArray(valueRef, data.userValue);
-                    } catch (ex) {
-                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
-                    }
+                    Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
+                    Module.eggShell.writeTypedArray(valueRef, data.userValue);
                 },
 
                 visitJSObjectRefnum: function (valueRef, data) {
-                    try {
-                        Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
-                    } catch (ex) {
-                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
-                    }
+                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
                 }
             };
         };
@@ -244,7 +236,11 @@ var assignJavaScriptInvoke;
         var jsInvokePoker = createJavaScriptInvokePoker();
 
         var pokeValueRef = function (valueRef, data) {
-            return Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
+            try {
+                Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
+            } catch (ex) {
+                mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
+            }
         };
 
         var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
