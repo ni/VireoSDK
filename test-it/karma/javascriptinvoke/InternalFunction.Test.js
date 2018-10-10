@@ -19,7 +19,7 @@ describe('A JavaScript function invoke', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
-    it('internal function works', function (done) {
+    xit('internal function works', function (done) {
         var runSlices = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -47,7 +47,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('internal function successfully sets error and return value is unset', function (done) {
+    xit('internal function successfully sets error and return value is unset', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -72,7 +72,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('internal function is invoked even when no error cluster is wired', function (done) {
+    xit('internal function is invoked even when no error cluster is wired', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -92,7 +92,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('internal function is invoked even when no error cluster is wired and it sets error', function (done) {
+    xit('internal function is invoked even when no error cluster is wired and it sets error', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 

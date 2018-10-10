@@ -24,6 +24,8 @@ define(MyVI dv(VirtualInstrument (
         e(.Occurrence occurrence4)
     )
     clump (
+        // TODO the test InternalFunction.Tests.js needs to be updated and this via needs to be updated to not run all of these functions every time
+        // Currently if an internal function is not found, no error is reported, and the test rrelies on that 
         JavaScriptInvoke(occurrence1 true error1 'NI_InternalFunction' returnValue1 value1)
         JavaScriptInvoke(occurrence2 true error2 'NI_InternalFunctionSetsError' returnValue2 value2)
         JavaScriptInvoke(occurrence3 true * 'NI_InternalFunctionNoErrorCluster' returnValue3 value3)

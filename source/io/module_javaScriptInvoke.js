@@ -180,73 +180,77 @@ var assignJavaScriptInvoke;
         };
 
         var jsInvokePeeker = createJavaScriptInvokePeeker();
-        var peekValueRef = function (valueRef) {
-            return Module.eggShell.reflectOnValueRef(jsInvokePeeker, valueRef);
-        };
 
         var createJavaScriptInvokePoker = function () {
-            var callVisitFuncAndSetError = function (fn) {
+            var reportReturnSetException = function (fn) {
                 return function (valueRef, data) {
                     try {
                         fn(valueRef, data);
                     } catch (ex) {
+                        if (data.isInternalFunction) {
+                            throw ex;
+                        }
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
                     }
                 };
             };
-            var visitNumeric = function (valueRef, data) {
-                if (typeof data.userValue !== 'number') {
-                    mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
-                    return;
+
+            var reportTypeMismatch = function (data) {
+                if (data.isInternalFunction) {
+                    throw new Error('Type mismatch trying to set return value');
                 }
-                Module.eggShell.writeDouble(valueRef, data.userValue);
+                mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
             };
 
+            var visitNumeric = reportReturnSetException(function (valueRef, data) {
+                if (typeof data.returnValue !== 'number') {
+                    reportTypeMismatch(data);
+                    return;
+                }
+                Module.eggShell.writeDouble(valueRef, data.returnValue);
+            });
+
             return {
-                visitInt8: callVisitFuncAndSetError(visitNumeric),
-                visitInt16: callVisitFuncAndSetError(visitNumeric),
-                visitInt32: callVisitFuncAndSetError(visitNumeric),
-                visitUInt8: callVisitFuncAndSetError(visitNumeric),
-                visitUInt16: callVisitFuncAndSetError(visitNumeric),
-                visitUInt32: callVisitFuncAndSetError(visitNumeric),
-                visitSingle: callVisitFuncAndSetError(visitNumeric),
-                visitDouble: callVisitFuncAndSetError(visitNumeric),
-                visitBoolean: callVisitFuncAndSetError(function (valueRef, data) {
-                    if (typeof data.userValue !== 'boolean') {
-                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                visitInt8: visitNumeric,
+                visitInt16: visitNumeric,
+                visitInt32: visitNumeric,
+                visitUInt8: visitNumeric,
+                visitUInt16: visitNumeric,
+                visitUInt32: visitNumeric,
+                visitSingle: visitNumeric,
+                visitDouble: visitNumeric,
+                visitBoolean: reportReturnSetException(function (valueRef, data) {
+                    if (typeof data.returnValue !== 'boolean') {
+                        reportTypeMismatch(data);
                         return;
                     }
-                    Module.eggShell.writeDouble(valueRef, data.userValue ? 1 : 0);
+                    Module.eggShell.writeDouble(valueRef, data.returnValue ? 1 : 0);
                 }),
 
-                visitString: callVisitFuncAndSetError(function (valueRef, data) {
-                    if (typeof data.userValue !== 'string') {
-                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                visitString: reportReturnSetException(function (valueRef, data) {
+                    if (typeof data.returnValue !== 'string') {
+                        reportTypeMismatch(data);
                         return;
                     }
-                    Module.eggShell.writeString(valueRef, data.userValue);
+                    Module.eggShell.writeString(valueRef, data.returnValue);
                 }),
 
-                visitArray: callVisitFuncAndSetError(function (valueRef, data) {
-                    if (!Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.userValue)) {
-                        mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
+                visitArray: reportReturnSetException(function (valueRef, data) {
+                    if (!Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.returnValue)) {
+                        reportTypeMismatch(data);
                         return;
                     }
-                    Module.eggShell.resizeArray(valueRef, [data.userValue.length]);
-                    Module.eggShell.writeTypedArray(valueRef, data.userValue);
+                    Module.eggShell.resizeArray(valueRef, [data.returnValue.length]);
+                    Module.eggShell.writeTypedArray(valueRef, data.returnValue);
                 }),
 
-                visitJSObjectRefnum: callVisitFuncAndSetError(function (valueRef, data) {
-                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.userValue);
+                visitJSObjectRefnum: reportReturnSetException(function (valueRef, data) {
+                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.returnValue);
                 })
             };
         };
 
         var jsInvokePoker = createJavaScriptInvokePoker();
-
-        var pokeValueRef = function (valueRef, data) {
-            Module.eggShell.reflectOnValueRef(jsInvokePoker, valueRef, data);
-        };
 
         var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
             if (isInternalFunction) {
@@ -286,7 +290,8 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     parameters[parametersArraySize + index] = parameterValueRef;
                 } else {
-                    parameters[parametersArraySize + index] = peekValueRef(parameterValueRef);
+                    // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
+                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(jsInvokePeeker, parameterValueRef);
                 }
             }
             return parameters;
@@ -303,21 +308,40 @@ var assignJavaScriptInvoke;
             REJECTED: 'REJECTED'
         };
 
-        var updateReturnValue = function (functionName, returnValueRef, returnUserValue, errorValueRef) {
-            if (returnValueRef === undefined) {
-                // User doesn't want to return value. We get here, if we're passing '*' for return parameter in VIA code
-                return;
+        var reportExecutionError = function (functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction) {
+            if (returnValue instanceof Error) {
+                if (isInternalFunction) {
+                    throw returnValue;
+                }
+
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, returnValue);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+                return true;
             }
-            var valueAndError = {
-                userValue: returnUserValue,
-                errorValueRef: errorValueRef,
-                functionName: functionName
-            };
-            pokeValueRef(returnValueRef, valueAndError);
+            return false;
         };
 
-        var tryUpdateReturnValue = function (functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus) {
-            updateReturnValue(functionName, returnValueRef, returnValue, errorValueRef);
+        var updateReturnValue = function (functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction) {
+            // TODO mraj should we allow undefined values to be ignored? need to check if this is a change in behavior.. should we allow null through?
+            if (isInternalFunction && returnValue !== undefined) {
+                throw new Error('Unexpected return value, internal functions should update return values through api functions instead of relying on return values');
+            }
+
+            // The returnValueRef is undefined if we're passing '*' for return parameter in VIA code
+            var data;
+            if (returnValueRef !== undefined) {
+                data = {
+                    returnValue: returnValue,
+                    errorValueRef: errorValueRef,
+                    functionName: functionName,
+                    isInternalFunction: isInternalFunction
+                };
+                Module.eggShell.reflectOnValueRef(jsInvokePoker, returnValueRef, data);
+            }
+
+            // We don't reflect write errors back on the completionCallbackStatus,
+            // so regardless of write errors at this point the completionCallback is fullfilled
             completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
             completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
         };
@@ -330,15 +354,16 @@ var assignJavaScriptInvoke;
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
-                if (!(returnValue instanceof Error)) {
-                    tryUpdateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus);
-                } else {
-                    if (isInternalFunction) {
-                        throw returnValue;
-                    }
-                    mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, returnValue);
+
+                var errorReported = reportExecutionError(functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
+                if (errorReported) {
+                    Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                    return;
                 }
+
+                updateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
                 Module.eggShell.setOccurrenceAsync(occurrencePointer);
+                return;
             };
             return completionCallback;
         };
@@ -401,18 +426,15 @@ var assignJavaScriptInvoke;
                 parameters.push(returnValueRef);
             }
 
-            try {
-                addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
-            } catch (ex) {
-                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnsupportedParameterTypeInJavaScriptInvoke, ex);
-                Module.eggShell.setOccurrence(occurrencePointer);
-                return;
-            }
+            addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
 
             var functionAndContext = findJavaScriptFunctionToCall(functionName, isInternalFunction);
             var functionToCall = functionAndContext.functionToCall;
             var context = functionAndContext.context;
             if (functionToCall === undefined) {
+                if (isInternalFunction) {
+                    throw new Error('Unable to find internal JS function:' + functionName);
+                }
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke);
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
@@ -423,35 +445,44 @@ var assignJavaScriptInvoke;
                 invocationState: completionCallbackInvocationEnum.PENDING
             };
 
-            var returnValue = undefined;
             var api;
             if (functionToCall.length === parameters.length + 1) {
                 api = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
                 parameters.push(api);
             }
 
+            var returnValue;
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
-                if (isInternalFunction) {
-                    throw ex;
-                }
+                returnValue = ex;
+            }
 
-                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, ex);
-                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
-                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+            var errorReported = reportExecutionError(functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
+            if (errorReported) {
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
 
-            // assume synchronous invocation since the completion callback was never retrieved
+            // assume synchronous invocation since the completion callback was never retrieved by the user
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
-                if (!isInternalFunction) {
-                    tryUpdateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus);
-                }
+                updateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
                 Module.eggShell.setOccurrence(occurrencePointer);
+                return;
             }
-            return;
+
+            // for async execution check that user did not provide a return value
+            if (returnValue !== undefined) {
+                if (isInternalFunction) {
+                    throw new Error('Unexpected return value for function requiring asynchronous completion');
+                }
+                // TODO mraj should we make this check for users? In previous versions we silently ignored return values when async...
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke);
+                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
+                Module.eggShell.setOccurrence(occurrencePointer);
+                return;
+            }
         };
 
         Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum = function (returnPointer, javaScriptRefNumPointer) {
