@@ -38,7 +38,6 @@ define (UpdateBooleanOnValueChangeEvent dv(.VirtualInstrument (
         e(.ErrorCluster error)
     )
     clump(1
-        JavaScriptInvoke(occurrence true error 'GetJSRef' controlRef)
         ConfigureEventSpecJSRef(0 0 controlRef)
         RegisterForJSEvent(controlRef 2)
         Printf("Waiting on Events\n")

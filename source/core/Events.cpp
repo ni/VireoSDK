@@ -1217,6 +1217,10 @@ VIREO_FUNCTION_SIGNATURE3(ConfigureEventSpecJSRef, Int32, Int32, JavaScriptRefNu
     Int32 eventStructIndex = _Param(0);
     Int32 eventSpecIndex = _Param(1);
     JavaScriptRefNum jsRefNum = _Param(2);
+    if (jsRefNum == 0) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "JavaScriptRefNum must not be null");
+        return THREAD_EXEC()->Stop();
+    }
     VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
     ConfigureEventSpecForJSRef(owningVI, eventStructIndex, eventSpecIndex, jsRefNum);
 
@@ -1226,6 +1230,10 @@ VIREO_FUNCTION_SIGNATURE3(ConfigureEventSpecJSRef, Int32, Int32, JavaScriptRefNu
 VIREO_FUNCTION_SIGNATURE2(RegisterForJSEvent, JavaScriptRefNum, UInt32)
 {
     JavaScriptRefNum jsRefNum = _Param(0);
+    if (jsRefNum == 0) {
+        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "JavaScriptRefNum must not be null");
+        return THREAD_EXEC()->Stop();
+    }
     UInt32 eventType = _Param(1);
     VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
     STACK_VAR(String, viNameVar);
