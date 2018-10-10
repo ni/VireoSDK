@@ -14,6 +14,7 @@ describe('The Vireo Control Event', function () {
     var updateMultipleEventStructuresOnValueChange = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEventWithMultipleRegistrations.via');
     var updateBooleanOnValueChangeEventJavaScriptRefNum = fixtures.convertToAbsoluteFromFixturesDir('events/ValueChangeStaticControlEventJavaScriptRefNum.via');
 
+    var javaScriptRefNumObject = {};
     var getEventDataValueRef = function (viName, controlName) {
         return vireo.eggShell.findValueRef(viName, 'valueChangedEventData' + controlName);
     };
@@ -62,8 +63,8 @@ describe('The Vireo Control Event', function () {
             // no-op
         });
         vireo.javaScriptInvoke.registerInternalFunctions({
-            GetJSRef: function () {
-                return 5;
+            GetJSRef: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, javaScriptRefNumObject);
             }
         });
     });
@@ -229,7 +230,7 @@ describe('The Vireo Control Event', function () {
         });
     });
 
-    xit('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
+    it('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventJavaScriptRefNum);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 

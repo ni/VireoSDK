@@ -13,10 +13,7 @@ var assignJavaScriptInvoke;
             MESSAGE: 'An exception occurred within the external JavaScript function called by a JavaScript Library Interface node. Verify your JavaScript code is valid.'
         },
 
-        kNIUnsupportedParameterTypeInJavaScriptInvoke: {
-            CODE: 44301,
-            MESSAGE: 'JavaScript function contains a parameter of an unsupported data type. Convert unsupported JavaScript types to types supported by the JavaScript Library Interface.'
-        },
+        kNIUnsupportedParameterTypeInJavaScriptInvoke: undefined, // Code 44301 no longer used. Unsupported LabVIEW parameter types now result in runtime exception.
 
         kNIUnableToFindFunctionForJavaScriptInvoke: {
             CODE: 44302,
@@ -28,10 +25,7 @@ var assignJavaScriptInvoke;
             MESSAGE: 'Unable to set return value for JavaScript Library Interface node parameter.'
         },
 
-        kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke: {
-            CODE: 44305,
-            MESSAGE: 'Unsupported return type for JavaScript Library Interface node parameter.'
-        },
+        kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke: undefined, // Code 44305 no longer used. Unsupported LabVIEW return types now result in runtime exception.
 
         kNITypeMismatchForReturnTypeInJavaScriptInvoke: {
             CODE: 44306,
@@ -319,9 +313,11 @@ var assignJavaScriptInvoke;
         };
 
         var updateReturnValue = function (functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction) {
-            // TODO mraj should we allow undefined values to be ignored? need to check if this is a change in behavior.. should we allow null through?
-            if (isInternalFunction && returnValue !== undefined) {
-                throw new Error('Unexpected return value, internal functions should update return values through api functions instead of relying on return values');
+            if (isInternalFunction) {
+                if (returnValue !== undefined) {
+                    throw new Error('Unexpected return value, internal functions should update return values through api functions instead of relying on return values');
+                }
+                return;
             }
 
             // The returnValueRef is undefined if we're passing '*' for return parameter in VIA code
@@ -408,9 +404,10 @@ var assignJavaScriptInvoke;
             returnPointer,
             parametersPointer,
             parametersCount,
-            isInternalFunction,
+            isInternalFunctionIn,
             errorTypeRef,
             errorDataRef) {
+            var isInternalFunction = isInternalFunctionIn !== 0;
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var functionNameValueRef = Module.eggShell.createValueRef(functionNameTypeRef, functionNameDataRef);
             var functionName = Module.eggShell.readString(functionNameValueRef);

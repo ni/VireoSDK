@@ -5,7 +5,6 @@ describe('A JavaScript function invoke', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    var kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke = 44305;
     var kNITypeMismatchForReturnTypeInJavaScriptInvoke = 44306;
 
     var vireo;
@@ -328,20 +327,19 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    // TODO (sankara) We want to catch the exception of runSlicesAsync to pass this test.
-    // This test should be fixed not to expect LabVIEW error.
-    xit('returns an error for unsupported LabVIEW data types', function (done) {
+    it('returns an error for unsupported LabVIEW data types', async function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsUnsupportedVireoReturnTypesViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect([kNIUnsupportedLabVIEWReturnTypeInJavaScriptInvoke]).toContain(viPathParser('error.code'));
-            expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
-            done();
-        });
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(exception.rawPrint).toBeEmptyString();
+        expect(exception.rawPrintError).toBeEmptyString();
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.message).toMatch(/Visitor must have a method named/);
     });
 
     it('returns an error for type mismatch on return values', function (done) {
@@ -410,9 +408,10 @@ describe('A JavaScript function invoke', function () {
     });
 
     it('Exception thrown in UpdateReturnValue is handled and reported', function (done) {
+        var viName = 'ExceptionInUpdateReturnValue';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsReturnDataTypesViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'ExceptionInUpdateReturnValue');
-        vireo.eggShell.loadVia('enqueue(ExceptionInUpdateReturnValue)');
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
         runSlicesAsync(function () {
             expect(viPathParser('error.status')).toBeTrue();
             expect(viPathParser('error.code')).toBe(44303);
