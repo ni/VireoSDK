@@ -246,12 +246,25 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
     replacing `[version]` with some version.
 
     This command will generate a `.nupkg` file in the folder the command is run from.
-3. See [installing a nuget package](https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package) for the various ways to install the created package to your .NET application.
+3. See [installing a nuget package](https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package) for the various ways to install the created package to your .NET application. If you are at NI and working on NXG, follow these steps:
+    1. Run this command:
+
+        ```console
+        .\BuildTools\RefactoringTools\UpgradeNuget.exe .\Source\VI\Tests\Tests.HtmlVI vireo oldversion newversion
+        ```
+
+        from the ASW root directory, replacing `oldversion` with the existing vireo version and `newversion` with the version you specified in the previous step.
+    2. Add this line to the `packageSources` section of the NuGet.config in the root directory:
+         ```xml
+         <add key="Local" value="Source\VI\Tests\Tests.HtmlVI" />
+         ```
+    3. Place the `.nupkg` file created in the previous step into `Source\VI\Tests\Tests.HtmlVI`.
+    4. You should now be able to build and run .NET tests that will use your locally created Vireo.
 
 ### Testing esh.exe on a different machine / CI
 
 1. Follow the same steps above for testing on your local machine.
-2. Once you have installed the nuget package, you must add a package source for that package so the remote machine can download the package. See [publishing a package](https://docs.microsoft.com/en-us/nuget/create-packages/publish-a-package) for information how to do this.
+2. You can now create a changeset that includes the .nuspec file to test.
 
 # Configuring Visual Studio Code Intellisense for the JavaScript build
 
