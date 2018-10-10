@@ -187,18 +187,14 @@ var assignJavaScriptInvoke;
                     try {
                         fn(valueRef, data);
                     } catch (ex) {
-                        if (data.isInternalFunction) {
-                            throw ex;
-                        }
+                        // Internal check not needed because poker is not used for internal calls
                         mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke, ex);
                     }
                 };
             };
 
             var reportTypeMismatch = function (data) {
-                if (data.isInternalFunction) {
-                    throw new Error('Type mismatch trying to set return value');
-                }
+                // Internal check not needed because poker is not used for internal calls
                 mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNITypeMismatchForReturnTypeInJavaScriptInvoke);
             };
 
@@ -334,8 +330,7 @@ var assignJavaScriptInvoke;
                 data = {
                     returnValue: returnValue,
                     errorValueRef: errorValueRef,
-                    functionName: functionName,
-                    isInternalFunction: isInternalFunction
+                    functionName: functionName
                 };
                 Module.eggShell.reflectOnValueRef(jsInvokePoker, returnValueRef, data);
             }
