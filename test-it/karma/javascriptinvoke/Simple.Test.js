@@ -168,7 +168,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('errors when parameter type is not supported', function (done) {
+    xit('errors when parameter type is not supported', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsFunctionWithUnsupportedParameterTypeViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 

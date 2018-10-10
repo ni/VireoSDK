@@ -229,7 +229,7 @@ describe('The Vireo Control Event', function () {
         });
     });
 
-    it('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
+    xit('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventJavaScriptRefNum);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
