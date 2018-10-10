@@ -6,7 +6,6 @@ describe('A JavaScript function invoke', function () {
     var fixtures = window.testHelpers.fixtures;
 
     var kNIUnableToInvokeAJavaScriptFunction = 44300;
-    var kNIUnsupportedParameterTypeInJavaScriptInvoke = 44301;
     var kNIUnableToFindFunctionForJavaScriptInvoke = 44302;
 
     var vireo;
@@ -168,18 +167,19 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    xit('errors when parameter type is not supported', function (done) {
+    it('errors when parameter type is not supported', async function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsFunctionWithUnsupportedParameterTypeViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect([kNIUnsupportedParameterTypeInJavaScriptInvoke]).toContain(viPathParser('error.code'));
-            expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
-            done();
-        });
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(exception.rawPrint).toBeEmptyString();
+        expect(exception.rawPrintError).toBeEmptyString();
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.message).toMatch(/Visitor must have a method named/);
     });
 
     describe('with a specific context', function () {

@@ -88,6 +88,10 @@
         };
     };
 
+    var enqueueVI = function (vireo, viName) {
+        vireo.eggShell.loadVia('enqueue(' + viName + ')');
+    };
+
     var vireoMatchers = {
         toMatchVtrText: function () {
             return {
@@ -139,6 +143,7 @@
     window.testHelpers.vireoRunner = {
         rebootAndLoadVia: rebootAndLoadVia,
         createVIPathParser: createVIPathParser,
-        createVIPathWriter: createVIPathWriter
+        createVIPathWriter: createVIPathWriter,
+        enqueueVI: enqueueVI
     };
 }());

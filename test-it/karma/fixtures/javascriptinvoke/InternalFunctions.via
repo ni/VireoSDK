@@ -1,36 +1,53 @@
-define(MyVI dv(VirtualInstrument (
+define(NI_InternalFunction dv(VirtualInstrument (
     Locals: c(
         e(c(
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
         ) error1)
+        e(dv(.Int32 1) value1)
+        e(dv(.Int32 0) returnValue1)
+        e(.Occurrence occurrence1)
+    )
+    clump (
+        JavaScriptInvoke(occurrence1 true error1 'NI_InternalFunction' returnValue1 value1)
+    )
+) ) )
+
+define(NI_InternalFunctionSetsError dv(VirtualInstrument (
+    Locals: c(
         e(c(
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
         ) error2)
-        e(dv(.Int32 1) value1)
         e(dv(.Int32 11) value2)
-        e(dv(.Int32 111) value3)
-        e(dv(.Int32 1111) value4)
-        e(dv(.Int32 0) returnValue1)
         e(dv(.Int32 0) returnValue2)
-        e(dv(.Int32 0) returnValue3)
-        e(dv(.Int32 0) returnValue4)
-        e(.Occurrence occurrence1)
         e(.Occurrence occurrence2)
-        e(.Occurrence occurrence3)
-        e(.Occurrence occurrence4)
     )
     clump (
-        // TODO the test InternalFunction.Tests.js needs to be updated and this via needs to be updated to not run all of these functions every time
-        // Currently if an internal function is not found, no error is reported, and the test rrelies on that 
-        JavaScriptInvoke(occurrence1 true error1 'NI_InternalFunction' returnValue1 value1)
         JavaScriptInvoke(occurrence2 true error2 'NI_InternalFunctionSetsError' returnValue2 value2)
-        JavaScriptInvoke(occurrence3 true * 'NI_InternalFunctionNoErrorCluster' returnValue3 value3)
-        JavaScriptInvoke(occurrence4 true * 'NI_InternalFunctionNoErrorClusterSetsError' returnValue4 value4)
     )
 ) ) )
 
-enqueue(MyVI)
+define(NI_InternalFunctionNoErrorCluster dv(VirtualInstrument (
+    Locals: c(
+        e(dv(.Int32 111) value3)
+        e(dv(.Int32 0) returnValue3)
+        e(.Occurrence occurrence3)
+    )
+    clump (
+        JavaScriptInvoke(occurrence3 true * 'NI_InternalFunctionNoErrorCluster' returnValue3 value3)
+    )
+) ) )
+
+define(NI_InternalFunctionNoErrorClusterSetsError dv(VirtualInstrument (
+    Locals: c(
+        e(dv(.Int32 1111) value4)
+        e(dv(.Int32 0) returnValue4)
+        e(.Occurrence occurrence4)
+    )
+    clump (
+        JavaScriptInvoke(occurrence4 true * 'NI_InternalFunctionNoErrorClusterSetsError' returnValue4 value4)
+    )
+) ) )
