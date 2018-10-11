@@ -141,7 +141,7 @@ var assignJavaScriptInvoke;
             cacheRefNum(newCookie, jsValue);
         };
 
-        var createJavaScriptInvokePeeker = function () {
+        var createJavaScriptInvokeParameterValueVisitor = function () {
             var visitNumeric = function (valueRef) {
                 return Module.eggShell.readDouble(valueRef);
             };
@@ -165,17 +165,13 @@ var assignJavaScriptInvoke;
 
                 visitArray: function (valueRef) {
                     return Module.eggShell.readTypedArray(valueRef);
-                },
-
-                visitJSObjectRefnum: function (valueRef) {
-                    return Module.eggShell.readJavaScriptRefNum(valueRef);
                 }
             };
         };
 
-        var jsInvokePeeker = createJavaScriptInvokePeeker();
+        var parameterValueVisitor = createJavaScriptInvokeParameterValueVisitor();
 
-        var createJavaScriptInvokePoker = function () {
+        var createJavaScriptInvokeReturnValueVisitor = function () {
             var reportReturnSetException = function (fn) {
                 return function (valueRef, data) {
                     try {
@@ -232,15 +228,11 @@ var assignJavaScriptInvoke;
                     }
                     Module.eggShell.resizeArray(valueRef, [data.returnValue.length]);
                     Module.eggShell.writeTypedArray(valueRef, data.returnValue);
-                }),
-
-                visitJSObjectRefnum: reportReturnSetException(function (valueRef, data) {
-                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.returnValue);
                 })
             };
         };
 
-        var jsInvokePoker = createJavaScriptInvokePoker();
+        var returnValueVisitor = createJavaScriptInvokeReturnValueVisitor();
 
         var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
             if (isInternalFunction) {
@@ -281,7 +273,7 @@ var assignJavaScriptInvoke;
                     parameters[parametersArraySize + index] = parameterValueRef;
                 } else {
                     // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
-                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(jsInvokePeeker, parameterValueRef);
+                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef);
                 }
             }
             return parameters;
@@ -328,7 +320,7 @@ var assignJavaScriptInvoke;
                     errorValueRef: errorValueRef,
                     functionName: functionName
                 };
-                Module.eggShell.reflectOnValueRef(jsInvokePoker, returnValueRef, data);
+                Module.eggShell.reflectOnValueRef(returnValueVisitor, returnValueRef, data);
             }
 
             // We don't reflect write errors back on the completionCallbackStatus,
@@ -468,7 +460,7 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     throw new Error('Unexpected return value for function requiring asynchronous completion');
                 }
-                // TODO mraj should we make this check for users? In previous versions we silently ignored return values when async...
+                // TODO mraj should we make a custom error message specific to this case?
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;

@@ -30,40 +30,40 @@ define(MyVI dv(VirtualInstrument (
         e(dv(.Boolean false) isNotANumPathRefnum3)
         e(dv(.Boolean false) isSharedRef)
         e(dv(.Boolean false) isSharedPrimRef)
+        e(dv(.Boolean true) internal)
         e(.Occurrence occurrence)
     )
     clump (
         // Get js object refs
-        JavaScriptInvoke(occurrence false error1 'NI_GetObjectFunction' ref1 name1)
-        JavaScriptInvoke(occurrence false error2 'NI_GetObjectFunction' ref2 name2)
+        JavaScriptInvoke(occurrence internal error1 'NI_GetObjectFunction' ref1 name1)
+        JavaScriptInvoke(occurrence internal error2 'NI_GetObjectFunction' ref2 name2)
         IsEQ(ref1 ref2 isEqual)
         IsNE(ref1 ref2 isNotEqual)
         IsNotANumPathRefnum(ref1 isNotANumPathRefnum1)
         IsNotANumPathRefnum(ref2 isNotANumPathRefnum2)
 
         // Use the js object refs
-        JavaScriptInvoke(occurrence false error3 'NI_UseObjectFunction' length1 ref1)
-        JavaScriptInvoke(occurrence false error4 'NI_UseObjectFunction' length2 ref2)
+        JavaScriptInvoke(occurrence internal error3 'NI_UseObjectFunction' length1 ref1)
+        JavaScriptInvoke(occurrence internal error4 'NI_UseObjectFunction' length2 ref2)
         
         // Get the same js ref
-        JavaScriptInvoke(occurrence false error5 'NI_GetObjectFunction' ref3 name1) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetObjectFunction' ref3 name1) 
         IsEQ(ref1 ref3 isSharedRef)
 
         // Primitive types don't get same js ref
-        JavaScriptInvoke(occurrence false error6 'NI_GetPrimitiveFunction' ref4 name1)
-        JavaScriptInvoke(occurrence false error7 'NI_GetPrimitiveFunction' ref5 name1)
+        JavaScriptInvoke(occurrence internal error6 'NI_GetPrimitiveFunction' ref4 name1)
+        JavaScriptInvoke(occurrence internal error7 'NI_GetPrimitiveFunction' ref5 name1)
         IsEQ(ref4 ref5 isSharedPrimRef)
 
         // Use un-inialized ref
         IsNotANumPathRefnum(ref6 isNotANumPathRefnum3)
-        JavaScriptInvoke(occurrence false error8 'NI_UseObjectFunction' length3 ref6)
+        JavaScriptInvoke(occurrence internal error8 'NI_UseObjectFunction' length3 ref6)
 
         // Setting pre-initalized ref to the same js object is ok, this case can happen for JSLI with in/out ref terminal
-        JavaScriptInvoke(occurrence false error9 'NI_GetObjectFunction' ref1 name1)
+        JavaScriptInvoke(occurrence internal error9 'NI_GetObjectFunction' ref1 name1)
 
         // Setting pre-initalized ref to a different object is not ok
-        JavaScriptInvoke(occurrence false error10 'NI_GetObjectFunction' ref1 name2)
-        JavaScriptInvoke(occurrence false error11 'NI_GetObjectFunction' ref1 name3)
+        JavaScriptInvoke(occurrence internal error10 'NI_GetObjectFunction' ref1 name2)
     )
 ) ) )
 

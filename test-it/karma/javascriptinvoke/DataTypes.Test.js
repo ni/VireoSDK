@@ -111,27 +111,43 @@ describe('A JavaScript function invoke', function () {
             return value;
         };
 
-        window.NI_GetObjectFunction = function (name) {
-            var existingObject = jsObjectMap.get(name);
-            if (existingObject === undefined) { // create new object
-                var myObject = {};
-                myObject.name = name;
-                myObject.getLengthOfName = function () {
-                    return this.name.length;
-                };
-                jsObjectMap.set(name, myObject);
-                return myObject;
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_GetObjectFunction: function (returnValueRef, nameValueRef) {
+                var name = vireo.eggShell.readString(nameValueRef);
+                var existingObject = jsObjectMap.get(name);
+                if (existingObject === undefined) { // create new object
+                    var myObject = {};
+                    myObject.name = name;
+                    myObject.getLengthOfName = function () {
+                        return this.name.length;
+                    };
+                    jsObjectMap.set(name, myObject);
+                    vireo.eggShell.writeJavaScriptRefNum(returnValueRef, myObject);
+                    return;
+                }
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, existingObject);
+                return; // share object
             }
-            return existingObject; // share object
-        };
+        });
 
-        window.NI_UseObjectFunction = function (myObject) {
-            return myObject.getLengthOfName();
-        };
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_UseObjectFunction: function (returnValueRef, myObjectValueRef) {
+                var myObject = vireo.eggShell.readJavaScriptRefNum(myObjectValueRef);
+                var length;
+                if (myObject === undefined) {
+                    length = -1;
+                } else {
+                    length = myObject.getLengthOfName();
+                }
+                vireo.eggShell.writeDouble(returnValueRef, length);
+            }
+        });
 
-        window.NI_GetPrimitiveFunction = function () {
-            return 'foo';
-        };
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_GetPrimitiveFunction: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, 'foo');
+            }
+        });
     });
 
     afterEach(function () {
@@ -154,8 +170,6 @@ describe('A JavaScript function invoke', function () {
         window.NI_UInt32ArrayFunction = undefined;
         window.NI_SingleArrayFunction = undefined;
         window.NI_DoubleArrayFunction = undefined;
-        window.NI_GetObjectFunction = undefined;
-        window.NI_UseObjectFunction = undefined;
     });
 
     it('succesfully pass different data types', function (done) {
@@ -209,56 +223,59 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('succesfully create and use an object type', function (done) {
+    it('succesfully create and use an object type', async function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsObjectTypeViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error1.status')).toBeFalse();
-            expect(viPathParser('error1.code')).toBe(0);
-            expect(viPathParser('error1.source')).toBeEmptyString();
-            expect(viPathParser('error2.status')).toBeFalse();
-            expect(viPathParser('error2.code')).toBe(0);
-            expect(viPathParser('error2.source')).toBeEmptyString();
-            expect(viPathParser('error3.status')).toBeFalse();
-            expect(viPathParser('error3.code')).toBe(0);
-            expect(viPathParser('error3.source')).toBeEmptyString();
-            expect(viPathParser('error4.status')).toBeFalse();
-            expect(viPathParser('error4.code')).toBe(0);
-            expect(viPathParser('error4.source')).toBeEmptyString();
-            expect(viPathParser('length1')).toBe(3);
-            expect(viPathParser('length2')).toBe(6);
-            expect(viPathParser('isEqual')).toBeFalse();
-            expect(viPathParser('isNotEqual')).toBeTrue();
-            expect(viPathParser('isNotANumPathRefnum1')).toBeFalse();
-            expect(viPathParser('isNotANumPathRefnum2')).toBeFalse();
-            expect(viPathParser('error5.code')).toBe(0);
-            expect(viPathParser('error5.status')).toBeFalse();
-            expect(viPathParser('error5.source')).toBeEmptyString();
-            expect(viPathParser('isSharedRef')).toBeTrue();
-            expect(viPathParser('isSharedPrimRef')).toBeFalse();
-            expect(viPathParser('error6.code')).toBe(0);
-            expect(viPathParser('error6.status')).toBeFalse();
-            expect(viPathParser('error6.source')).toBeEmptyString();
-            expect(viPathParser('error7.code')).toBe(0);
-            expect(viPathParser('error7.status')).toBeFalse();
-            expect(viPathParser('error7.source')).toBeEmptyString();
-            expect(viPathParser('isNotANumPathRefnum3')).toBeTrue();
-            expect(viPathParser('error8.code')).toBe(44300);
-            expect(viPathParser('error8.status')).toBeTrue();
-            expect(viPathParser('error8.source')).toMatch(/undefined/);
-            expect(viPathParser('error9.code')).toBe(0);
-            expect(viPathParser('error9.status')).toBeFalse();
-            expect(viPathParser('error9.source')).toBeEmptyString();
-            expect(viPathParser('error10.code')).toBe(44303);
-            expect(viPathParser('error10.status')).toBeTrue();
-            expect(viPathParser('error10.source')).toMatch(/already set to/);
-            expect(viPathParser('error11.code')).toBe(44303);
-            expect(viPathParser('error11.status')).toBeTrue();
-            expect(viPathParser('error11.source')).toMatch(/already set to/);
-            done();
-        });
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(exception.rawPrint).toBeEmptyString();
+        expect(exception.rawPrintError).toBeEmptyString();
+        expect(exception.message).toMatch(/already set to/);
+        expect(viPathParser('error1.status')).toBeFalse();
+        expect(viPathParser('error1.code')).toBe(0);
+        expect(viPathParser('error1.source')).toBeEmptyString();
+        expect(viPathParser('error2.status')).toBeFalse();
+        expect(viPathParser('error2.code')).toBe(0);
+        expect(viPathParser('error2.source')).toBeEmptyString();
+        expect(viPathParser('error3.status')).toBeFalse();
+        expect(viPathParser('error3.code')).toBe(0);
+        expect(viPathParser('error3.source')).toBeEmptyString();
+        expect(viPathParser('error4.status')).toBeFalse();
+        expect(viPathParser('error4.code')).toBe(0);
+        expect(viPathParser('error4.source')).toBeEmptyString();
+        expect(viPathParser('length1')).toBe(3);
+        expect(viPathParser('length2')).toBe(6);
+        expect(viPathParser('isEqual')).toBeFalse();
+        expect(viPathParser('isNotEqual')).toBeTrue();
+        expect(viPathParser('isNotANumPathRefnum1')).toBeFalse();
+        expect(viPathParser('isNotANumPathRefnum2')).toBeFalse();
+        expect(viPathParser('error5.code')).toBe(0);
+        expect(viPathParser('error5.status')).toBeFalse();
+        expect(viPathParser('error5.source')).toBeEmptyString();
+        expect(viPathParser('isSharedRef')).toBeTrue();
+        expect(viPathParser('isSharedPrimRef')).toBeFalse();
+        expect(viPathParser('error6.code')).toBe(0);
+        expect(viPathParser('error6.status')).toBeFalse();
+        expect(viPathParser('error6.source')).toBeEmptyString();
+        expect(viPathParser('error7.code')).toBe(0);
+        expect(viPathParser('error7.status')).toBeFalse();
+        expect(viPathParser('error7.source')).toBeEmptyString();
+        expect(viPathParser('isNotANumPathRefnum3')).toBeTrue();
+        expect(viPathParser('error8.code')).toBe(0);
+        expect(viPathParser('error8.status')).toBeFalse();
+        expect(viPathParser('error8.source')).toBeEmptyString();
+        expect(viPathParser('length3')).toBe(-1);
+        expect(viPathParser('error9.code')).toBe(0);
+        expect(viPathParser('error9.status')).toBeFalse();
+        expect(viPathParser('error9.source')).toBeEmptyString();
+        // Due to exception these are never set so they stay default
+        expect(viPathParser('error10.code')).toBe(0);
+        expect(viPathParser('error10.status')).toBeFalse();
+        expect(viPathParser('error10.source')).toBeEmptyString();
     });
 });
