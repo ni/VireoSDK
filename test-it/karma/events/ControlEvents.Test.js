@@ -251,18 +251,8 @@ describe('The Vireo Control Event', function () {
         });
     });
 
-    /*
     it('errors when JavaScriptRefNum is left null', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventNullJavaScriptRefNum);
-
-        setTimeout(function () {
-            const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent', 'Bool');
-            const data = {
-                OldValue: false,
-                NewValue: true
-            };
-            vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
-        }, 20);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
@@ -270,5 +260,4 @@ describe('The Vireo Control Event', function () {
             done();
         });
     });
-    */
 });
