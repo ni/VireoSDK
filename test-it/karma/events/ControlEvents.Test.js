@@ -251,7 +251,8 @@ describe('The Vireo Control Event', function () {
         });
     });
 
-    /*it('errors when JavaScriptRefNum is left null', function (done) {
+    /*
+    it('errors when JavaScriptRefNum is left null', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventNullJavaScriptRefNum);
 
         setTimeout(function () {
@@ -268,5 +269,6 @@ describe('The Vireo Control Event', function () {
             expect(rawPrint).toBe('(Error "JavaScriptRefNum must not be null.")\n');
             done();
         });
-    });*/
+    });
+    */
 });
