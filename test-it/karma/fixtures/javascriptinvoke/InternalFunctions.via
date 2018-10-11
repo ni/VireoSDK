@@ -4,13 +4,13 @@ define(NI_InternalFunction dv(VirtualInstrument (
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
-        ) error1)
-        e(dv(.Int32 1) value1)
-        e(dv(.Int32 0) returnValue1)
-        e(.Occurrence occurrence1)
+        ) error)
+        e(dv(.Int32 1) value)
+        e(dv(.Int32 0) returnValue)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence1 true error1 'NI_InternalFunction' returnValue1 value1)
+        JavaScriptInvoke(occurrence true error 'NI_InternalFunction' returnValue value)
     )
 ) ) )
 
@@ -20,34 +20,50 @@ define(NI_InternalFunctionSetsError dv(VirtualInstrument (
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
-        ) error2)
-        e(dv(.Int32 11) value2)
-        e(dv(.Int32 0) returnValue2)
-        e(.Occurrence occurrence2)
+        ) error)
+        e(dv(.Int32 11) value)
+        e(dv(.Int32 0) returnValue)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence2 true error2 'NI_InternalFunctionSetsError' returnValue2 value2)
+        JavaScriptInvoke(occurrence true error 'NI_InternalFunctionSetsError' returnValue value)
     )
 ) ) )
 
 define(NI_InternalFunctionNoErrorCluster dv(VirtualInstrument (
     Locals: c(
-        e(dv(.Int32 111) value3)
-        e(dv(.Int32 0) returnValue3)
-        e(.Occurrence occurrence3)
+        e(dv(.Int32 111) value)
+        e(dv(.Int32 0) returnValue)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence3 true * 'NI_InternalFunctionNoErrorCluster' returnValue3 value3)
+        JavaScriptInvoke(occurrence true * 'NI_InternalFunctionNoErrorCluster' returnValue value)
     )
 ) ) )
 
 define(NI_InternalFunctionNoErrorClusterSetsError dv(VirtualInstrument (
     Locals: c(
-        e(dv(.Int32 1111) value4)
-        e(dv(.Int32 0) returnValue4)
-        e(.Occurrence occurrence4)
+        e(dv(.Int32 1111) value)
+        e(dv(.Int32 0) returnValue)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence4 true * 'NI_InternalFunctionNoErrorClusterSetsError' returnValue4 value4)
+        JavaScriptInvoke(occurrence true * 'NI_InternalFunctionNoErrorClusterSetsError' returnValue value)
+    )
+) ) )
+
+define(NI_InternalFunction_DoesNotExist dv(VirtualInstrument (
+    Locals: c(
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+        e(dv(.Int32 1) value)
+        e(dv(.Int32 0) returnValue)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        JavaScriptInvoke(occurrence true error 'NI_InternalFunction_DoesNotExist' returnValue value)
     )
 ) ) )

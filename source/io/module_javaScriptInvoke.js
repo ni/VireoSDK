@@ -67,8 +67,8 @@ var assignJavaScriptInvoke;
                 code: undefined,
                 source: undefined
             };
-            newError.source = Module.coreHelpers.formatMessageWithException(errorToSet.MESSAGE + '\nfunction: ' + functionName, exception);
-            newError.source = Module.coreHelpers.createSourceFromMessage(newError.source);
+            var messageWithException = Module.coreHelpers.formatMessageWithException(errorToSet.MESSAGE + '\nfunction: ' + functionName, exception);
+            newError.source = Module.coreHelpers.createSourceFromMessage(messageWithException);
             newError.code = errorToSet.CODE;
             Module.coreHelpers.mergeErrors(errorValueRef, newError);
         };
@@ -290,18 +290,24 @@ var assignJavaScriptInvoke;
             REJECTED: 'REJECTED'
         };
 
-        var reportExecutionError = function (functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction) {
-            if (returnValue instanceof Error) {
-                if (isInternalFunction) {
-                    throw returnValue;
-                }
+        var hasExecutionError = function (returnValue) {
+            return returnValue instanceof Error;
+        };
 
-                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, returnValue);
-                completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
-                completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
-                return true;
+        var reportExecutionError = function (functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction) {
+            if (!hasExecutionError(returnValue)) {
+                return;
             }
-            return false;
+            if (isInternalFunction) {
+                // TODO mraj because this can happen asynchronously we may end up not actually
+                // stopping the runtime on throw. It would be helpful to have JS api function
+                // to abort the runtime at this point. https://github.com/ni/VireoSDK/issues/521
+                throw returnValue;
+            }
+
+            mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, returnValue);
+            completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+            completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
         };
 
         var updateReturnValue = function (functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction) {
@@ -338,8 +344,8 @@ var assignJavaScriptInvoke;
                     throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
                 }
 
-                var errorReported = reportExecutionError(functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
-                if (errorReported) {
+                if (hasExecutionError(returnValue)) {
+                    reportExecutionError(functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
                     Module.eggShell.setOccurrenceAsync(occurrencePointer);
                     return;
                 }
@@ -417,7 +423,7 @@ var assignJavaScriptInvoke;
             var context = functionAndContext.context;
             if (functionToCall === undefined) {
                 if (isInternalFunction) {
-                    throw new Error('Unable to find internal JS function:' + functionName);
+                    throw new Error('Unable to find internal JS function: ' + functionName);
                 }
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke);
                 Module.eggShell.setOccurrence(occurrencePointer);
@@ -442,8 +448,8 @@ var assignJavaScriptInvoke;
                 returnValue = ex;
             }
 
-            var errorReported = reportExecutionError(functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
-            if (errorReported) {
+            if (hasExecutionError(returnValue)) {
+                reportExecutionError(functionName, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
@@ -460,7 +466,6 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     throw new Error('Unexpected return value for function requiring asynchronous completion');
                 }
-                // TODO mraj should we make a custom error message specific to this case?
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
