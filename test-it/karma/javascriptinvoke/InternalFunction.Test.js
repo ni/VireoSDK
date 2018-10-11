@@ -1,4 +1,4 @@
-describe('A JavaScript function invoke', function () {
+describe('A JavaScriptInvoke for an internal function', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
@@ -19,9 +19,9 @@ describe('A JavaScript function invoke', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
-    it('internal function works', function (done) {
+    it('works for the simple case', function (done) {
         var viName = 'NI_InternalFunction';
-        var runSlices = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
         vireoRunner.enqueueVI(vireo, viName);
 
@@ -37,19 +37,19 @@ describe('A JavaScript function invoke', function () {
             }
         });
 
-        runSlices(function (rawPrint, rawPrintError) {
+        runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(called).toBeTrue();
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error1.status')).toBeFalse();
-            expect(viPathParser('error1.code')).toBe(0);
-            expect(viPathParser('error1.source')).toBeEmptyString();
-            expect(viPathParser('returnValue1')).toBe(2);
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+            expect(viPathParser('returnValue')).toBe(2);
             done();
         });
     });
 
-    it('internal function successfully sets error and return value is unset', function (done) {
+    it('successfully sets error and return value is unset', function (done) {
         var viName = 'NI_InternalFunctionSetsError';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
@@ -67,16 +67,16 @@ describe('A JavaScript function invoke', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error2.status')).toBeTrue();
-            expect(viPathParser('error2.code')).toBe(777);
-            expect(viPathParser('error2.source')).toContain('this is the error message');
-            expect(viPathParser('error2.source')).toContain('NI_InternalFunctionSetsError');
-            expect(viPathParser('returnValue2')).toBe(12);
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(777);
+            expect(viPathParser('error.source')).toContain('this is the error message');
+            expect(viPathParser('error.source')).toContain('NI_InternalFunctionSetsError');
+            expect(viPathParser('returnValue')).toBe(12);
             done();
         });
     });
 
-    it('internal function is invoked even when no error cluster is wired', function (done) {
+    it('is invoked even when no error cluster is wired', function (done) {
         var viName = 'NI_InternalFunctionNoErrorCluster';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
@@ -93,12 +93,12 @@ describe('A JavaScript function invoke', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('returnValue3')).toBe(112);
+            expect(viPathParser('returnValue')).toBe(112);
             done();
         });
     });
 
-    it('internal function is invoked even when no error cluster is wired and it sets error', function (done) {
+    it('is invoked even when no error cluster is wired and it sets error', function (done) {
         var viName = 'NI_InternalFunctionNoErrorClusterSetsError';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
@@ -116,12 +116,34 @@ describe('A JavaScript function invoke', function () {
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('returnValue4')).toBe(1112);
+            expect(viPathParser('returnValue')).toBe(1112);
             done();
         });
     });
 
-    it('registerInternalFunctions successfully errors if we add non-function', function () {
+    it('errors if the internal function does not exist', async function () {
+        var viName = 'NI_InternalFunction_DoesNotExist';
+        var runSlices = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var exception;
+        try {
+            await runSlices();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.rawPrint).toBeEmptyString();
+        expect(exception.rawPrintError).toBeEmptyString();
+        expect(exception.message).toMatch(/Unable to find internal JS function/);
+        expect(viPathParser('error.status')).toBeFalse();
+        expect(viPathParser('error.code')).toBe(0);
+        expect(viPathParser('error.source')).toBeEmptyString();
+        expect(viPathParser('returnValue')).toBe(0);
+    });
+
+    it('errors if we add non-function using registerInternalFunctions', function () {
         expect(function () {
             vireo.javaScriptInvoke.registerInternalFunctions({
                 NI_InternalFunctionThatIsNotAFunction: { }
@@ -129,7 +151,7 @@ describe('A JavaScript function invoke', function () {
         }).toThrow();
     });
 
-    it('registerInternalFunctions successfully errors if we add a duplicate function', function () {
+    it('errors if we add a duplicate function using registerInternalFunctions', function () {
         expect(function () {
             vireo.javaScriptInvoke.registerInternalFunctions({
                 NI_InternalFunctionDuplicate: function () {
@@ -142,5 +164,119 @@ describe('A JavaScript function invoke', function () {
                 }
             });
         }).toThrow();
+    });
+
+    it('errors if returning a value', async function () {
+        var viName = 'NI_InternalFunction';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var called = false;
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                jsAPI.getCompletionCallback();
+                called = true;
+                jsAPI.setLabVIEWError(false, 0, '');
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
+                return 'some unexpected value';
+            }
+        });
+
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(called).toBeTrue();
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.rawPrint).toBeEmptyString();
+        expect(exception.rawPrintError).toBeEmptyString();
+        expect(exception.message).toMatch(/Unexpected return value/);
+        expect(viPathParser('error.status')).toBeFalse();
+        expect(viPathParser('error.code')).toBe(0);
+        expect(viPathParser('error.source')).toBeEmptyString();
+        expect(viPathParser('returnValue')).toBe(2);
+    });
+
+    it('errors if starting an async call and returning a value sync', async function () {
+        var viName = 'NI_InternalFunction';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var called = false;
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                jsAPI.getCompletionCallback();
+                called = true;
+                jsAPI.setLabVIEWError(false, 0, '');
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
+                return 'some unexpected value';
+            }
+        });
+
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(called).toBeTrue();
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.rawPrint).toBeEmptyString();
+        expect(exception.rawPrintError).toBeEmptyString();
+        expect(exception.message).toMatch(/Unexpected return value/);
+        expect(viPathParser('error.status')).toBeFalse();
+        expect(viPathParser('error.code')).toBe(0);
+        expect(viPathParser('error.source')).toBeEmptyString();
+        expect(viPathParser('returnValue')).toBe(2);
+    });
+
+    it('errors if starting an async call and returning a value async', async function () {
+        var viName = 'NI_InternalFunction';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var called = false;
+        var complete;
+        var waitForError = new Promise(function (resolve) {
+            complete = resolve;
+        });
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                var cb = jsAPI.getCompletionCallback();
+                called = true;
+                jsAPI.setLabVIEWError(false, 0, '');
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
+                setTimeout(function () {
+                    // workaround for vireo completion callback unable to abort runtime https://github.com/ni/VireoSDK/issues/521
+                    try {
+                        cb('some unexpected value');
+                    } catch (ex) {
+                        complete(ex);
+                    }
+                }, 0);
+            }
+        });
+        runSlicesAsync();
+        var exception = await waitForError;
+        expect(called).toBeTrue();
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.message).toMatch(/Unexpected return value/);
+        expect(viPathParser('error.status')).toBeFalse();
+        expect(viPathParser('error.code')).toBe(0);
+        expect(viPathParser('error.source')).toBeEmptyString();
+        expect(viPathParser('returnValue')).toBe(2);
     });
 });
