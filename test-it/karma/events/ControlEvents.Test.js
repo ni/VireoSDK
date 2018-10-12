@@ -44,6 +44,7 @@ describe('The Vireo Control Event', function () {
         vireo.eggShell.reflectOnValueRef(typeVisitor, valueRef, data);
     };
 
+    // Can be removed once we finish this task: https://ni.visualstudio.com/DevCentral/_workitems/edit/41574
     var waitForReadyDataItem = function (viPathParser) {
         return new Promise(function (resolve) {
             (function checkReady () {
