@@ -27,6 +27,7 @@ define (UpdateBooleanOnValueChangeEvent dv(.VirtualInstrument (
             e(.UInt32 Time)
             e(.UInt32 Index)
         ) timeoutData)
+        e(.Boolean ready)
         e(.Boolean eventOccurred)
         e(.Boolean eventTimedOut)
         e(c(
@@ -35,6 +36,7 @@ define (UpdateBooleanOnValueChangeEvent dv(.VirtualInstrument (
         ) valueChangedEventDataBool)
     )
     clump(1
+        Copy(true ready)
         Printf("Waiting on Events\n")
         WaitForEventsAndDispatch(100 * 0 0 eventData 1 1 timeoutData 2)
         Branch(0)
