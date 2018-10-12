@@ -44,6 +44,19 @@ describe('The Vireo Control Event', function () {
         vireo.eggShell.reflectOnValueRef(typeVisitor, valueRef, data);
     };
 
+    var waitForReadyDataItem = function (viPathParser) {
+        return new Promise(function (resolve) {
+            (function checkReady () {
+                var ready = viPathParser('ready');
+                if (!ready) {
+                    setTimeout(checkReady, 0);
+                } else {
+                    resolve();
+                }
+            }());
+        });
+    };
+
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             valueChangedEventRegisterAndUnregister,
@@ -135,14 +148,15 @@ describe('The Vireo Control Event', function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEvent);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
-        setTimeout(function () {
+        var triggerEvent = async function () {
+            await waitForReadyDataItem(viPathParser);
             const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent', 'Bool');
             const data = {
                 OldValue: false,
                 NewValue: true
             };
             vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
-        }, 20);
+        };
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
@@ -150,6 +164,8 @@ describe('The Vireo Control Event', function () {
             expect(viPathParser('eventTimedOut')).toEqual(false);
             done();
         });
+
+        triggerEvent();
     });
 
     it('on an unregistered control does not update boolean terminal value', function (done) {
@@ -157,14 +173,15 @@ describe('The Vireo Control Event', function () {
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
 
         var unregisteredControlId = 19;
-        setTimeout(function () {
+        var triggerEvent = async function () {
+            await waitForReadyDataItem(viPathParser);
             const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent', 'Bool');
             const data = {
                 OldValue: false,
                 NewValue: true
             };
             vireo.eventHelpers.occurEvent(1, unregisteredControlId, 2, writeData, valueRef, data);
-        }, 20);
+        };
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
@@ -172,6 +189,8 @@ describe('The Vireo Control Event', function () {
             expect(viPathParser('eventTimedOut')).toEqual(true);
             done();
         });
+
+        triggerEvent();
     });
 
     it('time out event occurs when value change is not triggered', function (done) {
@@ -190,14 +209,15 @@ describe('The Vireo Control Event', function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateMultipleEventStructuresOnValueChange);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MultipleEventStructuresListeningToSameControl');
 
-        setTimeout(function () {
+        var triggerEvent = async function () {
+            await waitForReadyDataItem(viPathParser);
             const valueRef = getEventDataValueRef('MultipleEventStructuresListeningToSameControl', 'Bool');
             const data = {
                 OldValue: false,
                 NewValue: true
             };
             vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
-        }, 20);
+        };
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
@@ -205,6 +225,8 @@ describe('The Vireo Control Event', function () {
             expect(viPathParser('eventStructure2Notified')).toEqual(true);
             done();
         });
+
+        triggerEvent();
     });
 
     it('for value change occurrence passes correct old and new value', function (done) {
@@ -213,14 +235,15 @@ describe('The Vireo Control Event', function () {
         var oldValue = 12;
         var newValue = 13;
 
-        setTimeout(function () {
+        var triggerEvent = async function () {
+            await waitForReadyDataItem(viPathParser);
             const valueRef = getEventDataValueRef('UpdateNumericOnValueChangeEvent', 'Numeric');
             const data = {
                 OldValue: oldValue,
                 NewValue: newValue
             };
             vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
-        }, 20);
+        };
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
@@ -230,25 +253,34 @@ describe('The Vireo Control Event', function () {
             expect(viPathParser('eventTimedOut')).toEqual(false);
             done();
         });
+
+        triggerEvent();
     });
 
     it('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventJavaScriptRefNum);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
+        var result = `Waiting on Events
+Event occurred
+`;
 
-        setTimeout(function () {
+        var triggerEvent = async function () {
+            await waitForReadyDataItem(viPathParser);
             const valueRef = getEventDataValueRef('UpdateBooleanOnValueChangeEvent', 'Bool');
             const data = {
                 OldValue: false,
                 NewValue: true
             };
             vireo.eventHelpers.occurEvent(1, 18, 2, writeData, valueRef, data);
-        }, 20);
+        };
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
-            expect(rawPrint).toBe('Waiting on Events\nEvent occurred\n');
+            expect(rawPrint).toMatchVtrText(result);
             done();
         });
+
+        triggerEvent();
     });
 
     it('errors when JavaScriptRefNum is left null', function (done) {

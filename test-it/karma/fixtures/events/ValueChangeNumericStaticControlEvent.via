@@ -27,6 +27,7 @@ define (UpdateNumericOnValueChangeEvent dv(.VirtualInstrument (
             e(.UInt32 Time)
             e(.UInt32 Index)
         ) timeoutData)
+        e(.Boolean ready)
         e(.Boolean eventOccurred)
         e(.Int32 oldValueInEvent)
         e(.Int32 newValueInEvent)
@@ -37,6 +38,7 @@ define (UpdateNumericOnValueChangeEvent dv(.VirtualInstrument (
         ) valueChangedEventDataNumeric)
     )
     clump(1
+        Copy(true ready)
         Printf("Waiting on Events\n")
         WaitForEventsAndDispatch(100 * 0 0 eventData 1 1 timeoutData 2)
         Branch(0)
