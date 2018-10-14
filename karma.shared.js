@@ -109,7 +109,14 @@
             logLevel: config.LOG_INFO,
 
             // Timeout for jasmine set to 50000 in TestHelpers.ExtendJasmineTimeout.js so warn if test time getting close
-            reportSlowerThan: 40000
+            reportSlowerThan: 40000,
+
+            // Settings to pass to frameworks and plugins
+            client: {
+                jasmine: {
+                    random: true
+                }
+            }
         };
     };
 }());
