@@ -143,11 +143,11 @@ var assignEggShell;
         Module.eggShell.v_userShell = EggShell_Create(Module.eggShell.v_root);
 
         // Exported functions
-        Module.print = function (text) {
+        Module.eggShell.doPrint = function (text) {
             console.log(text);
         };
 
-        Module.printErr = function (text) {
+        Module.eggShell.doPrintErr = function (text) {
             console.error(text);
         };
 
@@ -156,7 +156,7 @@ var assignEggShell;
                 throw new Error('Print must be a callable function');
             }
 
-            Module.print = fn;
+            Module.eggShell.doPrint = fn;
         };
 
         publicAPI.eggShell.setPrintErrorFunction = function (fn) {
@@ -164,7 +164,7 @@ var assignEggShell;
                 throw new Error('PrintError must be a callable function');
             }
 
-            Module.printErr = fn;
+            Module.eggShell.doPrintErr = fn;
         };
 
         Module.eggShell.executeSlicesWakeUpCallback = function () {

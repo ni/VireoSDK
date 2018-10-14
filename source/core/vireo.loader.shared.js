@@ -50,14 +50,12 @@ const createModuleBase = function (config) {
         }
     }
 
-    let ttyout = [];
-    Module.stdout = function (val) {
-        if (val === null || val === 0x0A) {
-            Module.print(Module.coreHelpers.sizedUtf8ArrayToJSString(ttyout, 0, ttyout.length));
-            ttyout = [];
-        } else {
-            ttyout.push(val);
-        }
+    Module.print = function (text) {
+        Module.eggShell.doPrint(text);
+    };
+
+    Module.printErr = function (text) {
+        Module.eggShell.doPrintErr(text);
     };
 
     Module.vireoWasmReady = new Promise(function (resolve, reject) {
