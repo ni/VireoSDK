@@ -415,10 +415,10 @@ var assignJavaScriptInvoke;
                 invocationState: completionCallbackInvocationEnum.PENDING
             };
 
-            var api;
+            var jsapi;
             if (functionToCall.length === parameters.length + 1) {
-                api = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
-                parameters.push(api);
+                jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
+                parameters.push(jsapi);
             }
 
             var returnValue;
@@ -434,7 +434,26 @@ var assignJavaScriptInvoke;
                 return;
             }
 
-            // assume synchronous invocation since the completion callback was never retrieved by the user
+            var completionCallback;
+            if (returnValue instanceof Promise) {
+                if (completionCallbackStatus.retrievalState !== completionCallbackRetrievalEnum.AVAILABLE) {
+                    completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                    completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
+                    // TODO mraj Currently none of the async getting behaviors return labview errors, maybe they actually should
+                    throw new Error('Promise returned but completionCallback unavailable. Possible reason is using getCompletionCallback when returning a promise');
+                }
+
+                if (jsapi === undefined) {
+                    jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
+                }
+
+                completionCallback = jsapi.getCompletionCallback();
+                returnValue.then(completionCallback).catch(completionCallback);
+                // Do not setOccurrence when returning here since waiting asynchronously for user Promise to resolve
+                return;
+            }
+
+            // synchronous invocation since the completion callback was never retrieved by the user
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
                 updateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
                 Module.eggShell.setOccurrence(occurrencePointer);
@@ -452,6 +471,8 @@ var assignJavaScriptInvoke;
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
+
+            // at this point user retrieved getCompletionCallback so we wait for completion
         };
 
         Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, returnTypeRef, returnDataRef) {
