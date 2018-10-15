@@ -13,38 +13,11 @@ var assignEggShell;
             'Vireo_MaxExecWakeUpTime',
             'EggShell_Create',
             'EggShell_Delete',
-            'EggShell_GetPointer',
-            'EggShell_GetArrayDimLength',
-            'Data_ValidateArrayType',
             'Data_GetStringBegin',
             'Data_GetStringLength',
-            'Data_ReadBoolean',
-            'Data_ReadInt8',
-            'Data_ReadInt16',
-            'Data_ReadInt32',
-            'Data_ReadUInt8',
-            'Data_ReadUInt16',
-            'Data_ReadUInt32',
-            'Data_ReadSingle',
-            'Data_ReadDouble',
-            'Data_GetArrayMetadata',
-            'Data_GetArrayDimLength',
             'Data_WriteBoolean',
-            'Data_WriteString',
-            'Data_WriteStringFromArray',
-            'Data_WriteInt8',
-            'Data_WriteInt16',
-            'Data_WriteInt32',
-            'Data_WriteUInt8',
-            'Data_WriteUInt16',
-            'Data_WriteUInt32',
-            'Data_WriteSingle',
-            'Data_WriteDouble',
-            'Data_ResizeArray',
-            'EggShell_REPL',
             'EggShell_ExecuteSlices',
-            'Occurrence_Set',
-            'Pointer_stringify'
+            'Occurrence_Set'
         ]}], */
 
         Module.eggShell = {};
@@ -59,8 +32,6 @@ var assignEggShell;
         };
 
         // Private Instance Variables (per vireo instance)
-
-        var NULL = 0;
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
         var LENGTH_SIZE = 4;
@@ -108,33 +79,9 @@ var assignEggShell;
         var Vireo_MaxExecWakeUpTime = Module.cwrap('Vireo_MaxExecWakeUpTime', 'number', []);
         var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
-        var EggShell_GetPointer = Module.cwrap('EggShell_GetPointer', 'number', ['number', 'string', 'string', 'number', 'number']);
-        var EggShell_GetArrayDimLength = Module.cwrap('EggShell_GetArrayDimLength', 'number', ['number', 'string', 'string', 'number']);
-        var Data_ValidateArrayType = Module.cwrap('Data_ValidateArrayType', 'number', ['number', 'number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
-        var Data_WriteString = Module.cwrap('Data_WriteString', 'void', ['number', 'number', 'string', 'number']);
-        var Data_ReadBoolean = Module.cwrap('Data_ReadBoolean', 'number', ['number']);
-        var Data_ReadInt8 = Module.cwrap('Data_ReadInt8', 'number', ['number']);
-        var Data_ReadInt16 = Module.cwrap('Data_ReadInt16', 'number', ['number']);
-        var Data_ReadInt32 = Module.cwrap('Data_ReadInt32', 'number', ['number']);
-        var Data_ReadUInt8 = Module.cwrap('Data_ReadUInt8', 'number', ['number']);
-        var Data_ReadUInt16 = Module.cwrap('Data_ReadUInt16', 'number', ['number']);
-        var Data_ReadUInt32 = Module.cwrap('Data_ReadUInt32', 'number', ['number']);
-        var Data_ReadSingle = Module.cwrap('Data_ReadSingle', 'number', ['number']);
-        var Data_ReadDouble = Module.cwrap('Data_ReadDouble', 'number', ['number']);
-        var Data_GetArrayMetadata = Module.cwrap('Data_GetArrayMetadata', 'number', ['number', 'number', 'number', 'number', 'number']);
-        var Data_GetArrayDimLength = Module.cwrap('Data_GetArrayDimLength', 'number', ['number', 'number', 'number']);
-        var Data_ResizeArray = Module.cwrap('Data_ResizeArray', 'number', ['number', 'number', 'number', 'number']);
         var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
-        var Data_WriteInt8 = Module.cwrap('Data_WriteInt8', 'void', ['number', 'number']);
-        var Data_WriteInt16 = Module.cwrap('Data_WriteInt16', 'void', ['number', 'number']);
-        var Data_WriteInt32 = Module.cwrap('Data_WriteInt32', 'void', ['number', 'number']);
-        var Data_WriteUInt8 = Module.cwrap('Data_WriteUInt8', 'void', ['number', 'number']);
-        var Data_WriteUInt16 = Module.cwrap('Data_WriteUInt16', 'void', ['number', 'number']);
-        var Data_WriteUInt32 = Module.cwrap('Data_WriteUInt32', 'void', ['number', 'number']);
-        var Data_WriteSingle = Module.cwrap('Data_WriteSingle', 'void', ['number', 'number']);
-        var Data_WriteDouble = Module.cwrap('Data_WriteDouble', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -402,41 +349,6 @@ var assignEggShell;
             Module.stackRestore(stack);
         };
 
-        var supportedArrayTypeConfig = {
-            Int8: {
-                heap: Module.HEAP8,
-                constructorFunction: Int8Array
-            },
-            Int16: {
-                heap: Module.HEAP16,
-                constructorFunction: Int16Array
-            },
-            Int32: {
-                heap: Module.HEAP32,
-                constructorFunction: Int32Array
-            },
-            UInt8: {
-                heap: Module.HEAPU8,
-                constructorFunction: Uint8Array
-            },
-            UInt16: {
-                heap: Module.HEAPU16,
-                constructorFunction: Uint16Array
-            },
-            UInt32: {
-                heap: Module.HEAPU32,
-                constructorFunction: Uint32Array
-            },
-            Single: {
-                heap: Module.HEAPF32,
-                constructorFunction: Float32Array
-            },
-            Double: {
-                heap: Module.HEAPF64,
-                constructorFunction: Float64Array
-            }
-        };
-
         Module.eggShell.dataGetArrayBegin = function (dataRef) {
             return Module._Data_GetArrayBegin(dataRef);
         };
@@ -593,119 +505,6 @@ var assignEggShell;
             typedArray.set(typedArrayValue);
         };
 
-        var groupByDimensionLength = function (arr, startIndex, arrLength, dimensionLength) {
-            var i, retArr, currArr, currArrIndex;
-
-            if (arrLength % dimensionLength !== 0) {
-                throw new Error('Cannot evenly split array into groups');
-            }
-
-            retArr = [];
-            currArr = [];
-            currArrIndex = 0;
-            // TODO mraj should benchmark and see if difference between slice and iteration
-            for (i = 0; i < arrLength; i += 1) {
-                currArr[currArrIndex] = arr[startIndex + i];
-                currArrIndex += 1;
-
-                // After an increment currArrIndex is equivalent to the currArray length
-                if (currArrIndex === dimensionLength) {
-                    retArr.push(currArr);
-                    currArr = [];
-                    currArrIndex = 0;
-                }
-            }
-
-            return retArr;
-        };
-
-        var convertFlatArraytoNArray = function (arr, dimensionLengths) {
-            var i;
-            var rank = dimensionLengths.length;
-            var arrLength = 1;
-
-            for (i = 0; i < rank; i += 1) {
-                arrLength *= dimensionLengths[i];
-            }
-
-            // Perform a copy of array rank 1
-            var currArr;
-            if (rank === 1) {
-                currArr = [];
-                for (i = 0; i < arrLength; i += 1) {
-                    currArr[i] = arr[i];
-                }
-                return currArr;
-            }
-
-            // Perform nd array creation for rank > 1
-            // TODO mraj this is O((m-1)n) for rank m. So rank 2 is O(n) and can be improved for rank > 2
-            currArr = arr;
-            var currStartIndex = 0;
-            var currArrLength = arrLength;
-            var currDimensionLength;
-
-            for (i = 0; i < rank - 1; i += 1) {
-                currDimensionLength = dimensionLengths[i];
-                currArr = groupByDimensionLength(currArr, currStartIndex, currArrLength, currDimensionLength);
-
-                currStartIndex = 0;
-                currArrLength = currArr.length;
-            }
-
-            return currArr;
-        };
-
-        var arrayTypeNameDoublePointer = Module._malloc(4);
-        var arrayBeginPointer = Module._malloc(4);
-        var arrayRankPointer = Module._malloc(4);
-        var vireoObjectPointer = Module._malloc(4);
-        var vireoTypePointer = Module._malloc(4);
-
-        // **DEPRECATED**
-        Module.eggShell.getNumericArray = publicAPI.eggShell.getNumericArray = function (vi, path) {
-            var eggShellResult = EggShell_GetPointer(Module.eggShell.v_userShell, vi, path, vireoObjectPointer, vireoTypePointer);
-
-            if (eggShellResult !== 0) {
-                throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')' +
-                    ' (vi name: ' + vi + ')' +
-                    ' (path: ' + path + ')');
-            }
-
-            var arrayVireoPointer = Module.getValue(vireoObjectPointer, 'i32');
-            var typePointer = Module.getValue(vireoTypePointer, 'i32');
-            eggShellResult = Data_ValidateArrayType(Module.eggShell.v_userShell, typePointer);
-
-            if (eggShellResult !== 0) {
-                throw new Error('Getting the array pointer failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')' +
-                    ' (vi name: ' + vi + ')' +
-                    ' (path: ' + path + ')');
-            }
-
-            var arrayInfo = Module.eggShell.dataReadNumericArrayAsTypedArray(arrayVireoPointer);
-
-            var actualArray;
-            if (arrayInfo.array === undefined || arrayInfo.array.length === 0) {
-                // handle empty array
-                actualArray = [];
-                for (var i = 0; i < arrayInfo.dimensionLengths.length - 1; i += 1) {
-                    actualArray = [actualArray];
-                }
-                return actualArray;
-            }
-
-            actualArray = arrayInfo.array;
-
-            return convertFlatArraytoNArray(actualArray, arrayInfo.dimensionLengths);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.getArrayDimLength = publicAPI.eggShell.getArrayDimLength = function (vi, path, dim) {
-            return EggShell_GetArrayDimLength(Module.eggShell.v_userShell, vi, path, dim);
-        };
-
         Module.eggShell.resizeArray = publicAPI.eggShell.resizeArray = function (valueRef, newDimensions) {
             if (!Array.isArray(newDimensions)) {
                 throw new Error('Expected newDimensions to be an array of dimension lengths, instead got: ' + newDimensions);
@@ -740,211 +539,10 @@ var assignEggShell;
             return str;
         };
 
-        // Note this function is tied to the underlying buffer, a copy is not made
-        // **DEPRECATED**
-        Module.eggShell.dataReadStringAsArray_NoCopy = function (stringPointer) {
-            var begin = Data_GetStringBegin(stringPointer);
-            var length = Data_GetStringLength(stringPointer);
-            return Module.HEAPU8.subarray(begin, begin + length);
-        };
-
-        // Source should be a JS String
-        // **DEPRECATED**
-        Module.eggShell.dataWriteString = function (destination, source) {
-            var sourceLength = Module.lengthBytesUTF8(source);
-            Data_WriteString(Module.eggShell.v_userShell, destination, source, sourceLength);
-        };
-
-        // Source should be a JS array of numbers or a TypedArray of Uint8Array or Int8Array
-        // **DEPRECATED**
-        Module.eggShell.dataWriteStringFromArray = function (destination, source) {
-            var sourceHeapPointer = Module._malloc(source.length);
-            Module.writeArrayToMemory(source, sourceHeapPointer);
-            Module._Data_WriteString(Module.eggShell.v_userShell, destination, sourceHeapPointer, source.length);
-            Module._free(sourceHeapPointer);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadBoolean = function (booleanPointer) {
-            var numericValue = Data_ReadBoolean(booleanPointer);
-            return numericValue !== 0;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadInt8 = function (intPointer) {
-            var numericValue = Data_ReadInt8(intPointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadInt16 = function (intPointer) {
-            var numericValue = Data_ReadInt16(intPointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadInt32 = function (intPointer) {
-            var numericValue = Data_ReadInt32(intPointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadUInt8 = function (intPointer) {
-            var numericValue = Data_ReadUInt8(intPointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadUInt16 = function (intPointer) {
-            var numericValue = Data_ReadUInt16(intPointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadUInt32 = function (intPointer) {
-            var numericValue = Data_ReadUInt32(intPointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadSingle = function (singlePointer) {
-            var numericValue = Data_ReadSingle(singlePointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadDouble = function (doublePointer) {
-            var numericValue = Data_ReadDouble(doublePointer);
-            return numericValue;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadTypedArray = function (arrayPointer) {
-            return Module.eggShell.dataReadNumericArrayAsTypedArray(arrayPointer).array;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataReadNumericArrayAsTypedArray = function (arrayPointer) {
-            var eggShellResult = Data_GetArrayMetadata(Module.eggShell.v_userShell, arrayPointer, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
-
-            if (eggShellResult !== 0) {
-                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')');
-            }
-
-            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
-            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
-
-            var arrayTypeConfig = supportedArrayTypeConfig[arrayTypeName];
-            if (arrayTypeConfig === undefined) {
-                throw new Error('Unsupported type: ' + arrayTypeName + ', the following types are supported: ' + Object.keys(supportedArrayTypeConfig).join(','));
-            }
-            var heap = supportedArrayTypeConfig[arrayTypeName].heap;
-
-            var arrayRank = Module.getValue(arrayRankPointer, 'i32');
-            var arrayBeginBytes = Module.getValue(arrayBeginPointer, 'i32');
-
-            var dimensionLengths;
-            // Handle empty arrays
-            if (arrayBeginBytes === NULL) {
-                dimensionLengths = [];
-                for (var i = 0; i < arrayRank; i += 1) {
-                    dimensionLengths[i] = 0;
-                }
-
-                return {
-                    array: [],
-                    dimensionLengths: dimensionLengths
-                };
-            }
-
-            var arrayBegin = arrayBeginBytes / heap.BYTES_PER_ELEMENT;
-
-            var arrayLength = 1;
-            dimensionLengths = [];
-            for (var j = 0; j < arrayRank; j += 1) {
-                dimensionLengths[j] = Data_GetArrayDimLength(Module.eggShell.v_userShell, arrayPointer, j);
-                arrayLength *= dimensionLengths[j];
-            }
-
-            var TypedArrayConstructor = supportedArrayTypeConfig[arrayTypeName].constructorFunction;
-            var typedArray = new TypedArrayConstructor(heap.subarray(arrayBegin, arrayBegin + arrayLength));
-            return {
-                array: typedArray,
-                dimensionLengths: dimensionLengths
-            };
-        };
-
         // **DEPRECATED**
         Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
             var numericValue = booleanValue ? 1 : 0;
             Data_WriteBoolean(booleanPointer, numericValue);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteInt8 = function (destination, value) {
-            Data_WriteInt8(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteInt16 = function (destination, value) {
-            Data_WriteInt16(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteInt32 = function (destination, value) {
-            Data_WriteInt32(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteUInt8 = function (destination, value) {
-            Data_WriteUInt8(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteUInt16 = function (destination, value) {
-            Data_WriteUInt16(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteUInt32 = function (destination, value) {
-            Data_WriteUInt32(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteSingle = function (destination, value) {
-            Data_WriteSingle(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteDouble = function (destination, value) {
-            Data_WriteDouble(destination, value);
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteTypedArray = function (destination, value) {
-            var int32Byte = 4;
-            var rank = 1;
-            var newLengths = Module._malloc(rank * int32Byte);
-            Module.setValue(newLengths, value.length, 'i32');
-
-            Data_ResizeArray(Module.eggShell.v_userShell, destination, rank, newLengths);
-            Module._free(newLengths);
-
-            var eggShellResult = Data_GetArrayMetadata(Module.eggShell.v_userShell, destination, arrayTypeNameDoublePointer, arrayRankPointer, arrayBeginPointer);
-
-            if (eggShellResult !== 0) {
-                throw new Error('Querying Array Metadata failed for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')');
-            }
-
-            var arrayTypeNamePointer = Module.getValue(arrayTypeNameDoublePointer, 'i32');
-            var arrayTypeName = Module.Pointer_stringify(arrayTypeNamePointer);
-            var heap = supportedArrayTypeConfig[arrayTypeName].heap;
-            var arrayBegin = Module.getValue(arrayBeginPointer, 'i32') / heap.BYTES_PER_ELEMENT;
-
-            var returnArray = heap.subarray(arrayBegin, arrayBegin + value.length);
-            returnArray.set(value);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
