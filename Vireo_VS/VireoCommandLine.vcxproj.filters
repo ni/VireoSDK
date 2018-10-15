@@ -100,9 +100,6 @@
     <ClCompile Include="..\source\core\VirtualInstrument.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\io\Canvas2d.cpp">
-      <Filter>VireoSource\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\io\DebugGPIO.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
@@ -138,9 +135,6 @@
     <None Include="..\source\include\ConversionTable.def">
       <Filter>VireoSource\Include</Filter>
     </None>
-    <None Include="..\source\io\library_canvas2d.js">
-      <Filter>VireoSource\IO</Filter>
-    </None>
     <None Include="..\source\io\library_httpClient.js">
       <Filter>VireoSource\IO</Filter>
     </None>
@@ -160,9 +154,6 @@
       <Filter>VireoSource\Core</Filter>
     </None>
     <None Include="..\source\core\module_coreHelpers.js">
-      <Filter>VireoSource\Core</Filter>
-    </None>
-    <None Include="..\source\core\vireo.loader.js">
       <Filter>VireoSource\Core</Filter>
     </None>
     <None Include="..\source\core\vireo.wrapper.js">

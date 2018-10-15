@@ -44,7 +44,6 @@
     <ClCompile Include="..\source\core\UnitTest.cpp" />
     <ClCompile Include="..\source\core\VirtualInstrument.cpp" />
     <ClCompile Include="..\source\core\Waveform.cpp" />
-    <ClCompile Include="..\source\io\Canvas2d.cpp" />
     <ClCompile Include="..\source\io\DebugGPIO.cpp" />
     <ClCompile Include="..\source\io\FileIO.cpp" />
     <ClCompile Include="..\source\io\HttpClient.cpp" />
@@ -54,10 +53,8 @@
   <ItemGroup>
     <None Include="..\source\core\library_coreHelpers.js" />
     <None Include="..\source\core\module_coreHelpers.js" />
-    <None Include="..\source\core\vireo.loader.js" />
     <None Include="..\source\core\vireo.wrapper.js" />
     <None Include="..\source\include\ConversionTable.def" />
-    <None Include="..\source\io\library_canvas2d.js" />
     <None Include="..\source\io\library_httpClient.js" />
     <None Include="..\source\io\library_javaScriptInvoke.js" />
     <None Include="..\source\io\library_propertyNode.js" />
