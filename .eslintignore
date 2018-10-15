@@ -2,7 +2,6 @@ node_modules/*
 dist/*
 make-it/objs/*
 env/*
-source/io/library_canvas2d.js
 emscripten-sdk/*
 emsdk/*
 coverage/*
