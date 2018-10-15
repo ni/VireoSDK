@@ -83,9 +83,6 @@ Vireo_XCode/VireoEggShell.xcodeproj/xcuserdata
 Vireo_VS/_ReSharper.VireoCommandLine
 make-it/build
 source/io/LINX
-sample-vis/SampleLVNativeMethod/Canvas2D/DerivedData
-sample-vis/SampleLVNativeMethod/Canvas2D/Canvas2D.xcodeproj/project.xcworkspace/xcuserdata
-sample-vis/SampleLVNativeMethod/Canvas2D/Canvas2D.xcodeproj/xcuserdata
 Vireo_Web/emsdk_portable
 gh-pages
 test-it/node_modules

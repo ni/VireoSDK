@@ -97,7 +97,6 @@ EM_OPT = $(EM_OPTFLAGS) $(TARGET_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exce
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(CORESOURCEDIR)/library_eventHelpers.js \
-            --js-library $(IOSOURCEDIR)/library_canvas2d.js \
             --js-library $(IOSOURCEDIR)/library_httpClient.js \
             --js-library $(IOSOURCEDIR)/library_javaScriptInvoke.js \
             --js-library $(IOSOURCEDIR)/library_propertyNode.js
@@ -200,7 +199,6 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/UnitTest.bc\
 	$(OBJS)/VirtualInstrument.bc\
 	$(OBJS)/RefNumTest.bc\
-	$(OBJS)/Canvas2d.bc\
 	$(OBJS)/FileIO.bc\
 	$(OBJS)/HttpClient.bc\
 	$(OBJS)/Waveform.bc\
