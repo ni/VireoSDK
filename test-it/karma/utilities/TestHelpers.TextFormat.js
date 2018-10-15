@@ -10,8 +10,13 @@
         return multiLineString.replace(/^\/\/.*\n/gm, '');
     };
 
+    var convertNulltoNewline = function (multiLineString) {
+        return multiLineString.replace(/\0/gm, '\n');
+    };
+
     window.testHelpers.textFormat = {
         normalizeLineEndings: normalizeLineEndings,
-        removeInlineComments: removeInlineComments
+        removeInlineComments: removeInlineComments,
+        convertNulltoNewline: convertNulltoNewline
     };
 }());

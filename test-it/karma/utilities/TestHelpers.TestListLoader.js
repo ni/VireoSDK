@@ -4,20 +4,21 @@
 
     var testListDataUrl = '/base/test-it/testList.json';
 
-    var getTestNamesForEnvironmentFromTestList = function (testListData, environmentName) {
-        var environment = testListData.tests[environmentName];
-        if (environment === undefined) {
+    var enqueueTestNamesForEnvironment = function (resultList, environmentConfigs, environmentName) {
+        var environmentConfig = environmentConfigs[environmentName];
+        if (environmentConfig === undefined) {
             throw new Error('Cannot find environment ' + environmentName + ' in testList.json');
         }
 
-        var environmentSpecificTestNames = environment.tests;
-        var environmentIncludes = environment.include || [];
-        var listOfIncludedEnvironmentNameLists = environmentIncludes.map(function (environmentName) {
-            return testListData.tests[environmentName].tests;
-        });
+        if (Array.isArray(environmentConfig.tests)) {
+            Array.prototype.push.apply(resultList, environmentConfig.tests);
+        }
 
-        var testNames = Array.prototype.concat.apply(environmentSpecificTestNames, listOfIncludedEnvironmentNameLists);
-        return testNames;
+        if (Array.isArray(environmentConfig.include)) {
+            environmentConfig.include.forEach(function (environmentName) {
+                enqueueTestNamesForEnvironment(resultList, environmentConfigs, environmentName);
+            });
+        }
     };
 
     var makeSyncRequest = function (url, loadPassed) {
@@ -49,9 +50,11 @@
         });
 
         var testListData = JSON.parse(testListDataJSON);
-        var testNamesWithExtensions = getTestNamesForEnvironmentFromTestList(testListData, environmentName);
-        var testNames = testNamesWithExtensions.map(function (nameAndExtension) {
-            return nameAndExtension.match(/(.*)\.via/)[1];
+        var environmentConfigs = testListData.tests;
+        var resultList = [];
+        enqueueTestNamesForEnvironment(resultList, environmentConfigs, environmentName);
+        var testNames = resultList.map(function (nameWithExtension) {
+            return nameWithExtension.match(/(.*)\.via/)[1];
         });
         return testNames;
     };

@@ -95,19 +95,26 @@
     var vireoMatchers = {
         toMatchVtrText: function () {
             return {
-                compare: function (actual, expected) {
+                compare: function (actualRaw, expectedRaw) {
                     var result = {
                         pass: undefined,
                         message: undefined
                     };
 
-                    var actualNormalized = window.testHelpers.textFormat.normalizeLineEndings(actual);
+                    // We convert all nulls to newlines because we cannot distinguish between null and newline in Module.print and Module.printErr
+                    // https://github.com/kripken/emscripten/blob/52ff847187ee30fba48d611e64b5d10e2498fe0f/src/library_syscall.js#L162
+                    // We choose newline because in setPrintFunction and setPrintErrorFunction we use newline termination
+                    // Can avoid when lower-level api is available: https://github.com/kripken/emscripten/issues/5290#issuecomment-429970878
+
+                    var actualNormalized = window.testHelpers.textFormat.normalizeLineEndings(actualRaw);
                     var actualNoComments = window.testHelpers.textFormat.removeInlineComments(actualNormalized);
+                    var actual = window.testHelpers.textFormat.convertNulltoNewline(actualNoComments);
 
-                    var expectedNormalized = window.testHelpers.textFormat.normalizeLineEndings(expected);
+                    var expectedNormalized = window.testHelpers.textFormat.normalizeLineEndings(expectedRaw);
                     var expectedNoComments = window.testHelpers.textFormat.removeInlineComments(expectedNormalized);
+                    var expected = window.testHelpers.textFormat.convertNulltoNewline(expectedNoComments);
 
-                    result.pass = actualNoComments === expectedNoComments;
+                    result.pass = actual === expected;
                     if (result.pass) {
                         // Result is they are equal, but should be not equal (the .not case)
                         result.message = 'Expected Vireo output to not match the VTR text, but they are identical. VTR text:\n' + expectedNoComments;
