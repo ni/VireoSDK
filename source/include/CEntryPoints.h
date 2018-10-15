@@ -50,27 +50,14 @@ VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRe
 VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef actualType, const void* pData, Double* result);
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);
 VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
-VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm,
-        const char* viName, const char* elementName, void** dataPointer, void** typePointer);
-VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim);
 VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef actualType, const void* pData,
                                                  Int32 rank, Int32 dimensionLengths[]);
-VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
-VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
-        TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
 VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[]);
 VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData);
-VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim);
-VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths);
-VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer,
-                                   Int32 length);
-VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer);
 VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value);
-VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value);
-VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value);
 //------------------------------------------------------------
 //! Typeref functions
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString);

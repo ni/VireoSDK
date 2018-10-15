@@ -287,47 +287,6 @@ unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
     }
 }
 //------------------------------------------------------------
-//! Get the Vireo pointer given a path.
-VIREO_EXPORT EggShellResult EggShell_GetPointer(TypeManagerRef tm, const char* viName, const char* elementName, void** dataPointer, void** typePointer)
-{
-    SubString objectName(viName);
-    SubString path(elementName);
-    void *pData = nullptr;
-
-    TypeRef objectType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (objectType == nullptr)
-        return kEggShellResult_ObjectNotFoundAtPath;
-
-    if (objectType->IsArray()) {
-        pData = *(TypedArrayCoreRef*)pData;
-    } else {
-        // calling this function for other data types has not been implemented yet.
-        return kEggShellResult_UnexpectedObjectType;
-    }
-
-    *dataPointer = pData;
-    *typePointer = objectType;
-
-    return kEggShellResult_Success;
-}
-
-//------------------------------------------------------------
-//! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
-//! an Array or dimension requested is out of the bounds of the rank.
-VIREO_EXPORT Int32 EggShell_GetArrayDimLength(TypeManagerRef tm, const char* viName, const char* eltName, Int32 dim)
-{
-    SubString objectName(viName);
-    SubString path(eltName);
-    void *pData = nullptr;
-
-    TypeRef actualType = tm->GetObjectElementAddressFromPath(&objectName, &path, &pData, true);
-    if (actualType == nullptr || !actualType->IsArray())
-        return -1;
-
-    TypedArrayCoreRef actualArray = *(TypedArrayCoreRef*)pData;
-    return Data_GetArrayDimLength(tm, actualArray, dim);
-}
-//------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
 VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef typeRef, const void* pData,
                                                  Int32 rank, Int32 dimensionLengths[])
@@ -363,50 +322,6 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
     return stringObject->Length();
 }
 //------------------------------------------------------------
-// Verify that a type is an array.
-VIREO_EXPORT EggShellResult Data_ValidateArrayType(TypeManagerRef tm, TypeRef typeRef)
-{
-    if (!typeRef->IsArray() || typeRef->Rank() <= 0)
-        return kEggShellResult_UnexpectedObjectType;
-
-    return kEggShellResult_Success;
-}
-//------------------------------------------------------------
-//! Get information about an Array such as the type of its subtype, the array rank,
-//! and the memory location of the first element (or nullptr if there are zero elements)
-VIREO_EXPORT EggShellResult Data_GetArrayMetadata(TypeManagerRef tm,
-        TypedArrayCoreRef arrayObject, char** arrayTypeName, Int32* arrayRank, unsigned char** arrayBegin)
-{
-    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    TypeManagerScope scope(tm);
-
-    if (arrayTypeName == nullptr || arrayRank == nullptr || arrayBegin == nullptr)
-        return kEggShellResult_InvalidResultPointer;
-
-    static StringRef arrayTypeNameBuffer = nullptr;
-    if (arrayTypeNameBuffer == nullptr) {
-        // Allocate a string the first time it is used.
-        // After that it will be resized as needed.
-        STACK_VAR(String, tempReturn);
-        arrayTypeNameBuffer = tempReturn.DetachValue();
-    } else {
-        arrayTypeNameBuffer->Resize1D(0);
-    }
-
-    if (arrayTypeNameBuffer == nullptr) {
-        return kEggShellResult_UnableToCreateReturnBuffer;
-    }
-
-    TypeRef arrayElementType = arrayObject->ElementType();
-    CopyArrayTypeNameStringToBuffer(arrayTypeNameBuffer, arrayElementType->Name());
-    *arrayTypeName = (char*) arrayTypeNameBuffer->Begin();
-
-    *arrayRank = arrayObject->Rank();
-    *arrayBegin = GetArrayBeginAt(arrayObject);
-
-    return kEggShellResult_Success;
-}
-//------------------------------------------------------------
 //! Get the starting location of the first element of an Array / String type in memory
 // This function returns the start address of where elements would appear in memory (returns address even if length zero)
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
@@ -435,72 +350,6 @@ VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData)
     return arrayObject->Length();
 }
 //------------------------------------------------------------
-//! Get the Length of a dimension in an Array Symbol. Returns -1 if the Symbol is not found or not
-//! an Array or dimension requested is out of the bounds of the rank.
-VIREO_EXPORT Int32 Data_GetArrayDimLength(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 dim)
-{
-    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    TypeManagerScope scope(tm);
-
-    if (dim >= arrayObject->Rank() || dim < 0)
-        return -1;
-
-    return arrayObject->GetLength(dim);
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteString(TypeManagerRef tm, StringRef stringObject, const unsigned char* buffer, Int32 length)
-{
-    VIREO_ASSERT(String::ValidateHandle(stringObject));
-    // Scope needs to be setup for allocations
-    TypeManagerScope scope(tm);
-    stringObject->CopyFrom(length, buffer);
-}
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Data_ReadBoolean(Boolean* booleanPointer)
-{
-    return *booleanPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Data_ReadInt8(Int8* intPointer)
-{
-    return *intPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Data_ReadInt16(Int16* intPointer)
-{
-    return *intPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT Double Data_ReadInt32(Int32* intPointer)
-{
-    return *intPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT UInt32 Data_ReadUInt8(UInt8* intPointer)
-{
-    return *intPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT UInt32 Data_ReadUInt16(UInt16* intPointer)
-{
-    return *intPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT Double Data_ReadUInt32(UInt32* intPointer)
-{
-    return *intPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT Double Data_ReadSingle(Single* singlePointer)
-{
-    return *singlePointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT Double Data_ReadDouble(Double* doublePointer)
-{
-    return *doublePointer;
-}
-//------------------------------------------------------------
 VIREO_EXPORT JavaScriptRefNum Data_ReadJavaScriptRefNum(JavaScriptRefNum* refNumPointer)
 {
     return *refNumPointer;
@@ -511,63 +360,10 @@ VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
     *destination = (value != 0);
 }
 //------------------------------------------------------------
-VIREO_EXPORT void Data_WriteInt8(Int8* destination, Int32 value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteInt16(Int16* destination, Int32 value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteInt32(Int32* destination, Int32 value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteUInt8(UInt8* destination, Int32 value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteUInt16(UInt16* destination, Int32 value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteUInt32(UInt32* destination, UInt32 value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteSingle(Single* destination, Single value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteDouble(Double* destination, Double value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
 VIREO_EXPORT void Data_WriteJavaScriptRefNum(JavaScriptRefNum* destination, JavaScriptRefNum value)
 {
     *destination = value;
 }
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Data_ResizeArray(TypeManagerRef tm, TypedArrayCoreRef arrayObject, Int32 rank, Int32* newLengths)
-{
-    VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
-    TypeManagerScope scope(tm);
-
-    if (!arrayObject->ResizeDimensions(rank, newLengths, true, false)) {
-        return kLVError_MemFull;
-    }
-
-    return 0;
-}
-
 //------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {
