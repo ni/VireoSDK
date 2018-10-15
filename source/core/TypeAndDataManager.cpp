@@ -2721,6 +2721,7 @@ Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult)
             break;
         case kEncoding_UInt:
         case kEncoding_Enum:
+        case kEncoding_RefNum:
             switch (aqSize) {
                 case 1:  value = *(UInt8*)pData;                       break;
                 case 2:  value = *(UInt16*)pData;                      break;
@@ -2785,6 +2786,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
             break;
         case kEncoding_UInt:
         case kEncoding_Enum:
+        case kEncoding_RefNum:
             switch (aqSize) {
                 case 1:  *(UInt8*)pData = (Int8)value;     break;
                 case 2:  *(UInt16*)pData = (UInt16)value;   break;

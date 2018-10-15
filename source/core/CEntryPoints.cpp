@@ -350,21 +350,6 @@ VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData)
     return arrayObject->Length();
 }
 //------------------------------------------------------------
-VIREO_EXPORT JavaScriptRefNum Data_ReadJavaScriptRefNum(JavaScriptRefNum* refNumPointer)
-{
-    return *refNumPointer;
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value)
-{
-    *destination = (value != 0);
-}
-//------------------------------------------------------------
-VIREO_EXPORT void Data_WriteJavaScriptRefNum(JavaScriptRefNum* destination, JavaScriptRefNum value)
-{
-    *destination = value;
-}
-//------------------------------------------------------------
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString)
 {
     // TypeManagerScope scope(typeManager);

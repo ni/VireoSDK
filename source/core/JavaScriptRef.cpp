@@ -20,18 +20,18 @@ namespace Vireo {
 
 #if kVireoOS_emscripten
 extern "C" {
-    // JavaScript Reference methods to call from JS land
-    // Parameters: returnValue*, reference
-    extern void jsIsNotAJavaScriptRefnum(Boolean*, JavaScriptRefNum*);
+    extern void jsIsNotAJavaScriptRefnum(TypeRef, JavaScriptRefNum*, TypeRef, Boolean*);
 }
 #endif
 
 VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
 {
+    TypeRef typeRefJavaScriptRefNum = TypeManagerScope::Current()->FindType("JavaScriptRefNum");
+    TypeRef typeRefIsNotARefNum = TypeManagerScope::Current()->FindType("Boolean");
     JavaScriptRefNum* refnumPtr = _ParamPointer(0);
     Boolean isNotARefnum = false;
     #if kVireoOS_emscripten
-        jsIsNotAJavaScriptRefnum(&isNotARefnum, refnumPtr);
+        jsIsNotAJavaScriptRefnum(typeRefJavaScriptRefNum, refnumPtr, typeRefIsNotARefNum, &isNotARefnum);
     #else
         isNotARefnum = *refnumPtr == 0;
     #endif
@@ -54,4 +54,3 @@ DEFINE_VIREO_BEGIN(JavaScriptRefs)
 
 DEFINE_VIREO_END()
 }  // namespace Vireo
-

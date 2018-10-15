@@ -15,7 +15,6 @@ var assignEggShell;
             'EggShell_Delete',
             'Data_GetStringBegin',
             'Data_GetStringLength',
-            'Data_WriteBoolean',
             'EggShell_ExecuteSlices',
             'Occurrence_Set'
         ]}], */
@@ -81,7 +80,6 @@ var assignEggShell;
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
         var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
         var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
-        var Data_WriteBoolean = Module.cwrap('Data_WriteBoolean', 'void', ['number', 'number']);
         var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
         var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
 
@@ -537,12 +535,6 @@ var assignEggShell;
             var length = Data_GetStringLength(stringPointer);
             var str = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, begin, length);
             return str;
-        };
-
-        // **DEPRECATED**
-        Module.eggShell.dataWriteBoolean = function (booleanPointer, booleanValue) {
-            var numericValue = booleanValue ? 1 : 0;
-            Data_WriteBoolean(booleanPointer, numericValue);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {

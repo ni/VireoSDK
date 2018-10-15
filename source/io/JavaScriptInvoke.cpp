@@ -29,21 +29,6 @@ extern "C" {
 }
 #endif
 
-StringRef AllocateReturnBuffer()
-{
-    static StringRef returnBuffer = nullptr;
-    if (returnBuffer == nullptr) {
-        // Allocate a string the first time it is used.
-        // After that it will be resized as needed.
-        STACK_VAR(String, tempReturn);
-        returnBuffer = tempReturn.DetachValue();
-    } else {
-        returnBuffer->Resize1D(0);
-    }
-
-    return returnBuffer;
-}
-
 //------------------------------------------------------------
 //! Return dataRef of the parameter that is at the given index in the parameters array
 VIREO_EXPORT void* JavaScriptInvoke_GetParameterDataRef(StaticTypeAndData *parameters, Int32 index)
@@ -55,31 +40,6 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterDataRef(StaticTypeAndData *param
 VIREO_EXPORT void* JavaScriptInvoke_GetParameterTypeRef(StaticTypeAndData *parameters, Int32 index)
 {
     return parameters[index]._paramType;
-}
-
-//------------------------------------------------------------
-//! Return parameter pointer for the given element(index) in the parameters array
-VIREO_EXPORT void* JavaScriptInvoke_GetParameterPointer(StaticTypeAndData *parameters, Int32 index)
-{
-    void *pData = parameters[index]._pData;
-    TypeRef parameterType = parameters[index]._paramType;
-    if (parameterType->IsString()) {
-        // We a have pointer to a StringRef, we just need the StringRef.
-        // So we can use functions that already work with StringRef on the JavaScript side.
-        pData = *(StringRef*)pData;
-    } else if (parameterType->IsArray()) {
-        pData = *(TypedArrayCoreRef*)pData;
-    } else if (!(parameterType->IsNumeric()
-        || parameterType->IsString()
-        || parameterType->IsFloat()
-        || parameterType->IsBoolean()
-        || parameterType->IsJavaScriptRefNum())) {
-        return nullptr;
-    } else if (parameterType->IsInteger64()) {
-        return nullptr;
-    }
-
-    return pData;
 }
 
 //------------------------------------------------------------
