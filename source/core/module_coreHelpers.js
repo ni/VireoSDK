@@ -13,10 +13,6 @@ var assignCoreHelpers;
             // Dummy noop function user can replace by using eggShell.setFPSyncFunction
         };
 
-        var trackingFPS = false;
-        var lastTime = 0;
-        var currentFPS = 0;
-
         var CODES = {
             NO_ERROR: 0
         };
@@ -264,22 +260,6 @@ var assignCoreHelpers;
                 }
             }
             return outIdx - startIndex;
-        };
-
-        Module.coreHelpers.jsCurrentBrowserFPS = function () {
-            if (trackingFPS === false) {
-                trackingFPS = true;
-                lastTime = performance.now();
-
-                requestAnimationFrame(function vireoFPSTracker (currentTime) {
-                    var timeBetweenFrames = currentTime - lastTime;
-                    currentFPS = 1000 / timeBetweenFrames;
-                    lastTime = currentTime;
-                    requestAnimationFrame(vireoFPSTracker);
-                });
-            }
-
-            return currentFPS;
         };
 
         var writeNewError = function (errorValueRef, newError) {
