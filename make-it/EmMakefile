@@ -124,9 +124,6 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_OccurEvent',\
     '_Data_GetStringBegin',\
     '_Data_GetStringLength',\
-    '_Data_ReadJavaScriptRefNum',\
-    '_Data_WriteBoolean',\
-    '_Data_WriteJavaScriptRefNum',\
     '_Data_GetArrayBegin',\
     '_Data_GetArrayDimensions',\
     '_Data_GetArrayLength',\

@@ -57,7 +57,6 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
 VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[]);
 VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData);
-VIREO_EXPORT void Data_WriteBoolean(Boolean* destination, Int32 value);
 //------------------------------------------------------------
 //! Typeref functions
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString);
