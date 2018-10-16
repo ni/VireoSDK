@@ -25,9 +25,7 @@ describe('The Vireo VTR test suite', function () {
     // To disable a test add a key for the test name set to true, ie:
     // {'AwesomeDisabledTest': true}
     var focusTests = {};
-    var disabledTests = {
-        ValueChangeStaticControlEvent1: true
-    };
+    var disabledTests = {};
 
     viaTestConfigs.forEach(function (viaTestConfig) {
         var testName = viaTestConfig.testName;
