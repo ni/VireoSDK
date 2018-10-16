@@ -9,7 +9,6 @@ var assignEggShell;
     assignEggShell = function (Module, publicAPI) {
         // Disable new-cap for the cwrap functions so the names can be the same in C and JS
         /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-            'Vireo_Version',
             'Vireo_MaxExecWakeUpTime',
             'EggShell_Create',
             'EggShell_Delete',
@@ -74,7 +73,6 @@ var assignEggShell;
             7: 'ValueTruncated'
         };
 
-        var Vireo_Version = Module.cwrap('Vireo_Version', 'number', []);
         var Vireo_MaxExecWakeUpTime = Module.cwrap('Vireo_MaxExecWakeUpTime', 'number', []);
         var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
         var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
@@ -128,7 +126,6 @@ var assignEggShell;
 
         // Exporting functions to both Module.eggShell and publicAPI.eggShell is not normal
         // This is unique to the eggShell API as it is consumed by other modules as well as users
-        Module.eggShell.version = publicAPI.eggShell.version = Vireo_Version;
         Module.eggShell.maxExecWakeUpTime = publicAPI.eggShell.maxExecWakeUpTime = Vireo_MaxExecWakeUpTime;
 
         Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {

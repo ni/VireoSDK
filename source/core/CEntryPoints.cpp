@@ -22,13 +22,6 @@ SDG
 #if defined (VIREO_C_ENTRY_POINTS)
 namespace Vireo {
 
-//------------------------------------------------------------
-VIREO_EXPORT Int32 Vireo_Version()
-{
-    // TODO(paul) need to tie into semantic version numbers
-    return 0x00020003;
-}
-
 VIREO_EXPORT Int32 Vireo_MaxExecWakeUpTime()
 {
     return kMaxExecWakeUpTime;
