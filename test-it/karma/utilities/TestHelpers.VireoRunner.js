@@ -47,7 +47,10 @@
                             .then(function () {
                                 resolve({rawPrint, rawPrintError});
                             })
-                            .catch(function (ex) {
+                            .catch(function (exIn) {
+                                // Vireo sometimes aborts with strings so convert to Error
+                                var ex = exIn instanceof Error ? exIn : new Error(exIn);
+
                                 // Mutating the error is not great, used specifically for tests crashing the runtime in certain conditions
                                 ex.rawPrint = rawPrint;
                                 ex.rawPrintError = rawPrintError;
