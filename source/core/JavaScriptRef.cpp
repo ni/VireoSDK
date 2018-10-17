@@ -26,8 +26,8 @@ extern "C" {
 
 VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
 {
-    TypeRef typeRefJavaScriptRefNum = TypeManagerScope::Current()->FindType("JavaScriptRefNum");
-    TypeRef typeRefIsNotARefNum = TypeManagerScope::Current()->FindType("Boolean");
+    TypeRef typeRefJavaScriptRefNum = TypeManagerScope::Current()->FindType(tsJavaScriptRefNumType);
+    TypeRef typeRefIsNotARefNum = TypeManagerScope::Current()->FindType(tsBooleanType);
     JavaScriptRefNum* refnumPtr = _ParamPointer(0);
     Boolean isNotARefnum = false;
     #if kVireoOS_emscripten

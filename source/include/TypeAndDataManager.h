@@ -85,6 +85,7 @@ typedef TypeCommon StaticType;
 //! Names for some cores types.
 #define tsInvalidIntrinsicClusterType       ""
 #define tsBooleanType       "Boolean"
+#define tsJavaScriptRefNumType  "JavaScriptRefNum"
 #define tsInt32Type         "Int32"
 #define tsInt64Type         "Int64"
 #define tsDoubleType        "Double"
