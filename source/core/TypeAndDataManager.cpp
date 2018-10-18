@@ -2719,9 +2719,14 @@ Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult)
                 default: err = kNIError_kCantDecode;                  break;
             }
             break;
+        case kEncoding_RefNum:
+            switch (aqSize) {
+                case 4:  value = *(UInt32*)pData;                      break;
+                default: err = kNIError_kCantDecode;                   break;
+            }
+            break;
         case kEncoding_UInt:
         case kEncoding_Enum:
-        case kEncoding_RefNum:
             switch (aqSize) {
                 case 1:  value = *(UInt8*)pData;                       break;
                 case 2:  value = *(UInt16*)pData;                      break;
@@ -2784,9 +2789,14 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
+        case kEncoding_RefNum:
+            switch(aqSize) {
+                case 4:  *(UInt32*)pData = (UInt32)value;   break;
+                default: err = kNIError_kCantEncode;        break;
+            }
+            break;
         case kEncoding_UInt:
         case kEncoding_Enum:
-        case kEncoding_RefNum:
             switch (aqSize) {
                 case 1:  *(UInt8*)pData = (Int8)value;     break;
                 case 2:  *(UInt16*)pData = (UInt16)value;   break;
