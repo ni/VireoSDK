@@ -596,8 +596,10 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                     STACK_VAR(String, viNameVar);
                     StringRef viName = viNameVar.Value;
                     GetVIName(vi, viName);
-                    char *tagBegin = reinterpret_cast<char*>(tag->Begin()), *tagEnd = reinterpret_cast<char*>(tag->End());
-                    EventControlUID controlID = Int32(strtol(tagBegin, &tagEnd, 10));
+                    SubString tagSubString = tag->MakeSubStringAlias();
+                    TempStackCString tagCString;
+                    tagCString.Append(&tagSubString);
+                    EventControlUID controlID = Int32(strtol(tagCString.BeginCStr(), nullptr, 10));
                     if (controlID) {
                         RegisterForControlEvent(eventInfo, eventSpecRef[eventSpecIndex], viName, qID, controlID, controlRef, true);
                     }
