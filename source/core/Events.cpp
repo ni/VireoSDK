@@ -570,8 +570,10 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
                     PercentEncodedSubString encodedStr(vi->VIName(), true, false);
                     SubString encodedSubstr = encodedStr.GetSubString();
                     viName->AppendSubString(&encodedSubstr);
-                    char *tagBegin = reinterpret_cast<char*>(tag->Begin()), *tagEnd = reinterpret_cast<char*>(tag->End());
-                    EventControlUID controlID = Int32(strtol(tagBegin, &tagEnd, 10));
+                    SubString tagSubString = tag->MakeSubStringAlias();
+                    TempStackCString tagCString;
+                    tagCString.Append(&tagSubString);
+                    EventControlUID controlID = Int32(strtol(tagCString.BeginCStr(), nullptr, 10));
                     if (controlID) {
                         EventOracleIndex eventOracleIdx = kNotAnEventOracleIdx;
                         EventType eventType = eventSpecRef[eventSpecIndex].eventType;
