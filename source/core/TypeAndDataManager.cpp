@@ -2790,7 +2790,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
             }
             break;
         case kEncoding_RefNum:
-            switch(aqSize) {
+            switch (aqSize) {
                 case 4:  *(UInt32*)pData = (UInt32)value;   break;
                 default: err = kNIError_kCantEncode;        break;
             }
