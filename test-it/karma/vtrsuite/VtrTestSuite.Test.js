@@ -1,4 +1,4 @@
-describe('The Vireo VTR test suite', function () {
+fdescribe('The Vireo VTR test suite', function () {
     'use strict';
 
     // Reference aliases
@@ -11,6 +11,14 @@ describe('The Vireo VTR test suite', function () {
     var vireo;
     beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+
+        // // VTR tests can't fire JS events, so register no-op registration functions
+        // vireo.eventHelpers.setRegisterForControlEventsFunction(function () {
+        //     // no-op
+        // });
+        // vireo.eventHelpers.setUnRegisterForControlEventsFunction(function () {
+        //     // no-op
+        // });
     });
     var viaTestNames = testListLoader.getTestNamesForEnvironment('browser');
 
