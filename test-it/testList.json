@@ -12,8 +12,7 @@
                 "Round.via",
                 "Scale2X.via",
                 "Scale2XWithIntegers.via",
-                "StringFormatComplex.via",
-                "ValueChangeStaticControlEvent1.via"
+                "StringFormatComplex.via"
             ]
         },
         "js": {
@@ -25,8 +24,7 @@
                 "Round.via",
                 "Scale2X.via",
                 "Scale2XWithIntegers.via",
-                "StringFormatComplex.via",
-                "ValueChangeStaticControlEvent1.via"
+                "StringFormatComplex.via"
             ]
         },
         "browser": {
@@ -75,7 +73,8 @@
                 "UserEventsRegClustBug1.via",
                 "UserEventsReregister.via",
                 "UserEventsThroughput.via",
-                "UserEventsPoly.via"
+                "UserEventsPoly.via",
+                "ValueChangeStaticControlEvent1.via"
             ]
         },
         "manual": {
