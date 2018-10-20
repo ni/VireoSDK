@@ -24,11 +24,22 @@
             rawPrintError += text + '\n';
         });
 
-        var loadErrorOccurred = false;
+        var addOutputToError = function (exIn) {
+            // Vireo sometimes aborts with strings so convert to Error
+            var ex = exIn instanceof Error ? exIn : new Error(exIn);
+
+            // Mutating error used specifically for test crashes of the runtime
+            ex.rawPrint = rawPrint;
+            ex.rawPrintError = rawPrintError;
+            return ex;
+        };
+
+        var ex;
         try {
             vireo.eggShell.loadVia(viaText);
-        } catch (ex) {
-            loadErrorOccurred = true;
+        } catch (exIn) {
+            ex = addOutputToError(exIn);
+            throw ex;
         }
 
         // If a cb is provided we will execute the cb when finished running, cannot detect runtime failures (deprecated)
@@ -40,23 +51,14 @@
 
             if (cb === undefined) {
                 return new Promise(function (resolve, reject) {
-                    if (loadErrorOccurred) {
-                        resolve({rawPrint, rawPrintError});
-                    } else {
-                        vireo.eggShell.executeSlicesUntilClumpsFinished()
-                            .then(function () {
-                                resolve({rawPrint, rawPrintError});
-                            })
-                            .catch(function (exIn) {
-                                // Vireo sometimes aborts with strings so convert to Error
-                                var ex = exIn instanceof Error ? exIn : new Error(exIn);
-
-                                // Mutating the error is not great, used specifically for tests crashing the runtime in certain conditions
-                                ex.rawPrint = rawPrint;
-                                ex.rawPrintError = rawPrintError;
-                                reject(ex);
-                            });
-                    }
+                    vireo.eggShell.executeSlicesUntilClumpsFinished()
+                        .then(function () {
+                            resolve({rawPrint, rawPrintError});
+                        })
+                        .catch(function (exIn) {
+                            var ex = addOutputToError(exIn);
+                            reject(ex);
+                        });
                 });
             }
 
@@ -64,11 +66,7 @@
                 cb(rawPrint, rawPrintError);
             };
 
-            if (loadErrorOccurred) {
-                complete();
-            } else {
-                vireo.eggShell.executeSlicesUntilClumpsFinished().then(complete);
-            }
+            vireo.eggShell.executeSlicesUntilClumpsFinished().then(complete);
 
             return undefined;
         };

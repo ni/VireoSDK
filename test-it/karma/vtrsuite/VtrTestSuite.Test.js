@@ -1,4 +1,4 @@
-fdescribe('The Vireo VTR test suite', function () {
+describe('The Vireo VTR test suite', function () {
     'use strict';
 
     // Reference aliases
@@ -13,12 +13,12 @@ fdescribe('The Vireo VTR test suite', function () {
         vireo = await vireoHelpers.createInstance();
 
         // // VTR tests can't fire JS events, so register no-op registration functions
-        // vireo.eventHelpers.setRegisterForControlEventsFunction(function () {
-        //     // no-op
-        // });
-        // vireo.eventHelpers.setUnRegisterForControlEventsFunction(function () {
-        //     // no-op
-        // });
+        vireo.eventHelpers.setRegisterForControlEventsFunction(function () {
+            // no-op
+        });
+        vireo.eventHelpers.setUnRegisterForControlEventsFunction(function () {
+            // no-op
+        });
     });
     var viaTestNames = testListLoader.getTestNamesForEnvironment('browser');
 
@@ -44,11 +44,19 @@ fdescribe('The Vireo VTR test suite', function () {
             var testDescription = 'and run ' + testName;
             var test = function (done) {
                 var vtrText = fixtures.loadAbsoluteUrl(vtrFile);
-                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaFile);
-
-                runSlicesAsync(function (results, errorText) {
-                    expect(errorText).toBeEmptyString();
-                    expect(results).toMatchVtrText(vtrText);
+                var runSlicesAsync;
+                try {
+                    runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaFile);
+                } catch (ex) {
+                    expect(ex.message).toMatch(/CantDecode/);
+                    expect(ex.rawPrintError).toBeEmptyString();
+                    expect(ex.rawPrint).toMatchVtrText(vtrText);
+                    done();
+                    return;
+                }
+                runSlicesAsync(function (rawPrint, rawPrintError) {
+                    expect(rawPrintError).toBeEmptyString();
+                    expect(rawPrint).toMatchVtrText(vtrText);
                     done();
                 });
             };
