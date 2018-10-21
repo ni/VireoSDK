@@ -9,276 +9,590 @@ describe('A JavaScript function invoke', function () {
 
     var jsAsyncFunctionsUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/AsyncFunctions.via');
 
-    var javaScriptInvokeFixtures;
-    var CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution;
-    var CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError;
-    var NI_CallCompletionCallbackAfterFunctionErrors_Callback;
-    var running;
-
-    beforeAll(function () {
-        javaScriptInvokeFixtures = Object.freeze({
-            NI_AsyncSquareFunction: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                setTimeout(function () {
-                    completionCallback(inputInteger * inputInteger);
-                }, 0);
-            },
-            NI_CallCompletionCallbackSynchronously: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                completionCallback(inputInteger * inputInteger);
-            },
-            NI_PromiseBasedAsyncSquareFunction: function (inputInteger, jsAPI) {
-                var createTimerPromise = function (input) {
-                    var myPromise = new Promise(function (resolve) {
-                        setTimeout(function () {
-                            resolve(input * input);
-                        }, 0);
-                    });
-                    return myPromise;
-                };
-                var completionCallback = jsAPI.getCompletionCallback();
-                createTimerPromise(inputInteger).then(completionCallback);
-            },
-            NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                expect(jsAPI.getCompletionCallback).toThrowError(/retrieved more than once/);
-                completionCallback(inputInteger + inputInteger);
-            },
-            NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                completionCallback(inputInteger * inputInteger);
-                expect(jsAPI.getCompletionCallback).toThrowError(/The API being accessed for NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback is not valid anymore./);
-            },
-            NI_CallCompletionCallbackMoreThanOnce: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                var testCompletion = function () {
-                    completionCallback(inputInteger * inputInteger);
-                };
-                expect(testCompletion).not.toThrowError();
-                expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnce/);
-            },
-            NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                var testCompletion = function () {
-                    completionCallback(inputInteger * inputInteger);
-                };
-                expect(testCompletion).not.toThrowError();
-                expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
-                expect(jsAPI.getCompletionCallback).toThrowError(/The API being accessed for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval is not valid anymore./);
-                expect(testCompletion).toThrowError(/invoked more than once for NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval/);
-            },
-            NI_CompletionCallbackReturnsUndefined: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                var testCompletion = function () {
-                    completionCallback(undefined);
-                };
-                expect(testCompletion).not.toThrowError();
-            },
-            NI_CallCompletionCallbackAcrossClumps_DoubleFunction: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                running = 1;
-                var firstClumpCompletionCallback = function () {
-                    if (running === 2) {
-                        completionCallback(inputInteger + inputInteger);
-                        running = 1;
-                    } else {
-                        setTimeout(firstClumpCompletionCallback);
-                    }
-                };
-                firstClumpCompletionCallback();
-            },
-            NI_CallCompletionCallbackAcrossClumps_SquareFunction: function (inputInteger, jsAPI) {
-                var completionCallback = jsAPI.getCompletionCallback();
-                var secondClumpCompletionCallback = function () {
-                    if (running === 1) {
-                        completionCallback(inputInteger * inputInteger);
-                        running = 2;
-                    } else {
-                        setTimeout(secondClumpCompletionCallback);
-                    }
-                };
-                secondClumpCompletionCallback();
-            },
-            NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution: function (inputInteger, jsAPI) {
-                CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = jsAPI;
-                return inputInteger * inputInteger;
-            },
-            NI_RetrieveCompletionCallbackAfterContextIsStaleFromError: function (inputInteger, jsAPI) {
-                CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = jsAPI;
-                throw new Error('This function is a failure!');
-            },
-            NI_CallCompletionCallbackAfterFunctionErrors: function (inputInteger, jsAPI) {
-                NI_CallCompletionCallbackAfterFunctionErrors_Callback = jsAPI.getCompletionCallback();
-                throw new Error('Your function call just failed!');
-            },
-            NI_StartAsync_ReturnValueSync_Errors: function (jsAPI) {
-                jsAPI.getCompletionCallback();
-                return 'unexpected return value';
-            },
-            NI_ResolveAsyncWithError: function (jsAPI) {
-                var cb = jsAPI.getCompletionCallback();
-                setTimeout(function () {
-                    cb(new Error('An async error occurred'));
-                }, 0);
-            }
-        });
-
-        CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = undefined;
-        CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = undefined;
-        NI_CallCompletionCallbackAfterFunctionErrors_Callback = undefined;
-        running = 0;
-    });
-
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             jsAsyncFunctionsUrl
         ], done);
-        Object.assign(window, javaScriptInvokeFixtures);
     });
 
     beforeEach(async function () {
         vireo = await vireoHelpers.createInstance();
     });
 
-    afterAll(function () {
-        Object.keys(javaScriptInvokeFixtures).forEach(function (functionName) {
-            window[functionName] = undefined;
-        });
-        CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution = undefined;
-        CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError = undefined;
-        NI_CallCompletionCallbackAfterFunctionErrors_Callback = undefined;
-        running = 0;
-    });
+    describe('can start an async task and complete synchronously', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    completionCallback(input * input);
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 2);
+                vireoRunner.enqueueVI(vireo, viName);
 
-    it('with async callback successfully works', function (done) {
-        var viName = 'ValidCases';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-            expect(viPathParser('return')).toBe(4);
-            expect(viPathParser('returnSynchronousCompletionCallback')).toBe(9);
-            expect(viPathParser('returnPromiseBasedCall')).toBe(16);
-            done();
-        });
-    });
-
-    it('with multiple completion callback retrievals throws error', function (done) {
-        var viName = 'RetrieveCompletionCallbackMoreThanOnce';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-            expect(viPathParser('beforeCallbackReturn')).toBe(6);
-            expect(viPathParser('afterCallbackReturn')).toBe(25);
-            done();
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(4);
+            });
         });
     });
 
-    it('with multiple calls to completion callback throws error', function (done) {
-        var viName = 'CallCompletionCallbackMoreThanOnce';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-            done();
+    describe('can start an async task and complete as a microtask', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    Promise.resolve().then(function () {
+                        completionCallback(input * input);
+                    });
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 3);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(9);
+            });
         });
     });
 
-    it('with completion callbacks called out of order', function (done) {
-        var viName = 'CallCompletionCallbackAcrossClumps';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-            expect(viPathParser('acrossClumpsReturn1')).toBe(6);
-            expect(viPathParser('acrossClumpsReturn2')).toBe(25);
-            done();
+    describe('can start an async task and complete as a new task', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    setTimeout(function () {
+                        completionCallback(input * input);
+                    }, 0);
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 4);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(16);
+            });
         });
     });
 
-    it('with completion callback retrieval when context is stale after to synchronous execution throws error', function (done) {
-        var viName = 'RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function () {
-            expect(CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution.getCompletionCallback)
-                .toThrowError(/The API being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution is not valid anymore/);
-            expect(viPathParser('return')).toBe(36);
-            done();
+    describe('can start an async task and error synchronously', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    jsAPI.getCompletionCallback();
+                    throw new Error('Failed to run sync');
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 2);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/Failed to run sync/);
+                expect(viPathParser('return')).toBe(0);
+            });
         });
     });
 
-    it('with completion callback retrieval when context is stale after function errors throws error', function (done) {
-        var viName = 'RetrieveCompletionCallbackAfterContextIsStaleFromError';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function () {
-            expect(CachedContextFor_RetrieveCompletionCallbackAfterContextIsStaleFromError.getCompletionCallback)
-                .toThrowError(/The API being accessed for NI_RetrieveCompletionCallbackAfterContextIsStaleFromError is not valid anymore/);
-            done();
+    describe('can start an async task and error as a microtask', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    Promise.resolve().then(function () {
+                        completionCallback(new Error('Failed to run microtask'));
+                    });
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 3);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/Failed to run microtask/);
+                expect(viPathParser('return')).toBe(0);
+            });
         });
     });
 
-    it('with call to completion callback when context is stale after the function errors', function (done) {
-        var viName = 'CallCompletionCallbackAfterFunctionErrors';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function () {
-            expect(NI_CallCompletionCallbackAfterFunctionErrors_Callback)
-                .toThrowError(/NI_CallCompletionCallbackAfterFunctionErrors threw an error, so this callback cannot be invoked/);
-            done();
+    describe('can start an async task and error as a new task', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    setTimeout(function () {
+                        completionCallback(new Error('Failed to run new task'));
+                    }, 0);
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 4);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/Failed to run new task/);
+                expect(viPathParser('return')).toBe(0);
+            });
         });
     });
 
-    it('with call to completion callback, followed by returning a value, causes an error', function (done) {
-        var viName = 'NI_StartAsync_ReturnValueSync_Errors';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44303);
-            expect(viPathParser('error.source')).toMatch(/Unable to set return value/);
-            done();
+    describe('can return undefined to an unwired return value', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunctionUnwiredReturn = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    completionCallback(undefined);
+                };
+            });
+            afterEach(function () {
+                window.SingleFunctionUnwiredReturn = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunctionUnwiredReturn';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 4);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+            });
         });
     });
 
-    it('resolves to an error asynchronously', function (done) {
-        var viName = 'NI_ResolveAsyncWithError';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44300);
-            expect(viPathParser('error.source')).toMatch(/An exception occurred within the external JavaScript function/);
-            done();
+    describe('errors retrieving completion callback twice', function () {
+        describe('using the completion callback', function () {
+            var error;
+
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    try {
+                        jsAPI.getCompletionCallback();
+                    } catch (ex) {
+                        error = ex;
+                    }
+                    // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
+                    // Instead if we are not resolved we should resolve immediately with an error
+                    completionCallback(input * input);
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 7);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(49);
+                expect(error.message).toMatch(/retrieved more than once/);
+            });
+        });
+    });
+
+    describe('errors retrieving completion, completing, and trying to retrieve again', function () {
+        describe('using the completion callback', function () {
+            var error;
+
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    completionCallback(input * input);
+
+                    try {
+                        jsAPI.getCompletionCallback();
+                    } catch (ex) {
+                        error = ex;
+                    }
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 8);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(64);
+                expect(error.message).toMatch(/not valid anymore/);
+            });
+        });
+    });
+
+    describe('errors calling completion callback twice', function () {
+        describe('using the completion callback', function () {
+            var error;
+
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+
+                    completionCallback(input * input);
+                    try {
+                        completionCallback(input * input);
+                    } catch (ex) {
+                        error = ex;
+                    }
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 8);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(64);
+                expect(error.message).toMatch(/invoked more than once/);
+            });
+        });
+    });
+
+    describe('errors after using get completion callback or completing after initial completion', function () {
+        describe('using the completion callback', function () {
+            var errorSecondCompletion;
+            var errorSecondRetrieval;
+            var errorThirdCompletion;
+
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    completionCallback(input * input);
+
+                    try {
+                        completionCallback(input * input);
+                    } catch (ex) {
+                        errorSecondCompletion = ex;
+                    }
+
+                    try {
+                        jsAPI.getCompletionCallback();
+                    } catch (ex) {
+                        errorSecondRetrieval = ex;
+                    }
+
+                    try {
+                        completionCallback(input * input);
+                    } catch (ex) {
+                        errorThirdCompletion = ex;
+                    }
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 8);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(64);
+                expect(errorSecondCompletion.message).toMatch(/invoked more than once/);
+                expect(errorSecondRetrieval.message).toMatch(/is not valid anymore/);
+                expect(errorThirdCompletion.message).toMatch(/invoked more than once/);
+            });
+        });
+    });
+
+    describe('can have concurrent calls that complete out of order', function () {
+        describe('using the completion callback', function () {
+            var running;
+
+            beforeEach(function () {
+                running = 0;
+
+                window.ConcurrentFunction1 = function (inputInteger, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    running = 1;
+                    var firstClumpCompletionCallback = function () {
+                        if (running === 2) {
+                            completionCallback(inputInteger + inputInteger);
+                            running = 1;
+                        } else {
+                            setTimeout(firstClumpCompletionCallback);
+                        }
+                    };
+                    firstClumpCompletionCallback();
+                };
+
+                window.ConcurrentFunction2 = function (inputInteger, jsAPI) {
+                    var completionCallback = jsAPI.getCompletionCallback();
+                    var secondClumpCompletionCallback = function () {
+                        if (running === 1) {
+                            completionCallback(inputInteger * inputInteger);
+                            running = 2;
+                        } else {
+                            setTimeout(secondClumpCompletionCallback);
+                        }
+                    };
+                    secondClumpCompletionCallback();
+                };
+            });
+
+            afterEach(function () {
+                running = 0;
+                window.ConcurrentFunction1 = undefined;
+                window.ConcurrentFunction2 = undefined;
+            });
+            it('to do math on different values', async function () {
+                var viName = 'ConcurrentFunctions';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input1', 3);
+                viPathWriter('input2', 5);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return1')).toBe(6);
+                expect(viPathParser('return2')).toBe(25);
+            });
+        });
+    });
+
+    describe('errors using a stale jsapi reference', function () {
+        describe('using the completion callback', function () {
+            var jsapiStale;
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    jsapiStale = jsAPI;
+                    return input * input;
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 6);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(36);
+                expect(jsapiStale.getCompletionCallback).toThrowError(/not valid anymore/);
+            });
+        });
+    });
+
+    describe('errors using a stale jsapi reference after js function completes with error', function () {
+        describe('using the completion callback', function () {
+            var jsapiStale;
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    jsapiStale = jsAPI;
+                    throw new Error('This function is a failure!');
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 6);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/This function is a failure!/);
+                expect(viPathParser('return')).toBe(0);
+                expect(jsapiStale.getCompletionCallback).toThrowError(/not valid anymore/);
+            });
+        });
+    });
+
+    describe('errors using a stale completion callback reference after js function completes with error', function () {
+        describe('using the completion callback', function () {
+            var completionCallbackStale;
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    completionCallbackStale = jsAPI.getCompletionCallback();
+                    throw new Error('Your function errored before completion callback!');
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 6);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/Your function errored before completion callback!/);
+                expect(viPathParser('return')).toBe(0);
+                expect(completionCallbackStale).toThrowError(/callback cannot be invoked/);
+            });
+        });
+    });
+
+    describe('errors returning a value synchronously after retrieving completion callback', function () {
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsAPI) {
+                    jsAPI.getCompletionCallback();
+                    return 'unexpected return value';
+                };
+            });
+            afterEach(function () {
+                window.SingleFunction = undefined;
+            });
+            it('to square a value', async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 6);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44303);
+                expect(viPathParser('error.source')).toMatch(/Unable to set return value/);
+                expect(viPathParser('return')).toBe(0);
+            });
         });
     });
 });

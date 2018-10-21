@@ -1,4 +1,4 @@
-fdescribe('A JavaScript function invoke relying on async using Promises', function () {
+xdescribe('A JavaScript function invoke relying on async using Promises', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
