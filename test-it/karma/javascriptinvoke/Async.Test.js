@@ -862,4 +862,33 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('return')).toBe(0);
         });
     });
+
+    // This test is only possible with the promise approach
+    describe('errors if getCompletionCallback was used when returning a promise', function () {
+        beforeEach(function () {
+            window.SingleFunction = async function (input, jsapi) {
+                jsapi.getCompletionCallback();
+                return input * input;
+            };
+        });
+        afterEach(function () {
+            window.SingleFunction = undefined;
+        });
+        it('to square a value', async function () {
+            var viName = 'SingleFunction';
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+            viPathWriter('input', 2);
+            vireoRunner.enqueueVI(vireo, viName);
+
+            const {rawPrint, rawPrintError} = await runSlicesAsync();
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error.status')).toBeTrue();
+            expect(viPathParser('error.code')).toBe(44307);
+            expect(viPathParser('error.source')).toMatch(/Unable to use Promise/);
+            expect(viPathParser('return')).toBe(0);
+        });
+    });
 });

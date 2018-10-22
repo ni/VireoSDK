@@ -279,4 +279,38 @@ describe('A JavaScriptInvoke for an internal function', function () {
         expect(viPathParser('error.source')).toBeEmptyString();
         expect(viPathParser('returnValue')).toBe(2);
     });
+
+    it('errors if starting an async call with promises and calls getCompletionCallback', async function () {
+        var viName = 'NI_InternalFunction';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var called = false;
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: async function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                jsAPI.getCompletionCallback();
+                called = true;
+                jsAPI.setLabVIEWError(false, 0, '');
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
+                return 'Unexpected return value';
+            }
+        });
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+
+        expect(called).toBeTrue();
+        expect(exception instanceof Error).toBeTrue();
+        expect(exception.message).toMatch(/Promise returned but completionCallback unavailable/);
+        expect(viPathParser('error.status')).toBeFalse();
+        expect(viPathParser('error.code')).toBe(0);
+        expect(viPathParser('error.source')).toBeEmptyString();
+        expect(viPathParser('returnValue')).toBe(2);
+    });
 });
