@@ -418,7 +418,7 @@ describe('A JavaScript function invoke', function () {
             beforeEach(function () {
                 window.SingleFunction = async function (input, jsapi) {
                     // By returning a promise the first implicit call happens
-                    await delayForTask(); // TODO mraj the error is different when microtask vs new task, should make consistent?
+                    await delayForTask();
                     try {
                         jsapi.getCompletionCallback();
                     } catch (ex) {
@@ -857,8 +857,8 @@ describe('A JavaScript function invoke', function () {
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44303);
-            expect(viPathParser('error.source')).toMatch(/Unable to set return value/);
+            expect(viPathParser('error.code')).toBe(44308);
+            expect(viPathParser('error.source')).toMatch(/after call to getCompletionCallback/);
             expect(viPathParser('return')).toBe(0);
         });
     });
