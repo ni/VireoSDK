@@ -12,7 +12,7 @@ describe('The Vireo VTR test suite', function () {
     beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
 
-        // // VTR tests can't fire JS events, so register no-op registration functions
+        // VTR tests can't fire JS events, so register no-op registration functions
         vireo.eventHelpers.setRegisterForControlEventsFunction(function () {
             // no-op
         });
@@ -42,7 +42,7 @@ describe('The Vireo VTR test suite', function () {
 
         describe('can preload ' + testName, function () {
             var testDescription = 'and run ' + testName;
-            var test = function (done) {
+            var test = async function () {
                 var vtrText = fixtures.loadAbsoluteUrl(vtrFile);
                 var runSlicesAsync;
                 try {
@@ -51,14 +51,11 @@ describe('The Vireo VTR test suite', function () {
                     expect(ex.message).toMatch(/CantDecode/);
                     expect(ex.rawPrintError).toBeEmptyString();
                     expect(ex.rawPrint).toMatchVtrText(vtrText);
-                    done();
                     return;
                 }
-                runSlicesAsync(function (rawPrint, rawPrintError) {
-                    expect(rawPrintError).toBeEmptyString();
-                    expect(rawPrint).toMatchVtrText(vtrText);
-                    done();
-                });
+                var {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrintError).toBeEmptyString();
+                expect(rawPrint).toMatchVtrText(vtrText);
             };
 
             beforeEach(function (done) {
@@ -69,11 +66,17 @@ describe('The Vireo VTR test suite', function () {
             });
 
             if (focusTests[testName] === true) {
-                fit(testDescription, test); // eslint-disable-line no-restricted-globals
+                fit(testDescription, async function () { // eslint-disable-line no-restricted-globals
+                    await test();
+                });
             } else if (disabledTests[testName] === true) {
-                xit(testDescription, test);
+                xit(testDescription, async function () {
+                    await test();
+                });
             } else {
-                it(testDescription, test);
+                it(testDescription, async function () {
+                    await test();
+                });
             }
         });
     });
