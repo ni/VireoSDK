@@ -8,6 +8,7 @@ describe('A JavaScript function invoke', function () {
     var vireo;
 
     var jsAsyncFunctionsUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/AsyncFunctions.via');
+    var test;
 
     var delayForTask = function () {
         return new Promise(function (resolve) {
@@ -27,37 +28,56 @@ describe('A JavaScript function invoke', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
-    // This test is only possible with the callback approach
+    beforeEach(function () {
+        test = undefined;
+        window.SingleFunction = undefined;
+        window.SingleFunctionUnwiredReturn = undefined;
+        window.ConcurrentFunction1 = undefined;
+        window.ConcurrentFunction2 = undefined;
+    });
+
+    afterEach(function () {
+        test = undefined;
+        window.SingleFunction = undefined;
+        window.SingleFunctionUnwiredReturn = undefined;
+        window.ConcurrentFunction1 = undefined;
+        window.ConcurrentFunction2 = undefined;
+    });
+
     describe('can start an async task and complete synchronously', function () {
         beforeEach(function () {
-            window.SingleFunction = function (input, jsapi) {
-                var completionCallback = jsapi.getCompletionCallback();
-                completionCallback(input * input);
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 2);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(4);
             };
         });
-        afterEach(function () {
-            window.SingleFunction = undefined;
+        describe('using the completion callback', function () {
+            beforeEach(function () {
+                window.SingleFunction = function (input, jsapi) {
+                    var completionCallback = jsapi.getCompletionCallback();
+                    completionCallback(input * input);
+                };
+            });
+            it('to square a value', async function () {
+                await test();
+            });
         });
-        it('to square a value', async function () {
-            var viName = 'SingleFunction';
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
-            viPathWriter('input', 2);
-            vireoRunner.enqueueVI(vireo, viName);
-
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-            expect(viPathParser('return')).toBe(4);
-        });
+        // This test is only possible with Promises
     });
 
     describe('can start an async task and complete as a microtask', function () {
-        var test;
         beforeEach(function () {
             test = async function () {
                 var viName = 'SingleFunction';
@@ -76,10 +96,6 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(9);
             };
         });
-        afterEach(function () {
-            test = undefined;
-        });
-
         describe('using the completion callback', function () {
             beforeEach(function () {
                 window.SingleFunction = function (input, jsapi) {
@@ -89,22 +105,15 @@ describe('A JavaScript function invoke', function () {
                     });
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
         });
-
         describe('using promises', function () {
             beforeEach(function () {
                 window.SingleFunction = async function (input) {
                     return input * input;
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -113,7 +122,6 @@ describe('A JavaScript function invoke', function () {
     });
 
     describe('can start an async task and complete as a new task', function () {
-        var test;
         beforeEach(function () {
             test = async function () {
                 var viName = 'SingleFunction';
@@ -132,10 +140,6 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(16);
             };
         });
-        afterEach(function () {
-            test = undefined;
-        });
-
         describe('using the completion callback', function () {
             beforeEach(function () {
                 window.SingleFunction = function (input, jsapi) {
@@ -145,23 +149,16 @@ describe('A JavaScript function invoke', function () {
                     }, 0);
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
         });
-
         describe('using promises', function () {
             beforeEach(function () {
                 window.SingleFunction = async function (input) {
                     await delayForTask();
                     return input * input;
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -176,9 +173,6 @@ describe('A JavaScript function invoke', function () {
                 jsapi.getCompletionCallback();
                 throw new Error('Failed to run sync');
             };
-        });
-        afterEach(function () {
-            window.SingleFunction = undefined;
         });
         it('to square a value', async function () {
             var viName = 'SingleFunction';
@@ -199,7 +193,6 @@ describe('A JavaScript function invoke', function () {
     });
 
     describe('can start an async task and error as a microtask', function () {
-        var test;
         beforeEach(function () {
             test = async function () {
                 var viName = 'SingleFunction';
@@ -218,10 +211,6 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(0);
             };
         });
-        afterEach(function () {
-            test = undefined;
-        });
-
         describe('using the completion callback', function () {
             beforeEach(function () {
                 window.SingleFunction = function (input, jsapi) {
@@ -231,22 +220,15 @@ describe('A JavaScript function invoke', function () {
                     });
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
         });
-
         describe('using promises', function () {
             beforeEach(function () {
                 window.SingleFunction = async function () {
                     throw new Error('Failed to run microtask');
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -255,7 +237,6 @@ describe('A JavaScript function invoke', function () {
     });
 
     describe('can start an async task and error as a new task', function () {
-        var test;
         beforeEach(function () {
             test = async function () {
                 var viName = 'SingleFunction';
@@ -274,10 +255,6 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(0);
             };
         });
-        afterEach(function () {
-            test = undefined;
-        });
-
         describe('using the completion callback', function () {
             beforeEach(function () {
                 window.SingleFunction = function (input, jsapi) {
@@ -287,23 +264,16 @@ describe('A JavaScript function invoke', function () {
                     }, 0);
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
         });
-
         describe('using promises', function () {
             beforeEach(function () {
                 window.SingleFunction = async function () {
                     await delayForTask();
                     throw new Error('Failed to run new task');
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -312,7 +282,6 @@ describe('A JavaScript function invoke', function () {
     });
 
     describe('can return undefined to an unwired return value', function () {
-        var test;
         beforeEach(function () {
             test = async function () {
                 var viName = 'SingleFunctionUnwiredReturn';
@@ -330,10 +299,6 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.source')).toBeEmptyString();
             };
         });
-        afterEach(function () {
-            test = undefined;
-        });
-
         describe('using the completion callback', function () {
             beforeEach(function () {
                 window.SingleFunctionUnwiredReturn = function (input, jsapi) {
@@ -341,22 +306,15 @@ describe('A JavaScript function invoke', function () {
                     completionCallback(undefined);
                 };
             });
-            afterEach(function () {
-                window.SingleFunctionUnwiredReturn = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
         });
-
         describe('using promises', function () {
             beforeEach(function () {
                 window.SingleFunctionUnwiredReturn = async function () {
                     return undefined;
                 };
-            });
-            afterEach(function () {
-                window.SingleFunctionUnwiredReturn = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -366,7 +324,6 @@ describe('A JavaScript function invoke', function () {
 
     describe('errors retrieving completion callback twice', function () {
         var error;
-        var test;
         beforeEach(function () {
             error = undefined;
             test = async function () {
@@ -389,7 +346,6 @@ describe('A JavaScript function invoke', function () {
         });
         afterEach(function () {
             error = undefined;
-            test = undefined;
         });
 
         describe('using the completion callback', function () {
@@ -405,9 +361,6 @@ describe('A JavaScript function invoke', function () {
                     // Instead if we are not resolved we should resolve immediately with an error
                     completionCallback(input * input);
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -429,9 +382,6 @@ describe('A JavaScript function invoke', function () {
                     return input * input;
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
@@ -440,7 +390,6 @@ describe('A JavaScript function invoke', function () {
 
     describe('errors retrieving completion, completing, and trying to retrieve again', function () {
         var error;
-        var test;
         beforeEach(function () {
             error = undefined;
             test = async function () {
@@ -463,7 +412,6 @@ describe('A JavaScript function invoke', function () {
         });
         afterEach(function () {
             error = undefined;
-            test = undefined;
         });
         describe('using the completion callback', function () {
             beforeEach(function () {
@@ -477,9 +425,6 @@ describe('A JavaScript function invoke', function () {
                         error = ex;
                     }
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -498,9 +443,6 @@ describe('A JavaScript function invoke', function () {
                     }, 0);
                     return input * input;
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -523,9 +465,6 @@ describe('A JavaScript function invoke', function () {
                     error = ex;
                 }
             };
-        });
-        afterEach(function () {
-            window.SingleFunction = undefined;
         });
         it('to square a value', async function () {
             var viName = 'SingleFunction';
@@ -577,9 +516,6 @@ describe('A JavaScript function invoke', function () {
                     }
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -603,7 +539,6 @@ describe('A JavaScript function invoke', function () {
     });
 
     describe('can have concurrent calls that complete out of order', function () {
-        var test;
         var resolve1, task1;
         var resolve2, task2;
         beforeEach(function () {
@@ -691,7 +626,6 @@ describe('A JavaScript function invoke', function () {
 
     describe('errors using a stale jsapi reference', function () {
         var jsapiStale;
-        var test;
         beforeEach(function () {
             jsapiStale = undefined;
             test = async function () {
@@ -714,7 +648,6 @@ describe('A JavaScript function invoke', function () {
         });
         afterEach(function () {
             jsapiStale = undefined;
-            test = undefined;
         });
         describe('using synchronous functions', function () {
             beforeEach(function () {
@@ -722,9 +655,6 @@ describe('A JavaScript function invoke', function () {
                     jsapiStale = jsapi;
                     return input * input;
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -737,9 +667,6 @@ describe('A JavaScript function invoke', function () {
                     return input * input;
                 };
             });
-            afterEach(function () {
-                window.SingleFunction = undefined;
-            });
             it('to square a value', async function () {
                 await test();
             });
@@ -748,7 +675,6 @@ describe('A JavaScript function invoke', function () {
 
     describe('errors using a stale jsapi reference after js function completes with error', function () {
         var jsapiStale;
-        var test;
         beforeEach(function () {
             jsapiStale = undefined;
             test = async function () {
@@ -771,7 +697,6 @@ describe('A JavaScript function invoke', function () {
         });
         afterEach(function () {
             jsapiStale = undefined;
-            test = undefined;
         });
         describe('using the synchronous functions', function () {
             beforeEach(function () {
@@ -779,9 +704,6 @@ describe('A JavaScript function invoke', function () {
                     jsapiStale = jsapi;
                     throw new Error('This function is a failure!');
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -793,9 +715,6 @@ describe('A JavaScript function invoke', function () {
                     jsapiStale = jsapi;
                     throw new Error('This function is a failure!');
                 };
-            });
-            afterEach(function () {
-                window.SingleFunction = undefined;
             });
             it('to square a value', async function () {
                 await test();
@@ -811,9 +730,6 @@ describe('A JavaScript function invoke', function () {
                 completionCallbackStale = jsapi.getCompletionCallback();
                 throw new Error('Your function errored before completion callback!');
             };
-        });
-        afterEach(function () {
-            window.SingleFunction = undefined;
         });
         it('to square a value', async function () {
             var viName = 'SingleFunction';
@@ -842,9 +758,6 @@ describe('A JavaScript function invoke', function () {
                 return 'unexpected return value';
             };
         });
-        afterEach(function () {
-            window.SingleFunction = undefined;
-        });
         it('to square a value', async function () {
             var viName = 'SingleFunction';
             var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -870,9 +783,6 @@ describe('A JavaScript function invoke', function () {
                 jsapi.getCompletionCallback();
                 return input * input;
             };
-        });
-        afterEach(function () {
-            window.SingleFunction = undefined;
         });
         it('to square a value', async function () {
             var viName = 'SingleFunction';
