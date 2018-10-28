@@ -39,7 +39,7 @@ var assignJavaScriptInvoke;
         },
 
         // TODO needs review and to be added to error code database
-        kUnableToAcceptReturnValueDuringAsync: {
+        kNIUnableToAcceptReturnValueDuringAsync: {
             CODE: 44308,
             MESSAGE: 'Unable to set return value after call to getCompletionCallback API function. Verify return value is provided to the completion callback and not returned.'
         }
@@ -483,7 +483,7 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     throw new Error('Unexpected return value for function requiring asynchronous completion');
                 }
-                mergeNewError(errorValueRef, functionName, ERRORS.kUnableToAcceptReturnValueDuringAsync);
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToAcceptReturnValueDuringAsync);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
                 Module.eggShell.setOccurrence(occurrencePointer);
