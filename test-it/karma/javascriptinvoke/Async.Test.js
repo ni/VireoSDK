@@ -9,6 +9,7 @@ describe('A JavaScript function invoke', function () {
 
     var jsAsyncFunctionsUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/AsyncFunctions.via');
     var test;
+    var error;
 
     var delayForTask = function () {
         return new Promise(function (resolve) {
@@ -30,6 +31,7 @@ describe('A JavaScript function invoke', function () {
 
     beforeEach(function () {
         test = undefined;
+        error = undefined;
         window.SingleFunction = undefined;
         window.SingleFunctionUnwiredReturn = undefined;
         window.ConcurrentFunction1 = undefined;
@@ -38,6 +40,7 @@ describe('A JavaScript function invoke', function () {
 
     afterEach(function () {
         test = undefined;
+        error = undefined;
         window.SingleFunction = undefined;
         window.SingleFunctionUnwiredReturn = undefined;
         window.ConcurrentFunction1 = undefined;
@@ -63,18 +66,14 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(4);
             };
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    completionCallback(input * input);
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                completionCallback(input * input);
+            };
+            await test();
         });
-        // This test is only possible with Promises
+        // This test is not possible with Promises
     });
 
     describe('can start an async task and complete as a microtask', function () {
@@ -96,28 +95,20 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(9);
             };
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    Promise.resolve().then(function () {
-                        completionCallback(input * input);
-                    });
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                Promise.resolve().then(function () {
+                    completionCallback(input * input);
+                });
+            };
+            await test();
         });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function (input) {
-                    return input * input;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input) {
+                return input * input;
+            };
+            await test();
         });
     });
 
@@ -140,56 +131,51 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(16);
             };
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    setTimeout(function () {
-                        completionCallback(input * input);
-                    }, 0);
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                setTimeout(function () {
+                    completionCallback(input * input);
+                }, 0);
+            };
+            await test();
         });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function (input) {
-                    await delayForTask();
-                    return input * input;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input) {
+                await delayForTask();
+                return input * input;
+            };
+            await test();
         });
     });
 
-    // This test is only possible with the callback approach
     describe('can start an async task and error synchronously', function () {
         beforeEach(function () {
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 2);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/Failed to run sync/);
+                expect(viPathParser('return')).toBe(0);
+            };
+        });
+        it('using the completion callback', async function () {
             window.SingleFunction = function (input, jsapi) {
                 jsapi.getCompletionCallback();
                 throw new Error('Failed to run sync');
             };
+            await test();
         });
-        it('to square a value', async function () {
-            var viName = 'SingleFunction';
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
-            viPathWriter('input', 2);
-            vireoRunner.enqueueVI(vireo, viName);
-
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44300);
-            expect(viPathParser('error.source')).toMatch(/Failed to run sync/);
-            expect(viPathParser('return')).toBe(0);
-        });
+        // This test is not possible with Promises
     });
 
     describe('can start an async task and error as a microtask', function () {
@@ -211,28 +197,20 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(0);
             };
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    Promise.resolve().then(function () {
-                        completionCallback(new Error('Failed to run microtask'));
-                    });
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                Promise.resolve().then(function () {
+                    completionCallback(new Error('Failed to run microtask'));
+                });
+            };
+            await test();
         });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function () {
-                    throw new Error('Failed to run microtask');
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function () {
+                throw new Error('Failed to run microtask');
+            };
+            await test();
         });
     });
 
@@ -255,29 +233,21 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('return')).toBe(0);
             };
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    setTimeout(function () {
-                        completionCallback(new Error('Failed to run new task'));
-                    }, 0);
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                setTimeout(function () {
+                    completionCallback(new Error('Failed to run new task'));
+                }, 0);
+            };
+            await test();
         });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function () {
-                    await delayForTask();
-                    throw new Error('Failed to run new task');
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function () {
+                await delayForTask();
+                throw new Error('Failed to run new task');
+            };
+            await test();
         });
     });
 
@@ -299,33 +269,23 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.source')).toBeEmptyString();
             };
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunctionUnwiredReturn = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    completionCallback(undefined);
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using the completion callback', async function () {
+            window.SingleFunctionUnwiredReturn = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                completionCallback(undefined);
+            };
+            await test();
         });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunctionUnwiredReturn = async function () {
-                    return undefined;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunctionUnwiredReturn = async function () {
+                return undefined;
+            };
+            await test();
         });
     });
 
     describe('errors retrieving completion callback twice', function () {
-        var error;
         beforeEach(function () {
-            error = undefined;
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -344,54 +304,39 @@ describe('A JavaScript function invoke', function () {
                 expect(error.message).toMatch(/retrieved more than once/);
             };
         });
-        afterEach(function () {
-            error = undefined;
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                try {
+                    jsapi.getCompletionCallback();
+                } catch (ex) {
+                    error = ex;
+                }
+                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
+                // Instead if we are not resolved we should resolve immediately with an error
+                completionCallback(input * input);
+            };
+            await test();
         });
-
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    try {
-                        jsapi.getCompletionCallback();
-                    } catch (ex) {
-                        error = ex;
-                    }
-                    // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
-                    // Instead if we are not resolved we should resolve immediately with an error
-                    completionCallback(input * input);
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
-        });
-
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function (input, jsapi) {
-                    // By returning a promise the first implicit call happens
-                    await delayForTask();
-                    try {
-                        jsapi.getCompletionCallback();
-                    } catch (ex) {
-                        error = ex;
-                    }
-                    // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
-                    // Instead if we are not resolved we should resolve immediately with an error
-                    return input * input;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input, jsapi) {
+                // By returning a promise the first implicit call happens
+                await delayForTask();
+                try {
+                    jsapi.getCompletionCallback();
+                } catch (ex) {
+                    error = ex;
+                }
+                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
+                // Instead if we are not resolved we should resolve immediately with an error
+                return input * input;
+            };
+            await test();
         });
     });
 
     describe('errors retrieving completion, completing, and trying to retrieve again', function () {
-        var error;
         beforeEach(function () {
-            error = undefined;
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -410,51 +355,56 @@ describe('A JavaScript function invoke', function () {
                 expect(error.message).toMatch(/not valid anymore/);
             };
         });
-        afterEach(function () {
-            error = undefined;
-        });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    completionCallback(input * input);
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                completionCallback(input * input);
 
+                try {
+                    jsapi.getCompletionCallback();
+                } catch (ex) {
+                    error = ex;
+                }
+            };
+            await test();
+        });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input, jsapi) {
+                // By returning a promise the first implicit call happens
+                this.setTimeout(function () {
                     try {
                         jsapi.getCompletionCallback();
                     } catch (ex) {
                         error = ex;
                     }
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
-        });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function (input, jsapi) {
-                    // By returning a promise the first implicit call happens
-                    this.setTimeout(function () {
-                        try {
-                            jsapi.getCompletionCallback();
-                        } catch (ex) {
-                            error = ex;
-                        }
-                    }, 0);
-                    return input * input;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+                }, 0);
+                return input * input;
+            };
+            await test();
         });
     });
 
-    // This test is only possible with the callback approach
     describe('errors calling completion callback twice', function () {
-        var error;
-
         beforeEach(function () {
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 8);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(64);
+                expect(error.message).toMatch(/invoked more than once/);
+            };
+        });
+        it('using the completion callback', async function () {
             window.SingleFunction = function (input, jsapi) {
                 var completionCallback = jsapi.getCompletionCallback();
 
@@ -465,58 +415,19 @@ describe('A JavaScript function invoke', function () {
                     error = ex;
                 }
             };
+            await test();
         });
-        it('to square a value', async function () {
-            var viName = 'SingleFunction';
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
-            viPathWriter('input', 8);
-            vireoRunner.enqueueVI(vireo, viName);
-
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeFalse();
-            expect(viPathParser('error.code')).toBe(0);
-            expect(viPathParser('error.source')).toBeEmptyString();
-            expect(viPathParser('return')).toBe(64);
-            expect(error.message).toMatch(/invoked more than once/);
-        });
+        // This test is not possible with Promises
     });
 
-    // This test is only possible with the callback approach
     describe('errors after using get completion callback or completing after initial completion', function () {
-        describe('using the completion callback', function () {
-            var errorSecondCompletion;
-            var errorSecondRetrieval;
-            var errorThirdCompletion;
+        var errorSecondCompletion;
+        var errorSecondRetrieval;
+        var errorThirdCompletion;
 
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    completionCallback(input * input);
-
-                    try {
-                        completionCallback(input * input);
-                    } catch (ex) {
-                        errorSecondCompletion = ex;
-                    }
-
-                    try {
-                        jsapi.getCompletionCallback();
-                    } catch (ex) {
-                        errorSecondRetrieval = ex;
-                    }
-
-                    try {
-                        completionCallback(input * input);
-                    } catch (ex) {
-                        errorThirdCompletion = ex;
-                    }
-                };
-            });
-            it('to square a value', async function () {
+        beforeEach(function () {
+            errorSecondCompletion = errorSecondRetrieval = errorThirdCompletion = undefined;
+            test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
                 var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
@@ -534,14 +445,44 @@ describe('A JavaScript function invoke', function () {
                 expect(errorSecondCompletion.message).toMatch(/invoked more than once/);
                 expect(errorSecondRetrieval.message).toMatch(/is not valid anymore/);
                 expect(errorThirdCompletion.message).toMatch(/invoked more than once/);
-            });
+            };
         });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                completionCallback(input * input);
+
+                try {
+                    completionCallback(input * input);
+                } catch (ex) {
+                    errorSecondCompletion = ex;
+                }
+
+                try {
+                    jsapi.getCompletionCallback();
+                } catch (ex) {
+                    errorSecondRetrieval = ex;
+                }
+
+                try {
+                    completionCallback(input * input);
+                } catch (ex) {
+                    errorThirdCompletion = ex;
+                }
+            };
+            await test();
+        });
+        // This test is not possible with Promises
     });
 
     describe('can have concurrent calls that complete out of order', function () {
         var resolve1, task1;
         var resolve2, task2;
         beforeEach(function () {
+            resolve1 = task1 = undefined;
+            resolve2 = task2 = undefined;
+            window.ConcurrentFunction1 = undefined;
+            window.ConcurrentFunction2 = undefined;
             task1 = new Promise(function (resolve) {
                 resolve1 = resolve;
             });
@@ -568,59 +509,38 @@ describe('A JavaScript function invoke', function () {
             };
         });
         afterEach(function () {
-            test = undefined;
-            resolve1 = task1 = undefined;
-            resolve2 = task2 = undefined;
+            window.ConcurrentFunction1 = undefined;
+            window.ConcurrentFunction2 = undefined;
         });
-        describe('using the completion callback', function () {
-            beforeEach(function () {
-                window.ConcurrentFunction1 = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    resolve1();
-                    task2.then(function () {
-                        completionCallback(input + input);
-                    });
-                };
-
-                window.ConcurrentFunction2 = function (input, jsapi) {
-                    var completionCallback = jsapi.getCompletionCallback();
-                    task1.then(function () {
-                        resolve2();
-                        completionCallback(input * input);
-                    });
-                };
-            });
-
-            afterEach(function () {
-                window.ConcurrentFunction1 = undefined;
-                window.ConcurrentFunction2 = undefined;
-            });
-            it('to do math on different values', async function () {
-                await test();
-            });
-        });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.ConcurrentFunction1 = async function (input) {
-                    resolve1();
-                    await task2;
-                    return input + input;
-                };
-
-                window.ConcurrentFunction2 = async function (input) {
-                    await task1;
+        it('using the completion callback', async function () {
+            window.ConcurrentFunction1 = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                resolve1();
+                task2.then(function () {
+                    completionCallback(input + input);
+                });
+            };
+            window.ConcurrentFunction2 = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                task1.then(function () {
                     resolve2();
-                    return input * input;
-                };
-            });
-
-            afterEach(function () {
-                window.ConcurrentFunction1 = undefined;
-                window.ConcurrentFunction2 = undefined;
-            });
-            it('to do math on different values', async function () {
-                await test();
-            });
+                    completionCallback(input * input);
+                });
+            };
+            await test();
+        });
+        it('using promises', async function () {
+            window.ConcurrentFunction1 = async function (input) {
+                resolve1();
+                await task2;
+                return input + input;
+            };
+            window.ConcurrentFunction2 = async function (input) {
+                await task1;
+                resolve2();
+                return input * input;
+            };
+            await test();
         });
     });
 
@@ -646,30 +566,19 @@ describe('A JavaScript function invoke', function () {
                 expect(jsapiStale.getCompletionCallback).toThrowError(/not valid anymore/);
             };
         });
-        afterEach(function () {
-            jsapiStale = undefined;
+        it('using synchronous functions', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                jsapiStale = jsapi;
+                return input * input;
+            };
+            await test();
         });
-        describe('using synchronous functions', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    jsapiStale = jsapi;
-                    return input * input;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
-        });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function (input, jsapi) {
-                    jsapiStale = jsapi;
-                    return input * input;
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input, jsapi) {
+                jsapiStale = jsapi;
+                return input * input;
+            };
+            await test();
         });
     });
 
@@ -695,110 +604,109 @@ describe('A JavaScript function invoke', function () {
                 expect(jsapiStale.getCompletionCallback).toThrowError(/not valid anymore/);
             };
         });
-        afterEach(function () {
-            jsapiStale = undefined;
+        it('using the synchronous functions', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                jsapiStale = jsapi;
+                throw new Error('This function is a failure!');
+            };
+            await test();
         });
-        describe('using the synchronous functions', function () {
-            beforeEach(function () {
-                window.SingleFunction = function (input, jsapi) {
-                    jsapiStale = jsapi;
-                    throw new Error('This function is a failure!');
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
-        });
-        describe('using promises', function () {
-            beforeEach(function () {
-                window.SingleFunction = async function (input, jsapi) {
-                    jsapiStale = jsapi;
-                    throw new Error('This function is a failure!');
-                };
-            });
-            it('to square a value', async function () {
-                await test();
-            });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input, jsapi) {
+                jsapiStale = jsapi;
+                throw new Error('This function is a failure!');
+            };
+            await test();
         });
     });
 
-    // This test is only possible with the callback approach
     describe('errors using a stale completion callback reference after js function completes with error', function () {
         var completionCallbackStale;
         beforeEach(function () {
+            completionCallbackStale = undefined;
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 6);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/Your function errored before completion callback!/);
+                expect(viPathParser('return')).toBe(0);
+                expect(completionCallbackStale).toThrowError(/callback cannot be invoked/);
+            };
+        });
+        it('using the completion callback', async function () {
             window.SingleFunction = function (input, jsapi) {
                 completionCallbackStale = jsapi.getCompletionCallback();
                 throw new Error('Your function errored before completion callback!');
             };
+            await test();
         });
-        it('to square a value', async function () {
-            var viName = 'SingleFunction';
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
-            viPathWriter('input', 6);
-            vireoRunner.enqueueVI(vireo, viName);
-
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44300);
-            expect(viPathParser('error.source')).toMatch(/Your function errored before completion callback!/);
-            expect(viPathParser('return')).toBe(0);
-            expect(completionCallbackStale).toThrowError(/callback cannot be invoked/);
-        });
+        // This test is not possible with Promises
     });
 
-    // This test is only possible with the callback approach
     describe('errors returning a value synchronously after retrieving completion callback', function () {
         beforeEach(function () {
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 6);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44308);
+                expect(viPathParser('error.source')).toMatch(/after call to getCompletionCallback/);
+                expect(viPathParser('return')).toBe(0);
+            };
+        });
+        it('using the completion callback', async function () {
             window.SingleFunction = function (input, jsapi) {
                 jsapi.getCompletionCallback();
                 return 'unexpected return value';
             };
+            await test();
         });
-        it('to square a value', async function () {
-            var viName = 'SingleFunction';
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
-            viPathWriter('input', 6);
-            vireoRunner.enqueueVI(vireo, viName);
-
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44308);
-            expect(viPathParser('error.source')).toMatch(/after call to getCompletionCallback/);
-            expect(viPathParser('return')).toBe(0);
-        });
+        // This test is not possible with Promises
     });
 
-    // This test is only possible with the promise approach
     describe('errors if getCompletionCallback was used when returning a promise', function () {
         beforeEach(function () {
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 2);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44307);
+                expect(viPathParser('error.source')).toMatch(/Unable to use Promise/);
+                expect(viPathParser('return')).toBe(0);
+            };
+        });
+        // This test is not possible with completion callbacks
+        it('using promises', async function () {
             window.SingleFunction = async function (input, jsapi) {
                 jsapi.getCompletionCallback();
                 return input * input;
             };
-        });
-        it('to square a value', async function () {
-            var viName = 'SingleFunction';
-            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
-            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-            var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
-            viPathWriter('input', 2);
-            vireoRunner.enqueueVI(vireo, viName);
-
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect(viPathParser('error.code')).toBe(44307);
-            expect(viPathParser('error.source')).toMatch(/Unable to use Promise/);
-            expect(viPathParser('return')).toBe(0);
+            await test();
         });
     });
 });
