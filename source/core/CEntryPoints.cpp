@@ -385,7 +385,7 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
     return typeRef->AQAlignment();
 }
 //------------------------------------------------------------
-VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
+VIREO_EXPORT StringRef TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
 {
     TypeManagerScope scope(tm);
     SubString name = typeRef->Name();
@@ -397,20 +397,18 @@ VIREO_EXPORT const char* TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
         STACK_VAR(String, tempReturn);
         returnBuffer = tempReturn.DetachValue();
     } else {
-        returnBuffer->Resize1D(name.Length() + 1);
+        returnBuffer->Resize1D(name.Length());
     }
 
     if (returnBuffer) {
         returnBuffer->CopyFromSubString(&name);
-        // Add an explicit null terminator so it looks like a C string.
-        returnBuffer->Append((Utf8Char)'\0');
-        return (const char*) returnBuffer->Begin();
+        return returnBuffer;
     }
 
-    return "";
+    return nullptr;
 }
 //------------------------------------------------------------
-VIREO_EXPORT const char* TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
+VIREO_EXPORT StringRef TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
 {
     TypeManagerScope scope(tm);
     SubString name = typeRef->ElementName();
@@ -422,17 +420,15 @@ VIREO_EXPORT const char* TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
         STACK_VAR(String, tempReturn);
         returnBuffer = tempReturn.DetachValue();
     } else {
-        returnBuffer->Resize1D(name.Length() + 1);
+        returnBuffer->Resize1D(name.Length());
     }
 
     if (returnBuffer) {
         returnBuffer->CopyFromSubString(&name);
-        // Add an explicit null terminator so it looks like a C string.
-        returnBuffer->Append((Utf8Char)'\0');
-        return (const char*) returnBuffer->Begin();
+        return returnBuffer;
     }
 
-    return "";
+    return nullptr;
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)

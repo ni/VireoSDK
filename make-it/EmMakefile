@@ -105,63 +105,18 @@ POSTJS = $(OBJS)/vireo.postamble.js
 EM_WRAP = --pre-js $(PREJS) --post-js $(POSTJS)
 
 EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
-    '_Vireo_MaxExecWakeUpTime', \
-    '_EggShell_Create', \
-    '_EggShell_REPL',\
-    '_EggShell_ExecuteSlices',\
-    '_EggShell_Delete',\
-    '_EggShell_AllocateData',\
-    '_EggShell_DeallocateData',\
-    '_EggShell_FindValue',\
-    '_EggShell_FindSubValue',\
-    '_EggShell_ReadDouble',\
-    '_EggShell_WriteDouble',\
-    '_EggShell_ReadValueString',\
-    '_EggShell_WriteValueString',\
-    '_EggShell_ResizeArray',\
-    '_Occurrence_Set',\
-    '_OccurEvent',\
-    '_Data_GetStringBegin',\
-    '_Data_GetStringLength',\
-    '_Data_GetArrayBegin',\
-    '_Data_GetArrayDimensions',\
-    '_Data_GetArrayLength',\
-    '_TypeRef_TopAQSize',\
-    '_TypeRef_Name',\
-    '_TypeRef_ElementName',\
-    '_TypeRef_SubElementCount',\
-    '_TypeRef_GetSubElementByIndex',\
-    '_TypeRef_IsCluster',\
-    '_TypeRef_IsArray',\
-    '_TypeRef_IsBoolean',\
-    '_TypeRef_IsInteger',\
-    '_TypeRef_IsSigned',\
-    '_TypeRef_IsEnum',\
-    '_TypeRef_IsFloat',\
-    '_TypeRef_IsString',\
-    '_TypeRef_IsPath',\
-    '_TypeRef_IsTimestamp',\
-    '_TypeRef_IsComplex',\
-    '_TypeRef_IsAnalogWaveform',\
-    '_TypeRef_IsJavascriptRefnum',\
-    '_JavaScriptInvoke_GetParameterTypeRef',\
-    '_JavaScriptInvoke_GetParameterDataRef',\
-    '_TypeRef_Rank',\
     '_malloc', \
     '_free' \
     ]"
 
 EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
-	'cwrap', \
 	'lengthBytesUTF8', \
 	'stackAlloc', \
 	'stackSave', \
 	'stackRestore', \
 	'stringToUTF8', \
 	'getValue', \
-	'setValue', \
-	'Pointer_stringify', \
-	'writeArrayToMemory' \
+	'setValue' \
     ]"
 
 EM_BC_FILES=$(OBJS)/Array.bc\
