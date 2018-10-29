@@ -7,17 +7,6 @@ var assignEggShell;
 
     // Vireo Core Mixin Function
     assignEggShell = function (Module, publicAPI) {
-        // Disable new-cap for the cwrap functions so the names can be the same in C and JS
-        /* eslint 'new-cap': ['error', {'capIsNewExceptions': [
-            'Vireo_MaxExecWakeUpTime',
-            'EggShell_Create',
-            'EggShell_Delete',
-            'Data_GetStringBegin',
-            'Data_GetStringLength',
-            'EggShell_ExecuteSlices',
-            'Occurrence_Set'
-        ]}], */
-
         Module.eggShell = {};
         publicAPI.eggShell = {};
 
@@ -73,17 +62,15 @@ var assignEggShell;
             7: 'ValueTruncated'
         };
 
-        var Vireo_MaxExecWakeUpTime = Module.cwrap('Vireo_MaxExecWakeUpTime', 'number', []);
-        var EggShell_Create = Module.cwrap('EggShell_Create', 'number', ['number']);
-        var EggShell_Delete = Module.cwrap('EggShell_Delete', 'number', ['number']);
-        var Data_GetStringBegin = Module.cwrap('Data_GetStringBegin', 'number', []);
-        var Data_GetStringLength = Module.cwrap('Data_GetStringLength', 'number', []);
-        var EggShell_ExecuteSlices = Module.cwrap('EggShell_ExecuteSlices', 'number', ['number', 'number', 'number']);
-        var Occurrence_Set = Module.cwrap('Occurrence_Set', 'void', ['number']);
-
         // Create shell for vireo instance
-        Module.eggShell.v_root = EggShell_Create(0);
-        Module.eggShell.v_userShell = EggShell_Create(Module.eggShell.v_root);
+        Module.eggShell.create = function (parentTypeManager) {
+            return Module._EggShell_Create(parentTypeManager);
+        };
+        Module.eggShell.delete = function (typeManager) {
+            Module._EggShell_Delete(typeManager);
+        };
+        Module.eggShell.v_root = Module.eggShell.create(0);
+        Module.eggShell.v_userShell = Module.eggShell.create(Module.eggShell.v_root);
 
         // Exported functions
         Module.eggShell.doPrint = function (text) {
@@ -126,13 +113,15 @@ var assignEggShell;
 
         // Exporting functions to both Module.eggShell and publicAPI.eggShell is not normal
         // This is unique to the eggShell API as it is consumed by other modules as well as users
-        Module.eggShell.maxExecWakeUpTime = publicAPI.eggShell.maxExecWakeUpTime = Vireo_MaxExecWakeUpTime;
+        Module.eggShell.maxExecWakeUpTime = publicAPI.eggShell.maxExecWakeUpTime = function () {
+            return Module._Vireo_MaxExecWakeUpTime();
+        };
 
         Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {
-            EggShell_Delete(Module.eggShell.v_userShell);
-            EggShell_Delete(Module.eggShell.v_root);
-            Module.eggShell.v_root = EggShell_Create(0);
-            Module.eggShell.v_userShell = EggShell_Create(Module.eggShell.v_root);
+            Module.eggShell.delete(Module.eggShell.v_userShell);
+            Module.eggShell.delete(Module.eggShell.v_root);
+            Module.eggShell.v_root = Module.eggShell.create(0);
+            Module.eggShell.v_userShell = Module.eggShell.create(Module.eggShell.v_root);
         };
 
         Module.eggShell.createValueRef = function (typeRef, dataRef) {
@@ -528,8 +517,8 @@ var assignEggShell;
 
         // **DEPRECATED**
         Module.eggShell.dataReadString = function (stringPointer) {
-            var begin = Data_GetStringBegin(stringPointer);
-            var length = Data_GetStringLength(stringPointer);
+            var begin = Module._Data_GetStringBegin(stringPointer);
+            var length = Module._Data_GetStringLength(stringPointer);
             var str = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, begin, length);
             return str;
         };
@@ -583,7 +572,7 @@ var assignEggShell;
         //     returns < 0 if should be called again ASAP, 0 if nothing to run, or positive value N if okay
         //     to delay up to N milliseconds before calling again
         Module.eggShell.executeSlicesUntilWait = publicAPI.eggShell.executeSlicesUntilWait = function (numSlices, millisecondsToRun) {
-            return EggShell_ExecuteSlices(Module.eggShell.v_userShell, numSlices, millisecondsToRun);
+            return Module._EggShell_ExecuteSlices(Module.eggShell.v_userShell, numSlices, millisecondsToRun);
         };
 
         // Pumps vireo asynchronously until the currently loaded via has finished all clumps
@@ -663,12 +652,14 @@ var assignEggShell;
             // by relatively slow operation, may need to change from setTimeout
             // to improve performance in the future
             setTimeout(function () {
-                Occurrence_Set(occurrence);
+                Module._Occurrence_Set(occurrence);
                 Module.eggShell.executeSlicesWakeUpCallback.call(undefined);
             }, 0);
         };
 
-        Module.eggShell.setOccurrence = Occurrence_Set;
+        Module.eggShell.setOccurrence = function (occurrence) {
+            Module._Occurrence_Set(occurrence);
+        };
     };
 }());
 export default assignEggShell;
