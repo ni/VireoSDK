@@ -30,6 +30,18 @@ var assignJavaScriptInvoke;
         kNITypeMismatchForReturnTypeInJavaScriptInvoke: {
             CODE: 44306,
             MESSAGE: 'Return type mismatch. Verify the return type in the JavaScript Library Interface matches the return type in the external JavaScript function.'
+        },
+
+        // TODO needs review and to be added to error code database
+        kNIUnableToHandlePromise: {
+            CODE: 44307,
+            MESSAGE: 'Unable to use Promise. Verify that the getCompletionCallback API function is not used in the external JavaScript function with a Promise return value.'
+        },
+
+        // TODO needs review and to be added to error code database
+        kNIUnableToAcceptReturnValueDuringAsync: {
+            CODE: 44308,
+            MESSAGE: 'Unable to set return value after call to getCompletionCallback API function. Verify return value is provided to the completion callback and not returned.'
         }
     };
 
@@ -317,6 +329,7 @@ var assignJavaScriptInvoke;
 
         var generateCompletionCallback = function (occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction) {
             var completionCallback = function (returnValue) {
+                // The following checks are not LabVIEW errors because they may happen after JavaScriptInvoke completion finishes if user holds reference
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
                     throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
                 }
@@ -340,6 +353,7 @@ var assignJavaScriptInvoke;
         var generateAPI = function (occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction) {
             var api = {};
             api.getCompletionCallback = function () {
+                // The following checks are not LabVIEW errors because they may happen after JavaScriptInvoke completion finishes if user holds reference
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
                     throw new Error('The completion callback was retrieved more than once for ' + functionName + '.');
                 }
@@ -415,10 +429,10 @@ var assignJavaScriptInvoke;
                 invocationState: completionCallbackInvocationEnum.PENDING
             };
 
-            var api;
+            var jsapi;
             if (functionToCall.length === parameters.length + 1) {
-                api = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
-                parameters.push(api);
+                jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
+                parameters.push(jsapi);
             }
 
             var returnValue;
@@ -434,7 +448,30 @@ var assignJavaScriptInvoke;
                 return;
             }
 
-            // assume synchronous invocation since the completion callback was never retrieved by the user
+            var completionCallback;
+            if (returnValue instanceof Promise) {
+                if (completionCallbackStatus.retrievalState !== completionCallbackRetrievalEnum.AVAILABLE) {
+                    if (isInternalFunction) {
+                        throw new Error('Promise returned but completionCallback unavailable. Possible reason is using getCompletionCallback when returning a promise');
+                    }
+                    mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToHandlePromise);
+                    completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
+                    completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
+                    Module.eggShell.setOccurrence(occurrencePointer);
+                    return;
+                }
+
+                if (jsapi === undefined) {
+                    jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
+                }
+
+                completionCallback = jsapi.getCompletionCallback();
+                returnValue.then(completionCallback).catch(completionCallback);
+                // Do not setOccurrence when returning here since waiting asynchronously for user Promise to resolve
+                return;
+            }
+
+            // synchronous invocation since the completion callback was never retrieved by the user
             if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.AVAILABLE) {
                 updateReturnValue(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction);
                 Module.eggShell.setOccurrence(occurrencePointer);
@@ -446,12 +483,14 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     throw new Error('Unexpected return value for function requiring asynchronous completion');
                 }
-                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToSetReturnValueInJavaScriptInvoke);
+                mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToAcceptReturnValueDuringAsync);
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
                 completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
+
+            // at this point user retrieved getCompletionCallback so we wait for completion
         };
 
         Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, returnTypeRef, returnDataRef) {

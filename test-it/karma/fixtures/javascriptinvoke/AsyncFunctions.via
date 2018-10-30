@@ -1,4 +1,4 @@
-define(ValidCases dv(VirtualInstrument (
+define(SingleFunction dv(VirtualInstrument (
     Locals: c(
         e(c(
             e(.Boolean status)
@@ -7,88 +7,68 @@ define(ValidCases dv(VirtualInstrument (
         ) error)
         e(dv(.UInt8 2) input)
         e(dv(.UInt8 0) return)
-        e(dv(.UInt8 3) inputSynchronousCompletionCallback)
-        e(dv(.UInt8 0) returnSynchronousCompletionCallback)
-        e(dv(.UInt8 4) inputPromiseBasedCall)
-        e(dv(.UInt8 0) returnPromiseBasedCall)
-        e(.Occurrence occurrence1)
-        e(.Occurrence occurrence2)
-        e(.Occurrence occurrence3)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_AsyncSquareFunction' return input)
-        JavaScriptInvoke(occurrence2 false error 'NI_CallCompletionCallbackSynchronously' returnSynchronousCompletionCallback inputSynchronousCompletionCallback)
-        JavaScriptInvoke(occurrence3 false error 'NI_PromiseBasedAsyncSquareFunction' returnPromiseBasedCall inputPromiseBasedCall)
+        JavaScriptInvoke(occurrence false error 'SingleFunction' return input)
     )
 ) ) )
 
-define(RetrieveCompletionCallbackMoreThanOnce dv(VirtualInstrument (
+define(SingleFunctionUnwiredInput dv(VirtualInstrument (
     Locals: c(
         e(c(
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
         ) error)
-        e(dv(.UInt8 3) beforeCallbackInput)
-        e(dv(.UInt8 0) beforeCallbackReturn)
-        e(dv(.UInt8 5) afterCallbackInput)
-        e(dv(.UInt8 0) afterCallbackReturn)
-        e(.Occurrence occurrence1)
-        e(.Occurrence occurrence2)
+        e(dv(.UInt8 0) return)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_RetrieveCompletionCallbackMoreThanOnceBeforeCallback' beforeCallbackReturn beforeCallbackInput)
-        JavaScriptInvoke(occurrence2 false error 'NI_RetrieveCompletionCallbackMoreThanOnceAfterCallback' afterCallbackReturn afterCallbackInput)
+        JavaScriptInvoke(occurrence false error 'SingleFunctionUnwiredInput' return *)
     )
 ) ) )
 
-define(CallCompletionCallbackMoreThanOnce dv(VirtualInstrument (
+define(SingleFunctionUnwiredReturn dv(VirtualInstrument (
     Locals: c(
         e(c(
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
         ) error)
-        e(dv(.UInt8 6) inputCallCallback)
-        e(dv(.UInt8 0) returnCallCallback)
-        e(.Occurrence occurrence1)
-        e(.Occurrence occurrence2)
-        e(.Occurrence occurrence3)
+        e(dv(.UInt8 2) input)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_CallCompletionCallbackMoreThanOnce' returnCallCallback inputCallCallback)
-        JavaScriptInvoke(occurrence2 false error 'NI_CallCompletionCallbackMoreThanOnceAfterSecondCallbackRetrieval' returnCallCallback inputCallCallback)
-        JavaScriptInvoke(occurrence3 false error 'NI_CompletionCallbackReturnsUndefined' * inputCallCallback)
+        JavaScriptInvoke(occurrence false error 'SingleFunctionUnwiredReturn' * input)
     )
 ) ) )
 
-define(CallCompletionCallbackAfterFunctionErrors dv(VirtualInstrument (
+define(SingleFunctionUnwiredReturnAndInput dv(VirtualInstrument (
     Locals: c(
         e(c(
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
         ) error)
-        e(dv(.UInt8 6) input)
-        e(dv(.UInt8 26) return)
-        e(.Occurrence occurrence1)
+        e(.Occurrence occurrence)
     )
     clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_CallCompletionCallbackAfterFunctionErrors' return input)
+        JavaScriptInvoke(occurrence false error 'SingleFunctionUnwiredReturnAndInput' * *)
     )
 ) ) )
 
-define(CallCompletionCallbackAcrossClumps dv(VirtualInstrument (
+define(ConcurrentFunctions dv(VirtualInstrument (
     Locals: c(
         e(c(
             e(.Boolean status)
             e(.Int32 code)
             e(.String source)
         ) error)
-        e(dv(.UInt8 3) acrossClumpsInput1)
-        e(dv(.UInt8 0) acrossClumpsReturn1)
-        e(dv(.UInt8 5) acrossClumpsInput2)
-        e(dv(.UInt8 0) acrossClumpsReturn2)
+        e(dv(.UInt8 3) input1)
+        e(dv(.UInt8 0) return1)
+        e(dv(.UInt8 5) input2)
+        e(dv(.UInt8 0) return2)
         e(.Occurrence occurrence1)
         e(.Occurrence occurrence2)
     )
@@ -99,71 +79,9 @@ define(CallCompletionCallbackAcrossClumps dv(VirtualInstrument (
         Wait(2)
     )
     clump (1
-        JavaScriptInvoke(occurrence1 false error 'NI_CallCompletionCallbackAcrossClumps_DoubleFunction' acrossClumpsReturn1 acrossClumpsInput1)
+        JavaScriptInvoke(occurrence1 false error 'ConcurrentFunction1' return1 input1)
     )
     clump (1
-        JavaScriptInvoke(occurrence2 false error 'NI_CallCompletionCallbackAcrossClumps_SquareFunction' acrossClumpsReturn2 acrossClumpsInput2)
-    )
-) ) )
-
-define(RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution dv(VirtualInstrument (
-    Locals: c(
-        e(c(
-            e(.Boolean status)
-            e(.Int32 code)
-            e(.String source)
-        ) error)
-        e(dv(.UInt8 6) input)
-        e(dv(.UInt8 0) return)
-        e(.Occurrence occurrence1)
-    )
-    clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_RetrieveCompletionCallbackAfterContextIsStaleFromSynchronousExecution' return input)
-    )
-) ) )
-
-define(RetrieveCompletionCallbackAfterContextIsStaleFromError dv(VirtualInstrument (
-    Locals: c(
-        e(c(
-            e(.Boolean status)
-            e(.Int32 code)
-            e(.String source)
-        ) error)
-        e(dv(.UInt8 6) input)
-        e(dv(.UInt8 0) return)
-        e(.Occurrence occurrence1)
-    )
-    clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_RetrieveCompletionCallbackAfterContextIsStaleFromError' return input)
-    )
-) ) )
-
-define(NI_StartAsync_ReturnValueSync_Errors dv(VirtualInstrument (
-    Locals: c(
-        e(c(
-            e(.Boolean status)
-            e(.Int32 code)
-            e(.String source)
-        ) error)
-        e(dv(.UInt8 0) return)
-        e(.Occurrence occurrence1)
-    )
-    clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_StartAsync_ReturnValueSync_Errors' return)
-    )
-) ) )
-
-define(NI_ResolveAsyncWithError dv(VirtualInstrument (
-    Locals: c(
-        e(c(
-            e(.Boolean status)
-            e(.Int32 code)
-            e(.String source)
-        ) error)
-        e(dv(.UInt8 0) return)
-        e(.Occurrence occurrence1)
-    )
-    clump (
-        JavaScriptInvoke(occurrence1 false error 'NI_ResolveAsyncWithError' return)
+        JavaScriptInvoke(occurrence2 false error 'ConcurrentFunction2' return2 input2)
     )
 ) ) )
