@@ -229,6 +229,7 @@
                 "JSONErrorCodes.via",
                 "KeyValuePairDefinitions.via",
                 "Literals.via",
+                "LotsOfEvents.via",
                 "LotsOStrings.via",
                 "MatchPat.via",
                 "MathFunctions.via",
