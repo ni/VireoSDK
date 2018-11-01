@@ -358,7 +358,6 @@
                 "TimestampToDateTimeRecord.via",
                 "TimingTest1.via",
                 "TimingTest2.via",
-                "TooManyArguments.via",
                 "TooManyDimensions.via",
                 "TopVIWithArrayParameterData.via",
                 "ToStringOnTypes.via",

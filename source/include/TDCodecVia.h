@@ -229,7 +229,7 @@ class ExpandableStaticArray
             return _dynamicArray[index];
         }
         IntIndex Length() { return _staticLength + _dynamicArray.size(); }
-        void ResetExpansion() { _dynamicArray.clear(); }
+        void Clear() { _dynamicArray.clear(); }
 
 };
 
