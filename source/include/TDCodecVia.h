@@ -207,6 +207,32 @@ class TDViaFormatter
     static ViaFormatChars formatC;
 };
 
+template <class T>
+class ExpandableStaticArray
+{
+    private:
+        IntIndex _staticLength;
+        T* _staticArray;
+        std::vector<T> _dynamicArray;
+
+    public:
+        ExpandableStaticArray(T* array, Int32 length) {
+            _staticArray = array;
+            _staticLength = length;
+        }
+        T& operator[] (Int32 index) {
+            if (index < _staticLength)
+                return _staticArray[index];
+            index -= _staticLength;
+            if (index >= _dynamicArray.size())
+                _dynamicArray.resize(index + 1);
+            return _dynamicArray[index];
+        }
+        IntIndex Length() { return _staticLength + _dynamicArray.size(); }
+        void ResetExpansion() { _dynamicArray.clear(); }
+
+};
+
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr);
 #endif
 
