@@ -50,12 +50,22 @@ const createModuleBase = function (config) {
         }
     }
 
+    Module.vireoPrint = function (text) {
+        console.log(text);
+    };
+
+    Module.vireoPrintErr = function (text) {
+        console.error(text);
+    };
+
+    // Module.print and Module.printErr references are saved internally by Emscripten JS code
+    // So we forward to our own functions so that the target can be replaced as needed
     Module.print = function (text) {
-        Module.eggShell.doPrint(text);
+        Module.vireoPrint(text);
     };
 
     Module.printErr = function (text) {
-        Module.eggShell.doPrintErr(text);
+        Module.vireoPrintErr(text);
     };
 
     Module.vireoWasmReady = new Promise(function (resolve, reject) {
