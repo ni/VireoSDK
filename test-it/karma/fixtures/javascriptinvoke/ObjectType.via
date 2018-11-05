@@ -62,7 +62,7 @@ define(MyVI dv(VirtualInstrument (
         // Setting pre-initalized ref to the same js object is ok, this case can happen for JSLI with in/out ref terminal
         JavaScriptInvoke(occurrence internal error9 'NI_GetObjectFunction' ref1 name1)
 
-        // Setting pre-initalized ref to a different object is not ok
+        // Setting pre-initalized ref to a different object is ok, this case can happen for a reference wire in a loop (ie, reference property read in a loop)
         JavaScriptInvoke(occurrence internal error10 'NI_GetObjectFunction' ref1 name2)
     )
 ) ) )

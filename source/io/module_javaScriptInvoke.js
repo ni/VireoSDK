@@ -116,10 +116,10 @@ var assignJavaScriptInvoke;
         Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
             var cookie = Module.eggShell.readDouble(javaScriptValueRef);
             if (hasCachedRefNum(cookie)) { // refnum was already set to something
-                if (getCachedJsValue(cookie) !== jsValue) {
-                    throw new Error('JavaScriptRefNum[' + cookie + '] already set to ' + getCachedJsValue(cookie) + ' and can not be set to new value' + jsValue);
+                if (getCachedJsValue(cookie) === jsValue) {
+                    return; // nothing to do, tried to set the same object to the same reference
                 }
-                return; // nothing to do, tried to set the same object to the same reference
+                // if reference wire is going to change its cookie value (ie, ref property read in a loop), continue below to get new cookie assignment.
             }
 
             var cachedCookie = getCachedRefNum(jsValue);
