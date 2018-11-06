@@ -591,7 +591,7 @@ TypeRef TDViaParser::ParseArray()
         _string.ReadToken(&token);
     }
 
-    ArrayType  *array = ArrayType::New(_typeManager, elementType, rank, dimensionLengths);
+    ArrayType  *array = ArrayType::New(_typeManager, elementType, std::min(rank, static_cast<IntIndex>(kArrayMaxRank)), dimensionLengths);
     return array;
 }
 //------------------------------------------------------------
