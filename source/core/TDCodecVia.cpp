@@ -1638,7 +1638,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     ClumpParseState state(viClump, cia, _pLog);
     SubString  token;
     SubString  instructionNameToken;
-    ExpandableStaticArray<SubString, ClumpParseState::kMaxArguments> argExpressionTokens;
+    std::vector<SubString> argExpressionTokens;
+    argExpressionTokens.reserve(ClumpParseState::kMaxArguments);
     TokenTraits tt = _string.ReadToken(&token);
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");

@@ -207,37 +207,6 @@ class TDViaFormatter
     static ViaFormatChars formatC;
 };
 
-template <class T, size_t SIZE>
-class ExpandableStaticArray
-{
- private:
-    IntIndex _allocatedSize;
-    T _staticArray[SIZE];
-    std::vector<T> _dynamicArray;
-
- public:
-    ExpandableStaticArray() {
-        _allocatedSize = 0;
-    }
-    T& operator[] (Int32 index) {
-        VIREO_ASSERT(index < _allocatedSize);
-        if (index < SIZE)
-            return _staticArray[index];
-        return _dynamicArray[index - SIZE];
-    }
-    void push_back(const T& value) {
-        IntIndex newIndex = _allocatedSize;
-        _allocatedSize++;
-        if (newIndex < SIZE) {
-            _staticArray[newIndex] = value;
-        } else {
-            _dynamicArray.push_back(value);
-        }
-    }
-    void clear() { _allocatedSize = 0; _dynamicArray.clear(); }
-    IntIndex size() { return _allocatedSize; }
-};
-
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr);
 #endif
 
