@@ -15,6 +15,7 @@ SDG
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <algorithm>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "StringUtilities.h"

@@ -16,6 +16,7 @@ SDG
 #include <stdio.h>
 #include <ctype.h>
 #include <memory>
+#include <algorithm>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
