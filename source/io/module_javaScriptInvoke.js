@@ -99,10 +99,6 @@ var assignJavaScriptInvoke;
             return jsValueToJsRefNumCache.get(jsValue);
         };
 
-        var getCachedJsValue = function (cookie) {
-            return jsRefNumToJsValueMap.get(cookie);
-        };
-
         var generateUniqueRefNumCookie = function () {
             jsRefNumCookieCounter += 1;
             return jsRefNumCookieCounter;
@@ -113,18 +109,15 @@ var assignJavaScriptInvoke;
             return jsRefNumToJsValueMap.get(cookie);
         };
 
+        /**
+         * Write JS value to a JS reference local
+         * @param javaScriptValueRef VIA local for this JS reference
+         * @param jsValue the JS value to associate with an existing or new cookie
+         */
         Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
-            var cookie = Module.eggShell.readDouble(javaScriptValueRef);
-            if (hasCachedRefNum(cookie)) { // refnum was already set to something
-                if (getCachedJsValue(cookie) === jsValue) {
-                    return; // nothing to do, tried to set the same object to the same reference
-                }
-                // if reference wire is going to change its cookie value (ie, ref property read in a loop), continue below to get new cookie assignment.
-            }
-
             var cachedCookie = getCachedRefNum(jsValue);
-            if (cachedCookie !== undefined) { // this object already has a refnum, we must share the refnum value for the same object
-                Module.eggShell.writeDouble(javaScriptValueRef, cachedCookie); // set the VIA local to be this refnum value
+            if (cachedCookie !== undefined) {
+                Module.eggShell.writeDouble(javaScriptValueRef, cachedCookie); // set the VIA local to be this cookie value
                 return;
             }
 
