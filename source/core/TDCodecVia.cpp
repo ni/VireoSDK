@@ -1638,7 +1638,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     ClumpParseState state(viClump, cia, _pLog);
     SubString  token;
     SubString  instructionNameToken;
-    SubString  argExpressionTokens[ClumpParseState::kMaxArguments];
+    std::vector<SubString> argExpressionTokens;
+    argExpressionTokens.reserve(ClumpParseState::kMaxArguments);
     TokenTraits tt = _string.ReadToken(&token);
     if (!token.CompareCStr(tsClumpToken))
         return LOG_EVENT(kHardDataError, "'clump' missing");
@@ -1704,13 +1705,8 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 _string.ReadSubexpressionToken(&token);
                 if (token.Length() == 0 || token.CompareCStr(")")) {
                     break;
-                } else if (argCount < ClumpParseState::kMaxArguments) {
-                    argExpressionTokens[argCount] = token;
                 }
-            }
-
-            if (argCount > ClumpParseState::kMaxArguments) {
-                return LOG_EVENT(kHardDataError, "too many arguments");
+                argExpressionTokens.push_back(token);
             }
 
             while (keepTrying) {
@@ -1790,6 +1786,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!instruction) {
                 LOG_EVENTV(kSoftDataError, "Instruction not generated '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
             }
+            argExpressionTokens.clear();
         }
         tt = _string.ReadToken(&instructionNameToken);
     }
