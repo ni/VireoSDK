@@ -72,8 +72,8 @@ var assignJavaScriptInvoke;
             return returnValueRef;
         };
 
-        var jsRefNumToJsValueMap = new Map();
-        var jsValueToJsRefNumCache = new Map();
+        var cookieToJsValueMap = new Map();
+        var jsValueToCookieCache = new Map();
         var jsRefNumCookieCounter = 0;
 
         var isPrimitiveType = function (jsValue) {
@@ -81,22 +81,22 @@ var assignJavaScriptInvoke;
         };
 
         var cacheRefNum = function (cookie, jsValue) {
-            jsRefNumToJsValueMap.set(cookie, jsValue);
-            if (!isPrimitiveType(jsValue)) { // we don't want to share refnum for js primitives
-                jsValueToJsRefNumCache.set(jsValue, cookie);
+            cookieToJsValueMap.set(cookie, jsValue);
+            if (!isPrimitiveType(jsValue)) { // we don't want to share refnum cookie for js primitives
+                jsValueToCookieCache.set(jsValue, cookie);
             }
         };
 
         var hasCachedRefNum = function (cookie) {
-            var refNumExists = (jsRefNumToJsValueMap.get(cookie) !== undefined);
+            var refNumExists = (cookieToJsValueMap.get(cookie) !== undefined);
             if (!refNumExists && cookie !== 0) {
                 throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
             }
             return refNumExists;
         };
 
-        var getCachedRefNum = function (jsValue) {
-            return jsValueToJsRefNumCache.get(jsValue);
+        var getCachedRefNumCookie = function (jsValue) {
+            return jsValueToCookieCache.get(jsValue);
         };
 
         var generateUniqueRefNumCookie = function () {
@@ -106,7 +106,7 @@ var assignJavaScriptInvoke;
 
         Module.javaScriptInvoke.readJavaScriptRefNum = function (javaScriptValueRef) {
             var cookie = Module.eggShell.readDouble(javaScriptValueRef);
-            return jsRefNumToJsValueMap.get(cookie);
+            return cookieToJsValueMap.get(cookie);
         };
 
         /**
@@ -115,7 +115,7 @@ var assignJavaScriptInvoke;
          * @param jsValue the JS value to associate with an existing or new cookie
          */
         Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
-            var cachedCookie = getCachedRefNum(jsValue);
+            var cachedCookie = getCachedRefNumCookie(jsValue);
             if (cachedCookie !== undefined) {
                 Module.eggShell.writeDouble(javaScriptValueRef, cachedCookie); // set the VIA local to be this cookie value
                 return;
