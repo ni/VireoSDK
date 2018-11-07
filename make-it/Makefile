@@ -79,6 +79,11 @@ else
                 CFLAGS+= -std=c++11 -pthread $(CCOPT) $(TARGETARCH) -fdata-sections -ffunction-sections
                 LDFLAGS+= -s -Wl,--gc-sections
                 # LDSTATIC+= -static
+
+                ifdef ASAN
+                    CFLAGS += -fsanitize=address
+                    LDFLAGS += -fsanitize=address
+                endif
             endif
         endif
         ifeq ($(TARGETARCH),XuBlaze)
