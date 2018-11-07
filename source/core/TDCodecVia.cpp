@@ -1638,7 +1638,6 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
     ClumpParseState state(viClump, cia, _pLog);
     SubString  token;
     SubString  instructionNameToken;
-    
     std::vector<SubString> argExpressionTokens;
     argExpressionTokens.reserve(ClumpParseState::kMaxArguments);
     TokenTraits tt = _string.ReadToken(&token);
