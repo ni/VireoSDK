@@ -1233,18 +1233,18 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
         dimensionToDelete = 0;
         deletedPortionLength = 0;
     }
+    IntIndex lengthOfArrayDimensionToDelete = arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete);
 
     IntIndex offset = (_ParamPointer(5) == nullptr) ?
-        arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - deletedPortionLength : _Param(5);
-    if (offset > arrayIn->GetLength(numberOfDimensions - 1 - dimensionToDelete)) {
-        offset = arrayIn->GetLength(numberOfDimensions - 1 - dimensionToDelete);
+        lengthOfArrayDimensionToDelete - deletedPortionLength : _Param(5);
+    if (offset > lengthOfArrayDimensionToDelete) {
+        offset = lengthOfArrayDimensionToDelete;
     }
     Int32 rank = arrayIn->Rank();
 
     IntIndex startIndex = offset > 0 ? offset : 0;
-    IntIndex endIndex = (offset +
-        deletedPortionLength) > arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) ?
-        arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) : offset + deletedPortionLength;
+    IntIndex endIndex = (offset + deletedPortionLength > lengthOfArrayDimensionToDelete) ?
+        lengthOfArrayDimensionToDelete : offset + deletedPortionLength;
     if (endIndex - startIndex < deletedPortionLength) {
         deletedPortionLength = endIndex - startIndex;
     }
@@ -1252,7 +1252,7 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
     if (endIndex < startIndex) {
         endIndex = startIndex;
     }
-    IntIndex arrayOutLength = arrayIn->GetLength(numberOfDimensions-1-dimensionToDelete) - (endIndex - startIndex);
+    IntIndex arrayOutLength = lengthOfArrayDimensionToDelete - (endIndex - startIndex);
     if (rank == 1) {
         arrayOut->Resize1D(arrayOutLength);
         if (startIndex > 0) {
