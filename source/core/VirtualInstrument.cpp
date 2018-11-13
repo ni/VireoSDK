@@ -726,8 +726,9 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
     // and flag the emitter to record the address of the next instruction
     // as the target location to jump to for branches to this perch.
 
-    IntMax perchIndex;
-    if (perchToken->ReadInt(&perchIndex)) {
+    IntMax index;
+    if (perchToken->ReadInt(&index)) {
+        size_t perchIndex = (size_t)index;
         if (perchIndex >= _perches.size())
             _perches.resize(UInt32(perchIndex + kClumpStateIncrementSize));
         if (_perches[perchIndex] < kPerchUndefined) {
@@ -748,8 +749,9 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
 //------------------------------------------------------------
 void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
 {
-    IntMax perchIndex;
-    if (branchTargetToken->ReadInt(&perchIndex)) {
+    IntMax index;
+    if (branchTargetToken->ReadInt(&index)) {
+        size_t perchIndex = (size_t)index;
         if (perchIndex >= _perches.size())
             _perches.resize(perchIndex+kClumpStateIncrementSize);
         if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAllocated)) {
