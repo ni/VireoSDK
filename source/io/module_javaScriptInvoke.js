@@ -296,19 +296,18 @@ var assignJavaScriptInvoke;
             labVIEWCallStatus.hasFinished = true;
         };
 
-        var reportExecutionError = function (occurrencePointer, functionName, errorToSet,  returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
+        var reportExecutionError = function (occurrencePointer, functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
             reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
             Module.eggShell.setOccurrence(occurrencePointer);
         };
 
-        var reportExecutionErrorAsync = function (occurrencePointer, functionName, errorToSet,  returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
+        var reportExecutionErrorAsync = function (occurrencePointer, functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
             reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
             completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
             Module.eggShell.setOccurrenceAsync(occurrencePointer);
         };
 
-        var updateReturnValueCore = function(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus)
-        {
+        var updateReturnValueCore = function (functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
             if (isInternalFunction) {
                 if (returnValue !== undefined) {
                     throw new Error('Unexpected return value, internal functions should update return values through api functions instead of relying on return values');
@@ -332,12 +331,11 @@ var assignJavaScriptInvoke;
             completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
             completionCallbackStatus.invocationState = completionCallbackInvocationEnum.FULFILLED;
             labVIEWCallStatus.hasFinished = true;
-        }
+        };
 
         var updateReturnValue = function (occurrencePointer, functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
             updateReturnValueCore(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
             Module.eggShell.setOccurrence(occurrencePointer);
-
         };
 
         var updateReturnValueAsync = function (occurrencePointer, functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
@@ -355,7 +353,7 @@ var assignJavaScriptInvoke;
                 }
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
                     const error = new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
-                    reportExecutionErrorAsync(occurrencePointer, functionName,  ERRORS.kNIUnableToInvokeAJavaScriptFunction, error, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
+                    reportExecutionErrorAsync(occurrencePointer, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, error, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
                     return;
                 }
 
@@ -377,12 +375,12 @@ var assignJavaScriptInvoke;
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
                     const error = new Error('The completion callback was retrieved more than once for ' + functionName + '.');
                     reportExecutionErrorAsync(occurrencePointer, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, error, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
-                    return;
+                    return undefined;
                 }
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
                     const error = new Error('The API being accessed for ' + functionName + ' is not valid anymore.');
                     reportExecutionErrorAsync(occurrencePointer, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, error, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
-                    return;
+                    return undefined;
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
                 return generateCompletionCallback(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
