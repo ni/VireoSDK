@@ -194,7 +194,7 @@ class EventOracle {
         return _qObject[qID].DoneProcessingEvent();
     }
     void DeleteEventQueue(EventQueueID qID) {  // marks unallocated
-        if (qID < _qObject.size())
+        if ((size_t)qID < _qObject.size())
             _qObject[qID].DeleteQueue();
     }
     Int32 GetPendingEventInfo(EventQueueID *pActiveQID, Int32 nQueues, RefNumVal *dynRegRefs, Int32 *dynIndexBase);
@@ -276,7 +276,7 @@ EventOracle::EventInsertStatus EventOracle::EventListInsert(EventOracleIndex eve
 // EventListRemove -- remove registration entry for given eventOracleIndex for event source/type/ref
 bool EventOracle::EventListRemove(EventOracleIndex eventOracleIndex, EventRegQueueID eventRegQueueID, EventSource eSource, EventType eType) {
     bool removed = false;
-    if (eventOracleIndex >= _eventReg.size())
+    if ((size_t)eventOracleIndex >= _eventReg.size())
         return removed;
     EventRegList &eRegList = _eventReg[eventOracleIndex]._eRegList;
     EventRegList::iterator eRegIter = eRegList.begin(), eRegIterEnd = eRegList.end();
@@ -584,7 +584,7 @@ void RegisterForStaticEvents(VirtualInstrument *vi) {
         TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
         AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
         EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
-        UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
+        Int32 eventSpecCount = eventSpecType->SubElementCount();
         EventQueueID qID = kNotAQueueID;
         EventOracle::TheEventOracle().GetNewQueueObject(&qID, nullptr);
         // TODO(segaljared): remove this when we no longer use ControlRefNum
@@ -618,7 +618,7 @@ void ConfigureEventSpecForJSRef(VirtualInstrument *vi, Int32 eventStructIndex, I
         TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
         AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
         EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
-        UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
+        Int32 eventSpecCount = eventSpecType->SubElementCount();
         if (eventSpecIndex < eventSpecCount) {
             EventQueueID qID = eventInfo->eventStructInfo[eventStructIndex].staticQID;
             EventControlUID controlID = (EventControlUID)eventSpecRef[eventSpecIndex].eventControlRef;
@@ -649,7 +649,7 @@ void UnregisterForStaticEvents(VirtualInstrument *vi) {
             TypeRef eventSpecType = eventStructSpecsRef->ElementType()->GetSubElement(eventStructIndex);
             AQBlock1 *eventSpecClustPtr = eventStructSpecsRef->RawBegin() + eventSpecType->ElementOffset();
             EventSpecRef eventSpecRef = (EventSpecRef)eventSpecClustPtr;
-            UInt32 eventSpecCount = UInt32(eventSpecType->SubElementCount());
+            Int32 eventSpecCount = eventSpecType->SubElementCount();
             EventQueueID qID =  eventInfo->eventStructInfo[eventStructIndex].staticQID;
             for (Int32 eventSpecIndex = 0; eventSpecIndex < eventSpecCount; ++eventSpecIndex) {
                 RefNum controlRef = eventSpecRef[eventSpecIndex].eventControlRef;
