@@ -297,21 +297,16 @@ describe('A JavaScript function invoke', function () {
                 const {rawPrint, rawPrintError} = await runSlicesAsync();
                 expect(rawPrint).toBeEmptyString();
                 expect(rawPrintError).toBeEmptyString();
-                expect(viPathParser('error.status')).toBeFalse();
-                expect(viPathParser('error.code')).toBe(0);
-                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/retrieved more than once/);
                 expect(viPathParser('return')).toBe(49);
-                expect(error.message).toMatch(/retrieved more than once/);
             };
         });
         it('using the completion callback', async function () {
             window.SingleFunction = function (input, jsapi) {
                 var completionCallback = jsapi.getCompletionCallback();
-                try {
-                    jsapi.getCompletionCallback();
-                } catch (ex) {
-                    error = ex;
-                }
+                jsapi.getCompletionCallback();
                 // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
                 // Instead if we are not resolved we should resolve immediately with an error
                 completionCallback(input * input);

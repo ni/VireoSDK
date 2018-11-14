@@ -279,31 +279,27 @@ var assignJavaScriptInvoke;
             return returnValue instanceof Error;
         };
 
-        var reportExecutionErrorCore = function (functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
-            if (!hasExecutionError(returnValue)) {
-                return;
-            }
-            if (isInternalFunction || labVIEWCallStatus.hasFinished) {
+        var reportExecutionErrorCore = function (functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus, shouldThrow) {
+            if (isInternalFunction || (labVIEWCallStatus.hasFinished && shouldThrow)) {
                 // TODO mraj because this can happen asynchronously we may end up not actually
                 // stopping the runtime on throw. It would be helpful to have JS api function
                 // to abort the runtime at this point. https://github.com/ni/VireoSDK/issues/521
                 throw returnValue;
             }
 
-            mergeNewError(errorValueRef, functionName, errorToSet);
+            mergeNewError(errorValueRef, functionName, errorToSet, returnValue);
             completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;
             completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
             labVIEWCallStatus.hasFinished = true;
         };
 
         var reportExecutionError = function (occurrencePointer, functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
-            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
+            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus, false);
             Module.eggShell.setOccurrence(occurrencePointer);
         };
 
         var reportExecutionErrorAsync = function (occurrencePointer, functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
-            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
-            completionCallbackStatus.invocationState = completionCallbackInvocationEnum.REJECTED;
+            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus, true);
             Module.eggShell.setOccurrenceAsync(occurrencePointer);
         };
 
@@ -358,11 +354,11 @@ var assignJavaScriptInvoke;
                 }
 
                 if (hasExecutionError(returnValue)) {
-                    reportExecutionErrorAsync(functionName, returnValue, ERRORS.kNIUnableToInvokeAJavaScriptFunction, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
+                    reportExecutionErrorAsync(occurrencePointer, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
                     return;
                 }
 
-                updateReturnValueAsync(functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
+                updateReturnValueAsync(occurrencePointer, functionName, returnValueRef, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
                 return;
             };
             return completionCallback;
@@ -469,7 +465,7 @@ var assignJavaScriptInvoke;
             }
 
             if (hasExecutionError(returnValue)) {
-                reportExecutionError(occurrencePointer, functionName, returnValue, ERRORS.kNIUnableToInvokeAJavaScriptFunction, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
+                reportExecutionError(occurrencePointer, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
                 return;
             }
 
