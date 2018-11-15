@@ -139,7 +139,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayIndexND, ArrayIndexNDParamBlock)
             empty = true;
     }
     for (; j < rank; ++j) {
-        arraySlabLen[j] = arraySlabLen[j-1];
+        arraySlabLen[j] = j >= 1 ? arraySlabLen[j-1] : 0;
         arrayLen[j] = 1;
     }
     if (subRank > 0) {
@@ -570,8 +570,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayReplaceSubsetND, ArrayReplaceSubsetParamBlock)
         if (len == 0)
             empty = true;
     }
-    for (; j < rank; ++j)
-        arrayOutSlabLengths[j] = arrayOutSlabLengths[(j-1)];
+    for (; j < rank; ++j) {
+        arrayOutSlabLengths[j] = j >= 1 ? arrayOutSlabLengths[(j-1)] : 0;
+    }
     void* element = arguments[i]._pData;
     IntIndex srcRank =  arguments[i]._paramType->Rank();
     if (srcRank != expectedElemRank) {

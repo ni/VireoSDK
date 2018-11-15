@@ -138,6 +138,12 @@ make native
 
 Notice the esh executable placed in the `dist` folder.
 
+There is a flag you can pass to `make` to enable [AddressSanitizer](https://github.com/google/sanitizers/wiki/AddressSanitizer):
+
+```console
+make native ASAN=1
+```
+
 ## Vireo MacOS Native target
 
 ### Software requirements
@@ -147,6 +153,8 @@ Notice the esh executable placed in the `dist` folder.
 ### Building Vireo MacOS Native
 
 Open the `Vireo_Xcode/VireoEggShell.xcodeproj`
+
+If you prefer to build from the command line, the instructions for building Vireo Linux Native will work on macOS as well.
 
 # Running Tests
 

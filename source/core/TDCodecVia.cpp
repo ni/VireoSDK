@@ -16,6 +16,7 @@ SDG
 #include <stdio.h>
 #include <ctype.h>
 #include <memory>
+#include <algorithm>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
@@ -591,7 +592,7 @@ TypeRef TDViaParser::ParseArray()
         _string.ReadToken(&token);
     }
 
-    ArrayType  *array = ArrayType::New(_typeManager, elementType, rank, dimensionLengths);
+    ArrayType  *array = ArrayType::New(_typeManager, elementType, std::min(rank, static_cast<IntIndex>(kArrayMaxRank)), dimensionLengths);
     return array;
 }
 //------------------------------------------------------------

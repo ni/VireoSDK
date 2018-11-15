@@ -15,6 +15,7 @@ SDG
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <algorithm>
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
@@ -1473,7 +1474,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
                 break;
             }
         }
-        in.AliasAssign(in.Begin(), in.Begin()+formatOptions->MinimumFieldWidth+leadingSpace);
+        in.AliasAssign(in.Begin(), in.Begin() + std::min(in.Length(), formatOptions->MinimumFieldWidth + leadingSpace));
     }
     truncateInput.Append(&in);
     char* inpBegin = truncateInput.BeginCStr();
