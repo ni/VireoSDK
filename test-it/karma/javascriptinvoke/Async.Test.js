@@ -300,7 +300,8 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.status')).toBeTrue();
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/retrieved more than once/);
-                expect(viPathParser('return')).toBe(49);
+                expect(viPathParser('return')).toBe(0);
+                expect(error.message).toMatch(/threw an error, so this callback cannot be invoked/);
             };
         });
         it('using the completion callback', async function () {
@@ -311,22 +312,23 @@ describe('A JavaScript function invoke', function () {
                 // Instead if we are not resolved we should resolve immediately with an error
                 completionCallback(input * input);
             };
-            await test();
+            //await test();
+            test().catch(function(ex) {
+                error = ex;
+            });
         });
         it('using promises', async function () {
             window.SingleFunction = async function (input, jsapi) {
                 // By returning a promise the first implicit call happens
                 await delayForTask();
-                try {
-                    jsapi.getCompletionCallback();
-                } catch (ex) {
-                    error = ex;
-                }
+                jsapi.getCompletionCallback();
                 // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
                 // Instead if we are not resolved we should resolve immediately with an error
                 return input * input;
             };
-            await test();
+            test().catch(function(ex) {
+                error = ex;
+            });
         });
     });
 

@@ -279,8 +279,8 @@ var assignJavaScriptInvoke;
             return returnValue instanceof Error;
         };
 
-        var reportExecutionErrorCore = function (functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus, shouldThrow) {
-            if (isInternalFunction || (labVIEWCallStatus.hasFinished && shouldThrow)) {
+        var reportExecutionErrorCore = function (functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
+            if (isInternalFunction || labVIEWCallStatus.hasFinished) {
                 // TODO mraj because this can happen asynchronously we may end up not actually
                 // stopping the runtime on throw. It would be helpful to have JS api function
                 // to abort the runtime at this point. https://github.com/ni/VireoSDK/issues/521
@@ -294,12 +294,12 @@ var assignJavaScriptInvoke;
         };
 
         var reportExecutionError = function (occurrencePointer, functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
-            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus, false);
+            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
             Module.eggShell.setOccurrence(occurrencePointer);
         };
 
         var reportExecutionErrorAsync = function (occurrencePointer, functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus) {
-            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus, true);
+            reportExecutionErrorCore(functionName, errorToSet, returnValue, errorValueRef, completionCallbackStatus, isInternalFunction, labVIEWCallStatus);
             Module.eggShell.setOccurrenceAsync(occurrencePointer);
         };
 
