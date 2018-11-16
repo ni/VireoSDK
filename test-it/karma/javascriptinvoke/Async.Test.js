@@ -312,8 +312,7 @@ describe('A JavaScript function invoke', function () {
                 // Instead if we are not resolved we should resolve immediately with an error
                 completionCallback(input * input);
             };
-            //await test();
-            test().catch(function(ex) {
+            test().catch(function (ex) {
                 error = ex;
             });
         });
@@ -326,7 +325,7 @@ describe('A JavaScript function invoke', function () {
                 // Instead if we are not resolved we should resolve immediately with an error
                 return input * input;
             };
-            test().catch(function(ex) {
+            test().catch(function (ex) {
                 error = ex;
             });
         });
