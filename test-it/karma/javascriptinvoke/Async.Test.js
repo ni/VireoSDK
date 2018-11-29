@@ -335,6 +335,50 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
+    describe('errors retrieving completion callback twice without a try/catch are printed to console when', function () {
+        beforeEach(function () {
+            spyOn(console, 'error');
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 7);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(console.error).toHaveBeenCalled();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/retrieved more than once/);
+                expect(viPathParser('return')).toBe(0);
+            };
+        });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                var completionCallback = jsapi.getCompletionCallback();
+                jsapi.getCompletionCallback();
+                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
+                // Instead if we are not resolved we should resolve immediately with an error
+                completionCallback(input * input);
+            };
+            await test();
+        });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input, jsapi) {
+                // By returning a promise the first implicit call happens
+                await delayForTask();
+                jsapi.getCompletionCallback();
+                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
+                // Instead if we are not resolved we should resolve immediately with an error
+                return input * input;
+            };
+            await test();
+        });
+    });
+
     describe('errors retrieving completion, completing, and trying to retrieve again', function () {
         beforeEach(function () {
             test = async function () {
