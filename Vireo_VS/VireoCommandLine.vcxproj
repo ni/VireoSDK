@@ -52,13 +52,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\core\library_coreHelpers.js" />
+    <None Include="..\source\core\library_eventHelpers.js" />
     <None Include="..\source\core\module_coreHelpers.js" />
+    <None Include="..\source\core\module_eventHelpers.js" />
+    <None Include="..\source\core\module_typeHelpers.js" />
     <None Include="..\source\core\vireo.wrapper.js" />
     <None Include="..\source\include\ConversionTable.def" />
     <None Include="..\source\io\library_httpClient.js" />
     <None Include="..\source\io\library_javaScriptInvoke.js" />
     <None Include="..\source\io\library_propertyNode.js" />
+    <None Include="..\source\io\module_eggShell.js" />
     <None Include="..\source\io\module_javaScriptInvoke.js" />
+    <None Include="..\source\io\module_other.js" />
     <None Include="..\source\io\module_propertyNode.js" />
   </ItemGroup>
   <ItemGroup>

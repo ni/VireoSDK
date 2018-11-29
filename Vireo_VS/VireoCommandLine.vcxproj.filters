@@ -159,6 +159,21 @@
     <None Include="..\source\core\vireo.wrapper.js">
       <Filter>VireoSource\Core</Filter>
     </None>
+    <None Include="..\source\io\module_eggShell.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\source\io\module_other.js">
+      <Filter>VireoSource\IO</Filter>
+    </None>
+    <None Include="..\source\core\module_eventHelpers.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\core\module_typeHelpers.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
+    <None Include="..\source\core\library_eventHelpers.js">
+      <Filter>VireoSource\Core</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\BuildConfig.h">
