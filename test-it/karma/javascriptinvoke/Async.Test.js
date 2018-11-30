@@ -312,8 +312,6 @@ describe('A JavaScript function invoke', function () {
                 } catch (ex) {
                     error = ex;
                 }
-                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
-                // Instead if we are not resolved we should resolve immediately with an error
                 completionCallback(input * input);
             };
             await test();
@@ -327,8 +325,6 @@ describe('A JavaScript function invoke', function () {
                 } catch (ex) {
                     error = ex;
                 }
-                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
-                // Instead if we are not resolved we should resolve immediately with an error
                 return input * input;
             };
             await test();
@@ -360,8 +356,6 @@ describe('A JavaScript function invoke', function () {
             window.SingleFunction = function (input, jsapi) {
                 var completionCallback = jsapi.getCompletionCallback();
                 jsapi.getCompletionCallback();
-                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
-                // Instead if we are not resolved we should resolve immediately with an error
                 completionCallback(input * input);
             };
             await test();
@@ -371,8 +365,6 @@ describe('A JavaScript function invoke', function () {
                 // By returning a promise the first implicit call happens
                 await delayForTask();
                 jsapi.getCompletionCallback();
-                // TODO mraj this allows completing after an exception is thrown, this should not be allowed.
-                // Instead if we are not resolved we should resolve immediately with an error
                 return input * input;
             };
             await test();
