@@ -413,7 +413,6 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 }
                 dest++;
             } else if (escapeTokenLength) {
-                IntMax intValue;
                 TempStackCString escapeTokenCString;
                 escapeTokenCString.Append(&escapeToken);
                 char* escapeCharPtr = escapeTokenCString.BeginCStr();
@@ -432,7 +431,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                         ++escapeCharPtr;
                 }
                 if (base) {
-                    intValue = strtoull(escapeCharPtr, &escapeCharEnd, base);
+                    IntMax intValue = strtoull(escapeCharPtr, &escapeCharEnd, base);
                     *dest++ = (Utf8Char)intValue;
                 } else {
                     *dest++ = (c & 255);
@@ -873,16 +872,12 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=nullptr*/)
 //------------------------------------------------------------
 Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/, Int32 *errCodePtr /*= nullptr*/)
 {
-    // TODO(PaulAustin): not so pleased with the standard functions for parsing  numbers
-    // many are not thread safe, none seem to be bound on how many characters they will read
-    //
-    Double value;
     TempStackCString tempCStr(this);
     ConstCStr current = tempCStr.BeginCStr();
     char* end = nullptr;
     Int32 errCode = kLVError_NoError;
 
-    value = strtod(current, (char**)&end);
+    Double value = strtod(current, (char**)&end);
     if (suppressInfNaN) {
         if (isinf(value)) {
             end = (char*)current;

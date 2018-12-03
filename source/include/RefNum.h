@@ -130,7 +130,7 @@ class TypedRefNum : public RefNumStorageBase {
  Retrieve the refnum data at index in RefNumStorage.
  */
 template <typename T, bool _isRefCounted>
-typename RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T, _isRefCounted>::ValidateRefNumIndexT(UInt32 index)
+RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T, _isRefCounted>::ValidateRefNumIndexT(UInt32 index)
 {
     typename RefNumMap::iterator it = _refStorage.find(index);
     if (it != _refStorage.end())
@@ -142,7 +142,7 @@ typename RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T, _isRefCounted>::
   Create new refnum data at index in RefNumStorage
  */
 template <typename T, bool _isRefCounted>
-typename RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T, _isRefCounted>::CreateRefNumIndexT(UInt32 index,
+RefNumStorageBase::RefNumHeaderAndData* TypedRefNum<T, _isRefCounted>::CreateRefNumIndexT(UInt32 index,
     bool *isNew)
 {
     typename RefNumMap::iterator it = _refStorage.find(index);

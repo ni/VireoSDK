@@ -208,7 +208,6 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
 //---------------------------------------------------------------------------------------------
 void GenerateFinalNumeric(const FormatOptions*, char*, Int32*, TempStackCString*, Boolean);
 void RefactorLVNumeric(const FormatOptions*, char* , Int32* , Int32 , Int32, Boolean);
-Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output);
 
 void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
 {

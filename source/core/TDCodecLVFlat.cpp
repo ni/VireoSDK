@@ -229,12 +229,11 @@ VIREO_FUNCTION_SIGNATURE7(UnflattenFromString, StringRef, Boolean, StaticType, v
     void *pDefaultData = _ParamPointer(3);
     StringRef pRemainder = _ParamPointer(4) ? _Param(4) : nullptr;
     void *pData = _ParamPointer(5);
-    Boolean error;
 
     SubBinaryBuffer subBuffer(pString->Begin(), pString->End());
     IntIndex remainderIndex = UnflattenData(&subBuffer, prependArrayLength, 0, pDefaultData, type, pData);
     IntIndex remainderLength = pString->Length() - remainderIndex;
-    error = (remainderIndex == -1);
+    Boolean error = (remainderIndex == -1);
 
     if (error)
         type->CopyData(pDefaultData, pData);
