@@ -75,7 +75,7 @@ var assignJavaScriptInvoke;
         var jsRefNumCookieCounter = 0;
 
         var isPrimitiveType = function (jsValue) {
-            return ((typeof jsValue !== 'object' || jsValue === null) && typeof jsValue !== 'function');
+            return ((typeof jsValue !== 'object' || jsValue === null) && typeof jsValue !== 'function' && typeof jsValue !== 'symbol');
         };
 
         var cacheRefNum = function (cookie, jsValue) {
