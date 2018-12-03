@@ -32,13 +32,11 @@ var assignJavaScriptInvoke;
             MESSAGE: 'Return type mismatch. Verify the return type in the JavaScript Library Interface matches the return type in the external JavaScript function.'
         },
 
-        // TODO needs review and to be added to error code database
         kNIUnableToHandlePromise: {
             CODE: 44307,
             MESSAGE: 'Unable to use Promise. Verify that the getCompletionCallback API function is not used in the external JavaScript function with a Promise return value.'
         },
 
-        // TODO needs review and to be added to error code database
         kNIUnableToAcceptReturnValueDuringAsync: {
             CODE: 44308,
             MESSAGE: 'Unable to set return value after call to getCompletionCallback API function. Verify return value is provided to the completion callback and not returned.'
