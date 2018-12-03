@@ -444,7 +444,7 @@ class PercentCodecSubString {
 // "_%54estVI_ToLowercase%2Egvi" => "_TestVI_ToLowercase.gvi"
 class PercentDecodedSubString : public PercentCodecSubString {
  public:
-    PercentDecodedSubString() : PercentCodecSubString() { }
+    PercentDecodedSubString() = default;
     explicit PercentDecodedSubString(const SubString &encodedSubstring, bool decode = true, bool alwaysAlloc = false)
         : PercentCodecSubString(encodedSubstring, decode, alwaysAlloc) {
         Init(encodedSubstring, decode, alwaysAlloc);
@@ -469,7 +469,7 @@ class PercentDecodedSubString : public PercentCodecSubString {
 // "2018" => "%32018"
 class PercentEncodedSubString : public PercentCodecSubString {
  public:
-    PercentEncodedSubString() : PercentCodecSubString() { }
+    PercentEncodedSubString() = default;
     explicit PercentEncodedSubString(const SubString &decodedSubstring, bool encode = true, bool alwaysAlloc = false) :
         PercentCodecSubString(decodedSubstring, encode, alwaysAlloc) {
         Init(decodedSubstring, encode, alwaysAlloc);

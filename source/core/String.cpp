@@ -304,7 +304,6 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
     IntIndex offset = _ParamPointer(Offset) ? _Param(Offset) : 0;
     StringRef beforeMatchString = _ParamPointer(BeforeMatchString) ? _Param(BeforeMatchString) : nullptr;
     StringRef matchPlusRestString = _ParamPointer(MatchPlusRestString) ? _Param(MatchPlusRestString) : nullptr;
-    IntIndex matchOffset;
 
     VIREO_ASSERT(stringIn != matchPlusRestString);
 
@@ -314,7 +313,7 @@ VIREO_FUNCTION_SIGNATURET(SearchSplitString, SearchSplitStringStruct)
     TypeRef eltType = stringIn->ElementType();
 
     offset = Max(0, Min(offset, stringInLength));
-    matchOffset = stringInSubString.FindFirstMatch(&searchStringSubString, offset, false);
+    IntIndex matchOffset = stringInSubString.FindFirstMatch(&searchStringSubString, offset, false);
 
     if (matchOffset != -1) {  // A match is found
         if (matchPlusRestString) {
@@ -606,14 +605,14 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
     const Utf8Char* spacePos = nullptr;
     Boolean last = false;
     while (pSourceChar < ss.End()) {
-        IntIndex bytes = ss.CharLength(pSourceChar);
+        IntIndex bytes = SubString::CharLength(pSourceChar);
         if (bytes == 1) {
             char c = *pSourceChar;
-            if (!found && ss.IsSpaceChar(c)) {
+            if (!found && SubString::IsSpaceChar(c)) {
                 leading++;
             } else {
                 found = true;
-                if (ss.IsSpaceChar(c)) {
+                if (SubString::IsSpaceChar(c)) {
                     if (spacePos == nullptr || !last) {
                         spacePos = pSourceChar;
                     }

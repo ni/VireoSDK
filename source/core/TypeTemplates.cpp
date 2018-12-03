@@ -151,6 +151,7 @@ void TypeTemplateVisitor::VisitCluster(ClusterType* type)
     IntIndex subElementCount = type->SubElementCount();
     std::vector<TypeRef> elementTypesVector;
 
+    elementTypesVector.reserve(subElementCount);
     for (Int32 i = 0; i < subElementCount; i++) {
         elementTypesVector.push_back(Accept(type->GetSubElement(i)));
     }
@@ -184,6 +185,7 @@ void TypeTemplateVisitor::VisitEquivalence(EquivalenceType* type)
     IntIndex subElementCount = type->SubElementCount();
     std::vector<TypeRef> elementTypesVector;
 
+    elementTypesVector.reserve(subElementCount);
     for (Int32 i = 0; i < subElementCount; i++) {
         elementTypesVector.push_back(Accept(type->GetSubElement(i)));
     }

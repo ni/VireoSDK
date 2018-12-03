@@ -368,8 +368,7 @@ void TypeManager::GetTypes(TypedArray1D<TypeRef>* pArray)
 
     if (pArray->Length() == length) {
         TypeRef* pBegin = pArray->Begin();
-        TypeDictionaryIterator iter;
-        iter = _typeNameDictionary.begin();
+        TypeDictionaryIterator iter = _typeNameDictionary.begin();
 
         while (iter != _typeNameDictionary.end()) {
             *pBegin = iter->second;
@@ -473,8 +472,7 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name, Boolean decode /*=
         decodedSubStr = decodedStr.GetSubString();
         name = &decodedSubStr;
     }
-    TypeDictionaryIterator iter;
-    iter = _typeNameDictionary.find(*name);
+    TypeDictionaryIterator iter = _typeNameDictionary.find(*name);
     NamedTypeRef type = (iter != _typeNameDictionary.end()) ? iter->second : nullptr;
 
     if (type == nullptr && _baseTypeManager) {
@@ -486,7 +484,7 @@ NamedTypeRef TypeManager::FindTypeCore(const SubString* name, Boolean decode /*=
 //------------------------------------------------------------
 TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName)
 {
-    std::map<SubString, TypeRef, CompareSubString>::iterator  iter;
+    std::map<SubString, TypeRef, CompareSubString>::iterator iter;
 
     for (TypeManagerRef tm = this; tm ; tm = tm->BaseTypeManager()) {
         iter = _typeInstanceDictionary.find(*binaryName);
@@ -1360,7 +1358,7 @@ void AggregateAlignmentCalculator::Finish()
 {
     // Round up the size of the aggregate to a multiple the largest alignment requirement
     // For example, (Double Int8) is size 16, not 9. Note the padding if added.
-    AggregateSize = _tm->AlignAQOffset(_aqOffset, AggregateAlignment);
+    AggregateSize = TypeManager::AlignAQOffset(_aqOffset, AggregateAlignment);
     IncludesPadding |= AggregateSize != _aqOffset;
 }
 //------------------------------------------------------------
@@ -1392,7 +1390,7 @@ Int32 ClusterAlignmentCalculator::AlignNextElement(TypeRef element)
     AggregateAlignment = Max(AggregateAlignment, elementAlignment);
 
     // See if any padding is needed before this element. Round up as needed.
-    elementOffset = _tm->AlignAQOffset(_aqOffset, elementAlignment);
+    elementOffset = TypeManager::AlignAQOffset(_aqOffset, elementAlignment);
     IncludesPadding |= (elementOffset != _aqOffset);
     _aqOffset = elementOffset;
 
@@ -3137,9 +3135,9 @@ TypeRef TypeManager::FindCustomPointerTypeFromValue(void* pointer, SubString *cN
 class TypeRefDumpVisitor : public TypeVisitor
 {
  public:
-    TypeRefDumpVisitor() { }
+    TypeRefDumpVisitor() = default;
 
- private:
+private:
     virtual void VisitBad(TypeRef type) { gPlatform.IO.Printf("<bad> "); }
     virtual void VisitBitBlock(BitBlockType* type) { gPlatform.IO.Printf("<bitblock> "); }
     virtual void VisitBitCluster(BitClusterType* type) { gPlatform.IO.Printf("<bitcluster> "); }

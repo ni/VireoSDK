@@ -48,7 +48,7 @@ struct EventStructInfo {
     OccurrenceCore eventOccurrence;
     Int32 setCount;
     EventQueueID staticQID;
-    EventStructInfo() : eventOccurrence(), setCount(0), staticQID(0) { }
+    EventStructInfo() : setCount(0), staticQID(0) { }
 };
 
 struct EventControlInfo {

@@ -51,10 +51,8 @@ NIError VirtualInstrument::Init(TypeManagerRef tm, Int32 clumpCount, TypeRef par
 }
 VirtualInstrument::~VirtualInstrument()
 {
-    if (_viName)
-        delete[] _viName;
-    if (_eventInfo)
-        delete [] _eventInfo;
+    delete[] _viName;
+    delete[] _eventInfo;
 }
 
 //------------------------------------------------------------
@@ -709,7 +707,7 @@ void ClumpParseState::AddVarArgCount()
     // The VarArg count is a constant passed by value to the instruction.
     // It indicates how many pointers arguments are passed after the VarArg
     // normal Parameter token.
-    VIREO_ASSERT(_argCount == 0 && _argPointers.size() == 0);
+    VIREO_ASSERT(_argCount == 0 && _argPointers.empty());
 
     _argPointers.push_back(nullptr);
     _argTypes.resize(1);  // placeholder, not used
@@ -1119,7 +1117,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
     _totalInstructionCount++;
     _totalInstructionPointerCount += (sizeof(InstructionCore) / sizeof(void*)) + _argCount;
 
-    InstructionCore* instruction = CreateInstruction(_instructionPointerType, _argCount, _argPointers.size() > 0 ? &*_argPointers.begin() : nullptr);
+    InstructionCore* instruction = CreateInstruction(_instructionPointerType, _argCount, !_argPointers.empty() ? &*_argPointers.begin() : nullptr);
     if (_cia->IsCalculatePass())
         return instruction;
 
