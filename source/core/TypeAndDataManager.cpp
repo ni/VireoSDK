@@ -3137,7 +3137,7 @@ class TypeRefDumpVisitor : public TypeVisitor
  public:
     TypeRefDumpVisitor() = default;
 
-private:
+ private:
     virtual void VisitBad(TypeRef type) { gPlatform.IO.Printf("<bad> "); }
     virtual void VisitBitBlock(BitBlockType* type) { gPlatform.IO.Printf("<bitblock> "); }
     virtual void VisitBitCluster(BitClusterType* type) { gPlatform.IO.Printf("<bitcluster> "); }
