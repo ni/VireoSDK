@@ -728,7 +728,7 @@ void ClumpParseState::MarkPerch(SubString* perchToken)
 
     IntMax index;
     if (perchToken->ReadInt(&index)) {
-        size_t perchIndex = (size_t)index;
+        size_t perchIndex = size_t(index);
         if (perchIndex >= _perches.size())
             _perches.resize(UInt32(perchIndex + kClumpStateIncrementSize));
         if (_perches[perchIndex] < kPerchUndefined) {
@@ -751,7 +751,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
 {
     IntMax index;
     if (branchTargetToken->ReadInt(&index)) {
-        size_t perchIndex = (size_t)index;
+        size_t perchIndex = size_t(index);
         if (perchIndex >= _perches.size())
             _perches.resize(perchIndex+kClumpStateIncrementSize);
         if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAllocated)) {
