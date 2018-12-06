@@ -190,7 +190,7 @@ namespace Vireo {
         Boolean toUTC = _ParamPointer(1) ? _Param(1) : false;
         LVDateTimeRec *dt = _ParamPointer(2);
 
-        Date date(timestamp, toUTC ? true : false);
+        Date date(timestamp, toUTC);
         dt->year = date.Year();
         dt->month = date.Month();
         dt->day_of_month = date.Day();

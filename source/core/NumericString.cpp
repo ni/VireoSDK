@@ -1944,7 +1944,7 @@ static void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCou
             error->status = true;
             break;
         }
-        if (error && error->status == false && format->Length() > 255) {
+        if (error && !error->status && format->Length() > 255) {
             error->code = -1;  // TODO(sanmut): ErrorCluster fix error codes
             error->status = true;
             break;

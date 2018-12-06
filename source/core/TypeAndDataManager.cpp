@@ -855,10 +855,7 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
         t = t->BaseType();
     }
 
-    if (otherTypeName->CompareCStr(tsWildCard)) {
-        return true;
-    }
-    return false;
+	return otherTypeName->CompareCStr(tsWildCard);
 }
 //------------------------------------------------------------
 Boolean TypeCommon::IsNumeric()
