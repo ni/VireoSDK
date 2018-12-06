@@ -198,11 +198,7 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
         } else {
             // don't break the CR X LF 0x0D 0x0A
             if (*_begin == 0x0D) {
-                if (*next == 0x0A) {
-                    characterEnd = false;
-                } else {
-                    characterEnd = true;
-                }
+	            characterEnd = *next != 0x0A;
             } else if (*_begin == 0x0A) {
                 characterEnd = true;
             } else if (CharLength(next) == 1) {
@@ -212,11 +208,7 @@ Boolean SubString::ReadGraphemeCluster(SubString* token)
                 Int32 secondByte = *next + 1;
                 Int32 code = firstByte * 0x100 + secondByte;
                 // it only support cluster some extending LATIN character
-                if (code >= 0xCC80 && code <= 0xCDAF) {
-                    characterEnd = false;
-                } else {
-                    characterEnd = true;
-                }
+	            characterEnd = !(code >= 0xCC80 && code <= 0xCDAF);
             }
         }
         _begin = next;
@@ -779,10 +771,8 @@ Boolean SubString::CompareViaEncodedString(SubString* encodedString)
             return false;
         }
     }
-    if (length < this->Length()) {
-        return false;
-    }
-    return true;
+
+	return length >= this->Length();
 }
 //------------------------------------------------------------
 //! Read an integer or one of the special symbolic numbers formats
