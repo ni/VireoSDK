@@ -910,7 +910,7 @@ class ArrayType : public WrappedType
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual SubString Name()                            { return SubString("Array"); }
-    virtual IntDim* DimensionLengths()                  { return &_dimensionLengths[0]; }
+    IntDim* DimensionLengths()					        { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
@@ -932,7 +932,7 @@ class DefaultValueType : public WrappedType
     DefaultValueType* FinalizeDVT();
  public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
-    virtual void*   Begin(PointerAccessEnum mode);
+    void*           Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
 };
 //------------------------------------------------------------
