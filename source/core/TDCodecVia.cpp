@@ -189,7 +189,7 @@ NIError TDViaParser::ParseREPL()
         RepinLineNumberBase();
     }
 
-    TDViaParser::FinalizeModuleLoad(_typeManager, _pLog);
+    FinalizeModuleLoad(_typeManager, _pLog);
 
     return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
@@ -1542,7 +1542,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, eventSpecsType, lineNumberBase, &clumpSource);
 
     if (_loadVIsImmediately) {
-        TDViaParser::FinalizeVILoad(vi, _pLog);
+        FinalizeVILoad(vi, _pLog);
     }
     _virtualInstrumentScope = savedVIScope;
     // The clumps code will be loaded once the module is finalized.
@@ -1818,7 +1818,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
             if (type->HasCustomDefault() && type->IsA(&strVIType)) {
                 TypedArrayCoreRef *pObj = (TypedArrayCoreRef*) type->Begin(kPARead);
                 VirtualInstrument *vi = (VirtualInstrument*) (*pObj)->RawObj();
-                TDViaParser::FinalizeVILoad(vi, pLog);
+                FinalizeVILoad(vi, pLog);
             }
             type = type->Next();
         }
@@ -2106,7 +2106,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
     Boolean suppressInfNaN = _options._fmt.SuppressInfNaN();
     Boolean quotedInfNaN = _options._fmt.QuotedNameInfNaN();
 
-    if (::isnan(value)) {
+    if (isnan(value)) {
         if (!suppressInfNaN) {
             pBuff = "\"NaN\"";
             len = 3;
@@ -2117,7 +2117,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
         } else {
             _errorCode = kLVError_JSONBadNaN;
         }
-    } else if (::isinf(value)) {
+    } else if (isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
             if (value < 0) {

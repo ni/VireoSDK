@@ -381,15 +381,15 @@ class TypeManagerScope
 
  public:
     explicit TypeManagerScope(TypeManagerRef typeManager) {
-      _saveTypeManager = TypeManagerScope::ThreadsTypeManager;
-      TypeManagerScope::ThreadsTypeManager = typeManager;
+      _saveTypeManager = ThreadsTypeManager;
+      ThreadsTypeManager = typeManager;
     }
     ~TypeManagerScope() {
-        TypeManagerScope::ThreadsTypeManager = _saveTypeManager;
+        ThreadsTypeManager = _saveTypeManager;
     }
     static TypeManagerRef Current() {
         VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != nullptr);
-        return TypeManagerScope::ThreadsTypeManager;
+        return ThreadsTypeManager;
     }
 #else
     explicit TypeManagerScope(TypeManagerRef typeManager) {}
@@ -1177,7 +1177,7 @@ template <class T>
 class TypedArray1D : public TypedArrayCore
 {
  public:
-    T* Begin()                  { return (T*) TypedArrayCore::RawBegin(); }
+    T* Begin()                  { return (T*) RawBegin(); }
     T* End()                    { return (T*) Begin() + Length(); }
     T  At(IntIndex index)       { return *(T*) BeginAt(index);}
     T* BeginAt(IntIndex index)  { return (T*) TypedArrayCore::BeginAt(index); }
