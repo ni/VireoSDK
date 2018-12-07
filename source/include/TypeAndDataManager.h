@@ -226,7 +226,7 @@ class TypeManager
 {
  public:
     //! Create a Execution and Typemanager pair.
-    static TypeManagerRef New(TypeManagerRef tm);
+    static TypeManagerRef New(TypeManagerRef parentTADM);
     void Delete();
 
  private:
@@ -260,7 +260,7 @@ class TypeManager
     // but some times it is larger (e.g. 16 or 32) the CDC 7600 was 60
     // also defines alignment rules. Each element in a cluster is addressable
  private:
-    explicit TypeManager(TypeManagerRef typeManager);
+    explicit TypeManager(TypeManagerRef parentTm);
     NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);
  public:
     ExecutionContextRef TheExecutionContext() { return _executionContext; }
@@ -272,10 +272,10 @@ class TypeManager
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
     TypeRef TypeList() { return _typeList; }
-    void    PrintMemoryStat(ConstCStr, Boolean last);
+    void    PrintMemoryStat(ConstCStr, Boolean bLast);
 
     TypeManagerRef BaseTypeManager() { return _baseTypeManager; }
-    TypeRef Define(const SubString* name, TypeRef type);
+    TypeRef Define(const SubString* typeName, TypeRef type);
 
     TypeRef FindType(ConstCStr name);
     TypeRef FindType(const SubString* name, Boolean decode = false);
@@ -301,7 +301,7 @@ class TypeManager
     TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData,
                                             Boolean allowDynamic);
 #if defined (VIREO_INSTRUCTION_REFLECTION)
-    TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type,
+    TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef typeRef,
                                              PointerTypeEnum pointerType, ConstCStr cName);
     TypeRef FindCustomPointerTypeFromValue(void*, SubString *cName);
     TypeRef PointerToSymbolPath(TypeRef t, DataPointer p, StringRef path, Boolean* foundInVI = nullptr);
@@ -310,7 +310,7 @@ class TypeManager
 #else
     TypeRef DefineCustomPointerTypeWithValue(ConstCStr name, void* pointer, TypeRef type, PointerTypeEnum pointerType);
 #endif
-    TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef type);
+    TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef typeRef);
 
  public:
     // Low level allocation functions
@@ -334,7 +334,7 @@ class TypeManager
 
  public:
     // Read or write values accessible to this TM as described by a symbolic path
-    NIError ReadValue(SubString* objectName, SubString* path, Double *value);
+    NIError ReadValue(SubString* objectName, SubString* path, Double * pValue);
     NIError WriteValue(SubString* objectName, SubString* path, Double value);
     NIError ReadValue(SubString* objectName, SubString* path, StringRef);
     NIError WriteValue(SubString* objectName, SubString* path, SubString*);
@@ -352,7 +352,7 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData);
 NIError WriteIntToMemory(TypeRef type, void* pData, IntMax value);
 Double ReadDoubleFromMemory(TypeRef type, const void* pData, NIError* errResult = nullptr);
 NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value);
-IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax input);
+IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value);
 //------------------------------------------------------------
 //! Banker's rounding for Doubles.
 inline Double RoundToEven(Double value)
@@ -575,7 +575,7 @@ class TypeCommon
     //! Get an element of an Aggregate using it index.
     virtual TypeRef GetSubElement(Int32 index)          { return nullptr; }
     //! Parse through a path, digging through Aggregate element names. Calculates the cumulative offset.
-    virtual TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic);
+    virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
 
     //! Set the SubString to the name if the type is not anonymous.
     virtual SubString Name()                            { return SubString(nullptr, nullptr); }
@@ -602,19 +602,19 @@ class TypeCommon
     virtual IntIndex GetEnumItemCount()              { return 0; }
 
     //! Initialize a linear block to the default value for the type.
-    NIError InitData(void* pData, IntIndex count);
+    NIError InitData(void* pTarget, IntIndex count);
     //! Deep copy a linear block of values from one locatio to another.
-    NIError CopyData(const void* pData, void* pDataCopy, IntIndex count);
+    NIError CopyData(const void* pSource, void* pDest, IntIndex count);
     //! Deallocate and nullptr out a linear block of value of the type.
-    NIError ClearData(void* pData, IntIndex count);
+    NIError ClearData(void* pTarget, IntIndex count);
     //! Make multiple copies of a single instance to a linear block.
-    NIError MultiCopyData(const void* pSingleData, void* pDataCopy, IntIndex count);
+    NIError MultiCopyData(const void* pSource, void* pDest, IntIndex count);
 
     Boolean CompareType(TypeRef otherType);
     Boolean IsA(const SubString* otherTypeName);
     Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
     Boolean IsA(TypeRef otherType);
-    Boolean IsA(TypeRef otherType, Boolean compatibleArrays);
+    Boolean IsA(TypeRef otherType, Boolean compatibleStructure);
     Boolean IsNumeric();
     Boolean IsInteger();
     Boolean IsSignedInteger();
@@ -689,11 +689,11 @@ class NamedType : public WrappedType
  private:
     NamedTypeRef            _nextOverload;  // May point to one in current or root type manager.
     InlineArray<Utf8Char>   _name;
-    NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
+    NamedType(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload);
  public:
     static size_t   StructSize(const SubString* name)
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
-    static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef type, NamedTypeRef nextOverload);
+    static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload);
 
     NamedTypeRef    NextOverload()                  { return _nextOverload; }
     virtual void    Accept(TypeVisitor *tv)         { tv->VisitNamed(this); }
@@ -729,9 +729,9 @@ class BitBlockType : public TypeCommon
 {
  private:
     IntIndex   _blockLength;
-    BitBlockType(TypeManagerRef typeManager, IntIndex size, EncodingEnum encoding);
+    BitBlockType(TypeManagerRef typeManager, IntIndex length, EncodingEnum encoding);
  public:
-    static BitBlockType* New(TypeManagerRef typeManager, Int32 size, EncodingEnum encoding);
+    static BitBlockType* New(TypeManagerRef typeManager, Int32 length, EncodingEnum encoding);
     virtual void    Accept(TypeVisitor *tv)     { tv->VisitBitBlock(this); }
     virtual IntIndex BitLength()               { return _blockLength; }
 };
@@ -926,9 +926,9 @@ class DefaultValueType : public WrappedType
     static size_t   StructSize(TypeRef type)            { return sizeof(DefaultValueType) + type->TopAQSize(); }
  public:
     //! Create a default value for a pointer and set the value in one operation.
-    static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue, void* pointerValue);
+    static DefaultValueType* New(TypeManagerRef typeManager, TypeRef valuesType, Boolean mutableValue, void* pointerValue);
     //!
-    static DefaultValueType* New(TypeManagerRef typeManager, TypeRef type, Boolean mutableValue);
+    static DefaultValueType* New(TypeManagerRef typeManager, TypeRef valuesType, Boolean mutableValue);
     DefaultValueType* FinalizeDVT();
  public:
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
@@ -989,7 +989,7 @@ class EnumType : public WrappedType
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     void AddEnumItem(SubString *name);
     virtual Int32   SubElementCount()                   { return 1; }
-    virtual StringRef GetEnumItemName(IntIndex index);
+    virtual StringRef GetEnumItemName(IntIndex i);
     virtual IntIndex GetEnumItemCount();
     virtual ~EnumType();
 
@@ -1034,10 +1034,10 @@ class IDataProcs {
 class CustomDataProcType : public WrappedType
 {
  protected:
-    CustomDataProcType(TypeManagerRef typeManager, TypeRef type, IDataProcs *pAlloc);
+    CustomDataProcType(TypeManagerRef typeManager, TypeRef type, IDataProcs * pDataProcs);
     IDataProcs*    _pDataProcs;
  public:
-    static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs *pIAlloc);
+    static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs * pDataProcs);
     virtual void    Accept(TypeVisitor *tv)
         { tv->VisitCustomDataProc(this); }
     virtual NIError InitData(void* pData, TypeRef pattern = nullptr)
@@ -1095,7 +1095,7 @@ class TypedArrayCore
         return begin;
     }
     AQBlock1* BeginAtND(Int32, IntIndex*);
-    AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes[]);
+    AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]);
 
  public:
     void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
@@ -1143,7 +1143,7 @@ class TypedArrayCore
     IntIndex AQBlockLength(IntIndex count)  { return ElementType()->TopAQSize() * count; }
 
     //! Resize for multi dim arrays
-    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveOld, Boolean noInit = false);
+    Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean noInit = false);
 
     //! Make this array match the shape of the reference type.
     Boolean ResizeToMatchOrEmpty(TypedArrayCoreRef pReference);
@@ -1159,7 +1159,7 @@ class TypedArrayCore
 
  private:
     //! Resize the underlying block of memory. It DOES NOT update any dimension information. Returns true if success.
-    Boolean ResizeCapacity(IntIndex aqLength, IntIndex currentLength, IntIndex length, Boolean reserveExists);
+    Boolean ResizeCapacity(IntIndex countAQ, IntIndex currentCapactiy, IntIndex newCapacity, Boolean reserveExists);
 
  public:
     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);

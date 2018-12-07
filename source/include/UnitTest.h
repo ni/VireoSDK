@@ -43,5 +43,5 @@ class VireoUnitTest {
     virtual bool Execute() = 0;
     void RegisterTest(VireoUnitTest *test);
 
-    static bool RunTests(bool *passed);
+    static bool RunTests(bool * pass);
 };

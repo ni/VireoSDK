@@ -44,7 +44,7 @@ class EventLog {
         kHardDataError = 3,
     };
 
-    explicit EventLog(StringRef stringRef);
+    explicit EventLog(StringRef str);
     Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; }
     Int32 HardErrorCount()                  { return  _hardErrorCount; }
     Int32 WarningCount()                    { return _warningCount; }

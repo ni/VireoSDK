@@ -112,7 +112,7 @@ class ExecutionContext
 
     // Run the concurrent execution system for a short period of time
     ECONTEXT    Int32 /*ExecSlicesResult*/ ExecuteSlices(Int32 numSlices, Int32 millisecondsToRun);
-    ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* whereToWakeUp);
+    ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* nextInClump);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);

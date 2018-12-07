@@ -104,12 +104,12 @@ class QueueCore : public ObservableCore
     IntIndex RemoveIndex();
  public:
     Boolean Compress();
-    Boolean TryMakeRoom(IntIndex length, IntIndex insert);
+    Boolean TryMakeRoom(IntIndex additionalCount, IntIndex insert);
     Boolean Enqueue(void* pData);
     Boolean PushFront(void* pData);
     Boolean Dequeue(void* pData, bool skipObserver = false);
     Boolean Peek(void* pData, IntIndex skipCount = 0);
-    Boolean HasRoom(IntIndex count);
+    Boolean HasRoom(IntIndex additionalCount);
     IntIndex Count() const { return _count; }
     TypeRef EltType() const { return _elements->ElementType(); }
     IntDim MaxSize() const {

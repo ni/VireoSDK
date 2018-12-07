@@ -123,15 +123,15 @@ class TDViaParser
     TypeRef ParseEnqueue();
     Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
     TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
-    Int32   ParseArrayData(TypedArrayCoreRef array, void* pData, Int32 level);
+    Int32   ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
-    void    ParseClump(VIClump* clump, InstructionAllocator* cia);
+    void    ParseClump(VIClump* viClump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
     VirtualInstrument *CurrentVIScope() { return _virtualInstrumentScope; }
 
  public:
-    static NIError StaticRepl(TypeManagerRef typeManager, SubString *replStream);
+    static NIError StaticRepl(TypeManagerRef tm, SubString *replStream);
     static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
     static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
 
@@ -187,11 +187,11 @@ class TDViaFormatter
     void    SetExponentialNotation(Boolean on) { _options._exponentialNotation = on; }
     // Data formatters
     void    FormatData(TypeRef type, void* pData);
-    void    FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pData, Int32 rank);
+    void    FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank);
     void    FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
                 IntIndex *pDimLengths, IntIndex *pSlabLengths);
 
-    void    FormatClusterData(TypeRef clusterType, void* pData);
+    void    FormatClusterData(TypeRef type, void* pData);
     void    FormatPointerData(TypeRef pointerType, void* pData);
     void    FormatEncoding(EncodingEnum value);
     void    FormatElementUsageType(UsageTypeEnum value);

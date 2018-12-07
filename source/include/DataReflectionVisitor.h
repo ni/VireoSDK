@@ -27,8 +27,8 @@ namespace Vireo
 class DataReflectionVisitor : public TypeVisitor
 {
  public:
-    DataReflectionVisitor(TypeRef tNeedle, DataPointer pHaystack, StringRef path);
-    void Accept(TypeRef tHaystack, DataPointer pHaystack);
+    DataReflectionVisitor(TypeRef tHaystack, DataPointer pNeedle, StringRef path);
+    void Accept(TypeRef tHayStack, DataPointer pHayStack);
     void Accept(TypeManagerRef tm);
     Boolean Found()         { return _found; }
     Boolean FoundInVI()     { return _foundInVI; }
