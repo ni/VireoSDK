@@ -7,6 +7,7 @@ SDG
 */
 
 /*! \file
+    \brief Variant data type and variant attribute support functions
 */
 
 #include "TypeDefiner.h"
@@ -20,7 +21,7 @@ namespace Vireo
 {
 class VariantAttributeManager {
  public:
-    using AttributeMapType = std::map<StringRef, StaticTypeAndDataPointer, StringRefCmp>;
+    using AttributeMapType = std::map<StringRef, StaticTypeAndDataRef, StringRefCmp>;
     using VariantToAttributeMapType = std::map< DataPointer, AttributeMapType *>;
     VariantAttributeManager(const VariantAttributeManager&) = delete;
     VariantAttributeManager& operator=(const VariantAttributeManager&) = delete;
@@ -100,7 +101,7 @@ VIREO_FUNCTION_SIGNATUREV(VariantToData, VariantToDataParamBlock)
     return _NextInstruction();
 }
 
-struct SetVariantAttributesParamBlock : public VarArgInstruction
+struct SetVariantAttributeParamBlock : public VarArgInstruction
 {
     _ParamDef(TypeRef, InputVariant);
     _ParamDef(StringRef, Name);
@@ -110,7 +111,7 @@ struct SetVariantAttributesParamBlock : public VarArgInstruction
     NEXT_INSTRUCTION_METHODV()
 };
 
-VIREO_FUNCTION_SIGNATUREV(SetVariantAttribute, SetVariantAttributesParamBlock)
+VIREO_FUNCTION_SIGNATUREV(SetVariantAttribute, SetVariantAttributeParamBlock)
 {
     ErrorCluster *errPtr = _ParamPointer(ErrorClust);
     bool replaced = false;
@@ -122,7 +123,7 @@ VIREO_FUNCTION_SIGNATUREV(SetVariantAttribute, SetVariantAttributesParamBlock)
             }
         } else {
             TypeRef inputVariant = _Param(InputVariant);
-            StaticTypeAndDataPointer value = &_ParamImmediate(Value);
+            StaticTypeAndDataRef value = &_ParamImmediate(Value);
             VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
 
             auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
@@ -165,7 +166,7 @@ VIREO_FUNCTION_SIGNATUREV(GetVariantAttribute, GetVariantAttributesParamBlock)
     if (!errPtr || !errPtr->status) {
         TypeRef inputVariant = _Param(InputVariant);
         StringRef name = _Param(Name);
-        StaticTypeAndDataPointer value = &_ParamImmediate(Value);
+        StaticTypeAndDataRef value = &_ParamImmediate(Value);
         const VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
 
         const auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
@@ -173,7 +174,7 @@ VIREO_FUNCTION_SIGNATUREV(GetVariantAttribute, GetVariantAttributesParamBlock)
             VariantAttributeManager::AttributeMapType *attributeMap = variantToAttributeMapIter->second;
             auto attributeMapIter = attributeMap->find(name);
             if (attributeMapIter != attributeMap->end()) {
-                StaticTypeAndDataPointer foundValue = attributeMapIter->second;
+                StaticTypeAndDataRef foundValue = attributeMapIter->second;
                 if (foundValue->_paramType->IsA(value->_paramType) || value->_paramType->Name().Compare(&TypeCommon::TypeVariant)) {
                     found = true;
                     value->_paramType->CopyData(foundValue->_pData, value->_pData);
@@ -227,7 +228,7 @@ VIREO_FUNCTION_SIGNATUREV(GetVariantAttributeAll, GetVariantAttributesAllParamBl
                 TypeManagerRef tm = THREAD_TADM();
                 for (const auto attributePair : *attributeMap) {
                     String* const* attributeNameStr = &(attributePair.first);
-                    StaticTypeAndDataPointer attributeValue = attributePair.second;
+                    StaticTypeAndDataRef attributeValue = attributePair.second;
                     namesElementType->CopyData(attributeNameStr, pNamesInsert);
 
                     if (attributeValue->_paramType->Name().Compare(&TypeCommon::TypeVariant)) {

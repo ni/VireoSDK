@@ -190,7 +190,7 @@ struct StaticTypeAndData
     TypeRef  _paramType;
     void*    _pData;
 };
-typedef StaticTypeAndData* StaticTypeAndDataPointer;
+typedef StaticTypeAndData* StaticTypeAndDataRef;
 
 #ifdef STL_MAP
 #else
