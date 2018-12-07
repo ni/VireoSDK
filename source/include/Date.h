@@ -48,7 +48,7 @@ class Date {
     void getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
         Int32* monthPtr = nullptr, Int32* dayPtr = nullptr, Int32* hourPtr = nullptr,
         Int32* minutePtr = nullptr, Int32* secondPtr = nullptr, Double* fractionPtr = nullptr,
-        Int32* weekPtr = nullptr, Int32* weekOfFirstDay = nullptr, char** timeZoneString = nullptr);
+        Int32* weekDayPtr = nullptr, Int32* weekOfFirstDay = nullptr, char** timeZoneString = nullptr);
 
  public:
     Date(Timestamp timestamp, Int32 timeZoneOffset);  // this API is conceptually wrong;

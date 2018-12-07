@@ -218,7 +218,7 @@ class SubString : public SubVector<Utf8Char>
         return ((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Letter);
     }
     static Int32   CharLength(const Utf8Char* begin);
-    static Int32   DigitValue(Utf32Char codepoint, Int32 base);
+    static Int32   DigitValue(Utf32Char codePoint, Int32 base);
 
  public:
     SubString()                          { }
@@ -256,12 +256,12 @@ class SubString : public SubVector<Utf8Char>
 
     //! Compare the SubString with a reference string.
     Boolean Compare(const SubString* str)  const { return Compare(str->Begin(), str->Length()); }
-    Boolean Compare(const Utf8Char* begin, IntIndex length) const;
-    Boolean Compare(const Utf8Char* begin, IntIndex length, Boolean ignoreCase) const;
-    Boolean CompareCStr(ConstCStr begin) const;
+    Boolean Compare(const Utf8Char* begin2, IntIndex length2) const;
+    Boolean Compare(const Utf8Char* begin2, IntIndex length2, Boolean ignoreCase) const;
+    Boolean CompareCStr(ConstCStr begin2) const;
     Boolean CompareCStrIgnoreCase(ConstCStr begin) const { return Compare((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin), true); }
-    Boolean ComparePrefix(const Utf8Char* begin, Int32 length) const;
-    Boolean ComparePrefixIgnoreCase(const Utf8Char* begin, Int32 length) const;
+    Boolean ComparePrefix(const Utf8Char* begin2, Int32 length2) const;
+    Boolean ComparePrefixIgnoreCase(const Utf8Char* begin2, Int32 length2) const;
     Boolean ComparePrefix(char asciiChar) const { return (_begin != _end) && (*_begin == asciiChar); }
     Boolean ComparePrefixCStr(ConstCStr begin) const {
         return ComparePrefix((const Utf8Char*)begin, (IntIndex)strlen((ConstCStr)begin));
@@ -271,17 +271,17 @@ class SubString : public SubVector<Utf8Char>
     }
 
     //! Compare with the encoded string
-    Boolean CompareViaEncodedString(SubString* str);
+    Boolean CompareViaEncodedString(SubString* encodedString);
 
     //! Functions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
     Boolean ReadRawChar(Utf8Char* token);
     Boolean PeekRawChar(Utf8Char* token, IntIndex pos = 0);
     Int32 LengthAfterProcessingEscapes();
-    void ProcessEscapes(Utf8Char* begin, Utf8Char* end);
+    void ProcessEscapes(Utf8Char* dest, Utf8Char* end);
 
     //! Process the escape characters in the substring ('\t','\n', etc.) to ('\\t', '\\n', etc.)
-    IntIndex UnEscape(Utf8Char* begin, IntIndex length);
+    IntIndex UnEscape(Utf8Char* dest, IntIndex length);
 
     //! Read the next UTF-8 sequence and decode it into a regular UTF-32 code point.
     Boolean ReadUtf32(Utf32Char* value);
@@ -293,22 +293,22 @@ class SubString : public SubVector<Utf8Char>
     Boolean ReadLine(SubString* line);
 
     //! Read the next sequence of digits and parse them as an integer.
-    Boolean ReadInt(IntMax* value, Boolean *overflow = nullptr);
+    Boolean ReadInt(IntMax* pValue, Boolean *overflow = nullptr);
 
     //! Read the next sequence of digits and parse them as an IntDim. Like Int but adds '*' and '$n'
-    Boolean ReadIntDim(IntIndex* value);
+    Boolean ReadIntDim(IntIndex* pValue);
 
     //! Read the next sequence of digits and parse them as a Double.
-    Boolean ParseDouble(Double* value, Boolean suppressInfNaN = false, Int32 *errCodePtr = nullptr);
+    Boolean ParseDouble(Double* pValue, Boolean suppressInfNaN = false, Int32 *errCodePtr = nullptr);
 
     //! Read a simple token name, value, punctuation, etc.
     TokenTraits ReadToken(SubString* token, Boolean suppressInfNaN = false);
 
     //! Read 2 digit hex value
-    Boolean ReadHex2(Int32* value);
+    Boolean ReadHex2(Int32* pValue);
 
     //! Read a 64-bit integer in given base
-    Boolean ReadIntWithBase(Int64 *value, Int32 base);
+    Boolean ReadIntWithBase(Int64 * pValue, Int32 base);
 
     //! Read a simple name (like a field name in a JSON object)
     Boolean ReadNameToken(SubString* token);

@@ -63,8 +63,8 @@ class RefNumStorageBase
     NIError    GetRefNumData(const RefNum &refnum, RefNumDataPtr info);
 
     bool    AcquireRefNumRights(const RefNum &refnum, RefNumDataPtr info);
-    RefNumHeaderAndData* ValidateRefNumIndex(RefNum cookie);
-    RefNumHeaderAndData* CreateRefNumIndex(RefNum cookie);
+    RefNumHeaderAndData* ValidateRefNumIndex(RefNum refnum);
+    RefNumHeaderAndData* CreateRefNumIndex(RefNum refnum);
     virtual RefNumHeaderAndData* ValidateRefNumIndexT(RefNum cookie) = 0;
     virtual RefNumHeaderAndData* CreateRefNumIndexT(RefNum cookie, bool *isNew) = 0;
 

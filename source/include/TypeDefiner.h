@@ -48,16 +48,16 @@ class TypeDefiner
 
     //@{
     /** Methods used by C++ modules to register Vireo type definitions. */
-    TypeDefiner(TypeDefinerCallback pCallback, ConstCStr pNameSpace, Int32 version);
-    static TypeRef Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeCStr);
-    static TypeRef Define(TypeManagerRef tm, SubString* name, SubString* wrappedTypeString);
+    TypeDefiner(TypeDefinerCallback callback, ConstCStr pModuleName, Int32 version);
+    static TypeRef Define(TypeManagerRef tm, ConstCStr name, ConstCStr typeString);
+    static TypeRef Define(TypeManagerRef tm, SubString* typeName, SubString* typeString);
     static TypeRef ParseAndBuildType(TypeManagerRef tm, SubString* typeString);
     static Boolean HasRequiredModule(TypeDefiner* _this, ConstCStr name);
     static void InsertPastRequirement(TypeDefiner** ppNext, TypeDefiner* module, ConstCStr requirementName);
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer,
-                                                 ConstCStr typeString, PointerTypeEnum pointerType,
+                                                 ConstCStr typeCStr, PointerTypeEnum pointerType,
                                                  ConstCStr cname);
 #else
     static void DefineCustomPointerTypeWithValue(TypeManagerRef tm, ConstCStr name, void* pointer,
@@ -65,7 +65,7 @@ class TypeDefiner
 #endif
     static void DefineCustomValue(TypeManagerRef tm, ConstCStr name, Int32 value, ConstCStr typeString);
     static void DefineCustomDataProcs(TypeManagerRef tm, ConstCStr name, IDataProcs* pDataProcs,
-                                      ConstCStr typeString);
+                                      ConstCStr typeCStr);
  private:
     static TypeDefiner* _gpTypeDefinerList;
     //@}

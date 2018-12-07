@@ -91,10 +91,10 @@ class VirtualInstrument
                                            // It has a Begin and End pointer
  public:
     NIError Init(TypeManagerRef tm, Int32 clumpCount, TypeRef paramsType, TypeRef localsType, TypeRef eventSpecsType,
-                 Int32 lineNumberBase, SubString* source);
+                 Int32 lineNumberBase, SubString* clumpSource);
     void PressGo();
     void GoIsDone();
-    TypeRef GetVIElementAddressFromPath(SubString* elementPath, void* pStart, void** pData, Boolean allowDynamic);
+    TypeRef GetVIElementAddressFromPath(SubString* eltPath, void* pStart, void** ppData, Boolean allowDynamic);
 
  public:
     ~VirtualInstrument();
@@ -198,8 +198,8 @@ class VIClump : public FunctionClump
         return caller->_owningVI;
     }
     Observer*          GetObservationStates(Int32) { return _observationCount ? _observationStates : nullptr; }
-    Observer*          ReserveObservationStatesWithTimeout(Int32, PlatformTickType count);
-    InstructionCore*    WaitUntilTickCount(PlatformTickType count, InstructionCore* next);
+    Observer*          ReserveObservationStatesWithTimeout(Int32, PlatformTickType tickCount);
+    InstructionCore*    WaitUntilTickCount(PlatformTickType tickCount, InstructionCore* nextInstruction);
     void               ClearObservationStates();
     InstructionCore*    WaitOnObservableObject(InstructionCore* nextInstruction);
     TypeManagerRef      TheTypeManager()       { return OwningVI()->TheTypeManager(); }
@@ -313,7 +313,7 @@ class ClumpParseState
     InstructionCore*    AllocInstructionCore(Int32 argumentCount);
     InstructionCore*    CreateInstruction(TypeRef instructionType, Int32 argCount, void* args[]);
  public:
-    void                RecordNextHere(InstructionCore** startLocation);
+    void                RecordNextHere(InstructionCore** where);
 
  private:    // State related to two-pass parsing
     Int32           _totalInstructionCount;
@@ -355,7 +355,7 @@ class ClumpParseState
     explicit ClumpParseState(ClumpParseState* cps);
     ClumpParseState(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);
     void            Construct(VIClump* clump, InstructionAllocator* cia, Int32 lineNumber, EventLog* pLog);
-    void            StartSnippet(InstructionCore** startLocation);
+    void            StartSnippet(InstructionCore** pWhereToPatch);
     TypeRef         FormalParameterType()       { return _formalParameterType; }
     TypeRef         ActualArgumentType()        { return _actualArgumentType; }
     Boolean         LastArgumentError()         { return _argumentState < kArgumentResolved_FirstGood; }
