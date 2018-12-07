@@ -48,7 +48,7 @@ typedef Int32 FileHandle;
 
 #ifdef VIREO_FILESYSTEM
 
-struct FileOpenInstruction : public InstructionCore
+struct FileOpenInstruction : InstructionCore
 {
     _ParamDef(StringRef, path);
 
@@ -347,7 +347,7 @@ VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 
 #if defined(VIREO_VIA_FORMATTER)
 //------------------------------------------------------------
-struct PrintfParamBlock : public VarArgInstruction
+struct PrintfParamBlock : VarArgInstruction
 {
     _ParamDef(StringRef, format);
     _ParamImmediateDef(StaticTypeAndData, argument1[1]);

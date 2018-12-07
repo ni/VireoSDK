@@ -1861,7 +1861,7 @@ VIREO_FUNCTION_SIGNATURE4(StringFormatValue, StringRef, StringRef, StaticType, v
 }
 
 //------------------------------------------------------------
-struct StringFormatParamBlock : public VarArgInstruction
+struct StringFormatParamBlock : VarArgInstruction
 {
     _ParamDef(StringRef, StringOut);
     _ParamDef(StringRef, StringFormat);
@@ -1959,7 +1959,7 @@ static void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCou
 }
 
 //------------------------------------------------------------
-struct StringScanParamBlock : public VarArgInstruction
+struct StringScanParamBlock : VarArgInstruction
 {
     _ParamDef(StringRef, StringInput);
     _ParamDef(StringRef, StringRemaining);

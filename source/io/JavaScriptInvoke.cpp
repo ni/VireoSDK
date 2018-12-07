@@ -44,7 +44,7 @@ VIREO_EXPORT void* JavaScriptInvoke_GetParameterTypeRef(StaticTypeAndData *param
 
 //------------------------------------------------------------
 // arguments: occurrence, isInternalFunction, errorCluster, functionName, returnValue, then variable number of inputs that can be nullptr or any type
-struct JavaScriptInvokeParamBlock : public VarArgInstruction
+struct JavaScriptInvokeParamBlock : VarArgInstruction
 {
     _ParamDef(OccurrenceRef, occurrence);
     _ParamDef(Boolean, isInternalFunction);

@@ -2395,7 +2395,7 @@ VIREO_FUNCTION_SIGNATURE4(ToStringEx, StaticType, void, StringRef, StringRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-struct FlattenToJSONParamBlock : public VarArgInstruction
+struct FlattenToJSONParamBlock : VarArgInstruction
 {
     _ParamImmediateDef(StaticTypeAndData, arg1[1]);
     _ParamDef(Boolean, lvExtensions);
@@ -2441,7 +2441,7 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
  *      :default null elements
  *      :strict validation. whether allow json object contains items not defined in the cluster
  * */
-struct UnflattenFromJSONParamBlock : public VarArgInstruction
+struct UnflattenFromJSONParamBlock : VarArgInstruction
 {
     _ParamDef(StringRef, jsonString);
     _ParamImmediateDef(StaticTypeAndData, arg1[1]);

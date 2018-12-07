@@ -142,7 +142,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     }
 }
 //------------------------------------------------------------
-struct ReplaceSubstringStruct : public InstructionCore
+struct ReplaceSubstringStruct : InstructionCore
 {
     _ParamDef(StringRef, StringIn);
     _ParamDef(StringRef, ReplacementString);
@@ -200,7 +200,7 @@ VIREO_FUNCTION_SIGNATURET(ReplaceSubstring, ReplaceSubstringStruct)
     return _NextInstruction();
 }
 
-struct SearchAndReplaceStringStruct : public InstructionCore
+struct SearchAndReplaceStringStruct : InstructionCore
 {
     _ParamDef(StringRef, StringOut);
     _ParamDef(StringRef, StringIn);
@@ -286,7 +286,7 @@ VIREO_FUNCTION_SIGNATURET(SearchAndReplaceString, SearchAndReplaceStringStruct)
     return _NextInstruction();
 }
 
-struct SearchSplitStringStruct : public InstructionCore
+struct SearchSplitStringStruct : InstructionCore
 {
     _ParamDef(StringRef, StringIn);
     _ParamDef(StringRef, SearchString);
@@ -656,7 +656,7 @@ VIREO_FUNCTION_SIGNATURE3(StringTrim, StringRef, Int32, StringRef)
 }
 
 //------------------------------------------------------------
-struct StringConcatenateParamBlock : public VarArgInstruction
+struct StringConcatenateParamBlock : VarArgInstruction
 {
     _ParamDef(StringRef, StringOut);
     _ParamImmediateDef(TypedArrayCoreRef*, Element[1]);
