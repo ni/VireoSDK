@@ -54,14 +54,14 @@ struct InstructionCore
 
 //------------------------------------------------------------
 // A struct used for accessing any number or arguments in a non type strict way.
-struct GenericInstruction : public InstructionCore
+struct GenericInstruction : InstructionCore
 {
     void* _args[1];  // may be zero or more elements
 };
 
 //------------------------------------------------------------
 // Struct for var arg functions
-struct VarArgInstruction : public InstructionCore
+struct VarArgInstruction : InstructionCore
 {
     size_t _count;   // may be zero or more arguments in addition to the count
 };
@@ -76,56 +76,56 @@ struct VarArgInstruction : public InstructionCore
     return ( (InstructionCore*) ((size_t*)((VarArgInstruction*)this + 1) + (int)this->_count) ); }
 
 template <class type0>
-struct Instruction1 : public InstructionCore
+struct Instruction1 : InstructionCore
 {
     type0* _p0;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1>
-struct Instruction2 : public Instruction1<type0>
+struct Instruction2 : Instruction1<type0>
 {
     type1* _p1;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2>
-struct Instruction3 : public Instruction2<type0, type1>
+struct Instruction3 : Instruction2<type0, type1>
 {
     type2* _p2;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3>
-struct Instruction4 : public Instruction3<type0, type1, type2>
+struct Instruction4 : Instruction3<type0, type1, type2>
 {
     type3* _p3;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3, class type4>
-struct Instruction5 : public Instruction4<type0, type1, type2, type3>
+struct Instruction5 : Instruction4<type0, type1, type2, type3>
 {
     type4* _p4;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3, class type4, class type5>
-struct Instruction6 : public Instruction5<type0, type1, type2, type3, type4>
+struct Instruction6 : Instruction5<type0, type1, type2, type3, type4>
 {
     type5* _p5;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6>
-struct Instruction7 : public Instruction6<type0, type1, type2, type3, type4, type5>
+struct Instruction7 : Instruction6<type0, type1, type2, type3, type4, type5>
 {
     type6* _p6;
     NEXT_INSTRUCTION_METHOD()
 };
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6, class type7>
-struct Instruction8 : public Instruction7<type0, type1, type2, type3, type4, type5, type6>
+struct Instruction8 : Instruction7<type0, type1, type2, type3, type4, type5, type6>
 {
     type7* _p7;
     NEXT_INSTRUCTION_METHOD()
@@ -133,7 +133,7 @@ struct Instruction8 : public Instruction7<type0, type1, type2, type3, type4, typ
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6,
     class type7, class type8>
-struct Instruction9 : public Instruction8<type0, type1, type2, type3, type4, type5, type6, type7>
+struct Instruction9 : Instruction8<type0, type1, type2, type3, type4, type5, type6, type7>
 {
     type8* _p8;
     NEXT_INSTRUCTION_METHOD()
@@ -141,7 +141,7 @@ struct Instruction9 : public Instruction8<type0, type1, type2, type3, type4, typ
 
 template <class type0, class type1, class type2, class type3, class type4, class type5, class type6,
     class type7, class type8, class type9>
-struct Instruction10 : public Instruction9<type0, type1, type2, type3, type4, type5, type6, type7, type8>
+struct Instruction10 : Instruction9<type0, type1, type2, type3, type4, type5, type6, type7, type8>
 {
     type9* _p9;
     NEXT_INSTRUCTION_METHOD()

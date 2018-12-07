@@ -40,7 +40,7 @@ extern void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, Const
 extern void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, ConstCStr methodName);
 
 //------------------------------------------------------------
-struct PropertyNodeWriteParamBlock : public VarArgInstruction
+struct PropertyNodeWriteParamBlock : VarArgInstruction
 {
     _ParamDef(RefNumVal, refNum);
     _ParamDef(StringRef, propertyName);
