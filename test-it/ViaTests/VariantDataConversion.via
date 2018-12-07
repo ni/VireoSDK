@@ -1,5 +1,5 @@
 //VI Definition: Variant.via
-define(SubVI dv(.VirtualInstrument (
+define(TestVariantToData dv(.VirtualInstrument (
     Params:c(
         i(Variant myVar)
     )
@@ -14,13 +14,13 @@ define(SubVI dv(.VirtualInstrument (
         Copy(noError error)
         Copy(noError error2)
         VariantToData(myVar error myInt)
-        Printf("SubVI: myInt=%z, error=(%z %z)\n" myInt error.status error.code)
+        Printf("TestVariantToData: myInt=%z, error=(%z %z)\n" myInt error.status error.code)
         VariantToData(myVar error2 myStr)
-        Printf("SubVI: myStr=%z, error2=(%z %z)\n" myStr error2.status error2.code)
+        Printf("TestVariantToData: myStr=%z, error2=(%z %z)\n" myStr error2.status error2.code)
     )
 )))
 
-define(SubVI2 dv(.VirtualInstrument (
+define(TestDataToVariant dv(.VirtualInstrument (
     Locals: c(
         e(.Variant myVar)
         e(.Variant myVar2)
@@ -37,13 +37,13 @@ define(SubVI2 dv(.VirtualInstrument (
         DataToVariant(myInt myVar)
         DataToVariant(myVar myVar2)
         VariantToData(myVar2 error myVar3)
-        Printf("SubVI2: myVar3=%z, error=(%z %z)\n" myVar3 error.status error.code)
+        Printf("TestDataToVariant: myVar3=%z, error=(%z %z)\n" myVar3 error.status error.code)
         VariantToData(myVar3 error2 myInt2)
-        Printf("SubVI2: myInt2=%z, error2=(%z %z)\n" myInt2 error2.status error2.code)
+        Printf("TestDataToVariant: myInt2=%z, error2=(%z %z)\n" myInt2 error2.status error2.code)
     )
 )))
 
-define(SubVI3 dv(.VirtualInstrument (
+define(TestArrayOfVariants dv(.VirtualInstrument (
     Locals: c(
         e(.Variant myVar1)
         e(.Variant myVar2)
@@ -68,8 +68,8 @@ define(SubVI3 dv(.VirtualInstrument (
         ArrayIndex(myVarArray myVar2_out 1)
         VariantToData(myVar1_out error1 myInt1_out)
         VariantToData(myVar2_out error2 myInt2_out)
-        Printf("SubVI3: myVar1_out=%z, error=(%z %z) myInt1_out=%z\n" myVar1_out error1.status error1.code myInt1_out)
-        Printf("SubVI3: myVar2_out=%z, error2=(%z %z) myInt2_out=%z\n" myVar2_out error2.status error2.code myInt2_out)
+        Printf("TestArrayOfVariants: myVar1_out=%z, error=(%z %z) myInt1_out=%z\n" myVar1_out error1.status error1.code myInt1_out)
+        Printf("TestArrayOfVariants: myVar2_out=%z, error2=(%z %z) myInt2_out=%z\n" myVar2_out error2.status error2.code myInt2_out)
     )
 )))
 
@@ -94,10 +94,10 @@ define(videf1 dv(.VirtualInstrument (
     VariantToData(myVar2 error myInt3)
     Printf("myInt3=%z, error=(%z %z)\n" myInt3 error.status error.code)
 
-    SubVI(myVar)
-    SubVI(myVar2)
-    SubVI2()
-    SubVI3()
+    TestVariantToData(myVar)
+    TestVariantToData(myVar2)
+    TestDataToVariant()
+    TestArrayOfVariants()
 //--- end of vi
     )
 )))
