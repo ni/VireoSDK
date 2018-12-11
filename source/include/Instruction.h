@@ -45,6 +45,7 @@ typedef InstructionRef (VIVM_FASTCALL _PROGMEM *InstructionFunction) (Instructio
 struct InstructionCore
 {
     InstructionFunction  _function;
+    virtual ~InstructionCore() {}
 };
 
 // A non-nullptr faked allocation for two pass packed instruction

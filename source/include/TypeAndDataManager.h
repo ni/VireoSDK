@@ -1078,6 +1078,8 @@ class TypedArrayCore
     IntIndex* DimensionLengths()    { return _dimensionAndSlabLengths; }
     IntIndex* SlabLengths()         { return &_dimensionAndSlabLengths[0] + Rank(); }
 
+    virtual ~TypedArrayCore() {}
+
  protected:
     static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
     explicit TypedArrayCore(TypeRef type);
