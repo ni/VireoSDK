@@ -68,7 +68,7 @@ void VirtualInstrument::InitParamBlock()
     // Make sure VI is in its initial state
     for (Int32 i = 0; i < count; i++) {
         TypeRef eltType = viParamType->GetSubElement(i);
-        eltType->InitData(((AQBlock1*)pParamData) + eltType->ElementOffset());
+        eltType->InitData(pParamData + eltType->ElementOffset());
     }
 }
 //------------------------------------------------------------
@@ -85,7 +85,7 @@ void VirtualInstrument::ClearTopVIParamBlock()
     for (Int32 i = 0; i < count; i++) {
         TypeRef eltType = viParamType->GetSubElement(i);
         if (!eltType->IsFlat() &&  (eltType->IsInputParam() || eltType->IsOutputParam())) {
-            eltType->ClearData(((AQBlock1*)pParamData) + eltType->ElementOffset());
+            eltType->ClearData(pParamData + eltType->ElementOffset());
         }
     }
 }
@@ -266,7 +266,7 @@ void InstructionAllocator::Allocate(TypeManagerRef tm)
 {
     VIREO_ASSERT(_next == nullptr);
     if (_size) {
-        _next = (AQBlock1*) tm->Malloc(_size);
+        _next = static_cast<AQBlock1*>(tm->Malloc(_size));
     }
 }
 //------------------------------------------------------------
@@ -350,7 +350,7 @@ InstructionCore* ClumpParseState::AllocInstructionCore(Int32 argumentCount)
         _cia->AddRequest(size);
         return kFakedInstruction;
     } else {
-        instruction = (InstructionCore*)_cia->AllocateSlice(size);
+        instruction = static_cast<InstructionCore*>(_cia->AllocateSlice(size));
     }
 
     instruction->_function = nullptr;
@@ -378,7 +378,7 @@ InstructionCore* ClumpParseState::CreateInstruction(TypeRef instructionType, Int
         if (!_cia->IsCalculatePass()) {
             instructionType->InitData(&instruction->_function);
 
-            GenericInstruction *ginstruction = (GenericInstruction*)instruction;
+            GenericInstruction *ginstruction = static_cast<GenericInstruction*>(instruction);
             for (Int32 i = 0; i < argCount; i++) {
                 ginstruction->_args[i] = args[i];
             }
@@ -485,7 +485,7 @@ TypeRef ClumpParseState::StartNextOverload()
         _instructionPointerType = t;
         _instructionType = vi->Params()->ElementType();
     } else if (t && t->IsString()) {
-        StringRef *str = (StringRef*)t->Begin(kPARead);
+        StringRef *str = static_cast<StringRef*>(t->Begin(kPARead));
         if (str) {
             SubString ss = (*str)->MakeSubStringAlias();
             t = _clump->TheTypeManager()->FindTypeCore(&ss);
@@ -534,13 +534,13 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
 
             // Create an anonymous type const for the type resolved.
             DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), _actualArgumentType, false);
-            TypeRef* pDef = (TypeRef*)cdt->Begin(kPAInit);
+            TypeRef* pDef = static_cast<TypeRef*>(cdt->Begin(kPAInit));
             if (pDef) {
                 *pDef = type;
             }
             cdt = cdt->FinalizeDVT();
             if (needsAddress) {
-                *ppData = (AQBlock1*)cdt->Begin(kPARead);
+                *ppData = static_cast<AQBlock1*>(cdt->Begin(kPARead));
             }
         }
         return;
@@ -580,7 +580,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
     }
 
     // See if it is in the VI's locals or paramblock
-    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, (void**)ppData, false);
+    _actualArgumentType = _vi->GetVIElementAddressFromPath(argument, _vi, ppData, false);
     if (_actualArgumentType) {
         if ((_actualArgumentType->ElementUsageType() == kUsageTypeInput || _actualArgumentType->ElementUsageType() == kUsageTypeConst)
             && _formalParameterType->ElementUsageType() != kUsageTypeInput)
@@ -621,7 +621,7 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
         if (pathTail.Length()) {
             // If the top type is a cluster then the remainder is field name qualifier path.
             void* pDataStart = pData;
-            _actualArgumentType = _actualArgumentType->GetSubElementAddressFromPath(&pathTail, pDataStart, (void**)&pData, false);
+            _actualArgumentType = _actualArgumentType->GetSubElementAddressFromPath(&pathTail, pDataStart, &pData, false);
         }
         if (_actualArgumentType) {
             if (needsAddress) {
@@ -682,7 +682,7 @@ void ClumpParseState::InternalAddArg(TypeRef actualType, void* address)
 
     if (_varArgCount >= 0) {
         ++_varArgCount;
-        _argPointers[0] = (void*)intptr_t(_varArgCount);  // VargArgCount is always first argument; update
+        _argPointers[0] = reinterpret_cast<void*>(_varArgCount);  // VargArgCount is always first argument; update
     }
 }
 //------------------------------------------------------------
@@ -698,7 +698,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
     PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
     pPatch->_patchType = patchType;
     pPatch->_whereToPeek = IntIndex(whereToPeek);
-    InternalAddArg(nullptr, (void*)intptr_t(_patchInfoCount));
+    InternalAddArg(nullptr, reinterpret_cast<void*>(_patchInfoCount));
     ++_patchInfoCount;
 }
 //------------------------------------------------------------
@@ -790,7 +790,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
     // The primary instance of the actual VI will be the value of the type.
     // If its not reentrant then every caller uses that instance. If it is, then a copy needs to be made.
 
-    TypedArrayCoreRef* pObj = (TypedArrayCoreRef*) viType->Begin(kPARead);
+    TypedArrayCoreRef* pObj = static_cast<TypedArrayCoreRef*>(viType->Begin(kPARead));
     if ((*pObj)->Type()->IsA(_baseReentrantViType)  && !_cia->IsCalculatePass()) {
         // Each reentrant VI will be a copy of the original.
         // If it is the calculate pass skip this and the use the original for its type.
@@ -798,11 +798,11 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
 
         // Reentrant VI clones exist in TM the caller VI is in.
         DefaultValueType *cdt = DefaultValueType::New(tm, viType, false);
-        VirtualInstrumentObjectRef pVICopy = *(VirtualInstrumentObjectRef*)cdt->Begin(kPARead);
-        vi = (VirtualInstrument*)pVICopy->RawObj();
+        VirtualInstrumentObjectRef pVICopy = *(static_cast<VirtualInstrumentObjectRef*>(cdt->Begin(kPARead)));
+        vi = static_cast<VirtualInstrument*>(pVICopy->RawObj());
     } else {
         // Non reentrant VIs use the original type
-        vi = (VirtualInstrument*)(*pObj)->RawObj();
+        vi = static_cast<VirtualInstrument*>((*pObj)->RawObj());
     }
 
     if (vi != nullptr) {
@@ -826,7 +826,7 @@ Int32 ClumpParseState::AddSubSnippet()
 void ClumpParseState::BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction,
                                           Int32 argIndex)
 {
-    GenericInstruction *pInstruction = (GenericInstruction*) owningInstruction;
+    GenericInstruction *pInstruction = static_cast<GenericInstruction*>(owningInstruction);
 
     // For implicit next instructions the sub snippet will be where the "next" field points to
     // in packed instruction mode that means the instruction that immediately follows the current
@@ -834,7 +834,7 @@ void ClumpParseState::BeginEmitSubSnippet(ClumpParseState* subSnippet, Instructi
 
     InstructionCore** ppNext;
     if  (argIndex >= 0) {
-        ppNext = (InstructionCore**)&pInstruction->_args[argIndex];
+        ppNext = reinterpret_cast<InstructionCore**>(&pInstruction->_args[argIndex]);
     } else {
         // No place to patched (should be implicit next instruction)
         ppNext = nullptr;
@@ -915,7 +915,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     if (viArgCount >= kMaxArguments)
         return nullptr;
 
-    VIClump* targetVIClump = (VIClump*)_argPointers[0];
+    VIClump* targetVIClump = static_cast<VIClump*>(_argPointers[0]);
     if (viArgCount > 0) {
         memcpy(viArgPointers, &_argPointers[1], viArgCount * sizeof(size_t));
         memcpy(viArgTypes, &_argTypes[1], viArgCount * sizeof(size_t));
@@ -935,7 +935,7 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
     _instructionType = ReresolveInstruction(&opName);
 
     // Recurse now that the instruction is a simple one.
-    CallVIInstruction* callInstruction = (CallVIInstruction*)EmitInstruction();
+    CallVIInstruction* callInstruction = static_cast<CallVIInstruction*>(EmitInstruction());
 
     VirtualInstrument* vi = targetVIClump->OwningVI();
     TypedObjectRef viParamBlock = vi->Params();
@@ -1097,7 +1097,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
             if (type->IsStaticParam()) {
                 DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), type, true);
                 cdt = cdt->FinalizeDVT();
-                void* pData = (AQBlock1*)cdt->Begin(kPAReadWrite);  // * passed as a param means nullptr
+                void* pData = static_cast<AQBlock1*>(cdt->Begin(kPAReadWrite));  // * passed as a param means nullptr
                 InternalAddArg(type, pData);
             } else {
 //              foundMissing = true;
@@ -1131,7 +1131,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
         // Now that the instruction is built, if some of the arguments
         // still require patching (e.g. A branch to a forward perch)
         // add the _whereToPatch field.
-        GenericInstruction *generic = (GenericInstruction*) instruction;
+        GenericInstruction *generic = static_cast<GenericInstruction*>(instruction);
         for (Int32 i = 0; i < _argPatchCount; i++) {
             Int32 argNumToPatch = _argPatches[i];
             // PatchInfo object index was stashed in arg, look it up.
@@ -1203,7 +1203,7 @@ class VIDataProcsClass : public IDataProcs
         // First copy the basics, then fix up a few things.
         type->CopyData(pDataSource, pDataCopy);
 
-        VirtualInstrumentObjectRef vioCopy = *(VirtualInstrumentObjectRef*) pDataCopy;
+        VirtualInstrumentObjectRef vioCopy = *(static_cast<VirtualInstrumentObjectRef*>(pDataCopy));
         VirtualInstrument* viCopy = vioCopy->ObjBegin();
         VIClump *pClump = viCopy->Clumps()->Begin();
         VIClump *pClumpEnd = viCopy->Clumps()->End();
@@ -1219,7 +1219,7 @@ class VIDataProcsClass : public IDataProcs
         return kNIError_Success;
     }
     virtual NIError ClearData(TypeRef type, void* pData) {
-        VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pData;
+        VirtualInstrumentObjectRef vio = *(static_cast<VirtualInstrumentObjectRef*>(pData));
         if (nullptr == vio)
             return kNIError_Success;
 
@@ -1240,7 +1240,7 @@ class VIDataProcsClass : public IDataProcs
     }
     //------------------------------------------------------------
     virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic) {
-        VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*) pStart;
+        VirtualInstrumentObjectRef vio = *(static_cast<VirtualInstrumentObjectRef*>(pStart));
         VirtualInstrument* vi = vio->ObjBegin();
 
         // Check of Params and Locals alias'
@@ -1261,7 +1261,7 @@ class InstructionBlockDataProcsClass : public IDataProcs
     virtual NIError ClearData(TypeRef type, void* pData) {
         // All instructions for all clumps in a VI are stored in one
         // block of memory. The VI will free it.
-        *(void**)pData = nullptr;
+        *(static_cast<void**>(pData)) = nullptr;
         return kNIError_Success;
     }
 };
