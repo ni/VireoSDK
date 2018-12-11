@@ -1159,7 +1159,7 @@ class TypedArrayCore
 
  private:
     //! Resize the underlying block of memory. It DOES NOT update any dimension information. Returns true if success.
-    Boolean ResizeCapacity(IntIndex countAQ, IntIndex currentCapactiy, IntIndex newCapacity, Boolean reserveExists);
+    Boolean ResizeCapacity(IntIndex countAQ, IntIndex currentCapacity, IntIndex newCapacity, Boolean reserveExists);
 
  public:
     NIError Replace1D(IntIndex position, IntIndex count, const void* pSource, Boolean truncate);
