@@ -416,7 +416,7 @@ class DynamicEventRegInfo {
     // the same one storied in the EventSpec in the event structure configuration data.)
     Int32 DynamicEventMatchCore(TypeRef regRefType, void *pData, RefNum refnum, Int32 *dynIndexBase) {
         Int32 dynIndex = 0;
-        if (regRefType->IsRefnum() && pData && ((RefNumVal*)pData)->GetRefNum() == refnum) {
+        if (regRefType->IsRefnum() && pData && (static_cast<RefNumVal*>(pData)->GetRefNum() == refnum)) {
             dynIndex = *dynIndexBase;
             return dynIndex;
         } else if (regRefType->IsArray() && regRefType->Rank() == 1 && regRefType->GetSubElement(0)->IsRefnum()) {
@@ -430,7 +430,7 @@ class DynamicEventRegInfo {
                 ++aPtr;
             }
         } else if (regRefType->IsCluster()) {
-            AQBlock1 *refClustPtr = (AQBlock1*)pData;
+            AQBlock1 *refClustPtr = static_cast<AQBlock1*>(pData);
             AQBlock1 *eltPtr = refClustPtr;
             Int32 numElts = regRefType->SubElementCount();
             ++*dynIndexBase;  // the whole cluster counts as one, matching the rules for unbundler recursive indexes
@@ -803,13 +803,14 @@ static inline InstructionCore *ReturnRegForEventsFatalError(const char *errorMes
 LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, Int32 refInput, TypeRef refType, EventSource eSource,
                               EventType eventType, void *pData, void *pOldData) {
     LVError err = kLVError_NoError;
-    RefNumVal *refData = (RefNumVal*)pData;
+    RefNumVal *refData = static_cast<RefNumVal*>(pData);
     if (refType->IsRefnum()) {  // scalar refnum
         if (pOldData) {  // re-registration
             DynamicEventRegEntry &regEntry =  regInfo->_entry[refInput];
             if (refData && regEntry.refnumEntry.GetRefNum() == refData->GetRefNum())
                 return err;  // refnum is same as last time, no reason to unreg and rereg.
-            EventOracle::TheEventOracle().UnregisterForEvent(qID, eSource, eventType, kAppEventOracleIdx, ((RefNumVal*)pOldData)->GetRefNum());
+            EventOracle::TheEventOracle().UnregisterForEvent(
+                qID, eSource, eventType, kAppEventOracleIdx, static_cast<RefNumVal*>(pOldData)->GetRefNum());
             regEntry.refnumEntry.SetRefNum(refData ? refData->GetRefNum() : kNotARefNum);
         }
         if (refData && refData->GetRefNum())
@@ -836,14 +837,14 @@ LVError RegisterForEventsCore(EventQueueID qID, DynamicEventRegInfo *regInfo, In
         }
     } else if (refType->IsCluster()) {
         // Cluster of ... (recursive, can be scalar ref, array of scalar ref, or another cluster).
-        AQBlock1 *refClustPtr = (AQBlock1*)pData;
-        AQBlock1 *eltPtr = refClustPtr, *oldEltPtr = (AQBlock1*)pOldData;
+        AQBlock1 *refClustPtr = static_cast<AQBlock1*>(pData);
+        AQBlock1 *eltPtr = refClustPtr, *oldEltPtr = static_cast<AQBlock1*>(pOldData);
         Int32 numElts = refType->SubElementCount();
         for (Int32 j = 0; j < numElts; ++j) {
             TypeRef eltType = refType->GetSubElement(j);
             eltPtr = refClustPtr + eltType->ElementOffset();
             if (pOldData)
-                oldEltPtr = (AQBlock1*)pOldData + eltType->ElementOffset();
+                oldEltPtr = static_cast<AQBlock1*>(pOldData) + eltType->ElementOffset();
             // Recurse to handle subelements
             if ((err = RegisterForEventsCore(qID, regInfo, refInput, eltType, eSource, eventType, eltPtr, oldEltPtr)))
                 break;
@@ -931,7 +932,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
         void *pData = arguments[refInput].ref._pData;
         if (!refType->CompareType(regRefType)) {
             if (regRefType->BitEncoding() == kEncoding_RefNum && refType->BitEncoding() == kEncoding_S2CInt && refType->TopAQSize() == sizeof(Int32)) {
-                if (*(Int32*)pData == kNotARefNum) {  // special case: constant 0 allowed, treated as not-a-refnum
+                if (*(static_cast<Int32*>(pData)) == kNotARefNum) {  // special case: constant 0 allowed, treated as not-a-refnum
                     // TODO(spathiwa) - figure out what DFIR does/should generate for the generic not-a-refnum constant.
                     // Should there be a special refnum type for this in Vireo?  For now, allow '0' in via.
                     pData = nullptr;
@@ -944,7 +945,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
         void *pDataCopy = pData;
         if (!isRereg) {
             if (regRefType->IsRefnum()) {
-                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, *(RefNumVal*)pData));
+                regInfo->_entry.push_back(DynamicEventRegEntry(eSource, eventType, *(static_cast<RefNumVal*>(pData))));
             } else {  // clusters and arrays make a deep copy of the data in case it changes
                 Int32 topSize = regRefType->TopAQSize();
                 pDataCopy = THREAD_TADM()->Malloc(topSize);
@@ -1014,7 +1015,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
         THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Invalid Event Struct event registration ref type");
         return THREAD_EXEC()->Stop();
     }
-    RefNumVal* eventRegRefnumPtr = (RefNumVal*)(regRefArg[0]._pData);
+    RefNumVal* eventRegRefnumPtr = static_cast<RefNumVal*>(regRefArg[0]._pData);
 
     Int32 eventStructIndex = _Param(eventStructIndex);
     const Int32 numberOfFixedArgs = 4;
@@ -1117,8 +1118,8 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                         // User Event use the same cluster type which defined the user event to be to fire it and
                         // as a data element after the common portion (without inlining its fields).
                         TypeRef destElemType = esEventDataNodeType->GetSubElement(destElementIndex);
-                        eventData.eventDataType->CopyData((AQBlock1*)eventData.pEventData,
-                                                          (AQBlock1*)esEventDataNode + destElemType->ElementOffset());
+                        eventData.eventDataType->CopyData(static_cast<AQBlock1*>(eventData.pEventData),
+                                                          static_cast<AQBlock1*>(esEventDataNode) + destElemType->ElementOffset());
                     } else {
                         // Loop through all elements in the destination event data cluster, and look for the matching
                         // source element in the fired event data.  We need to copy one element at a time because the
@@ -1139,8 +1140,8 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                                 const SubString sourceElemName = sourceElemType->ElementName();
                                 if (destElemType->IsA(sourceElemType) && destElemType->ElementName().Compare(&sourceElemName)) {
                                     // Both type and element name must match.  On match, copy the element and move to next dest.
-                                    destElemType->CopyData((AQBlock1*)eventData.pEventData + sourceElemType->ElementOffset(),
-                                                           (AQBlock1*)esEventDataNode + destOffset);
+                                    destElemType->CopyData(static_cast<AQBlock1*>(eventData.pEventData) + sourceElemType->ElementOffset(),
+                                                           static_cast<AQBlock1*>(esEventDataNode) + destOffset);
                                     break;
                                 }
                             }

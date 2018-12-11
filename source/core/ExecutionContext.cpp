@@ -60,7 +60,7 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
     VIClump *callerClump = runningQueueElt->_caller;
     if (callerClump) {
         // The return instruction will be the CallInstruction.
-        CallVIInstruction *pCallInstruction = (CallVIInstruction*)callerClump->_savePc;
+        CallVIInstruction *pCallInstruction = static_cast<CallVIInstruction*>(callerClump->_savePc);
         VIREO_ASSERT(pCallInstruction != nullptr)
 
         InstructionCore* pCopyOut = pCallInstruction->_piCopyOutSnippet;
@@ -238,7 +238,7 @@ void AppendCallChainString(StringRef stringRef)
     VirtualInstrument* vi = runningQueueElt->OwningVI();
     TypeManagerRef typeManager = vi->TheTypeManager();
     TypeRef itemType = typeManager->FindType(tsStringArrayType);
-    StringRefArray1D* callChain = (StringRefArray1D*)StringRefArray1D::New(itemType);
+    StringRefArray1D* callChain = static_cast<StringRefArray1D*>(StringRefArray1D::New(itemType));
     GetCallChainArray(callChain);
     for (int i = 0; i < callChain->Length() - 1; i++) {
         stringRef->AppendStringRef(*callChain->BeginAt(i));
@@ -263,7 +263,7 @@ ExecutionContext::ExecutionContext()
         _culDeSac._function = (InstructionFunction) CulDeSac;
     }
     _breakoutCount = 0;
-    _runningQueueElt = (VIClump*) nullptr;
+    _runningQueueElt = static_cast<VIClump*>(nullptr);
     _timer._observerList = nullptr;
 }
 //------------------------------------------------------------
@@ -315,7 +315,7 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
         do {
 #if VIREO_DEBUG_EXEC_PRINT_INSTRS
             SubString cName;
-            THREAD_TADM()->FindCustomPointerTypeFromValue((void*)currentInstruction->_function, &cName);
+            THREAD_TADM()->FindCustomPointerTypeFromValue(static_cast<void*>(currentInstruction->_function), &cName);
             gPlatform.IO.Printf("Exec: %s\n", cName.Begin());
             currentInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
 #else
