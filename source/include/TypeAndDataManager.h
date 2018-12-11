@@ -910,7 +910,7 @@ class ArrayType : public WrappedType
     virtual TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
     virtual SubString Name()                            { return SubString("Array"); }
-    IntDim* DimensionLengths()					        { return &_dimensionLengths[0]; }
+    IntDim* DimensionLengths()                          { return &_dimensionLengths[0]; }
 
     virtual void*   Begin(PointerAccessEnum mode);
     virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
