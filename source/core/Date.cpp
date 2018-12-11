@@ -277,7 +277,7 @@ namespace Vireo {
             if (*timeZoneString != nullptr) {
                 free(*timeZoneString);
             }
-            *timeZoneString = (char *)malloc(strlen(timeZoneAbbr)+1);
+            *timeZoneString = static_cast<char *>(malloc(strlen(timeZoneAbbr) + 1));
             strncpy(*timeZoneString, timeZoneAbbr, strlen(timeZoneAbbr)+1);
         }
     }
@@ -301,7 +301,7 @@ namespace Vireo {
             gmtime_r(&time, &tm);
         else
             localtime_r(&time, &tm);
-        _timeZoneOffset = int(isUTC ? 0 : tm.tm_gmtoff);
+        _timeZoneOffset = static_cast<int>(isUTC ? 0 : tm.tm_gmtoff);
         _secondsOfYear = 0;
         _year = tm.tm_year + 1900;
         _month = tm.tm_mon;
@@ -317,7 +317,7 @@ namespace Vireo {
         const char *tz = isUTC ? "UTC" : tm.tm_zone;
         _daylightSavingTime = tm.tm_isdst;
         if (tm.tm_zone) {
-            _timeZoneString = (char *)malloc(strlen(tz)+1);
+            _timeZoneString = static_cast<char *>(malloc(strlen(tz) + 1));
             strncpy(_timeZoneString, tm.tm_zone, strlen(tz)+1);
         } else {
             _timeZoneString = nullptr;
@@ -349,7 +349,7 @@ namespace Vireo {
         struct tm tm;
         time_t timeVal = utcTime - kStdDT1970re1904;
         localtime_r(&timeVal, &tm);
-        _systemLocaleTimeZone = int(tm.tm_gmtoff);
+        _systemLocaleTimeZone = static_cast<int>(tm.tm_gmtoff);
 #else
         _systemLocaleTimeZone = GetTimeZoneOffsetSeconds(utcTime);
 #endif
