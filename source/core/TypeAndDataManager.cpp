@@ -2403,19 +2403,19 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     return bOK;
 }
 //------------------------------------------------------------
-Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapactiy, IntIndex newCapacity, Boolean reserveExists)
+Boolean TypedArrayCore::ResizeCapacity(IntIndex countAQ, IntIndex currentCapacity, IntIndex newCapacity, Boolean reserveExists)
 {
     // Resize the underlying block of bytes as needed.
 
     Boolean bOK = true;
-    if (newCapacity < currentCapactiy) {
+    if (newCapacity < currentCapacity) {
         // Shrinking
         VIREO_ASSERT(_pRawBufferBegin!= nullptr);
         bOK = AQRealloc(countAQ, countAQ);
-    } else if (newCapacity > currentCapactiy) {
+    } else if (newCapacity > currentCapacity) {
         // Growing
         Int32 eltSize = _eltTypeRef->TopAQSize();
-        bOK = AQRealloc(countAQ, (eltSize * currentCapactiy));
+        bOK = AQRealloc(countAQ, (eltSize * currentCapacity));
     }
     _capacity = reserveExists ? -newCapacity :  newCapacity;
     return bOK;
