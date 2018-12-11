@@ -267,7 +267,7 @@ VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const Ty
 }
 void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
 {
-    arrayTypeNameBuffer->Append(arrayTypeName.Length(), (Utf8Char*)arrayTypeName.Begin());
+    arrayTypeNameBuffer->Append(arrayTypeName.Length(), static_cast<const Utf8Char*>(arrayTypeName.Begin()));
     arrayTypeNameBuffer->Append((Utf8Char)'\0');
 }
 
@@ -294,7 +294,7 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
     if (typeRef->Rank() != rank)
         return kEggShellResult_MismatchedArrayRank;
 
-    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    TypedArrayCoreRef arrayObject = *(static_cast<const TypedArrayCoreRef*>(pData));
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
 
     if (!arrayObject->ResizeDimensions(rank, dimensionLengths, true, false)) {
@@ -319,7 +319,7 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject)
 // This function returns the start address of where elements would appear in memory (returns address even if length zero)
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
 {
-    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    TypedArrayCoreRef arrayObject = *(static_cast<const TypedArrayCoreRef*>(pData));
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     return arrayObject->BeginAt(0);
 }
@@ -328,7 +328,7 @@ VIREO_EXPORT void* Data_GetArrayBegin(const void* pData)
 //! Caller is expected to allocate an array dimensions of size array rank for the duration of function invocation.
 VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[])
 {
-    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    TypedArrayCoreRef arrayObject = *(static_cast<const TypedArrayCoreRef*>(pData));
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     for (int i = 0; i < arrayObject->Rank(); i++) {
         dimensionsLengths[i] = arrayObject->GetLength(i);
@@ -338,7 +338,7 @@ VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensions
 //! Get the total length for an array
 VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData)
 {
-    TypedArrayCoreRef arrayObject = *(TypedArrayCoreRef*)pData;
+    TypedArrayCoreRef arrayObject = *(static_cast<const TypedArrayCoreRef*>(pData));
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
     return arrayObject->Length();
 }

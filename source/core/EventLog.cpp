@@ -78,7 +78,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
 
     Int32 length;
     if (lineNumber > 0) {
-        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", (int)lineNumber, preamble, message);
+        length = snprintf(buffer, sizeof(buffer), "(Line %d %s \"%s.\")\n", static_cast<int>(lineNumber), preamble, message);
     } else {
         length = snprintf(buffer, sizeof(buffer), "(%s \"%s.\")\n", preamble, message);
     }
