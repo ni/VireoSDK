@@ -305,7 +305,7 @@ var assignCoreHelpers;
         };
 
         Module.coreHelpers.formatMessageWithException = function (messageText, exception) {
-            if (exception !== undefined && typeof exception.message === 'string' && exception.message.length !== 0) {
+            if (exception !== undefined && exception !== null && typeof exception.message === 'string' && exception.message.length !== 0) {
                 return messageText + ', Additional information: ' + exception.message;
             }
 
@@ -314,7 +314,7 @@ var assignCoreHelpers;
 
         Module.coreHelpers.createSourceFromMessage = function (additionalInformation) {
             if (typeof additionalInformation === 'string' && additionalInformation.length !== 0) {
-                return '<APPEND>\n' + additionalInformation;
+                return `<APPEND>\n${additionalInformation}`;
             }
 
             return '';

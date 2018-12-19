@@ -32,13 +32,11 @@ var assignJavaScriptInvoke;
             MESSAGE: 'Return type mismatch. Verify the return type in the JavaScript Library Interface matches the return type in the external JavaScript function.'
         },
 
-        // TODO needs review and to be added to error code database
         kNIUnableToHandlePromise: {
             CODE: 44307,
             MESSAGE: 'Unable to use Promise. Verify that the getCompletionCallback API function is not used in the external JavaScript function with a Promise return value.'
         },
 
-        // TODO needs review and to be added to error code database
         kNIUnableToAcceptReturnValueDuringAsync: {
             CODE: 44308,
             MESSAGE: 'Unable to set return value after call to getCompletionCallback API function. Verify return value is provided to the completion callback and not returned.'
@@ -325,10 +323,10 @@ var assignJavaScriptInvoke;
             var completionCallback = function (returnValue) {
                 // The following checks are not LabVIEW errors because they may happen after JavaScriptInvoke completion finishes if user holds reference
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.FULFILLED) {
-                    throw new Error('The completion callback was invoked more than once for ' + functionName + '.');
+                    throw new Error(`The completion callback was invoked more than once for ${functionName}.`);
                 }
                 if (completionCallbackStatus.invocationState === completionCallbackInvocationEnum.REJECTED) {
-                    throw new Error('The call to ' + functionName + ' threw an error, so this callback cannot be invoked.');
+                    throw new Error(`The call to ${functionName} threw an error, so this callback cannot be invoked.`);
                 }
 
                 if (hasExecutionError(returnValue)) {
@@ -349,10 +347,10 @@ var assignJavaScriptInvoke;
             api.getCompletionCallback = function () {
                 // The following checks are not LabVIEW errors because they may happen after JavaScriptInvoke completion finishes if user holds reference
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
-                    throw new Error('The completion callback was retrieved more than once for ' + functionName + '.');
+                    throw new Error(`The completion callback was retrieved more than once for ${functionName}.`);
                 }
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.UNRETRIEVABLE) {
-                    throw new Error('The API being accessed for ' + functionName + ' is not valid anymore.');
+                    throw new Error(`The API being accessed for ${functionName} is not valid anymore.`);
                 }
                 completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.RETRIEVED;
                 return generateCompletionCallback(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
@@ -374,10 +372,10 @@ var assignJavaScriptInvoke;
         publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
             Object.keys(functionsToAdd).forEach(function (name) {
                 if (internalFunctionsMap.has(name)) {
-                    throw new Error('Internal function already registered for name:' + name);
+                    throw new Error(`Internal function already registered for name:${name}`);
                 }
                 if (typeof functionsToAdd[name] !== 'function') {
-                    throw new Error('Cannot add non-function ' + name + ' as a function.');
+                    throw new Error(`Cannot add non-function ${name} as a function.`);
                 }
                 internalFunctionsMap.set(name, functionsToAdd[name]);
             });
@@ -411,7 +409,7 @@ var assignJavaScriptInvoke;
             var context = functionAndContext.context;
             if (functionToCall === undefined) {
                 if (isInternalFunction) {
-                    throw new Error('Unable to find internal JS function: ' + functionName);
+                    throw new Error(`Unable to find internal JS function: ${functionName}`);
                 }
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke);
                 Module.eggShell.setOccurrence(occurrencePointer);
