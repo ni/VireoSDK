@@ -151,6 +151,7 @@ describe('A JavaScript function invoke', function () {
 
     describe('can start an async task and error synchronously', function () {
         beforeEach(function () {
+            spyOn(console, 'error');
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -166,6 +167,8 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/Failed to run sync/);
                 expect(viPathParser('return')).toBe(0);
+                expect(console.error.calls.count()).toBe(1);
+                expect(console.error.calls.argsFor(0)).toMatch(/Failed to run sync/);
             };
         });
         it('using the completion callback', async function () {
@@ -180,6 +183,7 @@ describe('A JavaScript function invoke', function () {
 
     describe('can start an async task and error as a microtask', function () {
         beforeEach(function () {
+            spyOn(console, 'error');
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -195,6 +199,8 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/Failed to run microtask/);
                 expect(viPathParser('return')).toBe(0);
+                expect(console.error.calls.count()).toBe(1);
+                expect(console.error.calls.argsFor(0)).toMatch(/Failed to run microtask/);
             };
         });
         it('using the completion callback', async function () {
@@ -216,6 +222,7 @@ describe('A JavaScript function invoke', function () {
 
     describe('can start an async task and error as a new task', function () {
         beforeEach(function () {
+            spyOn(console, 'error');
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -231,6 +238,8 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/Failed to run new task/);
                 expect(viPathParser('return')).toBe(0);
+                expect(console.error.calls.count()).toBe(1);
+                expect(console.error.calls.argsFor(0)).toMatch(/Failed to run new task/);
             };
         });
         it('using the completion callback', async function () {
@@ -622,6 +631,7 @@ describe('A JavaScript function invoke', function () {
         var jsapiStale;
         beforeEach(function () {
             jsapiStale = undefined;
+            spyOn(console, 'error');
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -638,6 +648,8 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.source')).toMatch(/This function is a failure!/);
                 expect(viPathParser('return')).toBe(0);
                 expect(jsapiStale.getCompletionCallback).toThrowError(/not valid anymore/);
+                expect(console.error.calls.count()).toBe(1);
+                expect(console.error.calls.argsFor(0)).toMatch(/This function is a failure!/);
             };
         });
         it('using the synchronous functions', async function () {
@@ -660,6 +672,7 @@ describe('A JavaScript function invoke', function () {
         var completionCallbackStale;
         beforeEach(function () {
             completionCallbackStale = undefined;
+            spyOn(console, 'error');
             test = async function () {
                 var viName = 'SingleFunction';
                 var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
@@ -676,6 +689,8 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.source')).toMatch(/Your function errored before completion callback!/);
                 expect(viPathParser('return')).toBe(0);
                 expect(completionCallbackStale).toThrowError(/callback cannot be invoked/);
+                expect(console.error.calls.count()).toBe(1);
+                expect(console.error.calls.argsFor(0)).toMatch(/Your function errored before completion callback!/);
             };
         });
         it('using the completion callback', async function () {

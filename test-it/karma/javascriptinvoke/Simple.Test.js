@@ -153,17 +153,25 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('errors when function throws an exception', function (done) {
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsFunctionThatThrowsViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+    describe('logs error', function () {
+        beforeEach(function () {
+            spyOn(console, 'error');
+        });
 
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(viPathParser('error.status')).toBeTrue();
-            expect([kNIUnableToInvokeAJavaScriptFunction]).toContain(viPathParser('error.code'));
-            expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
-            done();
+        it('errors when function throws an exception', function (done) {
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsFunctionThatThrowsViaUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+            runSlicesAsync(function (rawPrint, rawPrintError) {
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect([kNIUnableToInvokeAJavaScriptFunction]).toContain(viPathParser('error.code'));
+                expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
+                expect(console.error.calls.count()).toBe(1);
+                expect(console.error.calls.argsFor(0)).toMatch(/This function throws/);
+                done();
+            });
         });
     });
 
