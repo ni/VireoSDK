@@ -13,7 +13,8 @@ SDG
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
 #include "TDCodecVia.h"  // for TDViaFormatter
-#include <math.h>
+#include <cmath>
+#include <utility>
 #include <limits>
 #if defined(VIREO_INSTRUCTION_REFLECTION)
 #include <map>

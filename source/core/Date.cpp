@@ -15,11 +15,11 @@ SDG
 #include "TDCodecVia.h"
 #include "Date.h"
 
-#include <stdio.h>
+#include <cstdio>
 #if defined(VIREO_DATE_TIME_STDLIB)
 #if kVireoOS_windows
     #include <windows.h>
-    #include <time.h>
+    #include <ctime>
 #else
     #include <time.h>
     #include <sys/time.h>
@@ -38,7 +38,7 @@ SDG
     #include <pthread.h>
     #include <time.h>
     #include <mach/mach_time.h>
-#elif (kVireoOS_linuxU)
+#elif kVireoOS_linuxU
     #undef _BSD_SOURCE
     #define _BSD_SOURCE
     #include <pthread.h>

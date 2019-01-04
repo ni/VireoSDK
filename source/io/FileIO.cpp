@@ -40,7 +40,8 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <stdio.h>
+#include <utility>
+#include <cstdio>
 
 namespace Vireo {
 

@@ -13,12 +13,12 @@ SDG
 #include "BuildConfig.h"
 #include "Thread.h"
 
-#if (kVireoOS_windows)
+#if defined(kVireoOS_windows)
     #define NOMINMAX
     #include <Windows.h>
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+#elif defined(kVireoOS_linuxU || kVireoOS_macosxU)
     #include <pthread.h>
-#elif kVireoOS_emscripten
+#elif defined(kVireoOS_emscripten)
     #include <emscripten.h>
 #endif
 
@@ -45,13 +45,13 @@ bool CompareAndSwapUInt32(volatile UInt32 *ptr, UInt32 new_value, UInt32 old_val
 //------------------------------------------------------------
 Mutex::Mutex()
 {
-#if (kVireoOS_windows)
+#if defined(kVireoOS_windows)
 
     HANDLE hdl;
     hdl = ::CreateMutex(nullptr, false, nullptr);
     _nativeMutex = reinterpret_cast<void*>(hdl);
 
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)Ï
+#elif defined(kVireoOS_linuxU || kVireoOS_macosxU)Ï
 
     pthread_mutex_t *pmtx = new pthread_mutex_t;
     pthread_mutexattr_t attr;
@@ -66,11 +66,11 @@ Mutex::Mutex()
 //------------------------------------------------------------
 Mutex::~Mutex()
 {
-#if (kVireoOS_windows)
+#if defined(kVireoOS_windows)
 
     ::CloseHandle((HANDLE)_nativeMutex);
 
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+#elif defined(kVireoOS_linuxU || kVireoOS_macosxU)
 
     pthread_mutex_destroy(reinterpret_cast<pthread_mutex_t*>(_nativeMutex));
     delete reinterpret_cast<pthread_mutex_t*>(_nativeMutex);
@@ -80,11 +80,11 @@ Mutex::~Mutex()
 //------------------------------------------------------------
 void Mutex::Acquire()
 {
-#if (kVireoOS_windows)
+#if defined(kVireoOS_windows)
 
     ::WaitForSingleObject((HANDLE)_nativeMutex, INFINITE);
 
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+#elif defined(kVireoOS_linuxU || kVireoOS_macosxU)
 
     if (_nativeMutex)
         pthread_mutex_lock(reinterpret_cast<pthread_mutex_t*>(_nativeMutex));
@@ -94,11 +94,11 @@ void Mutex::Acquire()
 //------------------------------------------------------------
 void Mutex::Release()
 {
-#if (kVireoOS_windows)
+#if defined(kVireoOS_windows)
 
     ::ReleaseMutex((HANDLE)_nativeMutex);
 
-#elif (kVireoOS_linuxU || kVireoOS_macosxU)
+#elif defined(kVireoOS_linuxU || kVireoOS_macosxU)
 
     if (_nativeMutex)
         pthread_mutex_unlock(reinterpret_cast<pthread_mutex_t*>(_nativeMutex));
