@@ -186,7 +186,7 @@ SDG
     #endif
 
 //------------------------------------------------------------
-#elif defined (__APPLE__)
+#elif defined(__APPLE__)
     #define kVireoOS_macosxU 1
     #define VIREO_DATE_TIME_STDLIB
 
@@ -195,10 +195,10 @@ SDG
     #endif
 
 //------------------------------------------------------------
-#elif defined (__OS_ANDROID__)
+#elif defined(__OS_ANDROID__)
     #define VIREO_DATE_TIME_STDLIB
 
-#elif (kVireoOS_windows)
+#elif defined(kVireoOS_windows)
 #ifdef _MSC_VER
 #define _USE_MATH_DEFINES   // needed for cmath for constants such as M_PI
 #if (_MSC_VER < 1900)
@@ -220,7 +220,7 @@ SDG
 #elif kVireoOS_linuxU
     #define VIREO_DATE_TIME_STDLIB
 
-#elif defined (kVireoOS_emscripten)
+#elif defined(kVireoOS_emscripten)
     #include <emscripten.h>
     #define VIREO_DATE_TIME_STDLIB
     #undef VIREO_EXPORT

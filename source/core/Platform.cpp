@@ -12,9 +12,9 @@
 
 #include "Platform.h"
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdarg>
+#include <cstdio>
 
 #include "TypeAndDataManager.h"
 
@@ -26,7 +26,7 @@
   #include <time.h>
   #include <mach/mach_time.h>
   #include <unistd.h>
-#elif (kVireoOS_linuxU)
+#elif kVireoOS_linuxU
   #include <pthread.h>
   #include <time.h>
   #include <unistd.h>
@@ -363,28 +363,28 @@ PlatformTickType PlatformTimer::TickCount()
     GetSystemTimeAsFileTime(&now);
     return now.dwLowDateTime;
 
-#elif (kVireoOS_macosxU)
+#elif defined(kVireoOS_macosxU)
 
     return mach_absolute_time();
 
-#elif (kVireoOS_wiring)
+#elif defined(kVireoOS_wiring)
 
     return micros();
 
-#elif (kVireoOS_linuxU)
+#elif defined(kVireoOS_linuxU)
 
     timespec time;
     clock_gettime(CLOCK_MONOTONIC, &time);
     return ((Int64)time.tv_sec * 1000000000) + (Int64)time.tv_nsec;
 
-#elif (kVireoOS_emscripten)
+#elif defined(kVireoOS_emscripten)
 
     // On modern browsers emscripten_get_now(), uses performance.now,
     // which returns sub milliseconds on the fractional part of the double that is returned.
     // Multiplying by a 1000 to get microseconds accuracy, before casting to PlatformTickType
     return (PlatformTickType) (emscripten_get_now() * 1000);
 
-#elif (kVireoOS_ZynqARM)
+#elif defined(kVireoOS_ZynqARM)
 
     // Hard coded to the max Zynq7000 clock rate for now.
     // the clock register is only 32 bits so it can wrap around
@@ -425,7 +425,7 @@ PlatformTickType PlatformTimer::TickCount()
     lastScuTickCount = scuTickCount;
     return TickCount;
 
-#elif defined (VIREO_EMBEDDED_EXPERIMENT)
+#elif defined(VIREO_EMBEDDED_EXPERIMENT)
     // #error MicroSecondCount not defined
     return gTickCount;
 #else
@@ -451,7 +451,7 @@ PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
     // Windows filetime base tick count is 100ns
     return microseconds * 10;
 
-#elif (kVireoOS_macosxU)
+#elif defined(kVireoOS_macosxU)
 
     // Scaling according to the kernel parameters.
     static mach_timebase_info_data_t sTimebaseInfo = { 0, 0 };
@@ -460,27 +460,27 @@ PlatformTickType PlatformTimer::MicrosecondsToTickCount(Int64 microseconds)
     }
     return (microseconds * 1000) * sTimebaseInfo.denom / sTimebaseInfo.numer;
 
-#elif (kVireoOS_wiring)
+#elif defined(kVireoOS_wiring)
 
     // tick count is microseconds for arduino's wiring
     return ticks;
 
-#elif (kVireoOS_linuxU)
+#elif defined(kVireoOS_linuxU)
 
     // tick count is nanoseconds for linux
     return microseconds * 1000;
 
-#elif (kVireoOS_emscripten)
+#elif defined(kVireoOS_emscripten)
 
     // Tick count is already in microseconds
     return microseconds;
 
-#elif (kVireoOS_ZynqARM)
+#elif defined(kVireoOS_ZynqARM)
 
     // Still experimental.
     return microseconds * 333333 / 10000;
 
-#elif defined (VIREO_EMBEDDED_EXPERIMENT)
+#elif defined(VIREO_EMBEDDED_EXPERIMENT)
 
     return microseconds / 1000;
 
@@ -502,7 +502,7 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
     // Windows filetime base tick count is 100ns
     return ticks / 10;
 
-#elif (kVireoOS_macosxU)
+#elif defined(kVireoOS_macosxU)
 
     // Get scale factor used to convert to nanoseconds
     static mach_timebase_info_data_t sTimebaseInfo = { 0, 0 };
@@ -511,27 +511,27 @@ Int64 PlatformTimer::TickCountToMicroseconds(PlatformTickType ticks)
     }
     return (ticks * sTimebaseInfo.numer / sTimebaseInfo.denom) / 1000;
 
-#elif (kVireoOS_wiring)
+#elif defined(kVireoOS_wiring)
 
     // tick count is microseconds for arduino's wiring
     return ticks;
 
-#elif (kVireoOS_linuxU)
+#elif defined(kVireoOS_linuxU)
 
     // tick count is nanoseconds for linux
     return ticks / 1000;
 
-#elif (kVireoOS_emscripten)
+#elif defined(kVireoOS_emscripten)
 
     // Tick count is already in microseconds
     return ticks;
 
-#elif (kVireoOS_ZynqARM)
+#elif defined(kVireoOS_ZynqARM)
 
     // Still experimental.
     return ticks * 10000 / 333333;
 
-#elif defined (VIREO_EMBEDDED_EXPERIMENT)
+#elif defined(VIREO_EMBEDDED_EXPERIMENT)
 
     return ticks * 1000;
 

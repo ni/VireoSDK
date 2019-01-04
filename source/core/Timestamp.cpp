@@ -16,8 +16,8 @@ SDG
 #include "TDCodecVia.h"
 #include "ExecutionContext.h"
 
-#include <math.h> /* fabs */
-#include <float.h> /* DBL_EPSILON */
+#include <cmath> /* fabs */
+#include <cfloat> /* DBL_EPSILON */
 
 #if defined(VIREO_DATE_TIME_STDLIB)
 #if kVireoOS_windows
@@ -33,7 +33,7 @@ SDG
     #include <tickLib.h>
 #endif
 
-#if (kVireoOS_windows)
+#if kVireoOS_windows)
     #define NOMINMAX
     #include <windows.h>
 #elif kVireoOS_macosxU
@@ -41,7 +41,7 @@ SDG
     #include <pthread.h>
     #include <time.h>
     #include <mach/mach_time.h>
-#elif (kVireoOS_linuxU)
+#elif kVireoOS_linuxU)
     #undef _BSD_SOURCE
     #define _BSD_SOURCE
     #include <pthread.h>
