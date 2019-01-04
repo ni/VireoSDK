@@ -16,7 +16,7 @@ SDG
 #if defined(kVireoOS_windows)
     #define NOMINMAX
     #include <Windows.h>
-#elif defined(kVireoOS_linuxU || kVireoOS_macosxU)
+#elif defined(kVireoOS_linuxU) || defined(kVireoOS_macosxU)
     #include <pthread.h>
 #elif defined(kVireoOS_emscripten)
     #include <emscripten.h>

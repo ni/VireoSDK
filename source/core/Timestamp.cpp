@@ -33,7 +33,7 @@ SDG
     #include <tickLib.h>
 #endif
 
-#if kVireoOS_windows)
+#if kVireoOS_windows
     #define NOMINMAX
     #include <windows.h>
 #elif kVireoOS_macosxU
@@ -41,7 +41,7 @@ SDG
     #include <pthread.h>
     #include <time.h>
     #include <mach/mach_time.h>
-#elif kVireoOS_linuxU)
+#elif kVireoOS_linuxU
     #undef _BSD_SOURCE
     #define _BSD_SOURCE
     #include <pthread.h>
