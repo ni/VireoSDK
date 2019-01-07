@@ -119,7 +119,7 @@ static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)  // NOLINT(
     s = str;
     se = s + n;
     p = pat->Begin();
-    for (lastP = 0; s < se; regChar ? (*p++ = mChr, *p++ = c) : 0) {
+    for (lastP = nullptr; s < se; regChar ? (*p++ = mChr, *p++ = c) : 0) {
         Int32 charLen = SubString::CharLength(s);
         regChar = false;
         if (charLen > 1) {
@@ -143,25 +143,25 @@ static Int32 MakePat(Int32 len, const Utf8Char *str, StringRef &pat)  // NOLINT(
                 *p++ = mAny;
                 break;
             case '*':
-                if (lastP == 0) {
+                if (lastP == nullptr) {
                     regChar = true; continue;
                 }
                 *lastP |= mStar;
-                lastP = 0;
+                lastP = nullptr;
                 break;
             case '+':
-                if (lastP == 0) {
+                if (lastP == nullptr) {
                     regChar = true; continue;
                 }
                 *lastP |= mPlus;
-                lastP = 0;
+                lastP = nullptr;
                 break;
             case '?':
-                if (lastP == 0) {
+                if (lastP == nullptr) {
                     regChar = true; continue;
                 }
                 *lastP |= mCond;
-                lastP = 0;
+                lastP = nullptr;
                 break;
             case '$':
                 if (s < se) {
@@ -265,23 +265,23 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
     for (;;) {
         switch (*p++) {
             case mEOF:
-                return s > se ? 0 : s;
+                return s > se ? nullptr : s;
             case mChr:
                 if (s >= se || *s++ != *p++)
-                    return 0;
+                    return nullptr;
                 continue;
             case mAny:
                 if (s >= se)
-                    return 0;
+                    return nullptr;
                 s++;
                 continue;
             case mEOS:
                 if (s != se)
-                    return 0;
+                    return nullptr;
                 continue;
             case mCCL:
                 if (s >= se || !InSet(*s++, p + 1, p + *p))
-                    return 0;
+                    return nullptr;
                 p += *p;
                 continue;
             case mAny | mStar:
@@ -309,7 +309,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
                 while (s < se && *s == *p)
                     s++;
                 if (s == sSave)
-                    return 0;
+                    return nullptr;
                 sSave++;
                 p++;
                 break;
@@ -318,7 +318,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
                 while (s < se && InSet(*s, p + 1, p + *p))
                     s++;
                 if (s == sSave)
-                    return 0;
+                    return nullptr;
                 sSave++;
                 p += *p;
                 break;
@@ -339,7 +339,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
                 p += *p;
                 break;
             default:
-                return 0;
+                return nullptr;
         }
     // starloop:
         for (; s >= sSave; s--) {
@@ -347,7 +347,7 @@ static const Utf8Char *AMatch(const UInt8 *p, const Utf8Char* s, const Utf8Char 
             if (t)
                 return t;
         }
-        return 0;
+        return nullptr;
     }
 }
 
