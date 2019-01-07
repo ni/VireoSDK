@@ -421,6 +421,7 @@ class InlineArray
 class TypeVisitor
 {
  public:
+    virtual ~TypeVisitor() = default;
     virtual void VisitBad(TypeRef type) = 0;
     virtual void VisitBitBlock(BitBlockType* type) = 0;
     virtual void VisitBitCluster(BitClusterType* type) = 0;
@@ -826,6 +827,7 @@ class AggregateAlignmentCalculator
     TypeManagerRef  _tm;
     Int32           _aqOffset;
  public:
+    virtual ~AggregateAlignmentCalculator() = default;
     Int32   ElementCount;
     Int32   AggregateAlignment;
     Int32   AggregateSize;
@@ -1018,6 +1020,8 @@ class DefaultPointerType : public PointerType
 //! An interface used a CustomDataProcType instance.
 class IDataProcs {
  public:
+    virtual ~IDataProcs() = default;
+
     virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern = nullptr)  {
         return type->InitData(pData, pattern);
     }
