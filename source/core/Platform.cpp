@@ -260,7 +260,7 @@ void PlatformIO::ReadFile(SubString *name, StringRef buffer)
     TempStackCString    cString(name);
 
     FILE* h = fopen(cString.BeginCStr(), "r");
-    if (h != 0) {
+    if (h != nullptr) {
         fseek(h, 0L, SEEK_END);
         IntIndex bytesToRead = (IntIndex)ftell(h);
         rewind(h);
