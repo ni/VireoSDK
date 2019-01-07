@@ -420,7 +420,7 @@ class PercentCodecSubString {
         return nullptr;
     }
 
-    ~PercentCodecSubString() {
+    virtual ~PercentCodecSubString() {
         if (_convertedStr && _convertedStr != _buffer)
             delete[] _convertedStr;
     }
