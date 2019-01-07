@@ -35,21 +35,21 @@ class TypeTemplateVisitor : public TypeVisitor
     TypeRef  LookupParameter(IntIndex i);
     IntIndex AcceptIntDim(IntIndex value);
 
-    virtual void VisitBad(TypeRef type);
-    virtual void VisitBitBlock(BitBlockType* type);
-    virtual void VisitBitCluster(BitClusterType* type);
-    virtual void VisitCluster(ClusterType* type);
-    virtual void VisitParamBlock(ParamBlockType* type);
-    virtual void VisitEquivalence(EquivalenceType* type);
-    virtual void VisitArray(ArrayType* type);
-    virtual void VisitElement(ElementType* type);
-    virtual void VisitNamed(NamedType* type);
-    virtual void VisitPointer(PointerType* type);
-    virtual void VisitEnum(EnumType* type);
-    virtual void VisitRefNumVal(RefNumValType* type);
-    virtual void VisitDefaultValue(DefaultValueType* type);
-    virtual void VisitDefaultPointer(DefaultPointerType* type);
-    virtual void VisitCustomDataProc(CustomDataProcType* type);
+    void VisitBad(TypeRef type) override;
+    void VisitBitBlock(BitBlockType* type) override;
+    void VisitBitCluster(BitClusterType* type) override;
+    void VisitCluster(ClusterType* type) override;
+    void VisitParamBlock(ParamBlockType* type) override;
+    void VisitEquivalence(EquivalenceType* type) override;
+    void VisitArray(ArrayType* type) override;
+    void VisitElement(ElementType* type) override;
+    void VisitNamed(NamedType* type) override;
+    void VisitPointer(PointerType* type) override;
+    void VisitEnum(EnumType* type) override;
+    void VisitRefNumVal(RefNumValType* type) override;
+    void VisitDefaultValue(DefaultValueType* type) override;
+    void VisitDefaultPointer(DefaultPointerType* type) override;
+    void VisitCustomDataProc(CustomDataProcType* type) override;
 };
 //------------------------------------------------------------
 TypeRef InstantiateTypeTemplate(TypeManagerRef tm, TypeRef type, SubVector<TypeRef>* parameters)

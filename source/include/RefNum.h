@@ -94,9 +94,9 @@ class TypedRefNum : public RefNumStorageBase {
 
     RefNumMap _refStorage;
 
-    virtual RefNumHeaderAndData* ValidateRefNumIndexT(UInt32 index);
-    virtual RefNumHeaderAndData* CreateRefNumIndexT(UInt32 index, bool *isNew);
-    virtual void Clear() { _refStorage.clear(); }
+    RefNumHeaderAndData* ValidateRefNumIndexT(UInt32 index) override;
+    RefNumHeaderAndData* CreateRefNumIndexT(UInt32 index, bool *isNew) override;
+    void Clear() override { _refStorage.clear(); }
 
  public:
     typedef typename RefNumMap::iterator RefNumIterator;
