@@ -61,7 +61,7 @@ class Timestamp {
     Boolean operator<=(const Timestamp & value) const {
         return (*this < value) || (value == *this);
     }
-    Double ToDouble(void) const;
+    Double ToDouble() const;
 };
 
 }  // namespace Vireo

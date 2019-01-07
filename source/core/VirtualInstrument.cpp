@@ -628,7 +628,6 @@ void ClumpParseState::ResolveActualArgument(SubString* argument, void** ppData, 
                 *ppData = pData;
             }
             _argumentState = kArgumentResolvedToGlobal;
-            return;
         }
     }
 }
@@ -779,7 +778,6 @@ void ClumpParseState::AddClumpTargetArgument(SubString* clumpIndexToken)
 
     _argumentState = kArgumentResolvedToClump;
     InternalAddArg(nullptr, _vi->Clumps()->BeginAt((IntIndex)clumpIndex));
-    return;
 }
 //------------------------------------------------------------
 VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)

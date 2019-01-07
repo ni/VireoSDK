@@ -2810,8 +2810,8 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
             TypeRef subType = type->GetSubElement(0);
             TypedArrayCoreRef pArray = *(TypedArrayCoreRef*)pData;
             TypedArrayCoreRef pDestArray = *(TypedArrayCoreRef*)pDestData;
-            Int32 elementSize = type->GetSubElement(0)->TopAQSize();;
-            Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();;
+            Int32 elementSize = type->GetSubElement(0)->TopAQSize();
+            Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();
             IntIndex count = pArray->Length();
             pDestArray->Resize1D(count);
             AQBlock1 *pElement = pArray->BeginAt(0);
@@ -2837,7 +2837,7 @@ Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, In
                 THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Type mismatch in NumberToString");
                 return false;
             }
-            Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();;
+            Int32 destElementSize = destType->GetSubElement(0)->TopAQSize();
             AQBlock1 *pDestElement = (AQBlock1*)pDestData;
             Int32 i = 0;
             while (i < count) {
