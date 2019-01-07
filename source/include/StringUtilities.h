@@ -451,10 +451,12 @@ class PercentDecodedSubString : public PercentCodecSubString {
     }
 
  private:
-    Int32 ComputeConvertedLength(const SubString &s) {
+    Int32 ComputeConvertedLength(const SubString &s) override
+    {
         return GetDecodedLength(s);
     }
-    void Convert(const SubString &s) {
+    void Convert(const SubString &s) override
+    {
         Decode(s);
     }
     Int32 GetDecodedLength(const SubString &s);
@@ -480,10 +482,12 @@ class PercentEncodedSubString : public PercentCodecSubString {
 
  private:
      Boolean IsReservedChar(Utf8Char c);
-     Int32 ComputeConvertedLength(const SubString &s) {
+     Int32 ComputeConvertedLength(const SubString &s) override
+     {
          return GetEncodedLength(s);
      }
-     void Convert(const SubString &s) {
+     void Convert(const SubString &s) override
+     {
          Encode(s);
      }
      Int32 GetEncodedLength(const SubString &s);

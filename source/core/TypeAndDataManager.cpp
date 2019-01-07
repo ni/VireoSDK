@@ -3137,26 +3137,38 @@ class TypeRefDumpVisitor : public TypeVisitor
     TypeRefDumpVisitor() = default;
 
  private:
-    virtual void VisitBad(TypeRef type) { gPlatform.IO.Printf("<bad> "); }
-    virtual void VisitBitBlock(BitBlockType* type) { gPlatform.IO.Printf("<bitblock> "); }
-    virtual void VisitBitCluster(BitClusterType* type) { gPlatform.IO.Printf("<bitcluster> "); }
-    virtual void VisitCluster(ClusterType* type) { gPlatform.IO.Printf("<cluster> "); }
-    virtual void VisitParamBlock(ParamBlockType* type) {
+    void VisitBad(TypeRef type) override { gPlatform.IO.Printf("<bad> "); }
+    void VisitBitBlock(BitBlockType* type) override { gPlatform.IO.Printf("<bitblock> "); }
+    void VisitBitCluster(BitClusterType* type) override { gPlatform.IO.Printf("<bitcluster> "); }
+    void VisitCluster(ClusterType* type) override { gPlatform.IO.Printf("<cluster> "); }
+
+    void VisitParamBlock(ParamBlockType* type) override
+    {
         gPlatform.IO.Printf("(");
         int i = 0, n = type->SubElementCount();
         while (i < n) { type->GetSubElement(i)->Accept(this); ++i; }
         gPlatform.IO.Printf(")");
     }
-    virtual void VisitEquivalence(EquivalenceType* type) { gPlatform.IO.Printf("<eq> "); }
-    virtual void VisitArray(ArrayType* type) { gPlatform.IO.Printf("<array> "); }
-    virtual void VisitElement(ElementType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
-    virtual void VisitNamed(NamedType* type) {}  // gPlatform.IO.Printf("<.%s>", &type->Name()); // type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
-    virtual void VisitPointer(PointerType* type) { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
-    virtual void VisitRefNumVal(RefNumValType* type) { gPlatform.IO.Printf("<rn> "); type->BaseType()->Accept(this); }
-    virtual void VisitEnum(EnumType* type) { gPlatform.IO.Printf("<enum> "); type->BaseType()->Accept(this); }
-    virtual void VisitDefaultValue(DefaultValueType* type)  { gPlatform.IO.Printf("<dv> "); }
-    virtual void VisitDefaultPointer(DefaultPointerType* type) { gPlatform.IO.Printf("<defptr> "); }
-    virtual void VisitCustomDataProc(CustomDataProcType* type) { gPlatform.IO.Printf("<customproc> "); }
+
+    void VisitEquivalence(EquivalenceType* type) override { gPlatform.IO.Printf("<eq> "); }
+    void VisitArray(ArrayType* type) override { gPlatform.IO.Printf("<array> "); }
+
+    void VisitElement(ElementType* type) override
+    { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
+
+    void VisitNamed(NamedType* type) override {}  // gPlatform.IO.Printf("<.%s>", &type->Name()); // type->BaseType()->Accept(this); gPlatform.IO.Printf(">"); }
+    void VisitPointer(PointerType* type) override
+    { gPlatform.IO.Printf(""); type->BaseType()->Accept(this); }
+
+    void VisitRefNumVal(RefNumValType* type) override
+    { gPlatform.IO.Printf("<rn> "); type->BaseType()->Accept(this); }
+
+    void VisitEnum(EnumType* type) override
+    { gPlatform.IO.Printf("<enum> "); type->BaseType()->Accept(this); }
+
+    void VisitDefaultValue(DefaultValueType* type) override { gPlatform.IO.Printf("<dv> "); }
+    void VisitDefaultPointer(DefaultPointerType* type) override { gPlatform.IO.Printf("<defptr> "); }
+    void VisitCustomDataProc(CustomDataProcType* type) override { gPlatform.IO.Printf("<customproc> "); }
 };
 
 //------------------------------------------------------------

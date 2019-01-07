@@ -1190,14 +1190,17 @@ VIREO_FUNCTION_SIGNATURE1(Start, VirtualInstrumentObjectRef)
 //! Custom data methods needed to Copy a VI.
 class VIDataProcsClass : public IDataProcs
 {
-    virtual NIError InitData(TypeRef type, void* pData, TypeRef pattern) {
+    NIError InitData(TypeRef type, void* pData, TypeRef pattern) override
+    {
         // The Proto-VI has a generic Param/Locals with no clumps. The Pattern type still has that type,
         // but will have a custom default value for the underlying type. This means the
         // InitData method will detect the default value and will copy the pattern's value
         // once the core structure is set up. Look in ArrayType::InitData() for more details.
         return type->InitData(pData, pattern);
     }
-    virtual NIError CopyData(TypeRef type, const void* pDataSource, void* pDataCopy) {
+
+    NIError CopyData(TypeRef type, const void* pDataSource, void* pDataCopy) override
+    {
         // First copy the basics, then fix up a few things.
         type->CopyData(pDataSource, pDataCopy);
 
@@ -1216,7 +1219,7 @@ class VIDataProcsClass : public IDataProcs
         }
         return kNIError_Success;
     }
-    virtual NIError ClearData(TypeRef type, void* pData) {
+    NIError ClearData(TypeRef type, void* pData) {
         VirtualInstrumentObjectRef vio = *(static_cast<VirtualInstrumentObjectRef*>(pData));
         if (nullptr == vio)
             return kNIError_Success;
@@ -1237,7 +1240,7 @@ class VIDataProcsClass : public IDataProcs
         return type->ClearData(pData);
     }
     //------------------------------------------------------------
-    virtual TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic) {
+    TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic) {
         VirtualInstrumentObjectRef vio = *(static_cast<VirtualInstrumentObjectRef*>(pStart));
         VirtualInstrument* vi = vio->ObjBegin();
 
@@ -1256,7 +1259,8 @@ VIDataProcsClass gVIDataProcs;
 //! Custom data methods needed to free up instruction lists.
 class InstructionBlockDataProcsClass : public IDataProcs
 {
-    virtual NIError ClearData(TypeRef type, void* pData) {
+    NIError ClearData(TypeRef type, void* pData) override
+    {
         // All instructions for all clumps in a VI are stored in one
         // block of memory. The VI will free it.
         *(static_cast<void**>(pData)) = nullptr;

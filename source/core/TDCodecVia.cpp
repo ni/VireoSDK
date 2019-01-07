@@ -1863,11 +1863,13 @@ class TDViaFormatterTypeVisitor : public TypeVisitor
     }
  private:
     //------------------------------------------------------------
-    virtual void VisitBad(TypeRef type) {
+    void VisitBad(TypeRef type) override
+    {
         _pFormatter->_string->AppendCStr("BadType");
     }
     //------------------------------------------------------------
-    virtual void VisitBitBlock(BitBlockType* type) {
+    void VisitBitBlock(BitBlockType* type) override
+    {
         _pFormatter->_string->AppendCStr("bb(");
         IntIndex length = type->BitLength();
         _pFormatter->FormatInt(kEncoding_DimInt, length);
@@ -1886,23 +1888,28 @@ class TDViaFormatterTypeVisitor : public TypeVisitor
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitBitCluster(BitClusterType* type) {
+    void VisitBitCluster(BitClusterType* type) override
+    {
         VisitAggregate(type, "bc(");
     }
     //------------------------------------------------------------
-    virtual void VisitCluster(ClusterType* type) {
+    void VisitCluster(ClusterType* type) override
+    {
         VisitAggregate(type, "c(");
     }
     //------------------------------------------------------------
-    virtual void VisitParamBlock(ParamBlockType* type) {
+    void VisitParamBlock(ParamBlockType* type) override
+    {
         VisitAggregate(type, "p(");
     }
     //------------------------------------------------------------
-    virtual void VisitEquivalence(EquivalenceType* type) {
+    void VisitEquivalence(EquivalenceType* type) override
+    {
         VisitAggregate(type, "eq(");
     }
     //------------------------------------------------------------
-    virtual void VisitArray(ArrayType* type) {
+    void VisitArray(ArrayType* type) override
+    {
         _pFormatter->_string->AppendCStr("a(");
         type->GetSubElement(0)->Accept(this);
         IntIndex* pDimension = type->DimensionLengths();
@@ -1915,7 +1922,8 @@ class TDViaFormatterTypeVisitor : public TypeVisitor
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitElement(ElementTypeRef type) {
+    void VisitElement(ElementTypeRef type) override
+    {
         _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');
         type->BaseType()->Accept(this);
@@ -1928,7 +1936,8 @@ class TDViaFormatterTypeVisitor : public TypeVisitor
         _pFormatter->_string->Append(')');
     }
     //------------------------------------------------------------
-    virtual void VisitNamed(NamedType* type) {
+    void VisitNamed(NamedType* type) override
+    {
         // At this point names are terminal elements.
         // There needs to be a mechanism that will optionally collect all the named dependencies
         // in a type.
@@ -1940,36 +1949,43 @@ class TDViaFormatterTypeVisitor : public TypeVisitor
         }
     }
     //------------------------------------------------------------
-    virtual void VisitPointer(PointerType* type) {
+    void VisitPointer(PointerType* type) override
+    {
         _pFormatter->_string->AppendCStr("^");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr("");
     }
     //------------------------------------------------------------
-    virtual void VisitEnum(EnumType* type) {
+    void VisitEnum(EnumType* type) override
+    {
         _pFormatter->_string->AppendCStr("enum(");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
     }
-    virtual void VisitRefNumVal(RefNumValType* type) {
+
+    void VisitRefNumVal(RefNumValType* type) override
+    {
         _pFormatter->_string->AppendCStr("^");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr("");
     }
     //------------------------------------------------------------
-    virtual void VisitDefaultValue(DefaultValueType* type) {
+    void VisitDefaultValue(DefaultValueType* type) override
+    {
         _pFormatter->_string->AppendCStr(type->IsMutableValue() ? "var(" : "dv(");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitDefaultPointer(DefaultPointerType* type) {
+    void VisitDefaultPointer(DefaultPointerType* type) override
+    {
         _pFormatter->_string->AppendCStr("dvp(");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
     }
     //------------------------------------------------------------
-    virtual void VisitCustomDataProc(CustomDataProcType* type) {
+    void VisitCustomDataProc(CustomDataProcType* type) override
+    {
         _pFormatter->_string->AppendCStr("cdp(");
         type->BaseType()->Accept(this);
         _pFormatter->_string->AppendCStr(")");
