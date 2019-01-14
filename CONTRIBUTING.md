@@ -1,7 +1,7 @@
 # Contributing to Vireo
 
 This guide will walk through the different workflows recommended for developing Vireo.
-It covers setting up your own fork with continuous integration (CI) server connections as well as commands for developing locally, keeping up to date, and submitting changes.
+It covers setting up your own fork with continuous integration (CI) server connections as well as commands for developing locally, keeping the source up to date, and submitting changes.
 
 # Getting started
 
@@ -14,7 +14,7 @@ Your fork will be available online at github.com/YOUR_USER_NAME/VireoSDK
 
 ## Connect fork to CI servers
 
-Vireo uses Travis and AppVeyor to build and test the Vireo source code automatically when changes are made.
+Vireo uses Travis and AppVeyor to build and test the Vireo source code automatically whenever changes are made.
 You are encouraged to push changes to your fork when you have changes and to make branches for experiments.
 The fork is your playground for development and experimentation.
 
@@ -269,7 +269,7 @@ If you want to test your local vireo changes on a separate machine from your loc
   ```
 
 This will update the package.json and package-lock.json to point to the tgz file location.
-You can now share the application or if running in a CI environment create a changeset, etc, that has the tgz file and updated package.json and package-lock.json to test.
+You can now share the application that has the tgz file, updated package.json, and package-lock.json to test.
 
 ## Testing esh.exe in a .NET application
 
@@ -278,12 +278,12 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
 ### Testing esh.exe on your local machine
 
 1. If you do not already have nuget.exe, download it [here](https://www.nuget.org/downloads). Version 4.7.1 should work.
-2. In the directory with the `VireoSDK.nuspec` file run:
+2. In the root VireoSDK directory file run:
 
     ```console
-    nuget pack VireoSDK.nuspec -properties version="[version]"
+    nuget pack VireoSDK.nuspec -properties version="[newversion]"
     ```
-    replacing `[version]` with some version.
+    replacing `[newversion]` with the version to update to.
 
     This command will generate a `.nupkg` file in the folder the command is run from.
 3. See [installing a nuget package](https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package) for the various ways to install the created package to your .NET application. If you are at NI and working on NXG, follow these steps:
@@ -294,7 +294,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
         ```
 
         from the ASW root directory, replacing `oldversion` with the existing vireo version and `newversion` with the version you specified in the previous step.
-    2. Add this line to the `packageSources` section of the NuGet.config in the root directory:
+    2. Add this line to the `packageSources` section of the NuGet.config in the root ASW directory:
          ```xml
          <add key="Local" value="Source\VI\Tests\Tests.HtmlVI" />
          ```
@@ -304,7 +304,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
 ### Testing esh.exe on a different machine / CI
 
 1. Follow the same steps above for testing on your local machine.
-2. You can now create a changeset that includes the .nuspec file to test.
+2. You can now create a change that includes the `.nupkg` file to test.
 
 # Configuring Visual Studio Code Intellisense for the JavaScript build
 
