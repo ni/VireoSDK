@@ -41,15 +41,15 @@ typedef intptr_t *RefNumDataPtr;
 class RefNumStorageBase
 {
  protected:
-    UInt32    _nextMagicNum;  // Magic Number to be used for creating next requested cookie
-    UInt32    _dataSize;      // Size of user-provided cookie info
-    UInt32    _cookieSize;    // Size of entire cookie including info
-    Int32    _firstFree;      // Index of first free cookie record
-    Int32   _numUsed;         // Total number of used cookies
+    UInt32    _nextMagicNum = 0;  // Magic Number to be used for creating next requested cookie
+    UInt32    _dataSize = 0;      // Size of user-provided cookie info
+    UInt32    _cookieSize = 0;    // Size of entire cookie including info
+    Int32    _firstFree = 0;      // Index of first free cookie record
+    Int32   _numUsed = 0;         // Total number of used cookies
 #ifdef  VIREO_MULTI_THREAD
     Mutex _mutex;    // Must have Acquired this mutex before read/writing to fields
 #endif
-    bool _isRefCounted;
+    bool _isRefCounted = false;
     struct RefNumHeaderAndData {
         RefNumCommonHeader _refHeader;
         intptr_t _refData;

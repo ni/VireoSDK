@@ -91,15 +91,15 @@ class Timer : public ObservableCore
 class QueueCore : public ObservableCore
 {
  private:
-    TypedArrayCoreRef _elements;
+    TypedArrayCoreRef _elements = nullptr;
 
     //! Index where the next element will be stored (may be one past end if full)
-    IntIndex   _insert;
+    IntIndex   _insert = 0;
 
     //! How many elements are in the queue
-    IntIndex   _count;
+    IntIndex   _count = 0;
 
-    IntIndex   _maxSize;
+    IntIndex   _maxSize = 0;
 
     IntIndex RemoveIndex();
  public:
