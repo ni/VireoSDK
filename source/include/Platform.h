@@ -34,7 +34,7 @@ typedef String *StringRef;
 //! Process level functions for memory allocation.
 class PlatformMemory {
  private:
-    size_t _totalAllocated;
+    size_t _totalAllocated = 0;
  public:
     void* Malloc(size_t countAQ);
     void* Realloc(void* pBuffer, size_t countAQ);
