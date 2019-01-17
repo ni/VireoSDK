@@ -47,7 +47,7 @@ void String::AppendViaDecoded(SubString* str)
         Utf8Char* pDest = BeginAt(originalLength);
         while (ss.ReadRawChar(&c)) {
             if (c == '%' && ss.ReadHex2(&value)) {
-                *pDest++ = (Utf8Char)value;
+                *pDest++ = static_cast<Utf8Char>(value);
             } else {
                 *pDest++ = c;
             }
@@ -68,7 +68,7 @@ void String::AppendEscapeEncoded(const Utf8Char* source, IntIndex len)
     // if inplaceIndex is positive, it means it's an in place operation
     IntIndex inplaceIndex = -1;
     if (source >= this->Begin() && source < this->End()) {
-        inplaceIndex = (IntIndex) (source - this->Begin());
+        inplaceIndex = static_cast<IntIndex>(source - this->Begin());
     }
     Int32 needLength = 0;
     const Utf8Char* begin = source;
@@ -393,7 +393,7 @@ VIREO_FUNCTION_SIGNATURE2(StringToLower, StringRef, StringRef)
 
     Utf8Char *pSourceChar      = (Utf8Char*) _Param(0)->Begin();
     Utf8Char *pSourceCharEnd   = (Utf8Char*) _Param(0)->End();
-    Utf8Char *pDestChar        = (Utf8Char*) _Param(1)->Begin();
+    Utf8Char *pDestChar        = static_cast<Utf8Char*>(_Param(1)->Begin());
     while (pSourceChar < pSourceCharEnd) {
         char c = *pSourceChar++;
         if ('A' <= c && c <= 'Z') {

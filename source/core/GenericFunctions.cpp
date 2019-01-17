@@ -29,7 +29,7 @@ ConstCStr GetCopyOpName(void *pSource, void *pDest, TypeRef elemType)
     // (Just because an object is 4 bytes doesn't mean it's an integer and appropriately aligned;
     // it could be an unaligned cluster of 4 Booleans).
     Int32 alignment = elemType->TheTypeManager()->AQAlignment(aqSize);
-    if (((uintptr_t)pSource % alignment != 0) || ((uintptr_t)pDest % alignment != 0))
+    if ((reinterpret_cast<uintptr_t>(pSource) % alignment != 0) || (reinterpret_cast<uintptr_t>(pDest) % alignment != 0))
         return nullptr;
 
     switch (aqSize) {  // copy sizes go to 32 bytes for efficiency
@@ -2033,7 +2033,7 @@ VIREO_FUNCTION_SIGNATURE1(IsGTAccumulator, void)
 // Execute a snippet of binops until one of them returns false or the commutative pair returns true
 VIREO_FUNCTION_SIGNATURE1(IsLEAccumulator, void)
 {
-    BinaryCompareInstruction* binop = (BinaryCompareInstruction*)_ParamPointer(0);
+    BinaryCompareInstruction* binop = static_cast<BinaryCompareInstruction*>(_ParamPointer(0));
     Boolean* dest = binop->_p2;
     if (binop->_p0 == nullptr) {
         *dest = true;
@@ -2293,7 +2293,7 @@ VIREO_FUNCTION_SIGNATURET(ClusterInRangeOp, InRangeAndCoerceInstruction)
 
         InstructionCore *next = _PROGMEM_PTR(snippet, _function)(snippet);
 
-        snippet->_p0 -= (size_t)_ParamPointer(SX);
+        snippet->_p0 -= reinterpret_cast<size_t>(_ParamPointer(SX));
         snippet->_p1 -= (size_t)_ParamPointer(SLo);
         snippet->_p2 -= (size_t)_ParamPointer(SHi);
         snippet->_p5 -= (size_t)_ParamPointer(SCoerced);
@@ -2674,7 +2674,7 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
                 }
             }
         } else {
-            ErrorCluster *errorCluster = (ErrorCluster*)errorClusterInputs[i]._pData;
+            ErrorCluster *errorCluster = static_cast<ErrorCluster*>(errorClusterInputs[i]._pData);
             if (i == 0) {  // Initialize output cluster with first error
                 errorClusterOut->SetError(*errorCluster);
             }

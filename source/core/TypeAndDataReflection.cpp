@@ -44,7 +44,7 @@ Boolean TypeManager::PointerToTypeConstRefName(TypeRef* pNeedle, SubString* name
     TypeDictionaryIterator iter = _typeNameDictionary.begin();
     TypeDictionaryIterator end = _typeNameDictionary.end();
     while (iter != end) {
-        if ((TypeRef*)&iter->second == pNeedle) {
+        if (reinterpret_cast<TypeRef*>(&iter->second) == pNeedle) {
             *name = iter->first;
             return true;
         }
@@ -86,7 +86,7 @@ void DataReflectionVisitor::Accept(TypeManagerRef tm)
     if (_found) {
         rootName = type->Name();
     } else {
-        _found = tm->PointerToTypeConstRefName((TypeRef*)_pNeedle, &rootName);
+        _found = tm->PointerToTypeConstRefName(static_cast<TypeRef*>(_pNeedle), &rootName);
         isTypeRefConstant = _found;
     }
 

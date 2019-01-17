@@ -36,7 +36,7 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
     switch (encoding) {
         case kEncoding_Array:
         {
-            TypedArrayCoreRef pArray = *(TypedArrayCoreRef*) pData;
+            TypedArrayCoreRef pArray = *static_cast<TypedArrayCoreRef*>(pData);
             IntIndex* dimLengths = pArray->DimensionLengths();
             Int32 rank = pArray->Rank();
 
@@ -52,13 +52,13 @@ NIError FlattenData(TypeRef type, void *pData, StringRef pString, Boolean prepen
                 for (Int32 i = 0; i < rank; i++) {
                     // LV format is bigendian.
                     UInt32 arrayLength = dimLengths[i];
-                    WriteBigEndianUInt32((UInt8*)&arrayLength, 0, dimLengths[i]);
-                    pString->Append(sizeof(arrayLength), (Utf8Char*)&arrayLength);
+                    WriteBigEndianUInt32(reinterpret_cast<UInt8*>(&arrayLength), 0, dimLengths[i]);
+                    pString->Append(sizeof(arrayLength), reinterpret_cast<Utf8Char*>(&arrayLength));
                 }
             }
 
             if (elementType->IsFlat()) {
-                pString->Append(pArray->Length() * elementType->TopAQSize(), (Utf8Char*)pArray->BeginAt(0));
+                pString->Append(pArray->Length() * elementType->TopAQSize(), static_cast<Utf8Char*>(pArray->BeginAt(0)));
             } else {
                 // Recursively call FlattenData on each element.
                 // Arrays contained in other data structures always include

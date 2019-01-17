@@ -88,7 +88,7 @@ struct FileOpenInstruction : InstructionCore
 
 VIREO_FUNCTION_SIGNATURET(FileOpen, FileOpenInstruction)
 {
-    AccessMode access = (AccessMode)_Param(access);
+    AccessMode access = static_cast<AccessMode>(_Param(access));
 
     // Set flags for access mode.
     int flags = 0;
@@ -105,7 +105,7 @@ VIREO_FUNCTION_SIGNATURET(FileOpen, FileOpenInstruction)
             break;
     }
 
-    OperationMode operation = (OperationMode)_Param(operation);
+    OperationMode operation = static_cast<OperationMode>(_Param(operation));
 
     switch (operation) {
         case OperationModes_openOnly:

@@ -25,17 +25,17 @@ namespace Vireo {
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt32, UInt32) {
-        _Param(0) = (UInt32)gPlatform.Timer.TickCount();
+        _Param(0) = static_cast<UInt32>(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt16, UInt16) {
-        _Param(0) = (UInt16)gPlatform.Timer.TickCount();
+        _Param(0) = static_cast<UInt16>(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetTickCountUInt8, UInt8) {
-        _Param(0) = (UInt8)gPlatform.Timer.TickCount();
+        _Param(0) = static_cast<UInt8>(gPlatform.Timer.TickCount());
         return _NextInstruction();
     }
 
@@ -46,33 +46,33 @@ namespace Vireo {
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt32, UInt32) {
-        _Param(0) = (UInt32) gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+        _Param(0) = static_cast<UInt32>(gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount()));
         return _NextInstruction();
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt16, UInt16) {
-        _Param(0) = (UInt16)gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+        _Param(0) = static_cast<UInt16>(gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount()));
         return _NextInstruction();
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetMicrosecondTickCountUInt8, UInt8) {
-        _Param(0) = (UInt8)gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount());
+        _Param(0) = static_cast<UInt8>(gPlatform.Timer.TickCountToMicroseconds(gPlatform.Timer.TickCount()));
         return _NextInstruction();
     }
 
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCount, UInt32) {
-        _Param(0) = (UInt32) gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+        _Param(0) = static_cast<UInt32>(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount()));
         return _NextInstruction();
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt16, UInt16) {
-        _Param(0) = (UInt16)gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+        _Param(0) = static_cast<UInt16>(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount()));
         return _NextInstruction();
     }
     //------------------------------------------------------------
     VIREO_FUNCTION_SIGNATURE1(GetMillisecondTickCountUInt8, UInt8) {
-        _Param(0) = (UInt8)gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount());
+        _Param(0) = static_cast<UInt8>(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount()));
         return _NextInstruction();
     }
 

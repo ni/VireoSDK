@@ -1468,7 +1468,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     TypeRef localsType = emptyVIParamList;
     TypeRef eventSpecsType = emptyVIParamList;
 
-    VirtualInstrumentObjectRef vio = *(VirtualInstrumentObjectRef*)pData;
+    VirtualInstrumentObjectRef vio = *static_cast<VirtualInstrumentObjectRef*>(pData);
     VirtualInstrument *vi = vio->ObjBegin();
 
     VirtualInstrument *savedVIScope = _virtualInstrumentScope;

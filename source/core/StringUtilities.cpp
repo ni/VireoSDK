@@ -867,14 +867,14 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
     char* end = nullptr;
     Int32 errCode = kLVError_NoError;
 
-    Double value = strtod(current, (char**)&end);
+    Double value = strtod(current, static_cast<char**>(&end));
     if (suppressInfNaN) {
         if (isinf(value)) {
-            end = (char*)current;
+            end = const_cast<char*>(current);
             errCode = kLVError_JSONBadInf;
         }
         if (isnan(value)) {
-            end = (char*)current;
+            end = const_cast<char*>(current);
             errCode = kLVError_JSONBadNaN;
         }
     }

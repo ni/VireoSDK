@@ -206,7 +206,7 @@ class SubString : public SubVector<Utf8Char>
         return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Decimal));
     }
     static Boolean IsHexChar(Utf8Char c)    {
-        return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Hex));
+        return (((UInt8)c <= 127) && (AsciiCharTraits[static_cast<UInt8>(c)] & kACT_Hex));
     }
     static Boolean IsIdentifierChar(Utf8Char c) {
         return (((UInt8)c <= 127) && (AsciiCharTraits[(UInt8)c] & kACT_Id)) || (c & 0x80);

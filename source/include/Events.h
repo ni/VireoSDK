@@ -91,7 +91,7 @@ inline Int32 EventTimeSeqCompare(UInt32 t1, UInt32 t2) {
 }
 
 inline UInt32 *EventIndexFieldPtr(void *rawEventDataPtr) {
-    EventCommonData *eventDataPtr = (EventCommonData*)rawEventDataPtr;
+    EventCommonData *eventDataPtr = static_cast<EventCommonData*>(rawEventDataPtr);
     return &eventDataPtr->eventSeqIndex;
 }
 

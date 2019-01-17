@@ -17,8 +17,8 @@ namespace Vireo {
 
 VIClumpQueue::VIClumpQueue()
 {
-    this->_head = (VIClump*)nullptr;
-    this->_tail = (VIClump*)nullptr;
+    this->_head = nullptr;
+    this->_tail = nullptr;
 }
 
 //! Add a clump to a Queue. The clump should not be in any other queue.
