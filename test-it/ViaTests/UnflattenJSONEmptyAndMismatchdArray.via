@@ -1,0 +1,109 @@
+
+define(c1 dv(c(
+    e(a(.Double *) array1)
+    e(a(.Double *) array2)
+    e(a(.Double *) array3)
+) ( (11 22 33 ) () (77 88 99)
+)))
+define(c2 dv(c(
+    e(a(.Double *) array1D)) (())
+))
+define(c3 dv(c(
+    e(a(.Double * *) array2D)) (())
+))
+define(jsonStr1D dv(.String '{"array":[1,2,3]}' ))
+define(jsonStr1DEmpty dv(.String '{"array":[]}' ))
+define(jsonStr2D dv(.String '{"array":[[1,2],[3,4]]}' ))
+define(jsonStr2DEmpty dv(.String '{"array":[[]]}' ))
+
+define(_Functionghtmlvi dv(.VirtualInstrument (
+    Locals: c(
+        e(.String jsonStr)
+        e(c(
+            e(a(.Double *) array1)
+            e(a(.Double *) array2)
+            e(a(.Double *) array3)
+        ) unfl)
+        e(c(
+        e(a(.Double *) array)
+        ) unf1D)
+        e(c(
+        e(a(.Double * *) array)
+        ) unf2D)
+        e(.Double db1)
+        e(dv(.Boolean true) bool)
+        e(a(.String *) strArr)
+        e(.String temp)
+        e(.ErrorCluster noErr)
+        e(.ErrorCluster err)
+    )
+        clump(1
+        Printf("JSON null array regression test\n")
+
+        Copy(noErr err)
+        Copy(c2 unf1D)
+        UnflattenFromJSON(jsonStr1D unf1D strArr true false false err)
+        Printf("1D Unflattened JSON |%s|  " jsonStr1D)
+        Println(unf1D)
+        Printf(" Err = %z\n" err)
+
+        Copy(noErr err)
+        Copy(c2 unf1D)
+        UnflattenFromJSON(jsonStr1DEmpty unf1D strArr true false false err)
+        Printf("1D Empty Unflattened JSON |%s| : " jsonStr1DEmpty)
+        Println(unf1D)
+        Printf(" Err = %z\n" err)
+
+	Copy(noErr err)
+        Copy(c3 unf2D)
+        UnflattenFromJSON(jsonStr2D unf2D strArr true false false err)
+        Printf("2D Unflattened JSON |%s| : " jsonStr2D)
+        Println(unf2D)
+        Printf(" Err = %z\n" err)
+
+        Copy(noErr err)
+        Copy(c3 unf2D)
+        UnflattenFromJSON(jsonStr2DEmpty unf2D strArr true false false err)
+        Printf("2D Empty Unflattened JSON |%s| : " jsonStr2DEmpty)
+        Println(unf2D)
+        Printf(" Err = %z\n" err)
+
+	Copy(noErr err)
+        Copy(c2 unf1D)
+        UnflattenFromJSON(jsonStr2D unf1D strArr true false false err)
+        Printf("2D Unflattened JSON |%s| to mismatched 1D array : " jsonStr2D)
+        Println(unf1D)
+        Printf(" Err = %z\n" err)
+
+        Copy(noErr err)
+        Copy(c2 unf1D)
+        UnflattenFromJSON(jsonStr2DEmpty unf1D strArr true false false err)
+        Printf("2D Empty Unflattened JSON |%s| to mismatched 1D array : " jsonStr2DEmpty)
+        Println(unf1D)
+        Printf(" Err = %z\n" err)
+
+	Copy(noErr err)
+        Copy(c3 unf2D)
+        UnflattenFromJSON(jsonStr1D unf2D strArr true false false err)
+        Printf("1D Unflattened JSON |%s| to mismatched 2D array : " jsonStr1D)
+        Println(unf2D)
+        Printf(" Err = %z\n" err)
+
+        Copy(noErr err)
+        Copy(c3 unf2D)
+        UnflattenFromJSON(jsonStr1DEmpty unf2D strArr true false false err)
+        Printf("1D Empty Unflattened JSON |%s| to mismatched 2D array : " jsonStr1DEmpty)
+        Println(unf2D)
+        Printf(" Err = %z\n" err)
+
+	Copy(noErr err)
+        FlattenToJSON(c1 bool jsonStr )
+        Printf("FlattenJSON %z : |%s|\n" c1 jsonStr)
+        UnflattenFromJSON(jsonStr unfl strArr true false false err)
+        Printf("Unflattened JSON |%s| : " jsonStr)
+        Println(unfl)
+        Printf(" Err = %z\n" err)
+
+/* Clump Ended. */    )
+)))
+enqueue(_Functionghtmlvi)

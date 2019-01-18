@@ -376,6 +376,7 @@
                 "UnflattenFromJSON.via",
                 "UnflattenFromJSONFail2.via",
                 "UnflattenJSONArrayAndNull.via",
+                "UnflattenJSONEmptyAndMismatchdArray.via",
                 "UnflattenJSONNested.via",
                 "UnflattenJSONPath.via",
                 "UnflattenJSONStrict.via",
