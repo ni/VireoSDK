@@ -783,7 +783,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     return cdt;
 }
 //------------------------------------------------------------
-Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths)
+Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth /*= NULL*/)
 {
     SubString  token;
     SubString  tempString(_string);
@@ -804,6 +804,8 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
     // The opening array_pre like "(" has been parsed before this function has been called.
     Int32 dimIndex;
     while (depth >= 0) {
+        if (reachedDepth && depth >= *reachedDepth)
+            *reachedDepth = depth+1;
         dimIndex = (rank - depth) - 1;
         if (!ReadArrayItem(&tempString, &token, true, Fmt().SuppressInfNaN())) {
              // Avoid infinite loop for incorrect input.
@@ -823,11 +825,11 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
             if (dimIndex >= 0) {
                 if (dimensionLengths[dimIndex] && tempDimensionLengths[dimIndex] != dimensionLengths[dimIndex])
                     inconsistentDimSizes = true;
-                // If the inner dimension is larger than processed before record the larger number
+                // If the inner dimension is larger than processed before, record the larger number
                 if (tempDimensionLengths[dimIndex] > dimensionLengths[dimIndex])
                     dimensionLengths[dimIndex] = tempDimensionLengths[dimIndex];
 
-                // Reset the temp counter for this level in case its used again.
+                // Reset the temp counter for this level in case it's used again.
                 tempDimensionLengths[dimIndex] = 0;
             }
             depth--;
@@ -921,13 +923,13 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
 
             if (level == 0) {
                 ArrayDimensionVector initializerDimensionLengths;
-                Boolean inconsistentDimLens = PreParseElements(rank, initializerDimensionLengths);
+                Int32 maxDepth = 1;
+                Boolean inconsistentDimLens = PreParseElements(rank, initializerDimensionLengths, &maxDepth);
                 if (Fmt().UseFieldNames()) {  // JSON
-                    if (inconsistentDimLens)
+                    if (maxDepth != rank)
+                        return kLVError_JSONInvalidArrayDims;
+                    else if (inconsistentDimLens)
                         return kLVError_JSONInvalidArray;
-                    for (IntIndex dimIndex = 0; dimIndex < rank; ++dimIndex)
-                        if (initializerDimensionLengths[dimIndex] == 0)
-                            return kLVError_JSONInvalidArrayDims;
                 }
                 // Resize the array to the degree possible to match initializers
                 // if some of the dimensions are bounded or fixed that may impact

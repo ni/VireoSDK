@@ -121,7 +121,7 @@ class TDViaParser
     Boolean EatJSONPath(SubString* path);
     NIError ParseREPL();
     TypeRef ParseEnqueue();
-    Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths);
+    Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth = NULL);
     TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
     Int32   ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
