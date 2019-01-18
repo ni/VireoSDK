@@ -735,8 +735,8 @@ class BitBlockType : public TypeCommon
     BitBlockType(TypeManagerRef typeManager, IntIndex length, EncodingEnum encoding);
  public:
     static BitBlockType* New(TypeManagerRef typeManager, Int32 length, EncodingEnum encoding);
-    void    Accept(TypeVisitor *tv)     { tv->VisitBitBlock(this); }
-    IntIndex BitLength()               { return _blockLength; }
+    void    Accept(TypeVisitor *tv) override { tv->VisitBitBlock(this); }
+    IntIndex BitLength() override { return _blockLength; }
 };
 //------------------------------------------------------------
 //! A type that is a collection of sub types.
@@ -916,11 +916,11 @@ class ArrayType : public WrappedType
     void    Accept(TypeVisitor *tv) override { tv->VisitArray(this); }
     TypeRef BaseType() override { return nullptr; }  // arrays are a more advanced
                                                                         // wrapping of a type.
-    Int32   SubElementCount()                   { return 1; }
-    TypeRef GetSubElement(Int32 index)          { return index == 0 ? _wrapped : nullptr; }
-    TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
-    SubString Name()                            { return SubString("Array"); }
-    IntDim* DimensionLengths()                          { return &_dimensionLengths[0]; }
+    Int32   SubElementCount() override { return 1; }
+    TypeRef GetSubElement(Int32 index) override { return index == 0 ? _wrapped : nullptr; }
+    TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic) override;
+    SubString Name() override { return SubString("Array"); }
+    IntDim* DimensionLengths() override { return &_dimensionLengths[0]; }
 
     void*   Begin(PointerAccessEnum mode) override;
     NIError InitData(void* pData, TypeRef pattern = nullptr) override;
@@ -941,9 +941,9 @@ class DefaultValueType : public WrappedType
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef valuesType, Boolean mutableValue);
     DefaultValueType* FinalizeDVT();
  public:
-    void    Accept(TypeVisitor *tv)             { tv->VisitDefaultValue(this); }
-    void*           Begin(PointerAccessEnum mode);
-    NIError InitData(void* pData, TypeRef pattern = nullptr);
+    void    Accept(TypeVisitor *tv) override { tv->VisitDefaultValue(this); }
+    void*           Begin(PointerAccessEnum mode) override;
+    NIError InitData(void* pData, TypeRef pattern = nullptr) override;
 };
 //------------------------------------------------------------
 //! A type describes a pointer to another type. Initial value will be nullptr.
@@ -998,9 +998,9 @@ class EnumType : public WrappedType
     void    Accept(TypeVisitor *tv) override { tv->VisitEnum(this); }
     TypeRef GetSubElement(Int32 index) override { return index == 0 ? _wrapped : nullptr; }
     void AddEnumItem(SubString *name);
-    Int32   SubElementCount()                   { return 1; }
-    StringRef GetEnumItemName(IntIndex i);
-    IntIndex GetEnumItemCount();
+    Int32   SubElementCount() override { return 1; }
+    StringRef GetEnumItemName(IntIndex i) override;
+    IntIndex GetEnumItemCount() override;
     virtual ~EnumType();
 
     // TODO(spathiwa): Add GetSubElementAddressFromPath
@@ -1052,16 +1052,16 @@ class CustomDataProcType : public WrappedType
     IDataProcs*    _pDataProcs;
  public:
     static CustomDataProcType* New(TypeManagerRef typeManager, TypeRef type, IDataProcs * pDataProcs);
-    void    Accept(TypeVisitor *tv)
-        { tv->VisitCustomDataProc(this); }
-    NIError InitData(void* pData, TypeRef pattern = nullptr)
-        { return _pDataProcs->InitData(_wrapped, pData, pattern); }
-    NIError CopyData(const void* pData, void* pDataCopy)
-        { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
-    NIError ClearData(void* pData)
-        { return _pDataProcs->ClearData(_wrapped, pData); }
-    TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic)
-        { return _pDataProcs->GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }
+    void    Accept(TypeVisitor *tv) override
+    { tv->VisitCustomDataProc(this); }
+    NIError InitData(void* pData, TypeRef pattern = nullptr) override
+    { return _pDataProcs->InitData(_wrapped, pData, pattern); }
+    NIError CopyData(const void* pData, void* pDataCopy) override
+    { return _pDataProcs->CopyData(_wrapped, pData, pDataCopy); }
+    NIError ClearData(void* pData) override
+    { return _pDataProcs->ClearData(_wrapped, pData); }
+    TypeRef GetSubElementAddressFromPath(SubString* name, void *start, void **end, Boolean allowDynamic) override
+    { return _pDataProcs->GetSubElementAddressFromPath(_wrapped, name, start, end, allowDynamic); }
 };
 //------------------------------------------------------------
 //! The core C++ implementation for ArrayType typed data's value.
