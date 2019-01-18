@@ -1219,7 +1219,8 @@ class VIDataProcsClass : public IDataProcs
         }
         return kNIError_Success;
     }
-    NIError ClearData(TypeRef type, void* pData) {
+    NIError ClearData(TypeRef type, void* pData) override
+    {
         VirtualInstrumentObjectRef vio = *(static_cast<VirtualInstrumentObjectRef*>(pData));
         if (nullptr == vio)
             return kNIError_Success;
@@ -1240,7 +1241,8 @@ class VIDataProcsClass : public IDataProcs
         return type->ClearData(pData);
     }
     //------------------------------------------------------------
-    TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic) {
+    TypeRef GetSubElementAddressFromPath(TypeRef type, SubString* path, void* pStart, void** ppData, Boolean allowDynamic) override
+    {
         VirtualInstrumentObjectRef vio = *(static_cast<VirtualInstrumentObjectRef*>(pStart));
         VirtualInstrument* vi = vio->ObjBegin();
 
