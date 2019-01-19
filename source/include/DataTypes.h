@@ -19,11 +19,7 @@ SDG
 
 #include "BuildConfig.h"
 
-#if defined (kVireoOS_macosxU)
-    typedef unsigned char Boolean;
-#else
-    typedef bool Boolean;
-#endif
+typedef bool Boolean;
 
 #define __STDC_LIMIT_MACROS
 #include <stdint.h>

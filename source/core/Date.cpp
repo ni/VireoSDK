@@ -292,7 +292,7 @@ namespace Vireo {
         _daylightSavingTime = isDaylightSavingTime();
     }
 
-    Date::Date(Timestamp timestamp, bool isUTC) {
+    Date::Date(Timestamp timestamp, Boolean isUTC) {
 #ifdef VIREO_DATE_TIME_STDLIB
 #if !kVireoOS_windows
         struct tm tm;
