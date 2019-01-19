@@ -1,4 +1,4 @@
-LINTARGS = --linelength=160 --filter=-build/header_guard,-readability/casting,-whitespace/braces
+LINTARGS = --quiet --linelength=160 --filter=-build/header_guard,-readability/casting,-whitespace/braces
 
 # Ignored warnings:
 # build/header_guard -- wants include guard to include file path (_SOURCE_INCLUDE_) prefixes, which is unnecessary since all of our includes are in the same folder
