@@ -53,7 +53,7 @@ class Date {
  public:
     Date(Timestamp timestamp, Int32 timeZoneOffset);  // this API is conceptually wrong;
     // (tzo should be computed from UTC date)
-    explicit Date(Timestamp timestamp, bool isUTC = false);
+    explicit Date(Timestamp timestamp, Boolean isUTC = false);
     ~Date();
     static Int32 getLocaletimeZone(Int64 utcTime);
     Int32 Year() const { return _year; }
