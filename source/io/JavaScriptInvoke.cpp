@@ -63,9 +63,9 @@ extern void GenerateNotSupportedOnPlatformError(ErrorCluster *errorCluster, Cons
 VIREO_FUNCTION_SIGNATUREV(JavaScriptInvoke, JavaScriptInvokeParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(errorCluster);
+#if kVireoOS_emscripten
     TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
 
-#if kVireoOS_emscripten
     OccurrenceCore *pOcc = _Param(occurrence)->ObjBegin();
     VIClump* clump = THREAD_CLUMP();
     Observer* pObserver = clump->GetObservationStates(2);
