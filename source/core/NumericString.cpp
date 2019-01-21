@@ -355,6 +355,65 @@ void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, Static
     buffer->Resize1D(0);
 }
 
+// Extract a time format string from a %<>T general format string pre-parsed in fOptions, or provide a default if not supplied.
+// TempStakString defaultTimeFormat is used for storage if needed (dateTimeFormat may alias it).
+static void GetDateTimeFormatString(SubString *datetimeFormat, const FormatOptions &fOptions, TempStackCString *defaultTimeFormat) {
+    SubString tempFormat(fOptions.FmtSubString.Begin(), fOptions.FmtSubString.End());
+    Utf8Char subCode;
+
+    char defaultFormatString[kTempCStringLength];
+
+    while (tempFormat.ReadRawChar(&subCode)) {
+        if (subCode == '<') {
+            datetimeFormat->AliasAssign(tempFormat.Begin(), tempFormat.Begin());
+        } else if (subCode == '>') {
+            datetimeFormat->AliasAssign(datetimeFormat->Begin(), tempFormat.Begin()-1);
+        }
+    }
+    if (datetimeFormat->Length() == 0) {
+        Int32 fractionLen = -1;
+        if (fOptions.FormatChar == 't') {
+            fractionLen = 3;
+            //  The %<digit>u is deep in this string.
+            snprintf(defaultFormatString, kTempCStringLength, "%%H:%%M:%%S%%%du", (int)fractionLen);
+        } else {
+            if (fOptions.MinimumFieldWidth >= 0) {
+                fractionLen = fOptions.MinimumFieldWidth;
+            }
+            if (fOptions.Precision >= 0) { fractionLen = fOptions.Precision;
+            }
+            if (fractionLen < 0) {
+                fractionLen = 3;
+            }
+            if (fractionLen > 0) {
+                //  The %<digit>u is deep in this string.
+                snprintf(defaultFormatString, kTempCStringLength, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
+            } else {
+                strncpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y", kTempCStringLength);
+            }
+        }
+        defaultTimeFormat->AppendCStr(defaultFormatString);
+        datetimeFormat->AliasAssign(defaultTimeFormat->Begin(), defaultTimeFormat->End());
+    }
+}
+
+static Int32 GetTimeZoneOffsetFromTimeAndLocale(StaticTypeAndData *arg, const FormatOptions &fOptions) {
+    Int32 tz = 0;
+    TypeRef argType = arg->_paramType;
+    if (fOptions.FormatChar == 'T' && !fOptions.EngineerNotation) {
+        // (Engineer notation here means ^ flag, which in Time context means UTC)
+        if (argType->IsTimestamp()) {
+            Timestamp time = *((Timestamp*)arg->_pData);
+            tz = Date::getLocaletimeZone(time.Integer());
+        } else if (argType->IsNumeric()) {
+            Double value = ReadDoubleFromMemory(argType,  arg->_pData);
+            Timestamp time(value);
+            tz = Date::getLocaletimeZone(time.Integer());
+        }
+    }
+    return tz;
+}
+
 /**
  * main format function, all the %format functionality is done through this one
  * */
@@ -789,67 +848,16 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     case 't':
                     case 'T':
                     {
-                        Int32 tz = 0;
-                        argType = arguments[argumentIndex]._paramType;
-                        if (fOptions.FormatChar == 'T' && !fOptions.EngineerNotation) {
-                            // (Engineer notation here means ^ flag, which in Time context means UTC)
-                            if (argType->IsTimestamp()) {
-                                Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
-                                tz = Date::getLocaletimeZone(time.Integer());
-                            } else if (argType->IsNumeric()) {
-                                Double value = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
-                                Timestamp time(value);
-                                tz = Date::getLocaletimeZone(time.Integer());
-                            }
-                        }
+                        Int32 tz = GetTimeZoneOffsetFromTimeAndLocale(&arguments[argumentIndex], fOptions);
                         if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp() && !argType->IsNumeric())
                             || (fOptions.FormatChar == 't' && !argType->IsNumeric())) {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
-
+#if defined(VIREO_TIME_FORMATTING)
                         SubString datetimeFormat;
                         TempStackCString defaultTimeFormat;
-                        SubString tempFormat(&fOptions.FmtSubString);
-                        Utf8Char subCode;
-
-                        char defaultFormatString[kTempCStringLength];
-
-                        while (tempFormat.ReadRawChar(&subCode)) {
-                            if (subCode == '^') {
-                                tz = 0;
-                            } else if (subCode == '<') {
-                                datetimeFormat.AliasAssign(tempFormat.Begin(), tempFormat.Begin());
-                            } else if (subCode == '>') {
-                                datetimeFormat.AliasAssign(datetimeFormat.Begin(), tempFormat.Begin()-1);
-                            }
-                        }
-                        if (datetimeFormat.Length() == 0) {
-                            Int32 fractionLen = -1;
-                            if (fOptions.FormatChar == 't') {
-                                 fractionLen = 3;
-                                //  The %<digit>u is deep in this string.
-                                snprintf(defaultFormatString, kTempCStringLength, "%%H:%%M:%%S%%%du", (int)fractionLen);
-                            } else {
-                                if (fOptions.MinimumFieldWidth >= 0) {
-                                    fractionLen = fOptions.MinimumFieldWidth;
-                                }
-                                if (fOptions.Precision >= 0) { fractionLen = fOptions.Precision;
-                                }
-                                if (fractionLen < 0) {
-                                    fractionLen = 3;
-                                }
-                                if (fractionLen > 0) {
-                                    //  The %<digit>u is deep in this string.
-                                    snprintf(defaultFormatString, kTempCStringLength, "%%#I:%%M:%%S%%%du %%p %%m/%%d/%%Y", (int)fractionLen);
-                                } else {
-                                    strncpy(defaultFormatString, "%#I:%M:%S %p %m/%d/%Y", kTempCStringLength);
-                                }
-                            }
-                            defaultTimeFormat.AppendCStr(defaultFormatString);
-                            datetimeFormat.AliasAssign(defaultTimeFormat.Begin(), defaultTimeFormat.End());
-                        }
-#if defined(VIREO_TIME_FORMATTING)
+                        GetDateTimeFormatString(&datetimeFormat, fOptions, &defaultTimeFormat);
                         if (argType->IsTimestamp()) {
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
                             Date date(time, tz);
@@ -1743,6 +1751,23 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                     argumentIndex++;
                 }
                 break;
+                case 'T':
+                {
+                    SubString datetimeFormat;
+                    TempStackCString defaultTimeFormat;
+                    Timestamp timestamp;
+                    SubString timeInput = *input;
+                    GetDateTimeFormatString(&datetimeFormat, fOptions, &defaultTimeFormat);
+                    if (!StringToDateTime(&timeInput, fOptions.EngineerNotation, &datetimeFormat, &timestamp)) {
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr, true);
+                    } else {
+                        offsetPastScan += timeInput.Begin() - input->Begin();
+                        input->AliasAssign(timeInput.Begin(), input->End());
+                    }
+                    *((Timestamp*)arguments[argumentIndex]._pData) = timestamp;
+                    argumentIndex++;
+                }
+                break;
                 case '%': {    //%%
                     input->ReadRawChar(&inputChar);
                     ++offsetPastScan;
@@ -2188,10 +2213,12 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     pOption->OriginalFormatChar = pOption->FormatChar;
     pOption->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
-char abbrWeekDayName[7][10] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-char weekDayName[7][10] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
-char abbrMonthName[12][10] = { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
-char monthName[12][10] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+
+static const char *abbrWeekDayName[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", nullptr };
+static const char *weekDayName[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", nullptr };
+static const char *abbrMonthName[] = { "Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec", nullptr };
+static const char *monthName[] = { "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December", nullptr };
 
 //------------------------------------------------------------
 Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output)
@@ -2512,6 +2539,280 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
         }
     }
     return validFormatString;
+}
+
+static inline Boolean ReadDateTimeValue(SubString *input, Int32 *value, Int32 minLen, Int32 maxLen, Int32 minVal, Int32 maxVal) {
+    const Utf8Char *begin = input->Begin(), *end = input->End();
+    if (end - begin > maxLen)
+        end = begin + maxLen;
+    Int32 charCount = 0;
+    *value = 0;
+    while (begin < end) {
+        Int32 cValue = input->DigitValue(*begin, 10);
+        if (cValue >= 0) {
+            begin++;
+            *value = (*value * 10) + cValue;
+        } else {
+            break;
+        }
+        ++charCount;
+    }
+    if (*value < minVal)
+        *value = minVal;
+    else if (*value > maxVal)
+        *value = maxVal;
+    if (charCount < minLen)
+        return false;
+    input->AliasAssign(begin, input->End());
+    return true;
+}
+
+static IntIndex MatchDateTimeName(SubString *input, const char *nameArray[]) {
+    IntIndex index = 0;
+    const char *nameToMatch;
+    while ((nameToMatch = nameArray[index]) != nullptr) {
+        if (input->ComparePrefixCStrIgnoreCase(nameToMatch)) {
+            input->EatRawChars(Int32(strlen(nameToMatch)));
+            return index;
+            break;
+        }
+        ++index;
+    }
+    return -1;
+}
+
+Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Timestamp *tsPtr) {
+    TempStackCString formatString;
+    SubString tempFormat(format);
+    if (format == nullptr || format->Length() == 0) {
+        formatString.AppendCStr("%x %X");
+        tempFormat.AliasAssign(formatString.Begin(), formatString.End());
+    }
+
+    Utf8Char c = 0, matchChar;
+    Int32 year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, weekday = -1, yearday = -1;
+    bool ampmIsPM = false, is12HourFormat = false;
+    double fracsec = 0;
+
+    Boolean validFormatString = true, canScan = true;
+    char decimalSeparator = '.';
+    while (canScan && validFormatString && tempFormat.ReadRawChar(&c)) {
+        if (c == '%') {
+            TimeFormatOptions fOption;
+            Boolean parseFinished = false;
+            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, nullptr, nullptr, &tempFormat, &validFormatString, &decimalSeparator, &parseFinished))
+                continue;
+            ReadTimeFormatOptions(&tempFormat, &fOption);
+            if  (fOption.Valid) {
+                switch (fOption.FormatChar) {
+                    case 'a' : case 'A':
+                    {
+                        IntIndex matchIndex = MatchDateTimeName(input, fOption.FormatChar == 'a' ? abbrWeekDayName : weekDayName);
+                        if (matchIndex >= 0)
+                            month = matchIndex + 1;
+                    }
+                        break;
+                    case 'b': case 'B':
+                    {
+                        IntIndex matchIndex = MatchDateTimeName(input, fOption.FormatChar == 'b' ? abbrMonthName : monthName);
+                        if (matchIndex >= 0)
+                            month = matchIndex + 1;
+                    }
+                        break;
+                    case 'c':
+                    {
+                        TempStackCString localeFormatString;
+                        SubString formatSubString(fOption.FmtSubString.Begin(), fOption.FmtSubString.End()-1);
+                        localeFormatString.AppendCStr("%");
+                        localeFormatString.Append(&formatSubString);
+                        localeFormatString.AppendCStr("x %");
+                        localeFormatString.Append(&formatSubString);
+                        localeFormatString.AppendCStr("X");
+                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
+                        validFormatString = StringToDateTime(input, isUTC, &localformat, tsPtr);
+                    }
+                        break;
+                    case 'd':
+                    {
+                        canScan = ReadDateTimeValue(input, &day, 2, 2, 1, 31);
+                    }
+                        break;
+                    case 'H':
+                    {
+                        canScan = ReadDateTimeValue(input, &hour, 2, 2, 0, 23);
+                    }
+                        break;
+                    case 'I':
+                    {
+                        canScan = ReadDateTimeValue(input, &hour, 2, 2, 1, 12);
+                        if (hour)
+                            is12HourFormat = true;
+                    }
+                        break;
+                    case 'j':
+                    {
+                        canScan = ReadDateTimeValue(input, &hour, 1, 3, 1, 366);
+                    }
+                        break;
+                    case 'm':
+                    {
+                        canScan = ReadDateTimeValue(input, &month, 2, 2, 1, 12);
+                    }
+                        break;
+                    case 'M':
+                    {
+                        canScan = ReadDateTimeValue(input, &minute, 2, 2, 0, 59);
+                    }
+                        break;
+                    case 'p':
+                    {
+                        Utf8Char ampmChar;
+                        if (input->PeekRawChar(&ampmChar) &&
+                            (ampmChar == 'A' || ampmChar == 'a' || ampmChar == 'P' || ampmChar == 'p')
+                            && input->PeekRawChar(&matchChar, 1)
+                            && (matchChar == 'M' || matchChar == 'm')) {
+                            input->ReadRawChar(&matchChar);
+                            input->ReadRawChar(&matchChar);
+                            if (ampmChar == 'P' || ampmChar == 'p')
+                                ampmIsPM = true;
+                        }
+                    }
+                        break;
+                    case 'S':
+                    {
+                        canScan = ReadDateTimeValue(input, &second, 2, 2, 0, 59);
+                    }
+                        break;
+                    case 'u':
+                    {
+                        if (input->PeekRawChar(&matchChar) || matchChar == '.')
+                            input->ParseDouble(&fracsec);
+                    }
+                        break;
+                    case 'w':
+                    {
+                        canScan = ReadDateTimeValue(input, &weekday, 1, 1, 0, 6);
+                    }
+                        break;
+                    case 'U':
+                    case 'W':
+                    {
+                        canScan = ReadDateTimeValue(input, &yearday, 2, 2, 0, 53);
+                        // TODO(spathiwa) finish
+                    }
+                        break;
+                    case 'x':
+                    {
+                        TempStackCString localeFormatString;
+                        if (fOption.Precision == 1) {
+                            localeFormatString.AppendCStr("%A, %B %d, %Y");
+                        } else if (fOption.Precision == 2) {
+                            localeFormatString.AppendCStr("%a, %b %d, %Y");
+                        } else {
+                            // to do locale specific format
+                            if (fOption.RemoveLeading) {
+                                localeFormatString.AppendCStr("%#m/%#d/%Y");
+                            } else {
+                                localeFormatString.AppendCStr("%m/%d/%Y");
+                            }
+                        }
+                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
+                        validFormatString = StringToDateTime(input, isUTC, &localformat, tsPtr);
+                    }
+                        break;
+                    case 'X':
+                    {
+                        TempStackCString localeFormatString;
+                        Int32 fractionLen = 0;
+                        if (fOption.MinimumFieldWidth >= 0) {
+                            fractionLen = fOption.MinimumFieldWidth;
+                        }
+                        if (fOption.Precision >= 0) {
+                            fractionLen = fOption.Precision;
+                        }
+                        localeFormatString.AppendCStr("%#I:%M:%S");
+                        if (fractionLen > 0) {
+                            char fractionPart[kTempCStringLength];
+                            snprintf(fractionPart, sizeof(fractionPart), "%%.%du", (int)fractionLen);
+                            localeFormatString.AppendCStr(fractionPart);
+                        }
+                        localeFormatString.AppendCStr(" %p");
+                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
+                        validFormatString = StringToDateTime(input, isUTC, &localformat, tsPtr);
+                    }
+                        break;
+                    case 'y':
+                    {
+                        canScan = ReadDateTimeValue(input, &year, 2, 2, 0, 99);
+                        if (year <= 68)
+                            year += 2000;
+                        else
+                            year += 1900;
+                    }
+                        break;
+                    case 'Y':
+                    {
+                        canScan = ReadDateTimeValue(input, &year, 4, 4, 1600, 3000);
+                    }
+                        break;
+                    case 'z':  // Scanning TZ offset is not supported; we will parse the value but it does not affect the result
+                    {
+                        Int32 relOffset = 0, relVal = 0;
+                        Int32 sign = 1;
+                        if (input->EatChar('-'))
+                            sign = -1;
+                        canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0,  23);  // scan hours
+                        relOffset = relVal * 60 * 60;
+                        if (canScan && input->EatChar(':')) {  // scan :minutes
+                            canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0,  59);
+                            relOffset += relVal * 60;
+                            if (canScan && input->EatChar(':')) {  // scan :seconds
+                                canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0, 59);
+                                relOffset += relVal;
+                            } else {
+                                canScan = false;
+                            }
+                        } else {
+                            canScan = false;
+                        }
+                    }
+                        break;
+                    case 'Z':  // Scanning TZ is not supported; we will parse the value but it does not affect the result
+                    {
+                        Timestamp tempTS(fracsec, second, minute, hour, day, month, year);
+                        Date date(tempTS, isUTC);
+                        ConstCStr tzStr = date.TimeZoneString();
+                        if (input->CompareCStrIgnoreCase(tzStr))
+                            input->EatRawChars(Int32(strlen(tzStr)));
+                        else
+                            canScan = false;
+                    }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
+            if (!input->ReadRawChar(&matchChar) || matchChar != c)
+               return false;
+        }
+    }
+    if (canScan) {
+        if (is12HourFormat) {
+            if (ampmIsPM) {
+                if (hour < 12)
+                    hour += 12;
+            } else if (hour >= 12) {
+                hour -= 12;
+            }
+        }
+        Timestamp timestamp(fracsec, second, minute, hour, day, month, year);
+        Int32 timeZoneOffset = 0;
+        if (!isUTC)
+            timeZoneOffset = Date::getLocaletimeZone(timestamp.Integer());
+        *tsPtr = timestamp - timeZoneOffset;
+    }
+    return validFormatString && canScan;
 }
 
 //------------------------------------------------------------
