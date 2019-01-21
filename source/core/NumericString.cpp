@@ -1979,8 +1979,11 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
     if (_ParamPointer(StringFormat)) {
         format = _Param(StringFormat)->MakeSubStringAlias();
     }
-    input.AliasAssign(input.Begin() + _Param(InitialPos), input.End());
-    UInt32 newOffset = _Param(InitialPos);
+    Int32 initPos = _ParamPointer(InitialPos) ? _Param(InitialPos) : 0;
+    if (input.Begin() + initPos >= input.End())
+        initPos = input.End() - input.Begin();
+    input.AliasAssign(input.Begin() + initPos, input.End());
+    UInt32 newOffset = initPos;
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
     ErrorCluster *errPtr = _ParamPointer(ErrClust);
 
@@ -1995,10 +1998,13 @@ VIREO_FUNCTION_SIGNATUREV(StringScan, StringScanParamBlock)
         }
         newOffset += FormatScan(&input, &format, argCount, arguments, errPtr);
     }
-    _Param(OffsetPast) = newOffset;
-    _Param(StringRemaining)->Resize1D(input.Length());
-    TypeRef elementType = _Param(StringRemaining)->ElementType();
-    elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
+    if (_ParamPointer(OffsetPast))
+        _Param(OffsetPast) = newOffset;
+    if (_ParamPointer(StringRemaining)) {
+        _Param(StringRemaining)->Resize1D(input.Length());
+        TypeRef elementType = _Param(StringRemaining)->ElementType();
+        elementType->CopyData(input.Begin(), _Param(StringRemaining)->Begin(), input.Length());
+    }
     return _NextInstruction();
 }
 
