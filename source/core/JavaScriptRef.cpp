@@ -26,15 +26,15 @@ extern "C" {
 
 VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
 {
+    Boolean isNotARefnum = false;
+    JavaScriptRefNum* refnumPtr = _ParamPointer(0);
+#if kVireoOS_emscripten
     TypeRef typeRefJavaScriptRefNum = TypeManagerScope::Current()->FindType(tsJavaScriptRefNumType);
     TypeRef typeRefIsNotARefNum = TypeManagerScope::Current()->FindType(tsBooleanType);
-    JavaScriptRefNum* refnumPtr = _ParamPointer(0);
-    Boolean isNotARefnum = false;
-    #if kVireoOS_emscripten
         jsIsNotAJavaScriptRefnum(typeRefJavaScriptRefNum, refnumPtr, typeRefIsNotARefNum, &isNotARefnum);
-    #else
+#else
         isNotARefnum = *refnumPtr == 0;
-    #endif
+#endif
     _Param(1) = isNotARefnum;
     return _NextInstruction();
 }

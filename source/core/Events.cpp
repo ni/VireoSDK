@@ -1235,6 +1235,7 @@ VIREO_FUNCTION_SIGNATURE2(RegisterForJSEvent, JavaScriptRefNum, UInt32)
         THREAD_EXEC()->LogEvent(EventLog::kSoftDataError, "JavaScriptRefNum must not be null");
         return THREAD_EXEC()->Stop();
     }
+#if kVireoOS_emscripten
     UInt32 eventType = _Param(1);
     VirtualInstrument *owningVI = THREAD_CLUMP()->OwningVI();
     STACK_VAR(String, viNameVar);
@@ -1248,10 +1249,9 @@ VIREO_FUNCTION_SIGNATURE2(RegisterForJSEvent, JavaScriptRefNum, UInt32)
         eventOracleIdx = ecInfo->eventOracleIndex;
         controlID = ecInfo->controlID;
 
-#if kVireoOS_emscripten
         jsRegisterForControlEvent(viName, controlID, eventType, eventOracleIdx);
-#endif
     }
+#endif
 
     return _NextInstruction();
 }
