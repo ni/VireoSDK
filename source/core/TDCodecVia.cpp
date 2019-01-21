@@ -783,7 +783,7 @@ TypeRef TDViaParser::ParseDefaultValue(Boolean mutableValue)
     return cdt;
 }
 //------------------------------------------------------------
-Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth /*= NULL*/)
+Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth /*= nullptr*/)
 {
     SubString  token;
     SubString  tempString(_string);
