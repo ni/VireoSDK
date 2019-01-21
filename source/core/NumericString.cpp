@@ -791,12 +791,19 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         Int32 tz = 0;
                         argType = arguments[argumentIndex]._paramType;
-                        if (fOptions.FormatChar == 'T' && argType->IsTimestamp() && !fOptions.EngineerNotation) {
+                        if (fOptions.FormatChar == 'T' && !fOptions.EngineerNotation) {
                             // (Engineer notation here means ^ flag, which in Time context means UTC)
-                            Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
-                            tz = Date::getLocaletimeZone(time.Integer());
+                            if (argType->IsTimestamp()) {
+                                Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
+                                tz = Date::getLocaletimeZone(time.Integer());
+                            } else if (argType->IsNumeric()) {
+                                Double value = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
+                                Timestamp time(value);
+                                tz = Date::getLocaletimeZone(time.Integer());
+                            }
                         }
-                        if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp()) || (fOptions.FormatChar == 't' && !argType->IsNumeric())) {
+                        if ((fOptions.FormatChar == 'T' && !argType->IsTimestamp() && !argType->IsNumeric())
+                            || (fOptions.FormatChar == 't' && !argType->IsNumeric())) {
                             CreateMismatchedFormatSpecifierError(format, count, arguments, buffer, fOptions, &validFormatString, &parseFinished, errPtr);
                             break;
                         }
