@@ -794,6 +794,8 @@ Boolean TDViaParser::PreParseElements(Int32 rank, ArrayDimensionVector dimension
     // such as a cluster or nested array.
 
     Int32 depth = 0;
+    if (reachedDepth)
+        *reachedDepth = 1;
 
     ArrayDimensionVector tempDimensionLengths;
     for (Int32 i = 0; i < kArrayMaxRank; i++) {
