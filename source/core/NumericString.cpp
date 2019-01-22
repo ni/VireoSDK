@@ -2511,11 +2511,11 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         break;
                     case 'z':
                     {
-                        Int32 hourdiff = date.TimeZoneOffset() / (3600);
-                        Int32 totalSeconds = date.TimeZoneOffset() % (3600);
-                        totalSeconds = totalSeconds < 0? 0 - totalSeconds : totalSeconds;
-                        Int32 mindiff = totalSeconds/60;
-                        Int32 seconddiff = totalSeconds%60;
+                        Int32 hourdiff = date.TimeZoneOffset() / 3600;
+                        Int32 totalSeconds = date.TimeZoneOffset() % 3600;
+                        totalSeconds = totalSeconds < 0 ? -totalSeconds : totalSeconds;
+                        Int32 mindiff = totalSeconds / 60;
+                        Int32 seconddiff = totalSeconds % 60;
                         char difference[64];
                         Int32 size = 0;
                         if (hourdiff < 0) {
@@ -2547,7 +2547,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
 
 static inline Boolean ReadDateTimeValue(SubString *input, Int32 *value, Int32 minLen, Int32 maxLen, Int32 minVal, Int32 maxVal) {
     const Utf8Char *begin = input->Begin(), *end = input->End();
-    if (end - begin > maxLen)
+    if (maxLen > 0 && end - begin > maxLen)
         end = begin + maxLen;
     Int32 charCount = 0;
     *value = 0;
@@ -2563,7 +2563,7 @@ static inline Boolean ReadDateTimeValue(SubString *input, Int32 *value, Int32 mi
     }
     if (*value < minVal)
         *value = minVal;
-    else if (*value > maxVal)
+    else if (maxVal > 0 && *value > maxVal)
         *value = maxVal;
     if (charCount < minLen)
         return false;
@@ -2734,25 +2734,15 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         break;
                     case 'z':  // Scanning TZ offset is not supported; we will parse the value but it does not affect the result
                     {
-                        Int32 relOffset = 0, relVal = 0;
-                        Int32 sign = 1;
-                        if (input->EatChar('-'))
-                            sign = -1;
-                        else
-                            input->EatChar('+');
-                        canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0, 24);  // scan hours
-                        relOffset = relVal * 60 * 60;
-                        if (canScan && input->EatChar(':')) {  // scan :minutes
-                            canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0,  59);
-                            relOffset += relVal * 60;
-                            if (canScan && input->EatChar(':')) {  // scan :seconds
-                                canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0, 59);
-                                relOffset += relVal;
-                            } else {
-                                canScan = false;
+                        Int32 relVal = 0;
+                        while (input->EatChar('-') || input->EatChar('+'))
+                        {}
+                        ReadDateTimeValue(input, &relVal, 0, 0, 0, 0);  // scan hours
+                        if (input->EatChar(':')) {  // scan :minutes
+                            ReadDateTimeValue(input, &relVal, 0, 0, 0, 0);
+                            if (input->EatChar(':')) {  // scan :seconds
+                                ReadDateTimeValue(input, &relVal, 0, 0, 0, 0);
                             }
-                        } else {
-                            canScan = false;
                         }
                     }
                         break;
