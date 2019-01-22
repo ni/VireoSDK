@@ -2656,7 +2656,7 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         break;
                     case 'j':
                     {
-                        canScan = ReadDateTimeValue(input, &hour, 1, 3, 1, 366);
+                        canScan = ReadDateTimeValue(input, &yearday, 1, 3, 1, 366);
                     }
                         break;
                     case 'm':
@@ -2695,16 +2695,17 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                             input->ParseDouble(&fracsec);
                     }
                         break;
-                    case 'w':
+                    case 'w':  // week day
                     {
+                        // 'w', 'U', and 'W' are scanned but do not affect scan result
+                        // (Note: Unix strptime+mktime does support this, but LV does not)
                         canScan = ReadDateTimeValue(input, &weekday, 1, 1, 0, 6);
                     }
                         break;
-                    case 'U':
+                    case 'U':  // week of year
                     case 'W':
                     {
                         canScan = ReadDateTimeValue(input, &yearday, 2, 2, 0, 53);
-                        // TODO(spathiwa) finish
                     }
                         break;
                     case 'X':
@@ -2737,7 +2738,9 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         Int32 sign = 1;
                         if (input->EatChar('-'))
                             sign = -1;
-                        canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0,  23);  // scan hours
+                        else
+                            input->EatChar('+');
+                        canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0, 24);  // scan hours
                         relOffset = relVal * 60 * 60;
                         if (canScan && input->EatChar(':')) {  // scan :minutes
                             canScan = ReadDateTimeValue(input, &relVal, 2, 2, 0,  59);
@@ -2782,7 +2785,15 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                 hour -= 12;
             }
         }
+        if (month && day) {  // %j year day ignored if month/day provided
+            yearday = 0;
+        } else {
+            month = 1;
+            day = 1;
+        }
         Timestamp timestamp(fracsec, second, minute, hour, day, month, year);
+        if (yearday)
+            timestamp = timestamp + (yearday * 24*60*60);
         Int32 timeZoneOffset = 0;
         if (!isUTC)
             timeZoneOffset = Date::getLocaletimeZone(timestamp.Integer());
