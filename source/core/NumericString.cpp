@@ -858,15 +858,16 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         SubString datetimeFormat;
                         TempStackCString defaultTimeFormat;
                         GetDateTimeFormatString(&datetimeFormat, fOptions, &defaultTimeFormat);
+                        Boolean isUTC = (tz == 0);
                         if (argType->IsTimestamp()) {
                             Timestamp time = *((Timestamp*)arguments[argumentIndex]._pData);
                             Date date(time, tz);
-                            validFormatString = DateTimeToString(date, true, &datetimeFormat, buffer);
+                            validFormatString = DateTimeToString(date, isUTC, &datetimeFormat, buffer);
                         } else {
                             Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
                             Timestamp time(tempDouble);
                             Date date(time, tz);
-                            validFormatString = DateTimeToString(date, true, &datetimeFormat, buffer);
+                            validFormatString = DateTimeToString(date, isUTC, &datetimeFormat, buffer);
                         }
                         if (fOptions.FormatChar == 't') {
                             TruncateLeadingZerosFromTimeString(buffer);
@@ -1764,7 +1765,12 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                         offsetPastScan += timeInput.Begin() - input->Begin();
                         input->AliasAssign(timeInput.Begin(), input->End());
                     }
-                    *((Timestamp*)arguments[argumentIndex]._pData) = timestamp;
+                    if (arguments[argumentIndex]._paramType->IsTimestamp()) {
+                        *((Timestamp*)arguments[argumentIndex]._pData) = timestamp;
+                    } else {
+                        Double doubleTime = timestamp.ToDouble();
+                        WriteDoubleToMemory(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData, doubleTime);
+                    }
                     argumentIndex++;
                 }
                 break;
@@ -2639,18 +2645,18 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         break;
                     case 'd':
                     {
-                        canScan = ReadDateTimeValue(input, &day, 2, 2, 1, 31);
+                        canScan = ReadDateTimeValue(input, &day, 1, 2, 1, 31);
                     }
                         break;
                     case 'H':
                     {
-                        canScan = ReadDateTimeValue(input, &hour, 2, 2, 0, 23);
+                        canScan = ReadDateTimeValue(input, &hour, 1, 2, 0, 23);
                         hourFormat = 24;
                     }
                         break;
                     case 'I':
                     {
-                        canScan = ReadDateTimeValue(input, &hour, 2, 2, 1, 12);
+                        canScan = ReadDateTimeValue(input, &hour, 1, 2, 1, 12);
                         hourFormat = 12;
                     }
                         break;
