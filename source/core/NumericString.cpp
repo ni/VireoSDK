@@ -2220,6 +2220,45 @@ static const char *abbrMonthName[] = { "Jan", "Feb", "Mar", "Apr", "May", "June"
 static const char *monthName[] = { "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December", nullptr };
 
+// Expand 'c', 'X', or 'x' time format codes to it's longform equivalent
+static void ExpandDateTimeCode(const TimeFormatOptions &fOption, TempStackCString *localeFormatString, SubString *formatSubString) {
+    if (fOption.FormatChar == 'c') {
+        localeFormatString->AppendCStr("%");
+        localeFormatString->Append(formatSubString);
+        localeFormatString->AppendCStr("x %");
+        localeFormatString->Append(formatSubString);
+        localeFormatString->AppendCStr("X");
+    } else if (fOption.FormatChar == 'x') {
+        if (fOption.Precision == 1) {
+            localeFormatString->AppendCStr("%A, %B %d, %Y");
+        } else if (fOption.Precision == 2) {
+            localeFormatString->AppendCStr("%a, %b %d, %Y");
+        } else {
+            // to do locale specific format
+            if (fOption.RemoveLeading) {
+                localeFormatString->AppendCStr("%#m/%#d/%Y");
+            } else {
+                localeFormatString->AppendCStr("%m/%d/%Y");
+            }
+        }
+    } else if (fOption.FormatChar == 'X') {
+        Int32 fractionLen = 0;
+        if (fOption.MinimumFieldWidth >= 0) {
+            fractionLen = fOption.MinimumFieldWidth;
+        }
+        if (fOption.Precision >= 0) {
+            fractionLen = fOption.Precision;
+        }
+        localeFormatString->AppendCStr("%#I:%M:%S");
+        if (fractionLen > 0) {
+            char fractionPart[kTempCStringLength];
+            snprintf(fractionPart, sizeof(fractionPart), "%%.%du", (int)fractionLen);
+            localeFormatString->AppendCStr(fractionPart);
+        }
+        localeFormatString->AppendCStr(" %p");
+    }
+}
+
 //------------------------------------------------------------
 Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output)
 {
@@ -2262,11 +2301,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         hourFormat = 12;
                         TempStackCString localeFormatString;
                         SubString formatSubString(fOption.FmtSubString.Begin(), fOption.FmtSubString.End()-1);
-                        localeFormatString.AppendCStr("%");
-                        localeFormatString.Append(&formatSubString);
-                        localeFormatString.AppendCStr("x %");
-                        localeFormatString.Append(&formatSubString);
-                        localeFormatString.AppendCStr("X");
+                        ExpandDateTimeCode(fOption, &localeFormatString, &formatSubString);
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = DateTimeToString(date, isUTC, &localformat, output);
                     }
@@ -2437,47 +2472,16 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         output->Append(size, (Utf8Char*)weekNumberString);
                     }
                         break;
+                    case 'X':
+                        hourFormat = 12;  // fall through...
                     case 'x':
                     {
                         TempStackCString localeFormatString;
-
-                        if (fOption.Precision == 1) {
-                            localeFormatString.AppendCStr("%A, %B %d, %Y");
-                        } else if (fOption.Precision == 2) {
-                            localeFormatString.AppendCStr("%a, %b %d, %Y");
-                        } else {
-                            // to do locale specific format
-                            if (fOption.RemoveLeading) {
-                                localeFormatString.AppendCStr("%#m/%#d/%Y");
-                            } else {
-                                localeFormatString.AppendCStr("%m/%d/%Y");
-                            }
-                        }
+                        ExpandDateTimeCode(fOption, &localeFormatString, nullptr);
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = DateTimeToString(date, isUTC, &localformat, output);
                     }
                         break;
-                    case 'X':
-                    {
-                        hourFormat = 12;
-                        TempStackCString localeFormatString;
-                        Int32 fractionLen = 0;
-                        if (fOption.MinimumFieldWidth >= 0) {
-                            fractionLen = fOption.MinimumFieldWidth;
-                        }
-                        if (fOption.Precision >= 0) {
-                            fractionLen = fOption.Precision;
-                        }
-                        localeFormatString.AppendCStr("%#I:%M:%S");
-                        if (fractionLen > 0) {
-                            char fractionPart[kTempCStringLength];
-                            snprintf(fractionPart, sizeof(fractionPart), "%%.%du", (int)fractionLen);
-                            localeFormatString.AppendCStr(fractionPart);
-                        }
-                        localeFormatString.AppendCStr(" %p");
-                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
-                        validFormatString = DateTimeToString(date, isUTC, &localformat, output);
-                    }
                         break;
                     case 'y':
                     {
@@ -2591,7 +2595,8 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
 
     Utf8Char c = 0, matchChar;
     Int32 year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, weekday = -1, yearday = -1;
-    bool ampmIsPM = false, is12HourFormat = false;
+    Int32 hourFormat = 0;
+    bool ampmIsPM = false;
     double fracsec = 0;
 
     Boolean validFormatString = true, canScan = true;
@@ -2640,13 +2645,13 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                     case 'H':
                     {
                         canScan = ReadDateTimeValue(input, &hour, 2, 2, 0, 23);
+                        hourFormat = 24;
                     }
                         break;
                     case 'I':
                     {
                         canScan = ReadDateTimeValue(input, &hour, 2, 2, 1, 12);
-                        if (hour)
-                            is12HourFormat = true;
+                        hourFormat = 12;
                     }
                         break;
                     case 'j':
@@ -2667,7 +2672,8 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                     case 'p':
                     {
                         Utf8Char ampmChar;
-                        if (input->PeekRawChar(&ampmChar) &&
+                        if (hourFormat == 12  // else %p is ignored and consumes no input; if AM/PM present it's an error
+                            && input->PeekRawChar(&ampmChar) &&
                             (ampmChar == 'A' || ampmChar == 'a' || ampmChar == 'P' || ampmChar == 'p')
                             && input->PeekRawChar(&matchChar, 1)
                             && (matchChar == 'M' || matchChar == 'm')) {
@@ -2701,42 +2707,12 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         // TODO(spathiwa) finish
                     }
                         break;
+                    case 'X':
+                        hourFormat = 12;  // fall through...
                     case 'x':
                     {
                         TempStackCString localeFormatString;
-                        if (fOption.Precision == 1) {
-                            localeFormatString.AppendCStr("%A, %B %d, %Y");
-                        } else if (fOption.Precision == 2) {
-                            localeFormatString.AppendCStr("%a, %b %d, %Y");
-                        } else {
-                            // to do locale specific format
-                            if (fOption.RemoveLeading) {
-                                localeFormatString.AppendCStr("%#m/%#d/%Y");
-                            } else {
-                                localeFormatString.AppendCStr("%m/%d/%Y");
-                            }
-                        }
-                        SubString localformat(localeFormatString.Begin(), localeFormatString.End());
-                        validFormatString = StringToDateTime(input, isUTC, &localformat, tsPtr);
-                    }
-                        break;
-                    case 'X':
-                    {
-                        TempStackCString localeFormatString;
-                        Int32 fractionLen = 0;
-                        if (fOption.MinimumFieldWidth >= 0) {
-                            fractionLen = fOption.MinimumFieldWidth;
-                        }
-                        if (fOption.Precision >= 0) {
-                            fractionLen = fOption.Precision;
-                        }
-                        localeFormatString.AppendCStr("%#I:%M:%S");
-                        if (fractionLen > 0) {
-                            char fractionPart[kTempCStringLength];
-                            snprintf(fractionPart, sizeof(fractionPart), "%%.%du", (int)fractionLen);
-                            localeFormatString.AppendCStr(fractionPart);
-                        }
-                        localeFormatString.AppendCStr(" %p");
+                        ExpandDateTimeCode(fOption, &localeFormatString, nullptr);
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = StringToDateTime(input, isUTC, &localformat, tsPtr);
                     }
@@ -2798,7 +2774,7 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
         }
     }
     if (canScan) {
-        if (is12HourFormat) {
+        if (hourFormat == 12) {
             if (ampmIsPM) {
                 if (hour < 12)
                     hour += 12;
