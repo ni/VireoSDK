@@ -2665,7 +2665,8 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
     Double relTimeSeconds = 0.0;
     Utf8Char c = 0, matchChar;
     Int32 weeks = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
-    Double initSign = 1.0, sign = 1.0;
+    Int32 sign = 1;
+    Double initSign = 1.0;
     Double fracsec = 0;
 
     Boolean validFormatString = true, canScan = true;
@@ -2682,7 +2683,7 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
             ReadTimeFormatOptions(&tempFormat, &fOption);
             if  (fOption.Valid) {
                 if (input->EatChar('-'))
-                    sign = -1.0;
+                    sign = -1;
                 switch (fOption.FormatChar) {
                     case 'W':
                         canScan = ReadDateTimeValue(input, &weeks, 0, 0, 0, 0);
