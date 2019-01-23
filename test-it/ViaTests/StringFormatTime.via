@@ -2,7 +2,7 @@ define(HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(.Double 0.0) vTime1)
         e(dv(.Double 3551482760.0) vTime2)
-        e(dv(.Double 9999999999.9) vTime3)
+        e(dv(.Double 3999999999.9) vTime3)
         e(dv(.Timestamp (99999999 0)) vTime4)
 
         e(dv(.String "") output)
