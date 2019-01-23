@@ -224,13 +224,13 @@ namespace Vireo {
         time_t rawtime = timestamp.Integer() - kStdDT1970re1904;
         struct tm timeinfo;
         localtime_r(&rawtime, &timeinfo);
-       if (strchr(timeinfo.tm_zone, ' ') == nullptr) {
-          // if timezone name is abbreviated, there won't be space. True on Linux and Mac (native, node.js, and browser)
-          snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
-       } else {
-          // if timezone name is unabbreviated (True on Windows (both node.js and browser), then abbreviate it
-          abbreviateTimeZone(timeinfo.tm_zone, timeZoneAbbr);
-       }
+        if (strchr(timeinfo.tm_zone, ' ') == nullptr) {
+            // if timezone name is abbreviated, there won't be space. True on Linux and Mac (native, node.js, and browser)
+            snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", timeinfo.tm_zone);
+        } else {
+            // if timezone name is unabbreviated (True on Windows (both node.js and browser), then abbreviate it
+            abbreviateTimeZone(timeinfo.tm_zone, timeZoneAbbr);
+        }
 // #elif kVireoOS_emscripten variant deleted (03/2017); localtime_r works correctly
 #elif kVireoOS_windows
         TIME_ZONE_INFORMATION timeZoneInfo;
@@ -319,9 +319,17 @@ namespace Vireo {
 
         const char *tz = isUTC ? "UTC" : tm.tm_zone;
         _daylightSavingTime = tm.tm_isdst;
-        if (tm.tm_zone) {
-            _timeZoneString = static_cast<char *>(malloc(strlen(tz) + 1));
-            strncpy(_timeZoneString, tm.tm_zone, strlen(tz)+1);
+        if (tz) {
+            char timeZoneAbbr[kTempCStringLength];
+            if (!isUTC && strchr(tz, ' ') == nullptr) {
+                // if timezone name is abbreviated, there won't be space. True on Linux and Mac (native, node.js, and browser)
+                snprintf(timeZoneAbbr, sizeof(timeZoneAbbr), "%s", tz);
+            } else {
+                // if timezone name is unabbreviated (True on Windows (both node.js and browser), then abbreviate it
+                abbreviateTimeZone(tz, timeZoneAbbr);
+            }
+            _timeZoneString = static_cast<char *>(malloc(strlen(timeZoneAbbr) + 1));
+            strncpy(_timeZoneString, timeZoneAbbr, strlen(timeZoneAbbr)+1);
         } else {
             _timeZoneString = nullptr;
         }
