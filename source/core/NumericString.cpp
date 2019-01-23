@@ -1756,6 +1756,24 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                     argumentIndex++;
                 }
                 break;
+                case 't':
+                {
+                    SubString datetimeFormat;
+                    TempStackCString defaultTimeFormat;
+                    Double relTimeSeconds = 0.0;
+                    SubString timeInput = *input;
+                    GetDateTimeFormatString(&datetimeFormat, fOptions, &defaultTimeFormat);
+                    if (!arguments[argumentIndex]._paramType->IsNumeric()
+                        || !StringToRelTime(&timeInput, &datetimeFormat, &relTimeSeconds)) {
+                        SetFormatError(kFormatScanFailed, argumentIndex, fOptions.FormatChar, errPtr, true);
+                    } else {
+                        offsetPastScan += timeInput.Begin() - input->Begin();
+                        input->AliasAssign(timeInput.Begin(), input->End());
+                    }
+                    WriteDoubleToMemory(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData, relTimeSeconds);
+                    argumentIndex++;
+                }
+                break;
                 case 'T':
                 {
                     SubString datetimeFormat;
@@ -2295,6 +2313,10 @@ Boolean RelTimeToString(Double relTimeSeconds, SubString* format, StringRef outp
     Utf8Char c = 0;
     Boolean validFormatString = true;
     char decimalSeparator = '.';
+    if (relTimeSeconds < 0) {
+        output->Append(1, (Utf8Char*)"-");
+        relTimeSeconds = -relTimeSeconds;
+    }
     while (validFormatString && tempFormat.ReadRawChar(&c)) {
         if (c == '%') {
             TimeFormatOptions fOption;
@@ -2306,15 +2328,15 @@ Boolean RelTimeToString(Double relTimeSeconds, SubString* format, StringRef outp
                 char outbuf[16];
                 switch (fOption.FormatChar) {
                     case 'H':
-                        size = snprintf(outbuf, sizeof(outbuf), "%02d", (int)(relTimeSeconds / 3600));
+                        size = snprintf(outbuf, sizeof(outbuf), "%02d", int(relTimeSeconds / 3600));
                         output->Append(size, (Utf8Char*)outbuf);
                     break;
                     case 'M':
-                        size = snprintf(outbuf, sizeof(outbuf), "%02d", ((int)(relTimeSeconds) % 3600) / 60);
+                        size = snprintf(outbuf, sizeof(outbuf), "%02d", int((Int64(relTimeSeconds) % 3600) / 60));
                         output->Append(size, (Utf8Char*)outbuf);
                     break;
                     case 'S':
-                        size = snprintf(outbuf, sizeof(outbuf), "%02d", (int)(relTimeSeconds) % 60);
+                        size = snprintf(outbuf, sizeof(outbuf), "%02d", int(Int64(relTimeSeconds) % 60));
                         output->Append(size, (Utf8Char*)outbuf);
                     break;
                     case 'u':
@@ -2638,6 +2660,75 @@ static IntIndex MatchDateTimeName(SubString *input, const char *nameArray[]) {
     return -1;
 }
 
+Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSecondsPtr) {
+    SubString tempFormat(format);
+    Double relTimeSeconds = 0.0;
+    Utf8Char c = 0, matchChar;
+    Int32 weeks = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
+    Double initSign = 1.0, sign = 1.0;
+    Double fracsec = 0;
+
+    Boolean validFormatString = true, canScan = true;
+    char decimalSeparator = '.';
+    input->EatChar('+');
+    if (input->EatChar('-'))
+        initSign = -1.0;
+    while (canScan && validFormatString && tempFormat.ReadRawChar(&c)) {
+        if (c == '%') {
+            TimeFormatOptions fOption;
+            Boolean parseFinished = false;
+            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, nullptr, nullptr, &tempFormat, &validFormatString, &decimalSeparator, &parseFinished))
+                continue;
+            ReadTimeFormatOptions(&tempFormat, &fOption);
+            if  (fOption.Valid) {
+                if (input->EatChar('-'))
+                    sign = -1.0;
+                switch (fOption.FormatChar) {
+                    case 'W':
+                        canScan = ReadDateTimeValue(input, &weeks, 0, 0, 0, 0);
+                        weeks *= sign;
+                        break;
+                    case 'D':
+                        canScan = ReadDateTimeValue(input, &days, 0, 0, 0, 0);
+                        days *= sign;
+                        break;
+                    case 'H':
+                        canScan = ReadDateTimeValue(input, &hours, 0, 0, 0, 0);
+                        hours *= sign;
+                        break;
+                    case 'M':
+                        canScan = ReadDateTimeValue(input, &minutes, 0, 0, 0, 0);
+                        minutes *= sign;
+                        break;
+                    case 'S':
+                        canScan = ReadDateTimeValue(input, &seconds, 0, 0, 0, 0);
+                        seconds *= sign;
+                        break;
+                    case 'U':
+                        if (input->PeekRawChar(&matchChar) && matchChar == decimalSeparator) {
+                            input->ParseDouble(&fracsec);
+                            if (seconds < 0.0)
+                                fracsec = -fracsec;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } else {
+            if (!input->ReadRawChar(&matchChar) || matchChar != c)
+                return false;
+        }
+    }
+    if (canScan) {
+        relTimeSeconds = initSign * ((((Double(weeks) * 7 + days) * 24 + hours) * 60 + minutes) * 60 + seconds + fracsec);
+    } else {
+        relTimeSeconds = 0;
+    }
+    *relTimeSecondsPtr = relTimeSeconds;
+    return validFormatString && canScan;
+}
+
 Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Timestamp *tsPtr) {
     TempStackCString formatString;
     SubString tempFormat(format);
@@ -2744,7 +2835,7 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         break;
                     case 'u':
                     {
-                        if (input->PeekRawChar(&matchChar) || matchChar == '.')
+                        if (input->PeekRawChar(&matchChar) && matchChar == decimalSeparator)
                             input->ParseDouble(&fracsec);
                     }
                         break;
