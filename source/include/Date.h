@@ -74,6 +74,8 @@ class Date {
 };
 
 Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output);
+Boolean RelTimeToString(Double relTimeSeconds, SubString* format, StringRef output);
+
 Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Timestamp *timestamp);
 
 }  // namespace Vireo

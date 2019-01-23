@@ -9,30 +9,34 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%t\n") format_t1)
         e(dv(.String "%<Abbrv-Weekday: %a\nWeekday: %A\nAbbrv-Month: %b\nMonth: %B\nDefault: %c\nDayNum: %d\n24Hour: %H\n12Hour: %I\nDayOfYear: %j\nMonthNum: %m\nMinute: %M\nAM/PM: %p\nSecond: %S\nfracSeconds: %3u\nWeekNum: %U\nWeekdayNum: %w\nWeekNum: %W\nlocale: %x\nLongDate: %.1x\nAbbvDate: %.2x\nLocaleTime: %X\nYearInCentury: %y\nYear: %Y\nDiff(locale/universal): %z\nTimeZone: %Z\n>T") format_T1)
         e(dv(.String "%T\n") format_T2)
+        e(dv(.String "%t\n") format_RelT1)
+        e(dv(.String "%<%M:%S>t\n") format_RelT2)
         e(dv(.Timestamp (3559753482 2268949521066274848)) vTime5)
     )
     clump (1
         Println("Testing Time Format")
 
         StringFormat(output format_T1 * vTime1)
-        Printf(output)
-        Printf("\n")
+        Printf("%s\n" output)
 
         StringFormat(output format_T1 * vTime2)
-        Printf(output)
-        Printf("\n")
+        Printf("%s\n" output)
 
         StringFormat(output format_T1 * vTime3)
-        Printf(output)
-        Printf("\n")
+        Printf("%s\n" output)
 
         StringFormat(output format_T2 * vTime4)
-        Printf(output)
-        Printf("\n")
+        Printf("%s\n" output)
 
         StringFormat(output format_T2 * vTime5)
-        Printf(output)
-        Printf("\n")
+        Printf("%s\n" output)
+
+        StringFormat(output format_RelT1 * 97263.123)
+        Printf("%s\n" output)
+
+        StringFormat(output format_RelT2 * 39923.0)
+        Printf("%s\n" output)
+
     )
 ) ) )
 enqueue(HelloWorld)

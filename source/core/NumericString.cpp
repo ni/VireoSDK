@@ -865,9 +865,13 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             validFormatString = DateTimeToString(date, isUTC, &datetimeFormat, buffer);
                         } else {
                             Double tempDouble = ReadDoubleFromMemory(argType,  arguments[argumentIndex]._pData);
-                            Timestamp time(tempDouble);
-                            Date date(time, tz);
-                            validFormatString = DateTimeToString(date, isUTC, &datetimeFormat, buffer);
+                            if (fOptions.FormatChar == 't') {
+                                validFormatString = RelTimeToString(tempDouble, &datetimeFormat, buffer);
+                            } else {
+                                Timestamp time(tempDouble);
+                                Date date(time, tz);
+                                validFormatString = DateTimeToString(date, isUTC, &datetimeFormat, buffer);
+                            }
                         }
                         if (fOptions.FormatChar == 't') {
                             TruncateLeadingZerosFromTimeString(buffer);
@@ -2265,6 +2269,69 @@ static void ExpandDateTimeCode(const TimeFormatOptions &fOption, TempStackCStrin
     }
 }
 
+static void AppendFractionalSecond(StringRef output, Double fracSec, const TimeFormatOptions &fOption, char decimalSeparator) {
+    char fractionString[10];
+    Int32 size = 0;
+    Int32 fractionLen = 0;
+    if (fOption.MinimumFieldWidth >= 0)
+        fractionLen = fOption.MinimumFieldWidth;
+    if (fOption.Precision >= 0)
+        fractionLen = fOption.Precision;
+    if (fractionLen <= 0) {
+        char buffer[2] = { decimalSeparator, '\0' };
+        output->AppendCStr(buffer);
+    } else {
+        size = snprintf(fractionString, sizeof(fractionString), "%.*f", (int)fractionLen, fracSec);
+        char* dot = strchr(fractionString, '.');
+        if (dot)
+            *dot = decimalSeparator;
+        output->Append(size-1, (Utf8Char*)fractionString+1);
+    }
+}
+
+//------------------------------------------------------------
+Boolean RelTimeToString(Double relTimeSeconds, SubString* format, StringRef output) {
+    SubString tempFormat(format);
+    Utf8Char c = 0;
+    Boolean validFormatString = true;
+    char decimalSeparator = '.';
+    while (validFormatString && tempFormat.ReadRawChar(&c)) {
+        if (c == '%') {
+            TimeFormatOptions fOption;
+            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, nullptr, nullptr, &tempFormat, &validFormatString, &decimalSeparator, nullptr))
+                continue;
+            ReadTimeFormatOptions(&tempFormat, &fOption);
+            if (fOption.Valid) {
+                Int32 size = 0;
+                char outbuf[16];
+                switch (fOption.FormatChar) {
+                    case 'H':
+                        size = snprintf(outbuf, sizeof(outbuf), "%02d", (int)(relTimeSeconds / 3600));
+                        output->Append(size, (Utf8Char*)outbuf);
+                    break;
+                    case 'M':
+                        size = snprintf(outbuf, sizeof(outbuf), "%02d", ((int)(relTimeSeconds) % 3600) / 60);
+                        output->Append(size, (Utf8Char*)outbuf);
+                    break;
+                    case 'S':
+                        size = snprintf(outbuf, sizeof(outbuf), "%02d", (int)(relTimeSeconds) % 60);
+                        output->Append(size, (Utf8Char*)outbuf);
+                    break;
+                    case 'u':
+                    {
+                        Double fracSec = relTimeSeconds - Int64(relTimeSeconds);
+                        AppendFractionalSecond(output, fracSec, fOption, decimalSeparator);
+                    }
+                    break;
+                }
+            }
+        } else {
+            output->Append(c);
+        }
+    }
+    return validFormatString;
+}
+
 //------------------------------------------------------------
 Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output)
 {
@@ -2411,27 +2478,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         break;
                     case 'u':
                     {
-                        char fractionString[10];
-                        Int32 size = 0;
-                        Int32 fractionLen = 0;
-                        if (fOption.MinimumFieldWidth >= 0) {
-                            fractionLen = fOption.MinimumFieldWidth;
-                        }
-                        if (fOption.Precision >= 0) {
-                            fractionLen = fOption.Precision;
-                        }
-                        if (fractionLen <= 0) {
-                            char buffer[2] = { decimalSeparator, '\0' };
-                            output->AppendCStr(buffer);
-                        } else {
-                            // and use it here too.
-                            size = snprintf(fractionString, sizeof(fractionString), "%.*f", (int)fractionLen, date.FractionalSecond());
-                            char* dot = strchr(fractionString, '.');
-                            if (dot) {
-                                *dot = decimalSeparator;
-                            }
-                            output->Append(size-1, (Utf8Char*)fractionString+1);
-                        }
+                        AppendFractionalSecond(output, date.FractionalSecond(), fOption, decimalSeparator);
                     }
                         break;
                     case 'W':
