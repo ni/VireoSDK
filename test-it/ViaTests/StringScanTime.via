@@ -1,0 +1,127 @@
+define(ScanTimestamp dv(.VirtualInstrument (
+  Params:
+    c(
+        i(.String formatStr)
+        i(.Timestamp vTime)
+    )
+  Locals:
+    c(
+        e(dv(.Timestamp (0 0)) nullTime)
+        e(dv(.Timestamp (0 0)) vTimeScan)
+
+        e(dv(.String "") output)
+        e(dv(.String "") remaining)
+        e(.ErrorCluster err)
+        e(.ErrorCluster noErr)
+    )
+    clump (1
+        Printf("Format String:%s\n" formatStr)
+        StringFormat(output formatStr * vTime)
+        Printf("Output: |%s|\n" output)
+
+        Copy(noErr err)
+        Copy(nullTime vTimeScan)
+        StringScan(output remaining formatStr * * err vTimeScan)
+        Printf("Scanned: %z error: %z\n" vTimeScan err)
+        StringFormat(output formatStr * vTimeScan)
+        Printf("Scanned Time: |%s|\nRemaining: |%s|\n\n" output remaining)
+    )
+) ) )
+
+define(ScanTimeDouble dv(.VirtualInstrument (
+  Params:
+    c(
+    i(.String formatStr)
+    i(.Double timeval)
+    )
+  Locals:
+    c(
+        e(dv(.Double 0.0) nullTime)
+        e(dv(.Double 0.0) timeScan)
+
+        e(dv(.String "") output)
+        e(dv(.String "") remaining)
+        e(.ErrorCluster err)
+        e(.ErrorCluster noErr)
+    )
+    clump (1
+        Printf("Format String: %s\n" formatStr)
+        StringFormat(output formatStr * timeval)
+        Printf("Output: |%s|\n" output)
+
+        Copy(noErr err)
+        Copy(nullTime timeScan)
+        StringScan(output remaining formatStr * * err timeScan)
+        Printf("Scanned: %.3lf error: %z\n" timeScan err)
+        StringFormat(output formatStr * timeScan)
+        Printf("Scanned Time: |%s|\nRemaining: |%s|\n\n" output remaining)
+    )
+) ) )
+
+define(ScanTimes dv(.VirtualInstrument (
+  Params:
+    c(
+        i(.String formatStr)
+    )
+  Locals:
+    c(
+        e(dv(.Double 0.0) vTime1)
+        e(dv(.Double 3551482760.0) vTime2)
+        e(dv(.Double 3999999999.9) vTime3)
+        e(dv(.Timestamp (99999999 0)) vTime4)
+        e(dv(.Timestamp (3559753482 2268949521066274848)) vTime5)
+    )
+    clump (1
+        ScanTimeDouble(formatStr vTime1)
+        ScanTimeDouble(formatStr vTime2)
+        ScanTimeDouble(formatStr vTime3)
+        ScanTimestamp(formatStr vTime4)
+        ScanTimestamp(formatStr vTime5)
+    )
+) ) )
+
+define(ScanRelTimes dv(.VirtualInstrument (
+  Params:
+    c(
+        i(.String formatStr)
+    )
+  Locals:
+    c(
+        e(dv(.Double -7280.5) vTime1)
+        e(dv(.Double 3551482760.0) vTime2)
+        e(dv(.Double 9999999999.9) vTime3)
+    )
+    clump (1
+        ScanTimeDouble(formatStr vTime1)
+        ScanTimeDouble(formatStr vTime2)
+        ScanTimeDouble(formatStr vTime3)
+    )
+) ) )
+
+define(TestScanTime dv(.VirtualInstrument (
+  Locals:
+    c(
+        e(dv(.String "%^<%Y-%m-%dT%H:%M:%S%7uZ>T") format_T1)
+        e(dv(.String "%^<%Y-%m-%dT%H:%M:%S%7uZxx>Tyy") format_T2)
+        e(dv(.String "%<%Y-%m-%dT%H:%M:%S%7uZ>T") format_T3)
+        e(dv(.String "%T") format_T4)
+        e(dv(.String "%<%I:%M:%S %p %A %B %#d, %Y %Z>T") format_T5)
+
+        e(dv(.String "%<%H:%M:%S>t") format_RT1)
+        e(dv(.String "%t") format_RT2)
+    )
+    clump (1
+        Println("Testing StringScan Time Formats\n")
+
+        ScanTimes(format_T1)
+        ScanTimes(format_T2)
+        ScanTimes(format_T3)
+        ScanTimes(format_T4)
+        ScanTimes(format_T5)
+
+        //ScanRelTimes(format_RT1)
+        //ScanRelTimes(format_RT2)
+    )
+) ) )
+
+enqueue(TestScanTime)
