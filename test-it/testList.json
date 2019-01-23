@@ -79,7 +79,6 @@
         },
         "manual": {
             "tests": [
-                "StringFormatTime.via",
                 "TestVI_LargeBDTest.via"
             ]
         },
@@ -305,12 +304,14 @@
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
                 "StringFormatFloat.via",
+                "StringFormatTime.via",
                 "StringFormatTimeRelative.via",
                 "StringFunctions.via",
                 "StringLength.via",
                 "StringPickLine.via",
                 "StringReverse.via",
                 "StringRotate.via",
+                "StringScanTime.via",
                 "Strings.via",
                 "StringToLowercase.via",
                 "StringTrim.via",
