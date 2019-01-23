@@ -344,6 +344,22 @@ namespace Vireo {
 #endif
     }
 
+    Timestamp Date::DateUTCToTimestamp(Int32 year, Int32 month, Int32 day, Int32 hour, Int32 minute, Int32 second, Double fracSecs) {
+        Int32 baseYear = 1903;
+        Int64 numberOfLeap = numberOfLeapYears(year - 1, baseYear);
+        Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (year-1 - baseYear - numberOfLeap)*kSecondsInYear;
+        Int32 dayOfMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+        if (isLeapYear(year))
+            dayOfMonth[1] = 29;
+        Int32 i;
+        for (i = 0; i < month; ++i) {
+            totalSeconds += dayOfMonth[i] * kSecondsPerDay;
+        }
+        totalSeconds += (day - 1) * kSecondsPerDay;
+        totalSeconds += hour * kSecondsPerHour + minute * kSecondsPerMinute + second;
+        return Timestamp(Double(totalSeconds) + fracSecs);
+    }
+
     Date::~Date() {
         if (_timeZoneString) {
             free(_timeZoneString);
