@@ -134,6 +134,21 @@ namespace Vireo
     #if !kVireoOS_windows
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, nullptr };
         time_t t = timegm(&timeVal);
+        if (sizeof(t) == 4 && (year <= 1901 || year >= 2038)) {  // adjust for overflow if time_t is only 32-bits
+            // timegm does the correct math, but overflows and gives us only the lower 32-bits
+            // Figure out the correct upper bits using only the year
+            Timestamp ts = Timestamp((Double)t + kStdDT1970re1904 + fracSecs);
+            Int32 tempYear = Date::getYear(ts.Integer(), nullptr, nullptr);
+            if (year == tempYear) {
+                *this = ts;
+            } else {
+                Int64 adjust = (year - tempYear) / 136;  // 136 is the entire range of years repreented by 32-bit second value
+                Int64 bigT = t;
+                bigT += adjust << 32;  // set high bits to correct truncated value
+                *this = Timestamp((Double)bigT + kStdDT1970re1904 + fracSecs);
+            }
+            return;
+        }
     #else
         struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0};
         time_t t = _mkgmtime(&timeVal);
