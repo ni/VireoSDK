@@ -130,32 +130,14 @@ namespace Vireo
     }
     //------------------------------------------------------------
     Timestamp::Timestamp(Double fracSecs, Int32 sec, Int32 min, Int32 hour, Int32 day, Int32 month, Int32 year) {
-    #ifdef VIREO_DATE_TIME_STDLIB
-    #if !kVireoOS_windows
-        struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0, 0, nullptr };
-        time_t t = timegm(&timeVal);
-        if (sizeof(t) == 4 && (year <= 1901 || year >= 2038)) {  // adjust for overflow if time_t is only 32-bits
-            // timegm does the correct math, but overflows and gives us only the lower 32-bits
-            // Figure out the correct upper bits using only the year
-            Timestamp ts = Timestamp((Double)t + kStdDT1970re1904 + fracSecs);
-            Int32 tempYear = Date::getYear(ts.Integer(), nullptr, nullptr);
-            if (year == tempYear) {
-                *this = ts;
-            } else {
-                Int64 adjust = (year - tempYear) / 136;  // 136 is the entire range of years repreented by 32-bit second value
-                Int64 bigT = t;
-                bigT += adjust << 32;  // set high bits to correct truncated value
-                *this = Timestamp((Double)bigT + kStdDT1970re1904 + fracSecs);
-            }
-            return;
-        }
-    #else
-        struct tm timeVal = { sec, min, hour, day, month-1, year-1900, 0, 0, 0};
-        time_t t = _mkgmtime(&timeVal);
-    #endif
-    #endif
-        *this = Timestamp((Double)t + kStdDT1970re1904 + fracSecs);
-    }
+        // We no longer use timegm/mktime/_mkgmtime here because of limitations on various platforms.
+        // Mac can't handle dates before 1901, even though time_t is signed 64-bit.
+        // Windows can't handle dates before 1970; time_t is unsigned 64-bit.
+        // We now use a simplified variant of mktime implemented in Date::DateUTCToTimestamp().
+        // It can't handle converting using tm_wday, tm_yday fields or DST/TZ like mktime, but we don't need this.
+        Timestamp ts = Date::DateUTCToTimestamp(year, month-1, day, hour, min, sec, fracSecs);
+        *this = ts;
+      }
     //------------------------------------------------------------
     Double Timestamp::ToDouble() const {
         Double wholeSeconds = (Double)this->Integer();

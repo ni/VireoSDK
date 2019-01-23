@@ -2930,7 +2930,6 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
         if (yearday)
             timestamp = timestamp + (yearday * 24*60*60);
         Int32 timeZoneOffset = 0;
-        Date dateDebug(timestamp, true);
         if (!isUTC)
             timeZoneOffset = Date::getLocaletimeZone(timestamp.Integer());
         *tsPtr = timestamp - timeZoneOffset;
