@@ -25,6 +25,7 @@ namespace Vireo {
     static const Int32 kSecondsPerHour = kSecondsPerMinute * 60;
     static const Int32 kSecondsPerDay = kSecondsPerHour * 24;
     static const Int32 kDaysInWeek = 7;
+    static const Int32 kSecondsPerWeek = kSecondsPerDay * kDaysInWeek;
     static const UInt32 kStdDT1970re1904 = 2082844800;
 
 class Date {

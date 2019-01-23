@@ -11,6 +11,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%T\n") format_T2)
         e(dv(.String "%t\n") format_RelT1)
         e(dv(.String "%<%M:%S>t\n") format_RelT2)
+        e(dv(.String "%<%#W weeks %#D days %#H hours %M:%S>t\n") format_RelT3)
         e(dv(.Timestamp (3559753482 2268949521066274848)) vTime5)
     )
     clump (1
@@ -37,6 +38,8 @@ define(HelloWorld dv(.VirtualInstrument (
         StringFormat(output format_RelT2 * 39923.0)
         Printf("%s\n" output)
 
+        StringFormat(output format_RelT3 * 1249523.4)
+        Printf("%s\n" output)
     )
 ) ) )
 enqueue(HelloWorld)

@@ -2203,7 +2203,7 @@ void ReadTimeFormatOptions(SubString *format, TimeFormatOptions* pOption)
     const Utf8Char* pBegin = format->Begin();
 
     while (bValid && format->ReadRawChar(&c)) {
-        if (strchr("aAbBcdHIjmMpSuUwWxXyYzZ%", c)) {
+        if (strchr("aAbBcdDHIjmMpSuUwWxXyYzZ%", c)) {
             pOption->FormatChar = c;
             break;
         }
@@ -2309,46 +2309,102 @@ static void AppendFractionalSecond(StringRef output, Double fracSec, const TimeF
 
 //------------------------------------------------------------
 Boolean RelTimeToString(Double relTimeSeconds, SubString* format, StringRef output) {
-    SubString tempFormat(format);
-    Utf8Char c = 0;
     Boolean validFormatString = true;
-    char decimalSeparator = '.';
-    if (relTimeSeconds < 0) {
-        output->Append(1, (Utf8Char*)"-");
-        relTimeSeconds = -relTimeSeconds;
-    }
-    while (validFormatString && tempFormat.ReadRawChar(&c)) {
-        if (c == '%') {
-            TimeFormatOptions fOption;
-            if (ReadLocalizedDecimalSeparator(&tempFormat, 0, nullptr, nullptr, &tempFormat, &validFormatString, &decimalSeparator, nullptr))
-                continue;
-            ReadTimeFormatOptions(&tempFormat, &fOption);
-            if (fOption.Valid) {
-                Int32 size = 0;
-                char outbuf[16];
-                switch (fOption.FormatChar) {
-                    case 'H':
-                        size = snprintf(outbuf, sizeof(outbuf), "%02d", int(relTimeSeconds / 3600));
-                        output->Append(size, (Utf8Char*)outbuf);
-                    break;
-                    case 'M':
-                        size = snprintf(outbuf, sizeof(outbuf), "%02d", int((Int64(relTimeSeconds) % 3600) / 60));
-                        output->Append(size, (Utf8Char*)outbuf);
-                    break;
-                    case 'S':
-                        size = snprintf(outbuf, sizeof(outbuf), "%02d", int(Int64(relTimeSeconds) % 60));
-                        output->Append(size, (Utf8Char*)outbuf);
-                    break;
-                    case 'u':
-                    {
-                        Double fracSec = relTimeSeconds - Int64(relTimeSeconds);
-                        AppendFractionalSecond(output, fracSec, fOption, decimalSeparator);
+    Int64 seconds = Int64(relTimeSeconds);
+    Int64 weeks = 0, days = 0, hours = 0, minutes = 0;
+    Int32 pass;
+    bool hasWeeks = false, hasDays = false, hasHours = false, hasMinutes = false;
+
+    for (pass = 0; pass < 2; ++pass) {
+        SubString tempFormat(format);
+        Utf8Char c = 0;
+        char decimalSeparator = '.';
+        if (relTimeSeconds < 0) {
+            if (pass)
+                output->Append(1, (Utf8Char*)"-");
+            else
+                seconds = -seconds;
+        }
+        while (validFormatString && tempFormat.ReadRawChar(&c)) {
+            if (c == '%') {
+                TimeFormatOptions fOption;
+                if (ReadLocalizedDecimalSeparator(&tempFormat, 0, nullptr, nullptr, &tempFormat, &validFormatString, &decimalSeparator, nullptr))
+                    continue;
+                ReadTimeFormatOptions(&tempFormat, &fOption);
+                if (fOption.Valid) {
+                    Int32 size = 0;
+                    char outbuf[16];
+                    const char *outFormatStr = "%02lld";
+                    if (fOption.RemoveLeading)
+                        outFormatStr = "%lld";
+                    switch (fOption.FormatChar) {
+                        case 'W':
+                            if (pass) {
+                                size = snprintf(outbuf, sizeof(outbuf), outFormatStr, weeks);
+                                output->Append(size, (Utf8Char*)outbuf);
+                            }
+                            hasWeeks = true;
+                        break;
+                        case 'D':
+                            if (pass) {
+                                size = snprintf(outbuf, sizeof(outbuf), outFormatStr, days);
+                                output->Append(size, (Utf8Char*)outbuf);
+                            }
+                            hasDays = true;
+                        break;
+                        case 'H':
+                            if (pass) {
+                                size = snprintf(outbuf, sizeof(outbuf), outFormatStr, hours);
+                                output->Append(size, (Utf8Char*)outbuf);
+                            }
+                            hasHours = true;
+                        break;
+                        case 'M':
+                            if (pass) {
+                                size = snprintf(outbuf, sizeof(outbuf), outFormatStr, minutes);
+                                output->Append(size, (Utf8Char*)outbuf);
+                            }
+                            hasMinutes = true;
+                        break;
+                        case 'S':
+                            if (pass) {
+                                size = snprintf(outbuf, sizeof(outbuf), outFormatStr, seconds);
+                                output->Append(size, (Utf8Char*)outbuf);
+                            }
+                        break;
+                        case 'u':
+                        {
+                            if (pass) {
+                                if (relTimeSeconds < 0)
+                                    relTimeSeconds = -relTimeSeconds;
+                                Double fracSec = relTimeSeconds - Int64(relTimeSeconds);
+                                AppendFractionalSecond(output, fracSec, fOption, decimalSeparator);
+                            }
+                        }
+                        break;
                     }
-                    break;
                 }
+            } else if (pass) {
+                output->Append(c);
             }
-        } else {
-            output->Append(c);
+        }
+        if (pass == 0) {
+            if (hasWeeks) {
+                weeks = Int32(seconds / kSecondsPerWeek);
+                seconds -= weeks * kSecondsPerWeek;
+            }
+            if (hasDays) {
+                days = Int32(seconds / kSecondsPerDay);
+                seconds -= days * kSecondsPerDay;
+            }
+            if (hasHours) {
+                hours = Int32(seconds / kSecondsPerHour);
+                seconds -= hours * kSecondsPerHour;
+            }
+            if (hasMinutes) {
+                minutes = Int32(seconds / kSecondsPerMinute);
+                seconds -= minutes * kSecondsPerMinute;
+            }
         }
     }
     return validFormatString;
