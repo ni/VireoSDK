@@ -56,6 +56,7 @@ class Date {
     explicit Date(Timestamp timestamp, Boolean isUTC = false);
     ~Date();
     static Int32 getLocaletimeZone(Int64 utcTime);
+    static Int32 getYear(Int64 wholeSeconds, Int64* yearSeconds, Int32* weekDays);
     Int32 Year() const { return _year; }
     Int32 Month() const { return _month; }
     Int32 Day() const { return _day; }

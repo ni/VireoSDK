@@ -111,7 +111,7 @@ namespace Vireo {
     }
 
     //------------------------------------------------------------
-    Int32 getYear(Int64 wholeSeconds, Int64* yearSeconds, Int32* weekDays) {
+    Int32 Date::getYear(Int64 wholeSeconds, Int64* yearSeconds, Int32* weekDays) {
         // Thursday, January 01, 1903
         Int32 baseYear = 1903;
         Int32 baseWeek = 4;  // 3;  3 was with 0=Monday, want 0=Sunday
@@ -129,7 +129,8 @@ namespace Vireo {
                 Int64 totalSecondsNext = numberOfLeap*kSecondsInLeapYear + (i + 1 - numberOfLeap)*kSecondsInYear;
                 if (totalSeconds <= wholeSeconds && wholeSeconds < totalSecondsNext) {
                     currentYear = nextYear;
-                    *yearSeconds = (Int32)(wholeSeconds - totalSeconds);
+                    if (yearSeconds)
+                        *yearSeconds = (Int32)(wholeSeconds - totalSeconds);
                     break;
                 }
             }
@@ -144,7 +145,8 @@ namespace Vireo {
                 if (totalSecondsPrevious <= wholeSeconds && wholeSeconds < totalSeconds) {
                     currentYear = year;
                     // this will make sure the *yearSeconds is always positive
-                    *yearSeconds = (Int32)(wholeSeconds - totalSecondsPrevious);
+                    if (yearSeconds)
+                        *yearSeconds = (Int32)(wholeSeconds - totalSecondsPrevious);
                     break;
                 }
             }
@@ -156,7 +158,8 @@ namespace Vireo {
         Int64 totalSeconds = numberOfLeap*kSecondsInLeapYear + (currentYear - baseYear - numberOfLeap)*kSecondsInYear;
         Int32 weekdaysOfYear = (totalSeconds / kSecondsPerDay + baseWeek) % kDaysInWeek;
         weekdaysOfYear = (weekdaysOfYear < 0) ? (weekdaysOfYear + kDaysInWeek) : weekdaysOfYear;
-        *weekDays = weekdaysOfYear;
+        if (weekDays)
+            *weekDays = weekdaysOfYear;
         return currentYear;
     }
 
