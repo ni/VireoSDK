@@ -1,0 +1,152 @@
+Testing StringScan Time Formats
+
+Format String: %^<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |1904-01-01T00:00:00.0000000Z|
+Scanned: 0.000 error: (false 0 '')
+Scanned Time: |1904-01-01T00:00:00.0000000Z|
+Remaining: ||
+
+Format String: %^<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |2016-07-16T02:59:20.0000000Z|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |2016-07-16T02:59:20.0000000Z|
+Remaining: ||
+
+Format String: %^<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |2030-10-02T07:06:39.9000001Z|
+Scanned: 3999999999.900 error: (false 0 '')
+Scanned Time: |2030-10-02T07:06:39.9000001Z|
+Remaining: ||
+
+Format String:%^<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |1907-03-03T09:46:39.0000000Z|
+Scanned: (99999999 0) error: (false 0 '')
+Scanned Time: |1907-03-03T09:46:39.0000000Z|
+Remaining: ||
+
+Format String:%^<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |2016-10-19T20:24:42.1230001Z|
+Scanned: (3559753482 2268952195078553600) error: (false 0 '')
+Scanned Time: |2016-10-19T20:24:42.1230001Z|
+Remaining: ||
+
+Format String: %^<%Y-%m-%dT%H:%M:%S%7uZxx>Tyy
+Output: |1904-01-01T00:00:00.0000000Zxxyy|
+Scanned: 0.000 error: (false 0 '')
+Scanned Time: |1904-01-01T00:00:00.0000000Zxxyy|
+Remaining: ||
+
+Format String: %^<%Y-%m-%dT%H:%M:%S%7uZxx>Tyy
+Output: |2016-07-16T02:59:20.0000000Zxxyy|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |2016-07-16T02:59:20.0000000Zxxyy|
+Remaining: ||
+
+Format String: %^<%Y-%m-%dT%H:%M:%S%7uZxx>Tyy
+Output: |2030-10-02T07:06:39.9000001Zxxyy|
+Scanned: 3999999999.900 error: (false 0 '')
+Scanned Time: |2030-10-02T07:06:39.9000001Zxxyy|
+Remaining: ||
+
+Format String:%^<%Y-%m-%dT%H:%M:%S%7uZxx>Tyy
+Output: |1907-03-03T09:46:39.0000000Zxxyy|
+Scanned: (99999999 0) error: (false 0 '')
+Scanned Time: |1907-03-03T09:46:39.0000000Zxxyy|
+Remaining: ||
+
+Format String:%^<%Y-%m-%dT%H:%M:%S%7uZxx>Tyy
+Output: |2016-10-19T20:24:42.1230001Zxxyy|
+Scanned: (3559753482 2268952195078553600) error: (false 0 '')
+Scanned Time: |2016-10-19T20:24:42.1230001Zxxyy|
+Remaining: ||
+
+Format String: %<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |1903-12-31T18:00:00.0000000Z|
+Scanned: 0.000 error: (false 0 '')
+Scanned Time: |1903-12-31T18:00:00.0000000Z|
+Remaining: ||
+
+Format String: %<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |2016-07-15T21:59:20.0000000Z|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |2016-07-15T21:59:20.0000000Z|
+Remaining: ||
+
+Format String: %<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |2030-10-02T02:06:39.9000001Z|
+Scanned: 3999999999.900 error: (false 0 '')
+Scanned Time: |2030-10-02T02:06:39.9000001Z|
+Remaining: ||
+
+Format String:%<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |1907-03-03T03:46:39.0000000Z|
+Scanned: (99999999 0) error: (false 0 '')
+Scanned Time: |1907-03-03T03:46:39.0000000Z|
+Remaining: ||
+
+Format String:%<%Y-%m-%dT%H:%M:%S%7uZ>T
+Output: |2016-10-19T15:24:42.1230001Z|
+Scanned: (3559753482 2268952195078553600) error: (false 0 '')
+Scanned Time: |2016-10-19T15:24:42.1230001Z|
+Remaining: ||
+
+Format String: %T
+Output: |6:00:00 PM 12/31/1903|
+Scanned: 0.000 error: (false 0 '')
+Scanned Time: |6:00:00 PM 12/31/1903|
+Remaining: ||
+
+Format String: %T
+Output: |9:59:20 PM 07/15/2016|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |9:59:20 PM 07/15/2016|
+Remaining: ||
+
+Format String: %T
+Output: |2:06:39 AM 10/02/2030|
+Scanned: 3999999999.000 error: (false 0 '')
+Scanned Time: |2:06:39 AM 10/02/2030|
+Remaining: ||
+
+Format String:%T
+Output: |3:46:39 AM 03/03/1907|
+Scanned: (99999999 0) error: (false 0 '')
+Scanned Time: |3:46:39 AM 03/03/1907|
+Remaining: ||
+
+Format String:%T
+Output: |3:24:42 PM 10/19/2016|
+Scanned: (3559753482 0) error: (false 0 '')
+Scanned Time: |3:24:42 PM 10/19/2016|
+Remaining: ||
+
+Format String: %<%I:%M:%S %p %A %B %#d, %Y %Z>T
+Output: |06:00:00 PM Thursday December 31, 1903 CST|
+Scanned: 0.000 error: (false 0 '')
+Scanned Time: |06:00:00 PM Thursday December 31, 1903 CST|
+Remaining: ||
+
+Format String: %<%I:%M:%S %p %A %B %#d, %Y %Z>T
+Output: |09:59:20 PM Friday July 15, 2016 CDT|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |09:59:20 PM Friday July 15, 2016 CDT|
+Remaining: ||
+
+Format String: %<%I:%M:%S %p %A %B %#d, %Y %Z>T
+Output: |02:06:39 AM Wednesday October 2, 2030 CDT|
+Scanned: 3999999999.000 error: (false 0 '')
+Scanned Time: |02:06:39 AM Wednesday October 2, 2030 CDT|
+Remaining: ||
+
+Format String:%<%I:%M:%S %p %A %B %#d, %Y %Z>T
+Output: |03:46:39 AM Sunday March 3, 1907 CST|
+Scanned: (99999999 0) error: (false 0 '')
+Scanned Time: |03:46:39 AM Sunday March 3, 1907 CST|
+Remaining: ||
+
+Format String:%<%I:%M:%S %p %A %B %#d, %Y %Z>T
+Output: |03:24:42 PM Wednesday October 19, 2016 CDT|
+Scanned: (3559753482 0) error: (false 0 '')
+Scanned Time: |03:24:42 PM Wednesday October 19, 2016 CDT|
+Remaining: ||
+
