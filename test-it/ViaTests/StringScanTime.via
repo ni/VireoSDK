@@ -89,7 +89,7 @@ define(ScanRelTimes dv(.VirtualInstrument (
     c(
         e(dv(.Double -7280.5) vTime1)
         e(dv(.Double 3551482760.0) vTime2)
-        e(dv(.Double 9999999999.9) vTime3)
+        e(dv(.Double 999999.9) vTime3)
     )
     clump (1
         ScanTimeDouble(formatStr vTime1)
@@ -119,8 +119,8 @@ define(TestScanTime dv(.VirtualInstrument (
         ScanTimes(format_T4)
         ScanTimes(format_T5)
 
-        //ScanRelTimes(format_RT1)
-        //ScanRelTimes(format_RT2)
+        ScanRelTimes(format_RT1)
+        ScanRelTimes(format_RT2)
     )
 ) ) )
 

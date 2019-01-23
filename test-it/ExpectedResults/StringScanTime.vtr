@@ -150,3 +150,39 @@ Scanned: (3559753482 0) error: (false 0 '')
 Scanned Time: |03:24:42 PM Wednesday October 19, 2016 CDT|
 Remaining: ||
 
+Format String: %<%H:%M:%S>t
+Output: |-02:01:20|
+Scanned: -7280.000 error: (false 0 '')
+Scanned Time: |-02:01:20|
+Remaining: ||
+
+Format String: %<%H:%M:%S>t
+Output: |986522:59:20|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |986522:59:20|
+Remaining: ||
+
+Format String: %<%H:%M:%S>t
+Output: |277:46:39|
+Scanned: 999999.000 error: (false 0 '')
+Scanned Time: |277:46:39|
+Remaining: ||
+
+Format String: %t
+Output: |-02:01:20.500|
+Scanned: -7280.000 error: (false 0 '')
+Scanned Time: |-02:01:20.000|
+Remaining: |.500|
+
+Format String: %t
+Output: |986522:59:20.000|
+Scanned: 3551482760.000 error: (false 0 '')
+Scanned Time: |986522:59:20.000|
+Remaining: |.000|
+
+Format String: %t
+Output: |277:46:39.900|
+Scanned: 999999.000 error: (false 0 '')
+Scanned Time: |277:46:39.000|
+Remaining: |.900|
+
