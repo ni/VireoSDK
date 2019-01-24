@@ -109,6 +109,10 @@ define(TestScanTime dv(.VirtualInstrument (
 
         e(dv(.String "%<%H:%M:%S>t") format_RT1)
         e(dv(.String "%t") format_RT2)
+
+        e(dv(.String "%<%#H hours/%M secs>t") format_RT3)
+        e(dv(.String " 3 hours / 2 secs") scanRT)
+        e(dv(.Double 0.0) timeScan)
     )
     clump (1
         Println("Testing StringScan Time Formats\n")
@@ -121,6 +125,9 @@ define(TestScanTime dv(.VirtualInstrument (
 
         ScanRelTimes(format_RT1)
         ScanRelTimes(format_RT2)
+
+        StringScan(scanRT * format_RT3 * * * timeScan)
+        Printf("Input: |%s|\nScanned: %z\n" scanRT timeScan)  // check extra spaces in input
     )
 ) ) )
 
