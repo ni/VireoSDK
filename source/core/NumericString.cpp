@@ -2727,10 +2727,15 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
 
     Boolean validFormatString = true, canScan = true;
     char decimalSeparator = '.';
-    input->EatChar('+');
-    if (input->EatChar('-'))
-        initSign = -1.0;
+
+    // time scan allows any number of redundant initial sign chars; '-' only counts once and doesn't double-negate
+    while (input->EatChar(' ') || input->EatChar('+')
+           || (input->EatChar('-') && (initSign = -1.0)))
+    {}
     while (canScan && validFormatString && tempFormat.ReadRawChar(&c)) {
+        while (input->EatChar(' '))  // time scan is lenient about extra white space anywhere in input
+        {}
+
         if (c == '%') {
             TimeFormatOptions fOption;
             Boolean parseFinished = false;
@@ -2738,8 +2743,11 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
                 continue;
             ReadTimeFormatOptions(&tempFormat, &fOption);
             if  (fOption.Valid) {
-                if (input->EatChar('-'))
+                if (input->EatChar('-')) {
                     sign = -1;
+                    while (input->EatChar(' '))
+                    {}
+                }
                 switch (fOption.FormatChar) {
                     case 'W':
                         canScan = ReadDateTimeValue(input, &weeks, 0, 0, 0, 0);
@@ -2772,7 +2780,7 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
                         break;
                 }
             }
-        } else {
+        } else if (c != ' ') {
             if (!input->ReadRawChar(&matchChar) || matchChar != c)
                 return false;
         }
