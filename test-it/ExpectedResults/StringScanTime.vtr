@@ -186,5 +186,14 @@ Scanned: 999999.000 error: (false 0 '')
 Scanned Time: |277:46:39.000|
 Remaining: |.900|
 
+Format String: %<%#H hours/%M secs>t
 Input: | 3 hours / 2 secs|
 Scanned: 10920
+
+Format String: %<%Y/%j>T
+Input: |2016/59|
+Scanned: 2016/02/29 00:00
+
+Format String: %<%j/%Y>T
+Input: |60/2017|
+Scanned: 2017/03/02 00:00
