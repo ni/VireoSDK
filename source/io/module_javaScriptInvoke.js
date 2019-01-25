@@ -287,7 +287,6 @@ var assignJavaScriptInvoke;
                 // to abort the runtime at this point. https://github.com/ni/VireoSDK/issues/521
                 throw returnValue;
             }
-            console.error(returnValue);
 
             mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToInvokeAJavaScriptFunction, returnValue);
             completionCallbackStatus.retrievalState = completionCallbackRetrievalEnum.UNRETRIEVABLE;

@@ -153,12 +153,12 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    describe('logs error', function () {
+    describe('does not log error', function () {
         beforeEach(function () {
             spyOn(console, 'error');
         });
 
-        it('errors when function throws an exception', function (done) {
+        it('when function throws an exception', function (done) {
             var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsFunctionThatThrowsViaUrl);
             var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -168,8 +168,7 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.status')).toBeTrue();
                 expect([kNIUnableToInvokeAJavaScriptFunction]).toContain(viPathParser('error.code'));
                 expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
-                expect(console.error.calls.count()).toBe(1);
-                expect(console.error.calls.argsFor(0)).toMatch(/This function throws/);
+                expect(console.error).not.toHaveBeenCalled();
                 done();
             });
         });
