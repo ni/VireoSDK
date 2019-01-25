@@ -45,6 +45,14 @@
 
 namespace Vireo {
 
+#if kVireoOS_emscripten
+extern "C" {
+    extern void jsSystemLogging_WriteMessageUTF8(
+        TypeRef messageType, StringRef * message,
+        TypeRef severityType, Int32 * severity);
+}
+#endif
+
 typedef Int32 FileHandle;
 
 #ifdef VIREO_FILESYSTEM
@@ -383,6 +391,23 @@ VIREO_FUNCTION_SIGNATURE2(Println, StaticType, void)
 }
 #endif
 //------------------------------------------------------------
+// An instruction to enable the Write to System Log VI which uses an SLI call to SystemLogging_WriteMessageUTF8
+// ignored(0), ignored(1), message(2), severity(3), error cluster(4)
+#if kVireoOS_emscripten
+VIREO_FUNCTION_SIGNATURE5(SystemLogging_WriteMessageUTF8, StringRef, StringRef, StringRef, Int32, ErrorCluster)
+{
+    TypeRef typeRefInt32 = TypeManagerScope::Current()->FindType("Int32");
+
+    if (!_Param(4).status) {
+        jsSystemLogging_WriteMessageUTF8(
+            _Param(2)->Type(), _ParamPointer(2),
+            typeRefInt32, _ParamPointer(3)
+        );
+    }
+    return _NextInstruction();
+}
+#endif
+//------------------------------------------------------------
 DEFINE_VIREO_BEGIN(FileSystem)
     // Types
     DEFINE_VIREO_TYPE(FileHandle, "Int32")
@@ -394,6 +419,10 @@ DEFINE_VIREO_BEGIN(FileSystem)
 #if defined(VIREO_VIA_FORMATTER)
     DEFINE_VIREO_FUNCTION(Println, "p(i(StaticTypeAndData))")
     DEFINE_VIREO_FUNCTION(Printf, "p(i(VarArgCount)i(String)i(StaticTypeAndData))")
+#endif
+    //--------
+#if kVireoOS_emscripten
+    DEFINE_VIREO_FUNCTION(SystemLogging_WriteMessageUTF8, "p(i(.String) i(.String) i(.String) i(.Int32) io(" ERROR_CLUST_TYPE_STRING "))")
 #endif
     //--------
 #ifdef VIREO_FILESYSTEM
