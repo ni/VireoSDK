@@ -257,6 +257,37 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
+    describe('can start an async task and throw a non-exception value, like a number', function () {
+        beforeEach(function () {
+            spyOn(console, 'error');
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 4);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect(viPathParser('error.code')).toBe(44300);
+                expect(viPathParser('error.source')).toMatch(/8675309/);
+                expect(viPathParser('return')).toBe(0);
+                expect(console.error).not.toHaveBeenCalled();
+            };
+        });
+        // Not possible with completioncallback as there is not a second code path for errors
+        it('using promises', async function () {
+            window.SingleFunction = async function () {
+                // eslint-disable-next-line no-throw-literal
+                throw 8675309;
+            };
+            await test();
+        });
+    });
+
     describe('can return undefined to an unwired return value', function () {
         beforeEach(function () {
             test = async function () {
