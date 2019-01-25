@@ -167,8 +167,7 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/Failed to run sync/);
                 expect(viPathParser('return')).toBe(0);
-                expect(console.error.calls.count()).toBe(1);
-                expect(console.error.calls.argsFor(0)).toMatch(/Failed to run sync/);
+                expect(console.error).not.toHaveBeenCalled();
             };
         });
         it('using the completion callback', async function () {
@@ -199,8 +198,7 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/Failed to run microtask/);
                 expect(viPathParser('return')).toBe(0);
-                expect(console.error.calls.count()).toBe(1);
-                expect(console.error.calls.argsFor(0)).toMatch(/Failed to run microtask/);
+                expect(console.error).not.toHaveBeenCalled();
             };
         });
         it('using the completion callback', async function () {
@@ -238,8 +236,7 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/Failed to run new task/);
                 expect(viPathParser('return')).toBe(0);
-                expect(console.error.calls.count()).toBe(1);
-                expect(console.error.calls.argsFor(0)).toMatch(/Failed to run new task/);
+                expect(console.error).not.toHaveBeenCalled();
             };
         });
         it('using the completion callback', async function () {
@@ -340,7 +337,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    describe('errors retrieving completion callback twice without a try/catch are printed to console when', function () {
+    describe('errors retrieving completion callback twice without a try/catch when', function () {
         beforeEach(function () {
             spyOn(console, 'error');
             test = async function () {
@@ -354,7 +351,7 @@ describe('A JavaScript function invoke', function () {
                 const {rawPrint, rawPrintError} = await runSlicesAsync();
                 expect(rawPrint).toBeEmptyString();
                 expect(rawPrintError).toBeEmptyString();
-                expect(console.error).toHaveBeenCalled();
+                expect(console.error).not.toHaveBeenCalled();
                 expect(viPathParser('error.status')).toBeTrue();
                 expect(viPathParser('error.code')).toBe(44300);
                 expect(viPathParser('error.source')).toMatch(/retrieved more than once/);
@@ -648,8 +645,7 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.source')).toMatch(/This function is a failure!/);
                 expect(viPathParser('return')).toBe(0);
                 expect(jsapiStale.getCompletionCallback).toThrowError(/not valid anymore/);
-                expect(console.error.calls.count()).toBe(1);
-                expect(console.error.calls.argsFor(0)).toMatch(/This function is a failure!/);
+                expect(console.error).not.toHaveBeenCalled();
             };
         });
         it('using the synchronous functions', async function () {
@@ -689,8 +685,7 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.source')).toMatch(/Your function errored before completion callback!/);
                 expect(viPathParser('return')).toBe(0);
                 expect(completionCallbackStale).toThrowError(/callback cannot be invoked/);
-                expect(console.error.calls.count()).toBe(1);
-                expect(console.error.calls.argsFor(0)).toMatch(/Your function errored before completion callback!/);
+                expect(console.error).not.toHaveBeenCalled();
             };
         });
         it('using the completion callback', async function () {
