@@ -401,8 +401,7 @@ VIREO_FUNCTION_SIGNATURE5(SystemLogging_WriteMessageUTF8, StringRef, StringRef, 
     if (!_Param(4).status) {
         jsSystemLogging_WriteMessageUTF8(
             _Param(2)->Type(), _ParamPointer(2),
-            typeRefInt32, _ParamPointer(3)
-        );
+            typeRefInt32, _ParamPointer(3));
     }
     return _NextInstruction();
 }
