@@ -305,8 +305,16 @@ var assignCoreHelpers;
         };
 
         Module.coreHelpers.formatMessageWithException = function (messageText, exception) {
-            if (exception !== undefined && exception !== null && typeof exception.message === 'string' && exception.message.length !== 0) {
-                return messageText + ', Additional information: ' + exception.message;
+            var additionalInfo;
+            if (exception !== undefined && exception !== null) {
+                // Some browsers do not print the message in the stack so print both
+                if (typeof exception.message === 'string' && exception.message.length !== 0) {
+                    additionalInfo = ', Additional information:\nMessage: ' + exception.message;
+                    if (typeof exception.stack === 'string' && exception.message.length !== 0) {
+                        additionalInfo += '\nStack: ' + exception.stack;
+                    }
+                    return messageText + additionalInfo;
+                }
             }
 
             return messageText;
