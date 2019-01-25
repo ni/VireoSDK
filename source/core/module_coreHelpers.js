@@ -310,7 +310,7 @@ var assignCoreHelpers;
                 // Some browsers do not print the message in the stack so print both
                 if (typeof exception.message === 'string' && exception.message.length !== 0) {
                     additionalInfo = ', Additional information:\nMessage: ' + exception.message;
-                    if (typeof exception.stack === 'string' && exception.message.length !== 0) {
+                    if (typeof exception.stack === 'string' && exception.stack.length !== 0) {
                         additionalInfo += '\nStack: ' + exception.stack;
                     }
                     return messageText + additionalInfo;
