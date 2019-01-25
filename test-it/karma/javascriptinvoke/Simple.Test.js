@@ -17,6 +17,7 @@ describe('A JavaScript function invoke', function () {
     var jsScopeNotFoundViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ScopeNotFound.via');
     var jsInvalidFunctionNameViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/InvalidFunctionName.via');
     var jsFunctionThatThrowsViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/FunctionThatThrows.via');
+    var jsFunctionThatThrowsNumbersViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/FunctionThatThrowsNumbers.via');
     var jsFunctionWithUnsupportedParameterTypeViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/FunctionWithUnsupportedParameterType.via');
 
     beforeAll(function (done) {
@@ -28,6 +29,7 @@ describe('A JavaScript function invoke', function () {
             jsScopeNotFoundViaUrl,
             jsInvalidFunctionNameViaUrl,
             jsFunctionThatThrowsViaUrl,
+            jsFunctionThatThrowsNumbersViaUrl,
             jsFunctionWithUnsupportedParameterTypeViaUrl
         ], done);
     });
@@ -53,6 +55,11 @@ describe('A JavaScript function invoke', function () {
         window.NI_FunctionThatThrows = function () {
             throw new Error('This function throws');
         };
+
+        window.NI_FunctionThatThrowsNumbers = function () {
+            // eslint-disable-next-line no-throw-literal
+            throw 8675309;
+        };
     });
 
     afterEach(function () {
@@ -61,6 +68,7 @@ describe('A JavaScript function invoke', function () {
         window.NI_Scoped = undefined;
         window.NI_FunctionWithInvalidParameterType = undefined;
         window.NI_FunctionThatThrows = undefined;
+        window.NI_FunctionThatThrowsNumbers = undefined;
     });
 
     it('with no parameters succesfully works', function (done) {
@@ -168,6 +176,23 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.status')).toBeTrue();
                 expect([kNIUnableToInvokeAJavaScriptFunction]).toContain(viPathParser('error.code'));
                 expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
+                expect(viPathParser('error.source')).toMatch(/This function throws/);
+                expect(console.error).not.toHaveBeenCalled();
+                done();
+            });
+        });
+
+        it('when function throws a non-exception value, like a number', function (done) {
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsFunctionThatThrowsNumbersViaUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+            runSlicesAsync(function (rawPrint, rawPrintError) {
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect([kNIUnableToInvokeAJavaScriptFunction]).toContain(viPathParser('error.code'));
+                expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
+                expect(viPathParser('error.source')).toMatch(/8675309/);
                 expect(console.error).not.toHaveBeenCalled();
                 done();
             });

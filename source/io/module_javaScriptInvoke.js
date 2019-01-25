@@ -273,6 +273,13 @@ var assignJavaScriptInvoke;
             REJECTED: 'REJECTED'
         };
 
+        var coerceToError = function (returnValue) {
+            if (returnValue instanceof Error === false) {
+                return new Error(returnValue);
+            }
+            return returnValue;
+        };
+
         var hasExecutionError = function (returnValue) {
             return returnValue instanceof Error;
         };
@@ -430,7 +437,7 @@ var assignJavaScriptInvoke;
             try {
                 returnValue = functionToCall.apply(context, parameters);
             } catch (ex) {
-                returnValue = ex;
+                returnValue = coerceToError(ex);
             }
 
             if (hasExecutionError(returnValue)) {
@@ -457,7 +464,7 @@ var assignJavaScriptInvoke;
                 }
 
                 completionCallback = jsapi.getCompletionCallback();
-                returnValue.then(completionCallback).catch(completionCallback);
+                returnValue.then(completionCallback).catch((returnValue) => completionCallback(coerceToError(returnValue)));
                 // Do not setOccurrence when returning here since waiting asynchronously for user Promise to resolve
                 return;
             }
