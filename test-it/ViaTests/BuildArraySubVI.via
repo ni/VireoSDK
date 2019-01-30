@@ -30,4 +30,57 @@ define(videf2 dv(.VirtualInstrument (
 //--- end of vi
     )
 )))
-enqueue(videf2)
+
+define (SubVi dv(.VirtualInstrument (
+    Params: c(  //param block
+        i(dv(a(.Int32 * *) )X)
+        i(dv(a(.Int32 * *) )Y)
+        o(a(.Int32 * * *) Z)
+    )
+    Locals: c(   // Data Space
+        e(a(.Int32 * *) local4)
+        e(a(.Int32 * *) local5)
+        e(a(.Int32 * * *) local6)
+        e(a(.Int32 * * *) local7)
+    )
+        clump(1
+        ArrayConcatenate(local6 X Y )
+        Copy(local6 Z)
+/* Clump Ended. */    )
+)))
+
+define (CallerTesterVI dv(.VirtualInstrument (
+    Params: c(  //param block
+    )
+    Locals: c(   // Data Space
+        ce(dv(a(.Int32 * *) ((1 2 3 )))c5)
+        ce(dv(a(.Int32 * *) ((101 102 103 104 )(111 112 113 114 )(121 122 123 124 )(131 132 133 134 )))c6)
+        e(a(.Int32 * * *) local8)
+        e(a(.Int32 * * *) local9)
+        e(a(.Int32 * * *) local10)
+        ce(dv(a(.Int32 * *) ((1 2 3 4 5 )))c12)
+        ce(dv(a(.Int32 * *) ((101 102 103 )(111 112 113 )(121 122 123 )(131 132 133 )))c13)
+    )
+        clump(1
+        SubVi(c5 c6 local8)
+        Println(local8)
+        SubVi(c12 c13 local9)
+        Println(local9)
+        SubVi(c5 c6 local10)
+        Println(local10)
+/* Clump Ended. */    )
+)))
+
+define(TopLevelVI dv(.VirtualInstrument (
+    c(
+        e(dv(a(.Double *) () ) local1)   // mDP
+        e(a(.Double *) local2)   // mDP
+    )
+        clump(1
+        videf2()
+        CallerTesterVI()
+//--- end of vi
+    )
+)))
+
+enqueue(TopLevelVI)
