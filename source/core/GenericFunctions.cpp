@@ -1724,12 +1724,17 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
             for (i = 0; i < numInputs; i++) {
                 TypedArrayCoreRef pSource = *((TypedArrayCoreRef*) inputs[i]);
                 if (pSource != pDest) {
-                    pInsert = ArrayToArrayCopyHelper(elementType, pInsert, slabLengths, pSource->BeginAt(0),
+                    AQBlock1* pNewInsert = ArrayToArrayCopyHelper(elementType, pInsert, slabLengths, pSource->BeginAt(0),
                         pSource->DimensionLengths(), pSource->SlabLengths(), outputRank, pSource->Rank());
-                    if (!pInsert) {
+                    if (!pNewInsert) {
                         tempDimensionLengths[0] = 0;
                         pDest->ResizeDimensions(outputRank, tempDimensionLengths, false);
                         break;
+                    } else {
+                        if (pNewInsert < pInsert + slabLengths[outputRank - 1]) // non-concatenating case: advance as necessary to ensure the remaining is zeroed out
+                            pInsert += slabLengths[outputRank - 1];
+                        else // concatenating case: ArrayToArrayCopyHelper has already inserted beyond (pInsert + slabLengths[outputRank - 1], so just use pNewInsert.
+                            pInsert = pNewInsert;
                     }
                 } else {  // Source and dest are the same array
                     if (i != 0) {
