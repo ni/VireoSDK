@@ -1695,13 +1695,13 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
         IntIndex minInputRank = outputRank;
         ArrayDimensionVector tempDimensionLengths, origDimensionLengths, origSlab;
         Int32 originalOuterDimSize = pDest->DimensionLengths()[outputRank-1];
-        Boolean isDestSameAsFirstInput = false; // true implies inplaceness case
+        Boolean isDestSameAsFirstInput = false;  // true implies inplaceness case
         for (i = 0; i < numInputs; i++) {
             TypedArrayCoreRef arrayInput = *((TypedArrayCoreRef *) inputs[i]);
             if (pDest == arrayInput) {
-                if (i == 0)
+                if (i == 0) {
                     isDestSameAsFirstInput = true;
-                else {
+                } else {
                     THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
                     return THREAD_EXEC()->Stop();
                 }
@@ -1742,10 +1742,14 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
                         pDest->ResizeDimensions(outputRank, tempDimensionLengths, false);
                         break;
                     } else {
-                        if (pNewInsert < pInsert + slabLengths[outputRank - 1]) // non-concatenating case: advance as necessary to ensure the remaining is zeroed out
+                        if (pNewInsert < pInsert + slabLengths[outputRank - 1]) {
+                            // non-concatenating case: advance as necessary to ensure the remaining is zeroed out
                             pInsert += slabLengths[outputRank - 1];
-                        else // concatenating case: ArrayToArrayCopyHelper has already inserted beyond (pInsert + slabLengths[outputRank - 1], so just use pNewInsert.
+                        } else {
+                            // concatenating case: ArrayToArrayCopyHelper has already inserted input and moved the pointed
+                            // beyond (pInsert + slabLengths[outputRank - 1], so just use pNewInsert.
                             pInsert = pNewInsert;
+                        }
                     }
                 } else {  // Source and dest are the same array
                     if (inplaceDimChange)
