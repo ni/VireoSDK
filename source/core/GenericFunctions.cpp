@@ -1693,8 +1693,17 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
         IntIndex minInputRank = outputRank;
         ArrayDimensionVector tempDimensionLengths, origDimensionLengths, origSlab;
         Int32 originalOuterDimSize = pDest->DimensionLengths()[outputRank-1];
+        Boolean isDestSameAsFirstInput = false; // true implies inplaceness case
         for (i = 0; i < numInputs; i++) {
             TypedArrayCoreRef arrayInput = *((TypedArrayCoreRef *) inputs[i]);
+            if (pDest == arrayInput) {
+                if (i == 0)
+                    isDestSameAsFirstInput = true;
+                else {
+                    THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
+                    return THREAD_EXEC()->Stop();
+                }
+            }
             IntIndex* pInputDimLength = arrayInput->DimensionLengths();
             IntIndex inputRank = arrayInput->Rank(), inputOuterDimSize;
             if (inputRank < minInputRank)
@@ -1717,7 +1726,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
             origDimensionLengths[j] = pDest->DimensionLengths()[j];
             origSlab[j] = pDest->SlabLengths()[j];
         }
-        if (pDest->ResizeDimensions(outputRank, tempDimensionLengths, true)) {
+        if (pDest->ResizeDimensions(outputRank, tempDimensionLengths, isDestSameAsFirstInput)) {
             AQBlock1* pInsert = pDest->BeginAt(0);
             TypeRef elementType = pDest->ElementType();
             IntIndex* slabLengths = pDest->SlabLengths();
@@ -1737,10 +1746,6 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
                             pInsert = pNewInsert;
                     }
                 } else {  // Source and dest are the same array
-                    if (i != 0) {
-                        THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Illegal ArrayConcatenate inplaceness");
-                        return THREAD_EXEC()->Stop();
-                    }
                     if (inplaceDimChange)
                         ArrayToArrayCopyHelperRev(elementType, pInsert, pDest->SlabLengths(), pSource->BeginAt(0),
                             origDimensionLengths, origSlab, outputRank, pSource->Rank());
