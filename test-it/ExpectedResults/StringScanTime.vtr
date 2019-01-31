@@ -91,33 +91,33 @@ Scanned Time: |2016-10-19T15:24:42.1230001Z|
 Remaining: ||
 
 Format String: %T
-Output: |6:00:00 PM 12/31/1903|
+Output: |6:00:00.000 PM 12/31/1903|
 Scanned: 0.000 error: (false 0 '')
-Scanned Time: |6:00:00 PM 12/31/1903|
+Scanned Time: |6:00:00.000 PM 12/31/1903|
 Remaining: ||
 
 Format String: %T
-Output: |9:59:20 PM 07/15/2016|
+Output: |9:59:20.000 PM 07/15/2016|
 Scanned: 3551482760.000 error: (false 0 '')
-Scanned Time: |9:59:20 PM 07/15/2016|
+Scanned Time: |9:59:20.000 PM 07/15/2016|
 Remaining: ||
 
 Format String: %T
-Output: |2:06:39 AM 10/02/2030|
-Scanned: 3999999999.000 error: (false 0 '')
-Scanned Time: |2:06:39 AM 10/02/2030|
+Output: |2:06:39.900 AM 10/02/2030|
+Scanned: 3999999999.900 error: (false 0 '')
+Scanned Time: |2:06:39.900 AM 10/02/2030|
 Remaining: ||
 
 Format String:%T
-Output: |3:46:39 AM 03/03/1907|
+Output: |3:46:39.000 AM 03/03/1907|
 Scanned: (99999999 0) error: (false 0 '')
-Scanned Time: |3:46:39 AM 03/03/1907|
+Scanned Time: |3:46:39.000 AM 03/03/1907|
 Remaining: ||
 
 Format String:%T
-Output: |3:24:42 PM 10/19/2016|
-Scanned: (3559753482 0) error: (false 0 '')
-Scanned Time: |3:24:42 PM 10/19/2016|
+Output: |3:24:42.123 PM 10/19/2016|
+Scanned: (3559753482 2268952195078553600) error: (false 0 '')
+Scanned Time: |3:24:42.123 PM 10/19/2016|
 Remaining: ||
 
 Format String: %<%I:%M:%S %p %A %B %#d, %Y %Z>T
@@ -170,21 +170,21 @@ Remaining: ||
 
 Format String: %t
 Output: |-02:01:20.500|
-Scanned: -7280.000 error: (false 0 '')
-Scanned Time: |-02:01:20.000|
-Remaining: |.500|
+Scanned: -7280.500 error: (false 0 '')
+Scanned Time: |-02:01:20.500|
+Remaining: ||
 
 Format String: %t
 Output: |986522:59:20.000|
 Scanned: 3551482760.000 error: (false 0 '')
 Scanned Time: |986522:59:20.000|
-Remaining: |.000|
+Remaining: ||
 
 Format String: %t
 Output: |277:46:39.900|
-Scanned: 999999.000 error: (false 0 '')
-Scanned Time: |277:46:39.000|
-Remaining: |.900|
+Scanned: 999999.900 error: (false 0 '')
+Scanned Time: |277:46:39.900|
+Remaining: ||
 
 Format String: %<%#H hours/%M secs>t
 Input: | 3 hours / 2 secs|
@@ -192,8 +192,8 @@ Scanned: 10920
 
 Format String: %<%Y/%j>T
 Input: |2016/59|
-Scanned: 2016/02/29 00:00
+Scanned: 2016/02/29 18:00
 
 Format String: %<%j/%Y>T
 Input: |60/2017|
-Scanned: 2017/03/02 00:00
+Scanned: 2017/03/02 18:00

@@ -305,6 +305,7 @@
                 "StringFormatDecimal.via",
                 "StringFormatFloat.via",
                 "StringFormatTime.via",
+                "StringFormatTimeMisc.via",
                 "StringFormatTimeRelative.via",
                 "StringFunctions.via",
                 "StringLength.via",
