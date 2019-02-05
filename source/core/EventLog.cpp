@@ -10,15 +10,15 @@ SDG
 /*! \file
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
 
 namespace Vireo {
 
 //------------------------------------------------------------
-StringRef EventLog::DevNull = (StringRef) nullptr;
-StringRef EventLog::StdOut = (StringRef) 1;
+StringRef EventLog::DevNull = static_cast<StringRef>(nullptr);
+StringRef EventLog::StdOut = reinterpret_cast<StringRef>(1);
 
 //------------------------------------------------------------
 EventLog::EventLog(StringRef str)
@@ -86,7 +86,7 @@ void EventLog::LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr 
     if (_errorLog == StdOut) {
         gPlatform.IO.Print(buffer);
     } else if (_errorLog) {
-        _errorLog->Append(length, (const Utf8Char*)buffer);
+        _errorLog->Append(length, reinterpret_cast<const Utf8Char*>(buffer));
     }
 }
 

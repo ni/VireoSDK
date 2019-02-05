@@ -77,21 +77,23 @@ struct EventCommonData {
     static UInt32 GetNumberOfCommonElements() { return 5; }  // change if fields are added above
 
     void InitEventTime() { eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount())); }
-    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type), eventSeqIndex(0) {
+
+    EventCommonData(const UInt32 source, const UInt32 type) : eventSource(source), eventType(type), eventSeqIndex(0) {
         InitEventTime();
     }
-    EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventSeqIndex(0), eventRef(ref) {
+
+    EventCommonData(const UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventSeqIndex(0), eventRef(ref) {
         InitEventTime();
     }
 };
 
 // Compare two event time stamps or sequence numbers, allowing for wrapping
-inline Int32 EventTimeSeqCompare(UInt32 t1, UInt32 t2) {
+inline Int32 EventTimeSeqCompare(const UInt32 t1, const UInt32 t2) {
     return Int32(t1 - t2);
 }
 
 inline UInt32 *EventIndexFieldPtr(void *rawEventDataPtr) {
-    EventCommonData *eventDataPtr = (EventCommonData*)rawEventDataPtr;
+    auto eventDataPtr = static_cast<EventCommonData*>(rawEventDataPtr);
     return &eventDataPtr->eventSeqIndex;
 }
 
@@ -104,11 +106,11 @@ struct EventData {
     void *pEventData;
 
     EventData() : common(0, 0, RefNumVal()), controlUID(kNotAnEventControlUID), eventDataType(nullptr), pEventData(nullptr) { }
-    EventData(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) :
+    EventData(const EventSource source, const EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) :
         common(source, type, ref), controlUID(kNotAnEventControlUID), eventDataType(edtype), pEventData(pData) { }
     EventData(EventSource source, EventType type, EventControlUID uid, TypeRef edtype = nullptr, void *pData = nullptr) :
         common(source, type), controlUID(0), eventDataType(edtype), pEventData(pData) { }
-    EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) {
+    EventData &Init(EventSource source, const EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) {
         common.eventSource = source;
         common.eventType = type;
         common.eventSeqIndex = 0;
@@ -119,12 +121,14 @@ struct EventData {
         pEventData = pData;
         return *this;
     }
+
     void Destroy() {
         if (eventDataType && pEventData) {
             eventDataType->ClearData(pEventData);
             THREAD_TADM()->Free(pEventData);
         }
     }
+
     static UInt32 GetNextEventSequenceNumber() { return ++_s_eventSequenceNumber; }
     static UInt32 _s_eventSequenceNumber;
 };
