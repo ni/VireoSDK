@@ -11,14 +11,14 @@ SDG
 /*! \file
  */
 
-#include <stdlib.h>         // exit()
+#include <cstdlib>         // exit()
 #include "DataTypes.h"
 
 namespace Vireo
 {
 
 #ifdef VIREO_USING_ASSERTS
-void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, int line)
+void VireoAssert_Hidden(Boolean test, ConstCStr message, ConstCStr file, const int line)
 {
     if (!test) {
         ConstCStr filename = (strrchr(file, '/') ? strrchr(file, '/') + 1 : strrchr(file, '\\') ? strrchr(file, '\\') + 1 : file);

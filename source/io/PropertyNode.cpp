@@ -17,7 +17,7 @@ SDG
 #include "TDCodecVia.h"
 #include "VirtualInstrument.h"
 #include "ControlRef.h"
-#include <stdio.h>
+#include <cstdio>
 
 #define VIREO_MODULE_PropertyNode 1
 
@@ -106,7 +106,7 @@ VIREO_FUNCTION_SIGNATUREV(PropertyNodeWrite, PropertyNodeWriteParamBlock)
 }
 
 //------------------------------------------------------------
-struct PropertyNodeReadParamBlock : public VarArgInstruction
+struct PropertyNodeReadParamBlock : VarArgInstruction
 {
     _ParamDef(RefNumVal, refNum);
     _ParamDef(StringRef, propertyName);

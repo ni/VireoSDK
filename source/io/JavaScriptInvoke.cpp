@@ -15,7 +15,7 @@ SDG
 #include "ExecutionContext.h"
 #include "StringUtilities.h"
 #include "TDCodecVia.h"
-#include <stdio.h>
+#include <cstdio>
 #include "VirtualInstrument.h"
 
 #if defined(VIREO_TYPE_JavaScriptInvoke)
@@ -31,13 +31,13 @@ extern "C" {
 
 //------------------------------------------------------------
 //! Return dataRef of the parameter that is at the given index in the parameters array
-VIREO_EXPORT void* JavaScriptInvoke_GetParameterDataRef(StaticTypeAndData *parameters, Int32 index)
+VIREO_EXPORT void* JavaScriptInvoke_GetParameterDataRef(StaticTypeAndData *parameters, const Int32 index)
 {
     return parameters[index]._pData;
 }
 
 //! Return typeRef of the parameter that is at the given index in the parameters array
-VIREO_EXPORT void* JavaScriptInvoke_GetParameterTypeRef(StaticTypeAndData *parameters, Int32 index)
+VIREO_EXPORT void* JavaScriptInvoke_GetParameterTypeRef(StaticTypeAndData *parameters, const Int32 index)
 {
     return parameters[index]._paramType;
 }

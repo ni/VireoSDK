@@ -28,7 +28,7 @@ void RunExec();
 }  // namespace Vireo
 
 //------------------------------------------------------------
-int VIREO_MAIN(int argc, const char * argv[])
+int VIREO_MAIN(const int argc, const char * argv[])
 {
     using namespace Vireo;  // NOLINT(build/namespaces)
 
@@ -47,7 +47,7 @@ int VIREO_MAIN(int argc, const char * argv[])
     if (argc >= 2) {
         gShells._pRootShell = TypeManager::New(nullptr);
 
-        for (Int32 arg = 1; arg < argc; ++arg) {
+        for (auto arg = 1; arg < argc; ++arg) {
             if (strcmp(argv[arg], "-D") == 0) {
                 gShells._pRootShell->DumpPrimitiveDictionary();
                 continue;
@@ -123,8 +123,8 @@ void Vireo::RunExec() {
     TypeManagerScope scope(tm);
     // These numbers may need further tuning (numSlices and millisecondsToRun).
     // They should match the values for VJS in io/module_eggShell.js
-    Int32 state = tm->TheExecutionContext()->ExecuteSlices(10000, 4);
-    Int32 delay = state > 0 ? state : 0;
+    const Int32 state = tm->TheExecutionContext()->ExecuteSlices(10000, 4);
+    const Int32 delay = state > 0 ? state : 0;
     gShells._keepRunning = (state != kExecSlices_ClumpsFinished);
     if (delay)
         gPlatform.Timer.SleepMilliseconds(delay);

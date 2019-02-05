@@ -7,7 +7,7 @@ This software is subject to the terms described in the LICENSE.TXT file
 SDG
 */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"

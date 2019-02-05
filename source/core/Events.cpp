@@ -116,13 +116,15 @@ class EventQueueObject {
         ClearQueue();
         SetStatus(kQIDFree);
     }
-    const bool GetPendingEventSequenceNumber(UInt32 *eventSeq) {
+
+    bool GetPendingEventSequenceNumber(UInt32 *eventSeq) {
         if (size() > 0) {
             *eventSeq = _eventQueue.front().common.eventSeqIndex;
             return true;
         }
         return false;
     }
+
     const EventData &GetEventData() {
         if (size() > 0) {
             _eventLock = true;
@@ -130,6 +132,7 @@ class EventQueueObject {
         }
         return _timeOutEvent.Init(kEventSourceLVUserInt, kEventTypeTimeout, RefNumVal());
     }
+
     void SetObserver(OccurrenceCore *occ) {
         if (_wakeUpOccur != occ && occ) {
             size_t i = _eventQueue.size();
