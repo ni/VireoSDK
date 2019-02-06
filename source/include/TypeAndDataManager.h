@@ -263,7 +263,7 @@ class TypeManager
     explicit TypeManager(TypeManagerRef parentTm);
     NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);
  public:
-    ExecutionContextRef TheExecutionContext() const { return _executionContext; }
+    ExecutionContextRef TheExecutionContext() { return _executionContext; }
     void    SetExecutionContext(ExecutionContextRef exec) { _executionContext = exec; }
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
@@ -271,10 +271,10 @@ class TypeManager
 
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
-    TypeRef TypeList() const { return _typeList; }
+    TypeRef TypeList() { return _typeList; }
     void    PrintMemoryStat(ConstCStr, Boolean bLast);
 
-    TypeManagerRef BaseTypeManager() const { return _baseTypeManager; }
+    TypeManagerRef BaseTypeManager() { return _baseTypeManager; }
     TypeRef Define(const SubString* typeName, TypeRef type);
 
     TypeRef FindType(ConstCStr name);
@@ -470,8 +470,8 @@ class TypeCommon
     static const SubString TypeStaticTypeAndData;
 
     explicit TypeCommon(TypeManagerRef typeManager);
-    TypeManagerRef TheTypeManager() const { return _typeManager; }
-    TypeRef Next() const { return _next; }
+    TypeManagerRef TheTypeManager() { return _typeManager; }
+    TypeRef Next() { return _next; }
 
     // Internal to the TypeManager, but this is hard to specify in C++
     virtual ~TypeCommon() = default;
@@ -698,7 +698,7 @@ class NamedType : public WrappedType
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload);
 
-    NamedTypeRef    NextOverload() const { return _nextOverload; }
+    NamedTypeRef    NextOverload() { return _nextOverload; }
     void    Accept(TypeVisitor *tv) override { tv->VisitNamed(this); }
     SubString Name() override { return {_name.Begin(), _name.End()}; }
     SubString ElementName() override { return {nullptr, nullptr}; }
@@ -1100,7 +1100,7 @@ protected:
     static void Delete(TypedArrayCoreRef);
 
  public:
-    AQBlock1* BeginAt(IntIndex index) const
+    AQBlock1* BeginAt(IntIndex index)
     {
         VIREO_ASSERT(index >= 0)
         VIREO_ASSERT(ElementType() != nullptr)
@@ -1110,16 +1110,16 @@ protected:
     AQBlock1* BeginAtND(Int32, IntIndex*);
     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]);
 
-    void* RawObj() const { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
-    AQBlock1* RawBegin() const { return _pRawBufferBegin; }
+    void* RawObj() { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
+    AQBlock1* RawBegin() { return _pRawBufferBegin; }
     template<typename CT> CT BeginAtAQ(IntIndex index) { return reinterpret_cast<CT>(RawBegin() + index); }
     BlockItr RawItr()               { return BlockItr(RawBegin(), ElementType()->TopAQSize(), Length()); }
 
     //! Array's type.
-    TypeRef Type() const { return _typeRef; }
+    TypeRef Type() { return _typeRef; }
 
     //! The element type of this array instance. This type may be more specific than the element in Array's Type.
-    TypeRef ElementType() const { return _eltTypeRef; }
+    TypeRef ElementType() { return _eltTypeRef; }
     Boolean SetElementType(TypeRef, Boolean preserveElements);
 
  protected:
@@ -1264,8 +1264,8 @@ struct ErrorCluster {
     void SetErrorAndAppendCallChain(Boolean status, Int32 code, ConstCStr source);
     void SetError(Boolean status, Int32 ccode, ConstCStr source);
     void SetError(ErrorCluster error);
-    void AddAppendixPreamble() const { source->AppendCStr("<APPEND>\n"); }
-    void AddAppendixPostamble() const { }  // no postamble
+    void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }
+    void AddAppendixPostamble() { }  // no postamble
     Boolean hasError() const { return status; }
     Boolean hasWarning() const { return !status && code != 0; }
 };
