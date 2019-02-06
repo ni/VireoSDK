@@ -28,7 +28,7 @@ SDG
 
 #define STL_MAP
 
-#include <stdlib.h>  // abs()
+#include <cstdlib>  // abs()
 #include <cmath>
 #include <new>       // for new placement
 
@@ -263,7 +263,7 @@ class TypeManager
     explicit TypeManager(TypeManagerRef parentTm);
     NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);
  public:
-    ExecutionContextRef TheExecutionContext() { return _executionContext; }
+    ExecutionContextRef TheExecutionContext() const { return _executionContext; }
     void    SetExecutionContext(ExecutionContextRef exec) { _executionContext = exec; }
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
@@ -271,10 +271,10 @@ class TypeManager
 
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
-    TypeRef TypeList() { return _typeList; }
+    TypeRef TypeList() const { return _typeList; }
     void    PrintMemoryStat(ConstCStr, Boolean bLast);
 
-    TypeManagerRef BaseTypeManager() { return _baseTypeManager; }
+    TypeManagerRef BaseTypeManager() const { return _baseTypeManager; }
     TypeRef Define(const SubString* typeName, TypeRef type);
 
     TypeRef FindType(ConstCStr name);
@@ -285,7 +285,7 @@ class TypeManager
     Int32   AQAlignment(Int32 size);
     static Int32   AlignAQOffset(Int32 offset, Int32 size) {
         if (size != 0) {
-            Int32 remainder  = offset % size;
+            const Int32 remainder  = offset % size;
             if (remainder)
                 offset += size - remainder;
         }
@@ -293,10 +293,9 @@ class TypeManager
     }
 
     Int32   BitLengthToAQSize(IntIndex length);
-    Int32   HostPointerToAQSize() { return sizeof(void*); }
-    Int32   AQBitLength() { return _aqBitLength; }
+    Int32   HostPointerToAQSize() const { return sizeof(void*); }
+    Int32   AQBitLength() const { return _aqBitLength; }
 
- public:
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
     TypeRef GetObjectElementAddressFromPath(SubString* objectName, SubString* path, void** ppData,
                                             Boolean allowDynamic);
@@ -312,7 +311,6 @@ class TypeManager
 #endif
     TypeRef DefineCustomDataProcs(ConstCStr name, IDataProcs* pDataProcs, TypeRef typeRef);
 
- public:
     // Low level allocation functions
     // TODO(PaulAustin): pull out into its own class.
     void* Malloc(size_t countAQ);
@@ -328,11 +326,10 @@ class TypeManager
     size_t _maxAllocated;
     size_t _allocationLimit;
 
-    size_t TotalAQAllocated()       { return _totalAQAllocated; }
-    Int32 TotalAllocations()        { return _totalAllocations; }
-    size_t MaxAllocated()           { return _maxAllocated; }
+    size_t TotalAQAllocated() const { return _totalAQAllocated; }
+    Int32 TotalAllocations() const { return _totalAllocations; }
+    size_t MaxAllocated() const { return _maxAllocated; }
 
- public:
     // Read or write values accessible to this TM as described by a symbolic path
     NIError ReadValue(SubString* objectName, SubString* path, Double * pValue);
     NIError WriteValue(SubString* objectName, SubString* path, Double value);
@@ -340,9 +337,7 @@ class TypeManager
     NIError WriteValue(SubString* objectName, SubString* path, SubString*);
 
 #ifdef VIREO_PERF_COUNTERS
- public:
     Int32 _typesShared;
-
 #endif
 };
 
@@ -384,16 +379,18 @@ class TypeManagerScope
       _saveTypeManager = ThreadsTypeManager;
       ThreadsTypeManager = typeManager;
     }
+
     ~TypeManagerScope() {
         ThreadsTypeManager = _saveTypeManager;
     }
+
     static TypeManagerRef Current() {
         VIREO_ASSERT(TypeManagerScope::ThreadsTypeManager != nullptr);
         return ThreadsTypeManager;
     }
 #else
     explicit TypeManagerScope(TypeManagerRef typeManager) {}
-    ~TypeManagerScope() {}
+    ~TypeManagerScope() = default;
 #endif
 };
 
@@ -413,7 +410,7 @@ class InlineArray
     T* End()                                    { return &_array[_length]; }
     void Assign(const T* source, Int32 count)    { memcpy(Begin(), source, count * sizeof(T)); }
     T& operator[] (const Int32 index)            { VIREO_ASSERT(index <= _length); return _array[index]; }
-    IntIndex Length()                           { return (IntIndex)_length; }
+    IntIndex Length() const { return static_cast<IntIndex>(_length); }
 };
 
 //------------------------------------------------------------
@@ -473,13 +470,13 @@ class TypeCommon
     static const SubString TypeStaticTypeAndData;
 
     explicit TypeCommon(TypeManagerRef typeManager);
-    TypeManagerRef TheTypeManager()     { return _typeManager; }
-    TypeRef Next()                      { return _next; }
- public:
-    // Internal to the TypeManager, but this is hard to specify in C++
-    virtual ~TypeCommon() { }
+    TypeManagerRef TheTypeManager() const { return _typeManager; }
+    TypeRef Next() const { return _next; }
 
- protected:
+    // Internal to the TypeManager, but this is hard to specify in C++
+    virtual ~TypeCommon() = default;
+
+protected:
     /// @name Storage for core property
     /// Members use a common type (UInt16) to maximize packing.
 
@@ -510,63 +507,66 @@ class TypeCommon
 
     //! How the data as a whole is encoded, either a simple encoding like "2s complement binary"
     //  or an Aggregate encoding.
-    EncodingEnum BitEncoding()      { return (EncodingEnum) _encoding; }
+    EncodingEnum BitEncoding() const { return static_cast<EncodingEnum>(_encoding); }
     //! Memory alignment required for values of this type.
-    Int32   AQAlignment()           { return _aqAlignment; }
+    Int32   AQAlignment() const { return _aqAlignment; }
     //! Amount of memory needed for the top level data structure for the type including any padding if needed.
-    Int32   TopAQSize()             { return _topAQSize; }
+    Int32   TopAQSize() const { return _topAQSize; }
     //! True if the initial value for data of this type is not just zeroed out memory.
-    Boolean HasCustomDefault()      { return _hasCustomDefault != 0; }
+    Boolean HasCustomDefault() const { return _hasCustomDefault != 0; }
     //! True if the initial value can be changed.
-    Boolean IsMutableValue()        { return _isMutableValue != 0; }
+    Boolean IsMutableValue() const { return _isMutableValue != 0; }
     //! Dimensionality of the type. Simple Scalars are Rank 0, arrays can be rank 0 as well.
-    Int32   Rank()                  { return _rank; }
+    Int32   Rank() const { return _rank; }
     //! True if the type is an indexable container that contains another type.
-    Boolean IsArray()               { return BitEncoding() == kEncoding_Array; }
+    Boolean IsArray() const { return BitEncoding() == kEncoding_Array; }
     //! True if the type is an indexable container that contains another type.
-    Boolean IsZDA()                 { return (IsArray() && Rank() == 0); }
+    Boolean IsZDA() const { return (IsArray() && Rank() == 0); }
     //! True if the type is an aggregate of other types.
-    Boolean IsCluster()             { return BitEncoding() == kEncoding_Cluster; }
+    Boolean IsCluster() const { return BitEncoding() == kEncoding_Cluster; }
     //! True if type is an enum
-    Boolean IsEnum()                { return BitEncoding() == kEncoding_Enum; }
+    Boolean IsEnum() const { return BitEncoding() == kEncoding_Enum; }
     //! True if type is an enum
-    Boolean IsRefnum()              { return BitEncoding() == kEncoding_RefNum; }
+    Boolean IsRefnum() const { return BitEncoding() == kEncoding_RefNum; }
     //! True if data can be copied by a simple block copy.
-    Boolean IsFlat()                { return _isFlat != 0; }
+    Boolean IsFlat() const { return _isFlat != 0; }
     //! True if all types the type is composed of have been resolved to valid types.
-    Boolean IsValid()               { return _isValid != 0; }
+    Boolean IsValid() const { return _isValid != 0; }
     //! True if the type a BitBlock or a BitClusters.
-    Boolean IsBitLevel()            { return _isBitLevel != 0; }
+    Boolean IsBitLevel() const { return _isBitLevel != 0; }
     //! True if TopAQSize includes internal or external padding necessary for proper alignment of multiple elements.
-    Boolean HasPadding()            { return _hasPadding != 0; }
+    Boolean HasPadding() const { return _hasPadding != 0; }
     //! True if the type contains one or more template parameter types.
-    Boolean IsTemplate()            { return _isTemplate != 0; }
-    Boolean IsOpaqueReference()     { return _opaqueReference != 0; }
+    Boolean IsTemplate() const { return _isTemplate != 0; }
+    Boolean IsOpaqueReference() const { return _opaqueReference != 0; }
     //! True if aggregate element is used as an input parameter.
-    Boolean IsInputParam()          {
+    Boolean IsInputParam() const
+    {
         return (_elementUsageType == kUsageTypeInput) || (_elementUsageType == kUsageTypeInputOutput);
     }
     //! True if aggregate element is used as an output parameter.
-    Boolean IsOutputParam()         {
+    Boolean IsOutputParam() const
+    {
         return (_elementUsageType == kUsageTypeOutput) || (_elementUsageType == kUsageTypeInputOutput);
     }
     //! True if aggregate element is owned elsewhere (e.g. its an i ,o ,io, or alias) .
-    Boolean IsAlias()               {
+    Boolean IsAlias() const
+    {
         return (_elementUsageType >= kUsageTypeInput) && (_elementUsageType <= kUsageTypeAlias);
     }
     //! True if the parameter is only visible to the callee, and is preserved between calls.
-    Boolean IsStaticParam()         { return _elementUsageType == kUsageTypeStatic; }
+    Boolean IsStaticParam() const { return _elementUsageType == kUsageTypeStatic; }
     //! True is the parameter is only visible to the callee, but may be cleared between calls.
-    Boolean IsTempParam()           { return _elementUsageType == kUsageTypeTemp; }
+    Boolean IsTempParam() const { return _elementUsageType == kUsageTypeTemp; }
     //! True if the parameter is not required. For non flat values nullptr may be passed in.
-    Boolean IsOptionalParam()       { return true; }  // TODO(PaulAustin): {return _elementUsageType == kUsageTypeOptionalInput ;}
-    UsageTypeEnum ElementUsageType() { return (UsageTypeEnum)_elementUsageType; }
+    Boolean IsOptionalParam() const { return true; }  // TODO(PaulAustin): {return _elementUsageType == kUsageTypeOptionalInput ;}
+    UsageTypeEnum ElementUsageType() const { return static_cast<UsageTypeEnum>(_elementUsageType); }
  private:
     //! True if the type owns data that needs to be freed when the TypeManager is cleared.
-    Boolean OwnsDefDefData()        { return _ownsDefDefData != 0; }
+    Boolean OwnsDefDefData() const { return _ownsDefDefData != 0; }
  public:
     //! What type of internal pointer is this type. Only used for CustomValuePointers.
-    PointerTypeEnum PointerType()   { return (PointerTypeEnum)_pointerType; }
+    PointerTypeEnum PointerType() const { return static_cast<PointerTypeEnum>(_pointerType); }
     //! Accept a TypeVisitor algorithm.
     virtual void    Accept(TypeVisitor *tv)             { tv->VisitBad(this); }
     //! For a wrapped type, return the type that was wrapped, nullptr otherwise.
@@ -579,9 +579,9 @@ class TypeCommon
     virtual TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic);
 
     //! Set the SubString to the name if the type is not anonymous.
-    virtual SubString Name()                            { return SubString(nullptr, nullptr); }
+    virtual SubString Name()                            { return {nullptr, nullptr}; }
     //! Set the SubString to the aggregates elements field name.
-    virtual SubString ElementName()                     { return SubString(nullptr, nullptr); }
+    virtual SubString ElementName()                     { return {nullptr, nullptr}; }
     //! Return a pointer to the raw vector of dimension lengths.
     virtual IntIndex* DimensionLengths()                { return nullptr; }
 
@@ -698,10 +698,10 @@ class NamedType : public WrappedType
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload);
 
-    NamedTypeRef    NextOverload()                  { return _nextOverload; }
+    NamedTypeRef    NextOverload() const { return _nextOverload; }
     void    Accept(TypeVisitor *tv) override { tv->VisitNamed(this); }
-    SubString Name() override { return SubString(_name.Begin(), _name.End()); }
-    SubString ElementName() override { return SubString(nullptr, nullptr); }
+    SubString Name() override { return {_name.Begin(), _name.End()}; }
+    SubString ElementName() override { return {nullptr, nullptr}; }
 };
 //------------------------------------------------------------
 //! Give a type a field name and offset properties. Used inside an aggregateType
@@ -723,7 +723,7 @@ class ElementType : public WrappedType
                             UsageTypeEnum usageType, Int32 offset);
 
     void    Accept(TypeVisitor *tv) override { tv->VisitElement(this); }
-    SubString ElementName() override { return SubString(_elementName.Begin(), _elementName.End()); }
+    SubString ElementName() override { return {_elementName.Begin(), _elementName.End()}; }
     IntIndex ElementOffset() override { return _offset; }
 };
 //------------------------------------------------------------
@@ -762,14 +762,14 @@ class AggregateType : public TypeCommon
     AggregateType(TypeManagerRef typeManager, TypeRef elements[], Int32 count)
     : TypeCommon(typeManager), _elements(count) {
         _pDefault = nullptr;
-        _elements.Assign((ElementTypeRef*)elements, count);
+        _elements.Assign(reinterpret_cast<ElementTypeRef*>(elements), count);
     }
     static size_t   StructSize(Int32 count) {
         return sizeof(AggregateType) + InlineArray<ElementType*>::ExtraStructSize(count);
     }
 
  public:
-    virtual ~AggregateType() { }
+    virtual ~AggregateType() = default;
     Int32   SubElementCount() override;
     TypeRef GetSubElementAddressFromPath(SubString* path, void *start, void **end, Boolean allowDynamic) override;
     TypeRef GetSubElement(Int32 index) override;
@@ -940,7 +940,6 @@ class DefaultValueType : public WrappedType
     //!
     static DefaultValueType* New(TypeManagerRef typeManager, TypeRef valuesType, Boolean mutableValue);
     DefaultValueType* FinalizeDVT();
- public:
     void    Accept(TypeVisitor *tv) override { tv->VisitDefaultValue(this); }
     void*           Begin(PointerAccessEnum mode) override;
     NIError InitData(void* pData, TypeRef pattern = nullptr) override;
@@ -1011,7 +1010,6 @@ class DefaultPointerType : public PointerType
 {
  private:
     DefaultPointerType(TypeManagerRef typeManager, TypeRef type, void* pointer, PointerTypeEnum pointerType);
-    DefaultPointerType();
  public:
     void*           _defaultPointerValue;
  public:
@@ -1020,7 +1018,7 @@ class DefaultPointerType : public PointerType
 
     NIError InitData(void* pData, TypeRef pattern = nullptr) override
     {
-        *(void**)pData = _defaultPointerValue;
+        *static_cast<void**>(pData) = _defaultPointerValue;
         return kNIError_Success;
     }
 
@@ -1088,13 +1086,13 @@ class TypedArrayCore
  private:
     IntIndex                _dimensionAndSlabLengths[2];
  public:
-    IntIndex  Rank()                { return _typeRef->Rank(); }
+    IntIndex  Rank() const { return _typeRef->Rank(); }
     IntIndex* DimensionLengths()    { return _dimensionAndSlabLengths; }
     IntIndex* SlabLengths()         { return &_dimensionAndSlabLengths[0] + Rank(); }
 
-    virtual ~TypedArrayCore() {}
+    virtual ~TypedArrayCore() = default;
 
- protected:
+protected:
     static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
     explicit TypedArrayCore(TypeRef type);
  public:
@@ -1102,7 +1100,8 @@ class TypedArrayCore
     static void Delete(TypedArrayCoreRef);
 
  public:
-    AQBlock1* BeginAt(IntIndex index) {
+    AQBlock1* BeginAt(IntIndex index) const
+    {
         VIREO_ASSERT(index >= 0)
         VIREO_ASSERT(ElementType() != nullptr)
         AQBlock1* begin = (RawBegin() + (index * ElementType()->TopAQSize()));
@@ -1111,18 +1110,16 @@ class TypedArrayCore
     AQBlock1* BeginAtND(Int32, IntIndex*);
     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]);
 
- public:
-    void* RawObj()                  { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
-    AQBlock1* RawBegin()            { return _pRawBufferBegin; }
+    void* RawObj() const { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
+    AQBlock1* RawBegin() const { return _pRawBufferBegin; }
     template<typename CT> CT BeginAtAQ(IntIndex index) { return reinterpret_cast<CT>(RawBegin() + index); }
     BlockItr RawItr()               { return BlockItr(RawBegin(), ElementType()->TopAQSize(), Length()); }
 
- public:
     //! Array's type.
-    TypeRef Type()                  { return _typeRef; }
+    TypeRef Type() const { return _typeRef; }
 
     //! The element type of this array instance. This type may be more specific than the element in Array's Type.
-    TypeRef ElementType()           { return _eltTypeRef; }
+    TypeRef ElementType() const { return _eltTypeRef; }
     Boolean SetElementType(TypeRef, Boolean preserveElements);
 
  protected:
@@ -1145,16 +1142,16 @@ class TypedArrayCore
     IntIndex Length()       { return Rank() == 1 ? *DimensionLengths() :  InternalCalculateLength(); }
 
     //! Returns the maximum number of elements the current underlying storage could hold.
-    IntIndex Capacity()     { return abs(_capacity); }
+    IntIndex Capacity() const { return abs(_capacity); }
 
     //! Attempt to grow the capacity of the array so that resizing the dimensions will not need
     // to realloc the underlying storage. This is a soft request and underlying system may reclaim the memory.
     // This method has no effect on fixed or bounded arrays. Returns true if the array capacity
     // is greater than or equal to the amount requested.
-    Boolean Reserve(IntIndex length)        { return length <= Capacity(); }
+    Boolean Reserve(IntIndex length) const { return length <= Capacity(); }
 
     //! Calculate the length of a contiguous chunk of elements
-    IntIndex AQBlockLength(IntIndex count)  { return ElementType()->TopAQSize() * count; }
+    IntIndex AQBlockLength(IntIndex count) const { return ElementType()->TopAQSize() * count; }
 
     //! Resize for multi dim arrays
     Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean noInit = false);
@@ -1187,12 +1184,12 @@ template <class T>
 class TypedArray1D : public TypedArrayCore
 {
  public:
-    T* Begin()                  { return (T*) RawBegin(); }
-    T* End()                    { return (T*) Begin() + Length(); }
-    T  At(IntIndex index)       { return *(T*) BeginAt(index);}
-    T* BeginAt(IntIndex index)  { return (T*) TypedArrayCore::BeginAt(index); }
+    T* Begin()                  { return reinterpret_cast<T*>(RawBegin()); }
+    T* End()                    { return reinterpret_cast<T*>(Begin()) + Length(); }
+    T  At(IntIndex index)       { return *reinterpret_cast<T*>(BeginAt(index));}
+    T* BeginAt(IntIndex index)  { return reinterpret_cast<T*>(TypedArrayCore::BeginAt(index)); }
     T* BeginAtNDIndirect(Int32 rank, IntIndex* pDimIndexes) {
-        return (T*) TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes);
+        return reinterpret_cast<T*>(TypedArrayCore::BeginAtNDIndirect(rank, pDimIndexes));
     }
 
     template <class T2> T2 AtAQ(IntIndex index)         { return *BeginAtAQ<T2*>(index); }
@@ -1214,7 +1211,7 @@ template <class T>
 class TypedObject : public TypedArrayCore
 {
  public:
-    T* ObjBegin() { return (T*) RawObj(); }
+    T* ObjBegin() { return static_cast<T*>(RawObj()); }
 };
 
 AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex* destSlabLengths,
@@ -1245,7 +1242,7 @@ class String : public TypedArray1D< Utf8Char >
     void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
 
     void InsertSubString(IntIndex position, SubString* str) {
-        Insert(position, (IntIndex)str->Length(), (Utf8Char*)str->Begin());
+        Insert(position, static_cast<IntIndex>(str->Length()), const_cast<Utf8Char*>(str->Begin()));
     }
     Boolean IsEqual(String *rhs) {
         return Length() == rhs->Length() && memcmp(Begin(), rhs->Begin(), Length()) == 0;
@@ -1266,10 +1263,10 @@ struct ErrorCluster {
     ErrorCluster() : status(false), code(0), source(nullptr) { }
     void SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain = true);
     void SetError(ErrorCluster error);
-    void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }
-    void AddAppendixPostamble() { }  // no postamble
-    Boolean hasError() { return status; }
-    Boolean hasWarning() { return !status && code != 0; }
+    void AddAppendixPreamble() const { source->AppendCStr("<APPEND>\n"); }
+    void AddAppendixPostamble() const { }  // no postamble
+    Boolean hasError() const { return status; }
+    Boolean hasWarning() const { return !status && code != 0; }
 };
 
 #define ERROR_CLUST_TYPE_STRING "c(e(Boolean status) e(Int32 code) e(String source))"
@@ -1310,12 +1307,14 @@ class StackVar
             type->InitData(&Value);
         }
     }
+
     //! Remove ownership of the managed value.
     T* DetachValue() {
         T* temp = Value;
         Value = nullptr;
         return temp;
     }
+
     //! Free any storage used by the value if it is still managed.
     ~StackVar() {
         if (Value) {
@@ -1326,16 +1325,20 @@ class StackVar
 
 struct StringRefCmp {
     bool operator()(const StringRef& a, const StringRef &b) const {
-        Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
+        const Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
         if (cmp < 0) {
             return true;
-        } else if (cmp > 0) {
-            return false;
-        } else if (a->Length() < b->Length()) {
-            return true;
-        } else {
+        }
+
+        if (cmp > 0) {
             return false;
         }
+
+        if (a->Length() < b->Length()) {
+            return true;
+        }
+
+        return false;
     }
 };
 
