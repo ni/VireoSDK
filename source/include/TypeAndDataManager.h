@@ -476,7 +476,7 @@ class TypeCommon
     // Internal to the TypeManager, but this is hard to specify in C++
     virtual ~TypeCommon() = default;
 
-protected:
+ protected:
     /// @name Storage for core property
     /// Members use a common type (UInt16) to maximize packing.
 
@@ -1092,7 +1092,7 @@ class TypedArrayCore
 
     virtual ~TypedArrayCore() = default;
 
-protected:
+ protected:
     static size_t   StructSize(Int32 rank)  { return sizeof(TypedArrayCore) + ((rank-1) * sizeof(IntIndex) * 2); }
     explicit TypedArrayCore(TypeRef type);
  public:
