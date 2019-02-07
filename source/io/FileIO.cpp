@@ -421,7 +421,7 @@ DEFINE_VIREO_BEGIN(FileSystem)
 #endif
     //--------
 #if kVireoOS_emscripten
-    DEFINE_VIREO_FUNCTION(SystemLogging_WriteMessageUTF8, "p(i(.String) i(.String) i(.String) i(.Int32) io(" ERROR_CLUST_TYPE_STRING "))")
+    DEFINE_VIREO_FUNCTION(SystemLogging_WriteMessageUTF8, "p(i(.String) i(.String) i(.String) i(.Int32) io(ErrorCluster))")
 #endif
     //--------
 #ifdef VIREO_FILESYSTEM
