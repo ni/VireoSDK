@@ -26,16 +26,20 @@ SDG
 namespace Vireo
 {
 
-void ErrorCluster::SetError(Boolean s, Int32 c, ConstCStr str, Boolean appendCallChain/*= true*/) {
-    status = s;
-    code = c;
-    if (source) {
-        source->Resize1D(0);
-        source->AppendCStr(str);
-        if (appendCallChain) {
-            source->AppendCStr(" in ");
-            AppendCallChainString(source);
-        }
+void ErrorCluster::SetErrorAndAppendCallChain(Boolean status, Int32 code, ConstCStr source) {
+    SetError(status, code, source);
+    if (this->source) {
+        this->source->AppendCStr(" in ");
+        AppendCallChainString(this->source);
+    }
+}
+
+void ErrorCluster::SetError(Boolean status, Int32 code, ConstCStr source) {
+    this->status = status;
+    this->code = code;
+    if (this->source) {
+        this->source->Resize1D(0);
+        this->source->AppendCStr(source);
     }
 }
 

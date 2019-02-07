@@ -94,7 +94,7 @@ VIREO_FUNCTION_SIGNATUREV(VariantToData, VariantToDataParamBlock)
             variant->CopyData(variant->Begin(kPARead), destData);
         } else {
             if (errPtr) {
-                errPtr->SetError(true, 91, "Variant To Data");
+                errPtr->SetErrorAndAppendCallChain(true, 91, "Variant To Data");
             }
         }
     }
@@ -119,7 +119,7 @@ VIREO_FUNCTION_SIGNATUREV(SetVariantAttribute, SetVariantAttributeParamBlock)
         StringRef name = _Param(Name);
         if (IsStringEmpty(name)) {
             if (errPtr) {
-                errPtr->SetError(true, 1, "Set Variant Attribute");
+                errPtr->SetErrorAndAppendCallChain(true, 1, "Set Variant Attribute");
             }
         } else {
             TypeRef inputVariant = _Param(InputVariant);
@@ -180,7 +180,7 @@ VIREO_FUNCTION_SIGNATUREV(GetVariantAttribute, GetVariantAttributeParamBlock)
                     value->_paramType->CopyData(foundValue->_pData, value->_pData);
                 } else {
                     if (errPtr) {
-                        errPtr->SetError(true, 91, "Get Variant Attribute");  // Incorrect type for default value for the attribute
+                        errPtr->SetErrorAndAppendCallChain(true, 91, "Get Variant Attribute");  // Incorrect type for default value for the attribute
                     }
                 }
             }

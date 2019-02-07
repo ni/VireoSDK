@@ -712,7 +712,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Create, RefNumVal, ErrorCluster)
     }
     if (errCode) {
         if (errPtr)
-            errPtr->SetError(true, errCode, "CreateUserEvent");
+            errPtr->SetErrorAndAppendCallChain(true, errCode, "CreateUserEvent");
     }
     return _NextInstruction();
 }
@@ -732,7 +732,7 @@ VIREO_FUNCTION_SIGNATURE5(UserEventRef_Generate, TypeCommon, RefNumVal, void, Bo
         if (!refnumPtr
             || UserEventRefNumManager::RefNumStorage().GetRefNumData(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success) {
             if (errPtr)
-                errPtr->SetError(true, kEventArgErr, "GenerateUserEvent");
+                errPtr->SetErrorAndAppendCallChain(true, kEventArgErr, "GenerateUserEvent");
         } else {
             // TODO(spathiwa) make a custom emitter for this prim so we can check the type of the data against the refnum's contained type
             // without incurring runtime performance penalty
@@ -751,7 +751,7 @@ VIREO_FUNCTION_SIGNATURE2(UserEventRef_Destroy, RefNumVal, ErrorCluster)
 
     if (!refnumPtr || UserEventRefNumManager::RefNumStorage().DisposeRefNum(refnumPtr->GetRefNum(), &userEventRef) != kNIError_Success) {
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kEventArgErr, "DestroyUserEvent");
+            errPtr->SetErrorAndAppendCallChain(true, kEventArgErr, "DestroyUserEvent");
     }
     return _NextInstruction();
 }
@@ -880,7 +880,7 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
     if (erRefNum && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(erRefNum, &regInfo) != kNIError_Success) {
         // event reg. ref passed, but invalid
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kEventArgErr, "RegisterForEvents");
+            errPtr->SetErrorAndAppendCallChain(true, kEventArgErr, "RegisterForEvents");
     }
 
     // Allocate a new Event Queue and associate it with the event reg. refnum
@@ -972,7 +972,7 @@ VIREO_FUNCTION_SIGNATURE2(UnregisterForEvents, RefNumVal, ErrorCluster)
     ErrorCluster *errPtr = _ParamPointer(1);
     if (!refnumPtr || !UnregisterForEventsAux(refnumPtr->GetRefNum())) {
         if (errPtr && !errPtr->status)
-            errPtr->SetError(true, kEventArgErr, "UnregisterForEvents");
+            errPtr->SetErrorAndAppendCallChain(true, kEventArgErr, "UnregisterForEvents");
     }
     return _NextInstruction();
 }
