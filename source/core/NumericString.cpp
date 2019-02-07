@@ -266,7 +266,7 @@ static Boolean SetFormatError(Int32 errCode, Int32 argNum, char formatCode, Erro
     if (errPtr) {
         char argBuf[8];
         snprintf(argBuf, sizeof(argBuf), "%d", argNum+1);
-        errPtr->SetError(true, errCode, isScan ? "Scan From String" : "Format Into String", false);
+        errPtr->SetError(true, errCode, isScan ? "Scan From String" : "Format Into String");
         if (errCode != kFormatTooManyFormatSpecs && errCode != kFormatTooFewFormatSpecs) {
             errPtr->source->AppendCStr(" (arg ");
             errPtr->source->AppendCStr(argBuf);
@@ -2082,7 +2082,7 @@ struct ByteArrayToStringParamBlock : InstructionCore
 static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 stringEncoding, TypedArrayCoreRef outputArray) {
     if (stringEncoding != 0) {
         if (errorCluster != nullptr) {
-            errorCluster->SetError(true, 1, "Encoding type not supported", true);
+            errorCluster->SetErrorAndAppendCallChain(true, 1, "Encoding type not supported");
         }
         if (outputArray != nullptr)
             outputArray->Resize1D(0);
@@ -2095,7 +2095,7 @@ static bool CheckValidUTF8Error(UInt8* begin, UInt8* end, ErrorCluster* errorClu
 {
     if (!utf8::is_valid(begin, end)) {
         if (errorCluster != nullptr) {
-            errorCluster->SetError(true, 1, "Invalid UTF-8 characters found");
+            errorCluster->SetErrorAndAppendCallChain(true, 1, "Invalid UTF-8 characters found");
         }
         return false;
     }
@@ -2112,7 +2112,7 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
     TypeRef eltType = byteArray->ElementType();
     if (!eltType->IsA(&TypeCommon::TypeInt8) && !eltType->IsA(&TypeCommon::TypeUInt8)) {
         if (errorCluster != nullptr) {
-            errorCluster->SetError(true, 1, "Byte Array must be of type Int8 or UInt8", true);
+            errorCluster->SetErrorAndAppendCallChain(true, 1, "Byte Array must be of type Int8 or UInt8");
         }
         return _NextInstruction();
     }
@@ -2168,7 +2168,7 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
         TypeRef eltType = byteArrayOut->ElementType();
         if (!eltType->IsA(&TypeCommon::TypeUInt8)) {
             if (errorCluster != nullptr) {
-                errorCluster->SetError(true, 1, "Byte Array must be of type UInt8", true);
+                errorCluster->SetErrorAndAppendCallChain(true, 1, "Byte Array must be of type UInt8");
             }
         } else {
             // Even if invalid UTF-8 characters are found, we want to copy to byteArrayOut to allow users to examine

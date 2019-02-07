@@ -2661,7 +2661,7 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
 
     // Initialize output error cluster
     ErrorCluster* errorClusterOut = _ParamPointer(ErrorClusterOut);
-    errorClusterOut->SetError(false, 0, "", false);
+    errorClusterOut->SetError(false, 0, "");
 
     // Find the first error and return it if there is one, otherwise save the first warning and return it at the end
     for (IntIndex i = 0; i < inputParametersCount; i++) {

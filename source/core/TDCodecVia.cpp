@@ -2445,7 +2445,7 @@ VIREO_FUNCTION_SIGNATUREV(FlattenToJSON, FlattenToJSONParamBlock)
     Int32 errCode = formatter.GetError();
     if (errCode) {
         if (_ParamVarArgCount() > 4) {
-            _ParamPointer(errClust)->SetError(true, errCode, "Flatten To JSON");
+            _ParamPointer(errClust)->SetErrorAndAppendCallChain(true, errCode, "Flatten To JSON");
         }
         _Param(stringOut)->Resize1D(0);
     } else if (_ParamVarArgCount() > 4) {
@@ -2511,7 +2511,7 @@ VIREO_FUNCTION_SIGNATUREV(UnflattenFromJSON, UnflattenFromJSONParamBlock)
     if (_ParamVarArgCount() > 7) {  // error I/O wired
         ErrorCluster *errPtr = _ParamPointer(errClust);
         if (error) {
-            errPtr->SetError(true,  error && error != kLVError_ArgError ? error : kLVError_JSONInvalidString, "Unflatten From JSON");
+            errPtr->SetErrorAndAppendCallChain(true,  error && error != kLVError_ArgError ? error : kLVError_JSONInvalidString, "Unflatten From JSON");
         }
     }
     return _NextInstruction();

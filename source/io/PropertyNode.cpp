@@ -54,7 +54,7 @@ static bool LookupControlRefForPropertyNode(RefNumVal *refNumPtr, ErrorCluster *
                                            StringRef viName, StringRef *controlId, ConstCStr propNodeName) {
     VirtualInstrument *vi;
     if (ControlReferenceLookup(refNumPtr->GetRefNum(), &vi, controlId) != kNIError_Success) {
-        errorClusterPtr->SetError(true, kNIError_ObjectReferenceIsInvalid, propNodeName);
+        errorClusterPtr->SetErrorAndAppendCallChain(true, kNIError_ObjectReferenceIsInvalid, propNodeName);
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, propNodeName);
         return false;
     }
