@@ -1151,7 +1151,7 @@ class TypedArrayCore
     Boolean Reserve(IntIndex length) const { return length <= Capacity(); }
 
     //! Calculate the length of a contiguous chunk of elements
-    IntIndex AQBlockLength(IntIndex count) const { return ElementType()->TopAQSize() * count; }
+    IntIndex AQBlockLength(IntIndex count) { return ElementType()->TopAQSize() * count; }
 
     //! Resize for multi dim arrays
     Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean noInit = false);
