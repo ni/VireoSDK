@@ -428,9 +428,7 @@ class DynamicEventRegInfo {
         if (regRefType->IsRefnum() && pData && (static_cast<RefNumVal*>(pData)->GetRefNum() == refnum)) {
             dynIndex = *dynIndexBase;
             return dynIndex;
-        }
-
-        if (regRefType->IsArray() && regRefType->Rank() == 1 && regRefType->GetSubElement(0)->IsRefnum()) {
+        } else if (regRefType->IsArray() && regRefType->Rank() == 1 && regRefType->GetSubElement(0)->IsRefnum()) {
             TypedArray1D<RefNumVal> *aRef = *static_cast<TypedArray1D<RefNumVal>**>(pData);
             RefNumVal *aPtr = aRef->BeginAt(0);
             for (Int32 i = 0; i < aRef->Length(); ++i) {
@@ -443,7 +441,7 @@ class DynamicEventRegInfo {
         } else if (regRefType->IsCluster()) {
             AQBlock1 *refClustPtr = static_cast<AQBlock1*>(pData);
             const Int32 numElts = regRefType->SubElementCount();
-            ++*dynIndexBase;  // the whole cluster counts as one, matching the rules for unbundler recursive indexes
+            ++*dynIndexBase;  // the whole cluster counts as one, matching the rules for un undler recursive indexes
             for (Int32 j = 0; j < numElts; ++j) {
                 TypeRef eltType = regRefType->GetSubElement(j);
                 AQBlock1* eltPtr = refClustPtr + eltType->ElementOffset();
@@ -550,7 +548,7 @@ struct EventSpec {  // Specifier for Event structure configuration data
 typedef EventSpec *EventSpecRef;
 
 // GetEventSourceForEventType -- return the EventSource associated with an event type
-static EventSource GetEventSourceForEventType(EventType eType) {
+inline static EventSource GetEventSourceForEventType(EventType eType) {
     EventSource eSource = kEventSourceLVUserInt;
     if (eType == kEventTypeUserEvent)
         eSource = kEventSourceUserEvent;
