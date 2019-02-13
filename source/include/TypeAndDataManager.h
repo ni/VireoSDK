@@ -285,7 +285,7 @@ class TypeManager
     Int32   AQAlignment(Int32 size);
     static Int32   AlignAQOffset(Int32 offset, Int32 size) {
         if (size != 0) {
-            const Int32 remainder  = offset % size;
+            Int32 remainder  = offset % size;
             if (remainder)
                 offset += size - remainder;
         }
@@ -1223,26 +1223,26 @@ AQBlock1* ArrayToArrayCopyHelper(TypeRef elementType, AQBlock1* pDest, IntIndex*
 class String : public TypedArray1D< Utf8Char >
 {
  public:
-    SubString MakeSubStringAlias()              { return SubString(Begin(), End()); }
+    SubString MakeSubStringAlias()              { return {Begin(), End()}; }
     void CopyFromSubString(const SubString* str)   {
         if (str->Length())
             CopyFrom(str->Length(), str->Begin());
         else
             Resize1D(0);
     }
-    void AppendCStr(ConstCStr cstr)             { Append((IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+    void AppendCStr(ConstCStr cstr)             { Append(static_cast<IntIndex>(strlen(cstr)), (Utf8Char*)cstr); }
     void AppendUtf8Str(Utf8Char* begin, IntIndex length) { Append(length, begin); }
-    void AppendSubString(SubString* str)     { Append((IntIndex)str->Length(), (Utf8Char*)str->Begin()); }
+    void AppendSubString(SubString* str)     { Append(static_cast<IntIndex>(str->Length()), str->Begin()); }
     void AppendStringRef(StringRef stringRef)           {
-        Append((IntIndex)stringRef->Length(), (Utf8Char*)stringRef->Begin());
+        Append(static_cast<IntIndex>(stringRef->Length()), stringRef->Begin());
     }
     void InsertCStr(IntIndex position, ConstCStr cstr)
-         { Insert(position, (IntIndex)strlen(cstr), (Utf8Char*)cstr); }
+         { Insert(position, static_cast<IntIndex>(strlen(cstr)), (Utf8Char*)cstr); }
     void AppendViaDecoded(SubString *str);
     void AppendEscapeEncoded(const Utf8Char* source, IntIndex len);
 
     void InsertSubString(IntIndex position, SubString* str) {
-        Insert(position, static_cast<IntIndex>(str->Length()), const_cast<Utf8Char*>(str->Begin()));
+        Insert(position, static_cast<IntIndex>(str->Length()), str->Begin());
     }
     Boolean IsEqual(String *rhs) {
         return Length() == rhs->Length() && memcmp(Begin(), rhs->Begin(), Length()) == 0;
@@ -1326,7 +1326,7 @@ class StackVar
 
 struct StringRefCmp {
     bool operator()(const StringRef& a, const StringRef &b) const {
-        const Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
+        Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
         if (cmp < 0) {
             return true;
         }
