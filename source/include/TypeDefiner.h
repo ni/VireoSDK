@@ -132,28 +132,28 @@ class TypeDefiner
 
 #if defined(VIREO_INSTRUCTION_REFLECTION)
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_name_), _typeTypeString_, \
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_name_), (_typeTypeString_), \
         kPTInstructionFunction, #_name_));
 
     #define DEFINE_VIREO_FUNCTION_CUSTOM(_name_, _cfunction_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_cfunction_), _typeTypeString_, \
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_cfunction_), (_typeTypeString_), \
         kPTInstructionFunction, #_cfunction_));
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_genericEmitProc_), _typeTypeString_, \
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_genericEmitProc_), (_typeTypeString_), \
         kPTGenericFunctionCodeGen, #_name_));
 
 #else
     #define DEFINE_VIREO_FUNCTION(_name_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_name_, _typeTypeString_, \
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_name_), (_typeTypeString_), \
         kPTInstructionFunction));
 
     #define DEFINE_VIREO_FUNCTION_CUSTOM(_name_, _cfunction_, _typeTypeString_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_cfunction_, _typeTypeString_, \
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_cfunction_), (_typeTypeString_), \
         kPTInstructionFunction));
 
     #define DEFINE_VIREO_GENERIC(_name_, _typeTypeString_, _genericEmitProc_) \
-      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)_genericEmitProc_, _typeTypeString_, \
+      (TypeDefiner::DefineCustomPointerTypeWithValue(tm, #_name_, (void*)(_genericEmitProc_), (_typeTypeString_), \
         kPTGenericFunctionCodeGen));
 
 #endif  // defined(VIREO_INSTRUCTION_REFLECTION)

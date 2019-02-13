@@ -78,17 +78,17 @@ struct EventCommonData {
 
     void InitEventTime() { eventTime = UInt32(gPlatform.Timer.TickCountToMilliseconds(gPlatform.Timer.TickCount())); }
 
-    EventCommonData(const UInt32 source, const UInt32 type) : eventSource(source), eventType(type), eventSeqIndex(0) {
+    EventCommonData(UInt32 source, UInt32 type) : eventSource(source), eventType(type), eventSeqIndex(0) {
         InitEventTime();
     }
 
-    EventCommonData(const UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventSeqIndex(0), eventRef(ref) {
+    EventCommonData(UInt32 source, UInt32 type, const RefNumVal &ref) : eventSource(source), eventType(type), eventSeqIndex(0), eventRef(ref) {
         InitEventTime();
     }
 };
 
 // Compare two event time stamps or sequence numbers, allowing for wrapping
-inline Int32 EventTimeSeqCompare(const UInt32 t1, const UInt32 t2) {
+inline Int32 EventTimeSeqCompare(UInt32 t1, UInt32 t2) {
     return Int32(t1 - t2);
 }
 
@@ -106,11 +106,11 @@ struct EventData {
     void *pEventData;
 
     EventData() : common(0, 0, RefNumVal()), controlUID(kNotAnEventControlUID), eventDataType(nullptr), pEventData(nullptr) { }
-    EventData(const EventSource source, const EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) :
+    EventData(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) :
         common(source, type, ref), controlUID(kNotAnEventControlUID), eventDataType(edtype), pEventData(pData) { }
     EventData(EventSource source, EventType type, EventControlUID uid, TypeRef edtype = nullptr, void *pData = nullptr) :
         common(source, type), controlUID(0), eventDataType(edtype), pEventData(pData) { }
-    EventData &Init(EventSource source, const EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) {
+    EventData &Init(EventSource source, EventType type, const RefNumVal &ref, TypeRef edtype = nullptr, void *pData = nullptr) {
         common.eventSource = source;
         common.eventType = type;
         common.eventSeqIndex = 0;

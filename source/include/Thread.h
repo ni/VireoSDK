@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-    \brief Tools for working in a multi threaded process.
+    \brief Tools for working in a multi-threaded process.
  */
 
 #ifndef Thread_h
