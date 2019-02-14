@@ -68,6 +68,7 @@
                 "UserEventAlignmentBug.via",
                 "UserEventsBasic.via",
                 "UserEventsMultiple.via",
+                "UserEventsMultSameCase.via",
                 "UserEventsMultUEMultES.via",
                 "UserEventsRegClust.via",
                 "UserEventsRegClustBug1.via",

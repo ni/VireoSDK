@@ -1,0 +1,14 @@
+Waiting on events
+(Generating User Events [B2,B1,B2too,B2,B1] in background)
+Event case 1, User Event B2, EventType:1000 Index:1 data:<Sup 456>
+Waiting on events
+Event case 1, User Event B1, EventType:1000 Index:0 data:<Bonjour 123>
+Waiting on events
+Event case 2, User Event B2too, EventType:1000 Index:0 data:<('Sup' 987.5 456)>
+Waiting on events
+Event case 1, User Event B2, EventType:1000 Index:1 data:<Sup 456>
+Waiting on events
+Event case 1, User Event B1, EventType:1000 Index:0 data:<Bonjour 123>
+Waiting on events
+Event case 3, Timeout case (100ms), EventType:1 Index:0
+Done
