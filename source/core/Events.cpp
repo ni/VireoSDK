@@ -1102,8 +1102,12 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
             // gPlatform.IO.Printf("Event match %d -> %x\n", eventSpecRef[eventSpecIndex].eventType, esBranchTarget);
             Int32 commonDataSize = sizeof(EventCommonData);
             Int32 dataNodeSize = esEventDataNodeType->TopAQSize();
-            // TODO(spathiwa) Compute eventIndex when we support multiple events sharing event cases
             UInt32 eventIndex = 0;
+            for (Int32 prevTuple = 0; prevTuple < inputTuple; ++prevTuple) {
+                // count other input tuples with same branch target to find eventIndex
+                if (arguments[prevTuple].branchTarget == esBranchTarget)
+                    ++eventIndex;
+            }
             if (dataNodeSize >= commonDataSize) {
                 memcpy(esEventDataNode, &eventData, commonDataSize);
                 *EventIndexFieldPtr(esEventDataNode) = eventIndex;
@@ -1123,7 +1127,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
                     } else {
                         // Loop through all elements in the destination event data cluster, and look for the matching
                         // source element in the fired event data.  We need to copy one element at a time because the
-                        // alignment of the source and dest might not be the same because of the precense of leading
+                        // alignment of the source and dest might not be the same because of the presence of leading
                         // common fields, and also to handle shared event cases which only expose event data common
                         // to all sources.
                         // Note, although this looks like an O(N^2) nested loop, it's actually O(N+M), the sum of
