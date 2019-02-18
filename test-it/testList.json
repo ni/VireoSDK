@@ -45,6 +45,7 @@
                 "QueueBug.via",
                 "QueueBugDequeueElement.via",
                 "QueueBugEnqueueElement.via",
+                "QueueBugEnqueueElement2.via",
                 "QueueBugObtainQueue.via",
                 "QueueBugReleaseQueue.via",
                 "QueueErrorCodes.via",

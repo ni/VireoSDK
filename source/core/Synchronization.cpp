@@ -951,7 +951,7 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction6<TypeCommon, RefNumVal,
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
-        if (errPtr)
+        if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, primName);
         if (boolOut)
             *boolOut = false;
@@ -1009,7 +1009,7 @@ static InstructionCore* QueueRef_DequeueCore(Instruction6<TypeCommon, RefNumVal,
     if ((errPtr && errPtr->status)
         || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
-        if (errPtr)
+        if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, preview ? "Preview Queue":"Dequeue");
         if (_ParamPointer(4))
             _Param(4) = false;
