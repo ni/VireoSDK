@@ -1328,17 +1328,13 @@ struct StringRefCmp {
         Int32 cmp = memcmp(a->Begin(), b->Begin(), Min(a->Length(), b->Length()));
         if (cmp < 0) {
             return true;
-        }
-
-        if (cmp > 0) {
+        } else if (cmp > 0) {
+            return false;
+        } else if (a->Length() < b->Length()) {
+            return true;
+        } else {
             return false;
         }
-
-        if (a->Length() < b->Length()) {
-            return true;
-        }
-
-        return false;
     }
 };
 
