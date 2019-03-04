@@ -74,19 +74,13 @@ var assignJavaScriptInvoke;
         var jsValueToCookieCache = new Map();
         var jsRefNumCookieCounter = 0;
 
-        var isPrimitiveType = function (jsValue) {
-            return ((typeof jsValue !== 'object' || jsValue === null) && typeof jsValue !== 'function' && typeof jsValue !== 'symbol');
-        };
-
         var cacheRefNum = function (cookie, jsValue) {
             cookieToJsValueMap.set(cookie, jsValue);
-            if (!isPrimitiveType(jsValue)) { // we don't want to share refnum cookie for js primitives
-                jsValueToCookieCache.set(jsValue, cookie);
-            }
+            jsValueToCookieCache.set(jsValue, cookie);
         };
 
         var hasCachedRefNum = function (cookie) {
-            var refNumExists = (cookieToJsValueMap.get(cookie) !== undefined);
+            var refNumExists = cookieToJsValueMap.has(cookie);
             if (!refNumExists && cookie !== 0) {
                 throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
             }
@@ -111,12 +105,17 @@ var assignJavaScriptInvoke;
          * Write JS value to a JS reference local
          * @param javaScriptValueRef VIA local for this JS reference
          * @param jsValue the JS value to associate with an existing or new cookie
+         * @param isStaticReference Whether the JS reference is a static reference.
+         * Static reference (Static control reference) shares cookie for the same jsValue.
+         * Dynamic reference (JS opaque reference from JSLI) always creates a new cookie even for the same jsValue.
          */
-        Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
-            var cachedCookie = getCachedRefNumCookie(jsValue);
-            if (cachedCookie !== undefined) {
-                Module.eggShell.writeDouble(javaScriptValueRef, cachedCookie); // set the VIA local to be this cookie value
-                return;
+        Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue, isStaticReference) {
+            if (isStaticReference) { // static reference (ie, control reference) shares cookie for the same jsValue
+                var cachedCookie = getCachedRefNumCookie(jsValue);
+                if (cachedCookie !== undefined) {
+                    Module.eggShell.writeDouble(javaScriptValueRef, cachedCookie); // set the VIA local to be this cookie value
+                    return;
+                }
             }
 
             var newCookie = generateUniqueRefNumCookie();

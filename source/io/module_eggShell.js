@@ -14,8 +14,8 @@ var assignEggShell;
             return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
         };
 
-        Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
-            return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
+        Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data, isStaticReference) {
+            return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data, isStaticReference);
         };
 
         // Private Instance Variables (per vireo instance)
