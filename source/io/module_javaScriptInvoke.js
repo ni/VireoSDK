@@ -148,6 +148,10 @@ var assignJavaScriptInvoke;
 
                 visitArray: function (valueRef) {
                     return Module.eggShell.readTypedArray(valueRef);
+                },
+
+                visitJSObjectRefnum: function (valueRef) {
+                    return Module.eggShell.readJavaScriptRefNum(valueRef);
                 }
             };
         };
@@ -211,6 +215,10 @@ var assignJavaScriptInvoke;
                     }
                     Module.eggShell.resizeArray(valueRef, [data.returnValue.length]);
                     Module.eggShell.writeTypedArray(valueRef, data.returnValue);
+                }),
+
+                visitJSObjectRefnum: reportReturnSetException(function (valueRef, data) {
+                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.returnValue);
                 })
             };
         };
