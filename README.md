@@ -117,7 +117,7 @@ Notice that vireo.js is created in the `dist` folder based on the `BUILD` type. 
 
 ### Building Vireo Windows Native
 
-1. Open the `Vireo_VS/VireoCommandLine.sln` solution in Vireo Studio
+1. Open the `Vireo_VS/VireoCommandLine.sln` solution in Visual Studio
 2. Perform a Debug build
 
 Notice the esh executable placed in the `dist` folder.
