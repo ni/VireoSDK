@@ -11,6 +11,19 @@ describe('A JavaScript function invoke', function () {
     var jsObjectTypeViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ObjectType.via');
 
     var jsObjectMap = new Map(); // to share javascript objects for JavaScriptRefNum types. <key,value>=<uniquifier, jsObject>
+    var getObjectByName = function (name) {
+        var existingObject = jsObjectMap.get(name);
+        if (existingObject === undefined) {
+            var newObject = {};
+            newObject.name = name;
+            newObject.getLengthOfName = function () {
+                return this.name.length;
+            };
+            jsObjectMap.set(name, newObject);
+            return newObject;
+        }
+        return existingObject;
+    };
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -112,21 +125,17 @@ describe('A JavaScript function invoke', function () {
         };
 
         vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_GetDynamicObjectFunction: function (returnValueRef, nameValueRef) {
+                var name = vireo.eggShell.readString(nameValueRef);
+                var objectToWrite = getObjectByName(name);
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, objectToWrite, false);
+                return;
+            },
             NI_GetObjectFunction: function (returnValueRef, nameValueRef) {
                 var name = vireo.eggShell.readString(nameValueRef);
-                var existingObject = jsObjectMap.get(name);
-                if (existingObject === undefined) { // create new object
-                    var myObject = {};
-                    myObject.name = name;
-                    myObject.getLengthOfName = function () {
-                        return this.name.length;
-                    };
-                    jsObjectMap.set(name, myObject);
-                    vireo.eggShell.writeJavaScriptRefNum(returnValueRef, myObject);
-                    return;
-                }
-                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, existingObject);
-                return; // share object
+                var objectToWrite = getObjectByName(name);
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, objectToWrite, true);
+                return;
             }
         });
 
@@ -145,7 +154,13 @@ describe('A JavaScript function invoke', function () {
 
         vireo.javaScriptInvoke.registerInternalFunctions({
             NI_GetPrimitiveFunction: function (returnValueRef) {
-                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, 'foo');
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, 'foo', false);
+            },
+            NI_GetNullFunction: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, null, false);
+            },
+            NI_GetUndefinedFunction: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, undefined, false);
             }
         });
     });
@@ -223,7 +238,7 @@ describe('A JavaScript function invoke', function () {
         });
     });
 
-    it('succesfully create and use an object type', async function () {
+    it('succesfully create and use an object type', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsObjectTypeViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
@@ -252,7 +267,10 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error5.status')).toBeFalse();
             expect(viPathParser('error5.source')).toBeEmptyString();
             expect(viPathParser('isSharedRef')).toBeTrue();
+            expect(viPathParser('isSharedDynamicRef')).toBeFalse();
             expect(viPathParser('isSharedPrimRef')).toBeFalse();
+            expect(viPathParser('isSharedNullRef')).toBeFalse();
+            expect(viPathParser('isSharedUndefinedRef')).toBeFalse();
             expect(viPathParser('error6.code')).toBe(0);
             expect(viPathParser('error6.status')).toBeFalse();
             expect(viPathParser('error6.source')).toBeEmptyString();
@@ -270,6 +288,7 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('error10.code')).toBe(0);
             expect(viPathParser('error10.status')).toBeFalse();
             expect(viPathParser('error10.source')).toBeEmptyString();
+            done();
         });
     });
 });
