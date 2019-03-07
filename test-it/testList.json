@@ -79,6 +79,11 @@
                 "ValueChangeStaticControlEvent1.via"
             ]
         },
+        "vtr": {
+            "tests": [
+                "Log10.via"
+            ]
+        },
         "manual": {
             "tests": [
                 "TestVI_LargeBDTest.via"
@@ -231,6 +236,7 @@
                 "JSONErrorCodes.via",
                 "KeyValuePairDefinitions.via",
                 "Literals.via",
+                "Log10.via",
                 "LotsOfEvents.via",
                 "LotsOStrings.via",
                 "MatchPat.via",
