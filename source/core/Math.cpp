@@ -952,7 +952,12 @@ DECLARE_VIREO_PRIMITIVE2(ArcCosineComplexSingle, ComplexSingle, ComplexSingle, (
 DECLARE_VIREO_PRIMITIVE2(ArcCosecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = asin(1.0f/_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE2(ArcSecantComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = acos(1.0f/_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE2(ArcCotangentComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = atan(1.0f/_Param(0)) ) )
-DECLARE_VIREO_PRIMITIVE2(Log10ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log10(_Param(0)) ) )
+DECLARE_VIREO_PRIMITIVE2(Log10ComplexSingle, ComplexSingle, ComplexSingle, {
+	ComplexSingle x = _Param(0);
+    // Log computation in JS and Native handle Inf+NaNi differently. While JS outputs Inf+NaNi, Native outputs NaN+NaNi.
+    // To maintain consistency, Inf+NaNi is special cased to always return NaN+NaNi
+    _Param(1) = ::isinf(x.real()) && ::isnan(x.imag()) ? ComplexSingle(NAN, NAN) : log10(x);
+})
 DECLARE_VIREO_PRIMITIVE2(LogComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE2(Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )
 DECLARE_VIREO_PRIMITIVE2(ExpComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = exp(_Param(0)) ) )
@@ -1100,7 +1105,12 @@ DECLARE_VIREO_PRIMITIVE2(ArcCosineComplexDouble, ComplexDouble, ComplexDouble, (
 DECLARE_VIREO_PRIMITIVE2(ArcCosecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = asin(1.0/_Param(0))))
 DECLARE_VIREO_PRIMITIVE2(ArcSecantComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = acos(1.0/_Param(0))) )
 DECLARE_VIREO_PRIMITIVE2(ArcCotangentComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = atan(1.0/_Param(0))))
-DECLARE_VIREO_PRIMITIVE2(Log10ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log10(_Param(0))))
+DECLARE_VIREO_PRIMITIVE2(Log10ComplexDouble, ComplexDouble, ComplexDouble, {
+	ComplexDouble x = _Param(0);
+    // Log computation in JS and Native handle Inf+NaNi differently. While JS outputs Inf+NaNi, Native outputs NaN+NaNi.
+    // To maintain consistency, Inf+NaNi is special cased to always return NaN+NaNi
+    _Param(1) = ::isinf(x.real()) && ::isnan(x.imag()) ? ComplexDouble(NAN, NAN) : log10(x);
+})
 DECLARE_VIREO_PRIMITIVE2(LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))))
 DECLARE_VIREO_PRIMITIVE2(Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0)) )
 DECLARE_VIREO_PRIMITIVE2(ExpComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = exp(_Param(0))))
