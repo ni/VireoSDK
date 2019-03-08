@@ -198,7 +198,7 @@ define (WebApp%3A%3Aindex%2Egviweb dv(.VirtualInstrument (
         Log10Tests%3A%3ATestVI_INT%2Egvi(* *)
         Printf("------ CDB --------\n")
         Log10Tests%3A%3ATestVI_CDB%2Egvi(* *)
-        Printf("------ CSG --------\n")
+        Printf("------ CGL --------\n")
         Log10Tests%3A%3ATestVI_CSG%2Egvi(* *)
         Printf("------ DBL 1D --------\n")
         Log10Tests%3A%3ATestVI_DBL_1D%2Egvi(* *)
@@ -916,7 +916,8 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexSingle Element%2014)
             e(.ComplexSingle Element%2015)
             e(.ComplexSingle Element%2016)
-        ) ((0 0.682188212871551513672) (0.150514990091323852539 0.341094106435775756836) (1.00216066837310791016 0.04328554496169090271) (3.00518083572387695313 4.29144623922184109688E-4) (0.518057584762573242188 0.13385181128978729248) (0.150514990091323852539 1.02328228950500488281) (Infinity 0) (Infinity 1.36437642574310302734) (NaN NaN) (0 0) (Infinity 0.682188212871551513672) (NaN NaN) (0 -0.0) (Infinity -0.682188212871551513672) (Infinity 0.341094106435775756836) (Infinity -0.341094106435775756836) (NaN NaN) ))dataItem_Expected)
+            e(.ComplexSingle Element%2017)
+        ) ((0 0.682188212871551513672) (0.150514990091323852539 0.341094106435775756836) (1.00216066837310791016 0.04328554496169090271) (3.00518083572387695313 4.29144623922184109688E-4) (0.518057584762573242188 0.13385181128978729248) (0.150514990091323852539 1.02328228950500488281) (Infinity 0) (Infinity 1.36437642574310302734) (NaN NaN) (0 0) (Infinity 0.682188212871551513672) (NaN NaN) (0 -0.0) (Infinity -0.682188212871551513672) (Infinity 0.341094106435775756836) (Infinity -0.341094106435775756836) (NaN NaN) (NaN NaN) ))dataItem_Expected)
         o(dv(c(
             e(.ComplexSingle Element%200)
             e(.ComplexSingle Element%201)
@@ -935,7 +936,8 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexSingle Element%2014)
             e(.ComplexSingle Element%2015)
             e(.ComplexSingle Element%2016)
-        ) ((0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) ))dataItem_Actual)
+            e(.ComplexSingle Element%2017)
+        ) ((0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) ))dataItem_Actual)
     )
     Locals: c(   // Data Space
         e(dv(.String 'Log10Tests::TestVI_CSG_Cluster.gvi')local38)
@@ -957,7 +959,8 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
             ce(.ComplexSingle Element%2014)
             ce(.ComplexSingle Element%2015)
             ce(.ComplexSingle Element%2016)
-        ) ((0 1) (1 1) (10 1) (1012 1) (3.14120006561279296875 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (NaN NaN) ))c57)
+            ce(.ComplexSingle Element%2017)
+        ) ((0 1) (1 1) (10 1) (1012 1) (3.14120006561279296875 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (Infinity NaN) (NaN NaN) ))c57)
         e(c(
             e(.ComplexSingle Element%200)
             e(.ComplexSingle Element%201)
@@ -976,6 +979,7 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexSingle Element%2014)
             e(.ComplexSingle Element%2015)
             e(.ComplexSingle Element%2016)
+            e(.ComplexSingle Element%2017)
         ) local76)
         e(c(
             e(.ComplexSingle Element%200)
@@ -995,6 +999,7 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexSingle Element%2014)
             e(.ComplexSingle Element%2015)
             e(.ComplexSingle Element%2016)
+            e(.ComplexSingle Element%2017)
         ) local95)
         e(c(
             e(.ComplexSingle Element%200)
@@ -1014,6 +1019,7 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexSingle Element%2014)
             e(.ComplexSingle Element%2015)
             e(.ComplexSingle Element%2016)
+            e(.ComplexSingle Element%2017)
         ) local114)
     )
         clump(1
@@ -1028,12 +1034,12 @@ define (Log10Tests%3A%3ATestVI_CSG_Cluster%2Egvi dv(.VirtualInstrument (
 //VI Definition: ::Web Server::Interactive::Log10Tests::TestVI_CSG_1D.gvi
 define (Log10Tests%3A%3ATestVI_CSG_1D%2Egvi dv(.VirtualInstrument (
     Params: c(  //param block
-        o(dv(a(.ComplexSingle *) ((0 0.682188153266906738281) (0.150515004992485046387 0.341094076633453369141) (1.00216066837310791016 0.04328554496169090271) (3.00518083572387695313 4.29144594818353652954E-4) (0.518057584762573242188 0.13385181128978729248) (0.150515004992485046387 1.02328228950500488281) (Infinity 0) (Infinity 1.36437630653381347656) (NaN NaN) (0 0) (Infinity 0.682188153266906738281) (NaN NaN) (0 -0.0) (Infinity -0.682188153266906738281) (Infinity 0.341094076633453369141) (Infinity -0.341094076633453369141) (NaN NaN)))dataItem_Expected)
+        o(dv(a(.ComplexSingle *) ((0 0.682188153266906738281) (0.150515004992485046387 0.341094076633453369141) (1.00216066837310791016 0.04328554496169090271) (3.00518083572387695313 4.29144594818353652954E-4) (0.518057584762573242188 0.13385181128978729248) (0.150515004992485046387 1.02328228950500488281) (Infinity 0) (Infinity 1.36437630653381347656) (NaN NaN) (0 0) (Infinity 0.682188153266906738281) (NaN NaN) (0 -0.0) (Infinity -0.682188153266906738281) (Infinity 0.341094076633453369141) (Infinity -0.341094076633453369141) (NaN NaN) (NaN NaN)))dataItem_Expected)
         o(a(.ComplexSingle *) dataItem_Actual)
     )
     Locals: c(   // Data Space
         e(dv(.String 'Log10Tests::TestVI_CSG_1D.gvi')local2)
-        ce(dv(a(.ComplexSingle *) ((0 1) (1 1) (10 1) (1012 1) (3.14120006561279296875 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (NaN NaN)))c3)
+        ce(dv(a(.ComplexSingle *) ((0 1) (1 1) (10 1) (1012 1) (3.14120006561279296875 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (Infinity NaN) (NaN NaN)))c3)
         e(a(.ComplexSingle *) local4)
         e(a(.ComplexSingle *) local5)
         e(a(.ComplexSingle *) local6)
@@ -1055,7 +1061,7 @@ define (Log10Tests%3A%3ATestVI_CSG%2Egvi dv(.VirtualInstrument (
     )
     Locals: c(   // Data Space
         e(dv(.String 'Log10Tests::TestVI_CSG.gvi')local2)
-        ce(dv(a(.ComplexSingle *) ((0 1) (1 1) (10 1) (1012 1) (3.14120006561279296875 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (NaN NaN)))c3)
+        ce(dv(a(.ComplexSingle *) ((0 1) (1 1) (10 1) (1012 1) (3.14120006561279296875 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (Infinity NaN) (NaN NaN)))c3)
         e(.Int32 local4)
         e(a(.ComplexSingle *) local5)
         ce(dv(.Int32 0)c6)
@@ -1122,7 +1128,8 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexDouble Element%2014)
             e(.ComplexDouble Element%2015)
             e(.ComplexDouble Element%2016)
-        ) ((0 0.682188176920920597013) (0.150514997831990626764 0.341094088460460298506) (1.0021606868913213173 0.0432855457956444547585) (3.00518072453171303238 4.29144605287856250719E-4) (0.518057579875009444059 0.133851817313432736034) (0.150514997831990626764 1.02328226538138089552) (Infinity 0) (Infinity 1.36437635384184119403) (NaN NaN) (0 0) (Infinity 0.682188176920920597013) (NaN NaN) (0 -0.0) (Infinity -0.682188176920920597013) (Infinity 0.341094088460460298506) (Infinity -0.341094088460460298506) (NaN NaN) ))dataItem_Expected)
+            e(.ComplexDouble Element%2017)
+        ) ((0 0.682188176920920597013) (0.150514997831990626764 0.341094088460460298506) (1.0021606868913213173 0.0432855457956444547585) (3.00518072453171303238 4.29144605287856250719E-4) (0.518057579875009444059 0.133851817313432736034) (0.150514997831990626764 1.02328226538138089552) (Infinity 0) (Infinity 1.36437635384184119403) (NaN NaN) (0 0) (Infinity 0.682188176920920597013) (NaN NaN) (0 -0.0) (Infinity -0.682188176920920597013) (Infinity 0.341094088460460298506) (Infinity -0.341094088460460298506) (NaN NaN) (NaN NaN) ))dataItem_Expected)
         o(dv(c(
             e(.ComplexDouble Element%200)
             e(.ComplexDouble Element%201)
@@ -1141,7 +1148,8 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexDouble Element%2014)
             e(.ComplexDouble Element%2015)
             e(.ComplexDouble Element%2016)
-        ) ((0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) ))dataItem_Actual)
+            e(.ComplexDouble Element%2017)
+        ) ((0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) (0 0) ))dataItem_Actual)
     )
     Locals: c(   // Data Space
         e(dv(.String 'Log10Tests::TestVI_CDB_Cluster.gvi')local38)
@@ -1163,7 +1171,8 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
             ce(.ComplexDouble Element%2014)
             ce(.ComplexDouble Element%2015)
             ce(.ComplexDouble Element%2016)
-        ) ((0 1) (1 1) (10 1) (1012 1) (3.14119999999999999218 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (NaN NaN) ))c57)
+            ce(.ComplexDouble Element%2017)
+        ) ((0 1) (1 1) (10 1) (1012 1) (3.14119999999999999218 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (Infinity NaN) (NaN NaN) ))c57)
         e(c(
             e(.ComplexDouble Element%200)
             e(.ComplexDouble Element%201)
@@ -1182,6 +1191,7 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexDouble Element%2014)
             e(.ComplexDouble Element%2015)
             e(.ComplexDouble Element%2016)
+            e(.ComplexDouble Element%2017)
         ) local76)
         e(c(
             e(.ComplexDouble Element%200)
@@ -1201,6 +1211,7 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexDouble Element%2014)
             e(.ComplexDouble Element%2015)
             e(.ComplexDouble Element%2016)
+            e(.ComplexDouble Element%2017)
         ) local95)
         e(c(
             e(.ComplexDouble Element%200)
@@ -1220,6 +1231,7 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
             e(.ComplexDouble Element%2014)
             e(.ComplexDouble Element%2015)
             e(.ComplexDouble Element%2016)
+            e(.ComplexDouble Element%2017)
         ) local114)
     )
         clump(1
@@ -1234,12 +1246,12 @@ define (Log10Tests%3A%3ATestVI_CDB_Cluster%2Egvi dv(.VirtualInstrument (
 //VI Definition: ::Web Server::Interactive::Log10Tests::TestVI_CDB_1D.gvi
 define (Log10Tests%3A%3ATestVI_CDB_1D%2Egvi dv(.VirtualInstrument (
     Params: c(  //param block
-        o(dv(a(.ComplexDouble *) ((0 0.682188176920920597013) (0.150514997831990626764 0.341094088460460298506) (1.0021606868913213173 0.0432855457956444547585) (3.00518072453171303238 4.29144605287856250719E-4) (0.518057579875009444059 0.133851817313432736034) (0.150514997831990626764 1.02328226538138089552) (Infinity 0) (Infinity 1.36437635384184119403) (NaN NaN) (0 0) (Infinity 0.682188176920920597013) (NaN NaN) (0 -0.0) (Infinity -0.682188176920920597013) (Infinity 0.341094088460460298506) (Infinity -0.341094088460460298506) (NaN NaN)))dataItem_Expected)
+        o(dv(a(.ComplexDouble *) ((0 0.682188176920920597013) (0.150514997831990626764 0.341094088460460298506) (1.0021606868913213173 0.0432855457956444547585) (3.00518072453171303238 4.29144605287856250719E-4) (0.518057579875009444059 0.133851817313432736034) (0.150514997831990626764 1.02328226538138089552) (Infinity 0) (Infinity 1.36437635384184119403) (NaN NaN) (0 0) (Infinity 0.682188176920920597013) (NaN NaN) (0 -0.0) (Infinity -0.682188176920920597013) (Infinity 0.341094088460460298506) (Infinity -0.341094088460460298506) (NaN NaN) (NaN NaN)))dataItem_Expected)
         o(a(.ComplexDouble *) dataItem_Actual)
     )
     Locals: c(   // Data Space
         e(dv(.String 'Log10Tests::TestVI_CDB_1D.gvi')local2)
-        ce(dv(a(.ComplexDouble *) ((0 1) (1 1) (10 1) (1012 1) (3.14119999999999999218 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (NaN NaN)))c3)
+        ce(dv(a(.ComplexDouble *) ((0 1) (1 1) (10 1) (1012 1) (3.14119999999999999218 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (Infinity NaN) (NaN NaN)))c3)
         e(a(.ComplexDouble *) local4)
         e(a(.ComplexDouble *) local5)
         e(a(.ComplexDouble *) local6)
@@ -1256,12 +1268,12 @@ define (Log10Tests%3A%3ATestVI_CDB_1D%2Egvi dv(.VirtualInstrument (
 //VI Definition: ::Web Server::Interactive::Log10Tests::TestVI_CDB.gvi
 define (Log10Tests%3A%3ATestVI_CDB%2Egvi dv(.VirtualInstrument (
     Params: c(  //param block
-        o(dv(a(.ComplexDouble *) ((0 0.682188176920920597013) (0.150514997831990626764 0.341094088460460298506) (1.0021606868913213173 0.0432855457956444547585) (3.00518072453171303238 4.29144605287856250719E-4) (0.518057579875009444059 0.133851817313432736034) (0.150514997831990626764 1.02328226538138089552) (Infinity 0) (Infinity 1.36437635384184119403) (NaN NaN) (0 0) (Infinity 0.682188176920920597013) (NaN NaN) (0 -0.0) (Infinity -0.682188176920920597013) (Infinity 0.341094088460460298506) (Infinity -0.341094088460460298506) (NaN NaN)))dataItem_Expected)
+        o(dv(a(.ComplexDouble *) ((0 0.682188176920920597013) (0.150514997831990626764 0.341094088460460298506) (1.0021606868913213173 0.0432855457956444547585) (3.00518072453171303238 4.29144605287856250719E-4) (0.518057579875009444059 0.133851817313432736034) (0.150514997831990626764 1.02328226538138089552) (Infinity 0) (Infinity 1.36437635384184119403) (NaN NaN) (0 0) (Infinity 0.682188176920920597013) (NaN NaN) (0 -0.0) (Infinity -0.682188176920920597013) (Infinity 0.341094088460460298506) (Infinity -0.341094088460460298506) (NaN NaN) (NaN NaN)))dataItem_Expected)
         o(a(.ComplexDouble *) dataItem_Actual)
     )
     Locals: c(   // Data Space
         e(dv(.String 'Log10Tests::TestVI_CDB.gvi')local2)
-        ce(dv(a(.ComplexDouble *) ((0 1) (1 1) (10 1) (1012 1) (3.14119999999999999218 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (NaN NaN)))c3)
+        ce(dv(a(.ComplexDouble *) ((0 1) (1 1) (10 1) (1012 1) (3.14119999999999999218 1) (-1 1) (Infinity 1) (-Infinity 1) (NaN 1) (1 0) (1 Infinity) (1 NaN) (1 -0.0) (1 -Infinity) (Infinity Infinity) (Infinity -Infinity) (Infinity NaN) (NaN NaN)))c3)
         e(.Int32 local4)
         e(a(.ComplexDouble *) local5)
         ce(dv(.Int32 0)c6)
