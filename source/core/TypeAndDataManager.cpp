@@ -16,6 +16,7 @@ SDG
 #include <cmath>
 #include <utility>
 #include <limits>
+#include "Variants.h"
 #if defined(VIREO_INSTRUCTION_REFLECTION)
 #include <map>
 #endif
@@ -74,6 +75,7 @@ VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 //------------------------------------------------------------
 void TypeManager::Delete()
 {
+    VariantAttributeManager::Instance().CleanUp();
     TypeManagerRef tm = this;
 
     // Delete all types owned bye the tm.
