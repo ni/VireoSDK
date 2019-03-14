@@ -86,7 +86,7 @@ VIREO_FUNCTION_SIGNATURET(SetVariantAttribute, SetVariantAttributeParamBlock)
     bool replaced = false;
     if (!errPtr || !errPtr->status) {
         StringRef name = _Param(Name);
-        if (IsStringEmpty(name)) { 
+        if (IsStringEmpty(name)) {
             if (errPtr) {
                 errPtr->SetErrorAndAppendCallChain(true, 1, "Set Variant Attribute");
             }
@@ -211,8 +211,7 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
                     namesElementType->CopyData(attributeNameStr, pNamesInsert);
                     if (attributeValue->Name().Compare(&TypeCommon::TypeVariant)) {
                         attributeValue->CopyData(attributeValue->Begin(kPARead), pValuesInsert);
-                    }
-                    else {
+                    } else {
                         TypeRef variant = DefaultValueType::New(tm, attributeValue, true);
                         variant->CopyData(attributeValue->Begin(kPARead), variant->Begin(kPAWrite));
                         *reinterpret_cast<TypeRef *>(pValuesInsert) = variant;

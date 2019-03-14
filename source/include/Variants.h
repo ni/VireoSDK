@@ -19,46 +19,46 @@ SDG
 
 namespace Vireo {
 
-    class VariantAttributeManager {
-    public:
-        using AttributeMapType = std::map<StringRef, TypeRef, StringRefCmp>;
-        using VariantToAttributeMapType = std::map< DataPointer, AttributeMapType *>;
-        VariantAttributeManager(const VariantAttributeManager&) = delete;
-        VariantAttributeManager& operator=(const VariantAttributeManager&) = delete;
+class VariantAttributeManager {
+ public:
+    using AttributeMapType = std::map<StringRef, TypeRef, StringRefCmp>;
+    using VariantToAttributeMapType = std::map< DataPointer, AttributeMapType *>;
+    VariantAttributeManager(const VariantAttributeManager&) = delete;
+    VariantAttributeManager& operator=(const VariantAttributeManager&) = delete;
 
-    private:
-        VariantToAttributeMapType _variantToAttributeMap;
-        VariantAttributeManager() = default;
+ private:
+    VariantToAttributeMapType _variantToAttributeMap;
+    VariantAttributeManager() = default;
 
-    public:
-        static VariantAttributeManager& Instance() {
-            static VariantAttributeManager _instance;
-            return _instance;
-        }
+ public:
+    static VariantAttributeManager& Instance() {
+        static VariantAttributeManager _instance;
+        return _instance;
+    }
 
-        const VariantToAttributeMapType& GetVariantToAttributeMap() const {
-            return _variantToAttributeMap;
-        }
+    const VariantToAttributeMapType& GetVariantToAttributeMap() const {
+        return _variantToAttributeMap;
+    }
 
-        VariantToAttributeMapType& GetVariantToAttributeMap() {
-            return _variantToAttributeMap;
-        }
+    VariantToAttributeMapType& GetVariantToAttributeMap() {
+        return _variantToAttributeMap;
+    }
 
-        void CleanUp()
-        {
-            for (auto entry : _variantToAttributeMap) {
-                for (auto attribute : *entry.second) {
-                    attribute.first->Delete(attribute.first);
-                }
-                entry.second->clear();
+    void CleanUp()
+    {
+        for (auto entry : _variantToAttributeMap) {
+            for (auto attribute : *entry.second) {
+                attribute.first->Delete(attribute.first);
             }
-            _variantToAttributeMap.clear();
+            entry.second->clear();
         }
+        _variantToAttributeMap.clear();
+    }
 
-        ~VariantAttributeManager() {
-            CleanUp();
-        }
-    };
-}
+    ~VariantAttributeManager() {
+        CleanUp();
+    }
+};
+}  // namespace Vireo
 
 #endif
