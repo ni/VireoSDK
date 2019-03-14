@@ -1,0 +1,8 @@
+dataItem_TestResult_AttributeDoesNotExist = true
+dataItem_TestResult_EmptyAttributeNameReturnsAnErrorOn = true
+dataItem_TestResult_ErrorInCorrectlyPropagated = true
+dataItem_TestResult_GetAllAtributtesReturnsNone = true
+dataItem_TestResult_GetAllAttributesReturnsData = true
+dataItem_TestResult_GetAttributeWithUnwiredDefaultValue = true
+dataItem_TestResult_GetAttributeWorksCorrectly = true
+dataItem_TestResult_ReplacedIsCorrectlyUpdated = true

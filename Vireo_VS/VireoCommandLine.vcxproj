@@ -93,6 +93,7 @@
     <ClInclude Include="..\source\include\TypeAndDataManager.h" />
     <ClInclude Include="..\source\include\TypeDefiner.h" />
     <ClInclude Include="..\source\include\UnitTest.h" />
+    <ClInclude Include="..\source\include\Variants.h" />
     <ClInclude Include="..\source\include\VirtualInstrument.h" />
     <ClInclude Include="..\source\include\Waveform.h" />
   </ItemGroup>

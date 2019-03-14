@@ -256,5 +256,8 @@
     <ClInclude Include="..\source\include\JavaScriptRef.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\Variants.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
