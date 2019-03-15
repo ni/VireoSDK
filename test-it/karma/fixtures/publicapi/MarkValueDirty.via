@@ -1,0 +1,23 @@
+
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(
+        e(.Double myDouble)
+    )
+        clump(1
+        MarkValueDirty(myDouble)
+        MySubVI()
+    )
+)))
+
+
+define(MySubVI dv(.VirtualInstrument (
+c(
+e(dv(.Int32 42) myInteger)
+)
+clump(1 
+    MarkValueDirty(myInteger)
+)
+)))
+
+enqueue (MyVI)
+

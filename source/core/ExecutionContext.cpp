@@ -25,6 +25,7 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     extern void jsExecutionContextFPSync(StringRef);
+    extern void jsMarkValueDirty(void* pData);
 }
 #endif
 
@@ -138,6 +139,29 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 #if kVireoOS_emscripten
     jsExecutionContextFPSync(_Param(0));
 #endif
+    return _NextInstruction();
+}
+//------------------------------------------------------------
+// 
+struct MarkValueDirtyParamBlock : InstructionCore
+{
+    _ParamDef(StaticType, dirtyValueType);
+    _ParamDef(void, dirtyValueData);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(MarkValueDirty, MarkValueDirtyParamBlock)
+{
+    ExecutionContextRef exec = THREAD_EXEC();
+    VIClump* runningQueueElt = exec->_runningQueueElt;
+    VirtualInstrument* vi = runningQueueElt->OwningVI();
+
+    if (!vi->Clumps()->Begin()->_caller) {
+#if kVireoOS_emscripten
+        jsMarkValueDirty(_ParamPointer(dirtyValueData));
+#endif
+    }
+
     return _NextInstruction();
 }
 //------------------------------------------------------------
@@ -445,6 +469,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
+    DEFINE_VIREO_FUNCTION(MarkValueDirty, "p(i(StaticTypeAndData dirtyValue))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")

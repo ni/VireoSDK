@@ -23,6 +23,20 @@ var assignCoreHelpers;
             fpSync(fpString);
         };
 
+        // Want the Map to be in C++ but if was in js then need to clear in reboot
+        var dirtyDataRefs = new Set();
+        Module.coreHelpers.jsMarkValueDirty = function (dirtyValuePointer) {
+            dirtyDataRefs.add(dirtyValuePointer);
+        };
+
+        publicAPI.coreHelpers.isValueDirty = function (valueRef) {
+            return dirtyDataRefs.has(valueRef.dataRef);
+        };
+
+        publicAPI.coreHelpers.clearDirtyValues = function () {
+            dirtyDataRefs.clear();
+        };
+
         Module.coreHelpers.jsSystemLogging_WriteMessageUTF8 = function (
             messageTypeRef, messageDataRef,
             severityTypeRef, severityDataRef) {
