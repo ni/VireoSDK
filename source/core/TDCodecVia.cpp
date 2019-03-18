@@ -68,7 +68,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     }
 }
 //------------------------------------------------------------
-void TDViaParser::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
+void TDViaParser::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...) const
 {
     va_list args;
     va_start(args, message);
@@ -76,7 +76,7 @@ void TDViaParser::LogEvent(EventLog::EventSeverity severity, ConstCStr message, 
     va_end(args);
 }
 //------------------------------------------------------------
-Int32 TDViaParser::CalcCurrentLine()
+Int32 TDViaParser::CalcCurrentLine() const
 {
     // As the parser moves through the string the line number is periodically calculated
     // It is not managed token by token.
@@ -2047,7 +2047,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     }
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatEncoding(EncodingEnum value)
+void TDViaFormatter::FormatEncoding(EncodingEnum value) const
 {
     ConstCStr str = nullptr;
     switch (value) {
@@ -2063,7 +2063,7 @@ void TDViaFormatter::FormatEncoding(EncodingEnum value)
     _string->AppendCStr(str);
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
+void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value) const
 {
     ConstCStr str = nullptr;
     switch (value) {
@@ -2080,7 +2080,7 @@ void TDViaFormatter::FormatElementUsageType(UsageTypeEnum value)
     _string->AppendCStr(str);
 }
 //------------------------------------------------------------
-void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit /*= false*/)
+void TDViaFormatter::FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit /*= false*/) const
 {
     char buffer[kTempFormattingBufferSize];
     ConstCStr format = nullptr;

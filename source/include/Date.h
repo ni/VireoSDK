@@ -46,7 +46,7 @@ class Date {
     static Int32 _systemLocaleTimeZone;
 
  private:
-    void getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
+    static void getDate(Timestamp timestamp, Int64* secondsOfYearPtr, Int32* yearPtr,
         Int32* monthPtr = nullptr, Int32* dayPtr = nullptr, Int32* hourPtr = nullptr,
         Int32* minutePtr = nullptr, Int32* secondPtr = nullptr, Double* fractionPtr = nullptr,
         Int32* weekDayPtr = nullptr, Int32* weekOfFirstDay = nullptr, char** timeZoneString = nullptr);
@@ -71,7 +71,7 @@ class Date {
     Int32 TimeZoneOffset() const {return _timeZoneOffset;}
     ConstCStr TimeZoneString() const { return _timeZoneString; }
     Int32 DaylightSavingTime() const {return _daylightSavingTime;}
-    Int32 isDaylightSavingTime();
+    static Int32 isDaylightSavingTime();
     Double FractionalSecond() const {return  _fractionalSecond;}
 };
 

@@ -98,15 +98,16 @@ class VirtualInstrument
 
  public:
     ~VirtualInstrument();
-    TypeManagerRef TheTypeManager()     { return _typeManager; }
-    TypedObjectRef Params()             { return _params; }
-    TypedObjectRef Locals()             { return _locals; }
-    TypedObjectRef EventSpecs()         { return _eventSpecs; }
+    TypeManagerRef TheTypeManager() const { return _typeManager; }
+    TypedObjectRef Params() const { return _params; }
+    TypedObjectRef Locals() const { return _locals; }
+    TypedObjectRef EventSpecs() const { return _eventSpecs; }
     EventInfo *GetEventInfo() const     { return _eventInfo; }
     void SetEventInfo(EventInfo *ei)    { _eventInfo = ei; }
-    TypedArray1D<VIClump>* Clumps()     { return _clumps; }
+    TypedArray1D<VIClump>* Clumps() const { return _clumps; }
     ConstCStr VINameCStr() const        { return ConstCStr(_viName); }
-    SubString VIName()                  {
+    SubString VIName() const
+    {
         SubString s;
         if (_viName)
             s.AliasAssignLen(_viName, IntIndex(strlen(ConstCStr(_viName))));
@@ -179,15 +180,15 @@ class VIClump : public FunctionClump
 
  public:
     void Trigger();
-    Int32               FireCount()     { return _fireCount; }
-    Int32               ShortCount()    { return _shortCount; }
+    Int32               FireCount() const { return _fireCount; }
+    Int32               ShortCount() const { return _shortCount; }
 
     void InsertIntoWaitList(VIClump* elt);
     void AppendToWaitList(VIClump* elt);
     void EnqueueRunQueue()  { TheExecutionContext()->EnqueueRunQueue(this); }
 
-    VirtualInstrument*  OwningVI()      { return _owningVI; }
-    VirtualInstrument*  CallerVI()      { return _caller->OwningVI(); }
+    VirtualInstrument*  OwningVI() const { return _owningVI; }
+    VirtualInstrument*  CallerVI() const { return _caller->OwningVI(); }
     VirtualInstrument*  TopVI()      {
         VIClump *caller = this;
         do {
@@ -202,8 +203,8 @@ class VIClump : public FunctionClump
     InstructionCore*    WaitUntilTickCount(PlatformTickType tickCount, InstructionCore* nextInstruction);
     void               ClearObservationStates();
     InstructionCore*    WaitOnObservableObject(InstructionCore* nextInstruction);
-    TypeManagerRef      TheTypeManager()       { return OwningVI()->TheTypeManager(); }
-    ExecutionContextRef TheExecutionContext()   { return TheTypeManager()->TheExecutionContext(); }
+    TypeManagerRef      TheTypeManager() const { return OwningVI()->TheTypeManager(); }
+    ExecutionContextRef TheExecutionContext() const { return TheTypeManager()->TheExecutionContext(); }
 };
 //------------------------------------------------------------
 //! An instruction that suspends a clump and starts a SubVI's root clump.
@@ -219,7 +220,7 @@ struct CallVIInstruction : public InstructionCore
     // explicit field.
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* CopyInSnippet()    { return this + 1; }
-    inline InstructionCore* Next()             { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 
     _ParamImmediateDef(InstructionCore*, CopyOutSnippet);
 };
@@ -231,7 +232,7 @@ class InstructionAllocator {
     AQBlock1*   _next;
 
     InstructionAllocator() { _size = 0; _next = nullptr; }
-    Boolean IsCalculatePass() { return _next == nullptr; }
+    Boolean IsCalculatePass() const { return _next == nullptr; }
     void AddRequest(size_t count);
     void Allocate(TypeManagerRef tm);
     void* AllocateSlice(size_t count);
@@ -356,20 +357,20 @@ class ClumpParseState
     ClumpParseState(VIClump* clump, InstructionAllocator* cia, EventLog* pLog);
     void            Construct(VIClump* clump, InstructionAllocator* cia, Int32 lineNumber, EventLog* pLog);
     void            StartSnippet(InstructionCore** pWhereToPatch);
-    TypeRef         FormalParameterType()       { return _formalParameterType; }
-    TypeRef         ActualArgumentType()        { return _actualArgumentType; }
-    Boolean         LastArgumentError()         { return _argumentState < kArgumentResolved_FirstGood; }
+    TypeRef         FormalParameterType() const { return _formalParameterType; }
+    TypeRef         ActualArgumentType() const { return _actualArgumentType; }
+    Boolean         LastArgumentError() const { return _argumentState < kArgumentResolved_FirstGood; }
     TypeRef         ReadFormalParameterType();
-    void            SetClumpFireCount(Int32 fireCount);
+    void            SetClumpFireCount(Int32 fireCount) const;
     TypeRef         StartInstruction(SubString* opName);
     TypeRef         StartNextOverload();
-    Boolean         HasMultipleDefinitions()    { return _hasMultipleDefinitions; }
+    Boolean         HasMultipleDefinitions() const { return _hasMultipleDefinitions; }
     TypeRef         ReresolveInstruction(SubString* opName);
     void            ResolveActualArgument(SubString* argument, void** ppData , Boolean needsAddress);
     void            AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress);
     void            InternalAddArg(TypeRef actualType, void* address);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, intptr_t whereToPeek);
-    Boolean         VarArgParameterDetected()   { return _varArgCount >= 0; }
+    Boolean         VarArgParameterDetected() const { return _varArgCount >= 0; }
     void            AddVarArgCount();
     void            SetVarArgRepeat()            { _varArgRepeatStart = _formalParameterIndex-1; }
 
@@ -388,7 +389,7 @@ class ClumpParseState
     void            EmitSimpleInstruction(ConstCStr opName);
     void            CommitSubSnippet();
     void            CommitClump();
-    void            BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction,
+    static void     BeginEmitSubSnippet(ClumpParseState* subSnippet, InstructionCore* owningInstruction,
                                         Int32 argIndex);
     void            EndEmitSubSnippet(ClumpParseState* subSnippet);
 };

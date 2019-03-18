@@ -263,7 +263,7 @@ class TypeManager
     explicit TypeManager(TypeManagerRef parentTm);
     NamedTypeRef NewNamedType(const SubString* typeName, TypeRef type, NamedTypeRef existingOverload);
  public:
-    ExecutionContextRef TheExecutionContext() { return _executionContext; }
+    ExecutionContextRef TheExecutionContext() const { return _executionContext; }
     void    SetExecutionContext(ExecutionContextRef exec) { _executionContext = exec; }
     void    DeleteTypes(Boolean finalTime);
     void    TrackType(TypeCommon* type);
@@ -271,18 +271,18 @@ class TypeManager
 
     void    UntrackLastType(TypeCommon* type);
     void    GetTypes(TypedArray1D<TypeRef>*);
-    TypeRef TypeList() { return _typeList; }
-    void    PrintMemoryStat(ConstCStr, Boolean bLast);
+    TypeRef TypeList() const { return _typeList; }
+    void    PrintMemoryStat(ConstCStr, Boolean bLast) const;
 
-    TypeManagerRef BaseTypeManager() { return _baseTypeManager; }
+    TypeManagerRef BaseTypeManager() const { return _baseTypeManager; }
     TypeRef Define(const SubString* typeName, TypeRef type);
 
     TypeRef FindType(ConstCStr name);
     TypeRef FindType(const SubString* name, Boolean decode = false);
     NamedTypeRef FindTypeCore(const SubString* name, Boolean decode = false);
-    TypeRef BadType();
+    TypeRef BadType() const;
 
-    Int32   AQAlignment(Int32 size);
+    static Int32   AQAlignment(Int32 size);
     static Int32   AlignAQOffset(Int32 offset, Int32 size) {
         if (size != 0) {
             Int32 remainder  = offset % size;
@@ -292,8 +292,8 @@ class TypeManager
         return offset;
     }
 
-    Int32   BitLengthToAQSize(IntIndex length);
-    Int32   HostPointerToAQSize() const { return sizeof(void*); }
+    Int32   BitLengthToAQSize(IntIndex length) const;
+    static Int32   HostPointerToAQSize() { return sizeof(void*); }
     Int32   AQBitLength() const { return _aqBitLength; }
 
     //! Parse through a path, digging through Aggregate element names, references and array indexes.
@@ -470,8 +470,8 @@ class TypeCommon
     static const SubString TypeStaticTypeAndData;
 
     explicit TypeCommon(TypeManagerRef typeManager);
-    TypeManagerRef TheTypeManager() { return _typeManager; }
-    TypeRef Next() { return _next; }
+    TypeManagerRef TheTypeManager() const { return _typeManager; }
+    TypeRef Next() const { return _next; }
 
     // Internal to the TypeManager, but this is hard to specify in C++
     virtual ~TypeCommon() = default;
@@ -559,7 +559,7 @@ class TypeCommon
     //! True is the parameter is only visible to the callee, but may be cleared between calls.
     Boolean IsTempParam() const { return _elementUsageType == kUsageTypeTemp; }
     //! True if the parameter is not required. For non flat values nullptr may be passed in.
-    Boolean IsOptionalParam() const { return true; }  // TODO(PaulAustin): {return _elementUsageType == kUsageTypeOptionalInput ;}
+    static Boolean IsOptionalParam() { return true; }  // TODO(PaulAustin): {return _elementUsageType == kUsageTypeOptionalInput ;}
     UsageTypeEnum ElementUsageType() const { return static_cast<UsageTypeEnum>(_elementUsageType); }
  private:
     //! True if the type owns data that needs to be freed when the TypeManager is cleared.
@@ -592,7 +592,7 @@ class TypeCommon
     virtual void*    Begin(PointerAccessEnum mode)      { return nullptr; }
 
     //! Zero out a buffer that will hold a value of the type without consideration for the existing bits.
-    void ZeroOutTop(void* pData);
+    void ZeroOutTop(void* pData) const;
     //! Initialize (re)initialize a value to the default value for the Type. Buffer must be well formed.
     virtual NIError InitData(void* pData, TypeRef pattern = nullptr);
     //! May a deep copy fom the source to the copy.
@@ -698,7 +698,7 @@ class NamedType : public WrappedType
         { return sizeof(NamedType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length()); }
     static NamedType* New(TypeManagerRef typeManager, const SubString* name, TypeRef wrappedType, NamedTypeRef nextOverload);
 
-    NamedTypeRef    NextOverload() { return _nextOverload; }
+    NamedTypeRef    NextOverload() const { return _nextOverload; }
     void    Accept(TypeVisitor *tv) override { tv->VisitNamed(this); }
     SubString Name() override { return {_name.Begin(), _name.End()}; }
     SubString ElementName() override { return {nullptr, nullptr}; }
@@ -996,7 +996,7 @@ class EnumType : public WrappedType
     static EnumType* New(TypeManagerRef typeManager, TypeRef type);
     void    Accept(TypeVisitor *tv) override { tv->VisitEnum(this); }
     TypeRef GetSubElement(Int32 index) override { return index == 0 ? _wrapped : nullptr; }
-    void AddEnumItem(SubString *name);
+    void AddEnumItem(SubString *name) const;
     Int32   SubElementCount() override { return 1; }
     StringRef GetEnumItemName(IntIndex i) override;
     IntIndex GetEnumItemCount() override;
@@ -1100,7 +1100,7 @@ class TypedArrayCore
     static void Delete(TypedArrayCoreRef);
 
  public:
-    AQBlock1* BeginAt(IntIndex index)
+    AQBlock1* BeginAt(IntIndex index) const
     {
         VIREO_ASSERT(index >= 0)
         VIREO_ASSERT(ElementType() != nullptr)
@@ -1110,16 +1110,17 @@ class TypedArrayCore
     AQBlock1* BeginAtND(Int32, IntIndex*);
     AQBlock1* BeginAtNDIndirect(Int32 rank, IntIndex* ppDimIndexes[]);
 
-    void* RawObj() { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
-    AQBlock1* RawBegin() { return _pRawBufferBegin; }
+    void* RawObj() const
+    { VIREO_ASSERT(Rank() == 0); return RawBegin(); }  // some extra asserts fo  ZDAs
+    AQBlock1* RawBegin() const { return _pRawBufferBegin; }
     template<typename CT> CT BeginAtAQ(IntIndex index) { return reinterpret_cast<CT>(RawBegin() + index); }
     BlockItr RawItr()               { return BlockItr(RawBegin(), ElementType()->TopAQSize(), Length()); }
 
     //! Array's type.
-    TypeRef Type() { return _typeRef; }
+    TypeRef Type() const { return _typeRef; }
 
     //! The element type of this array instance. This type may be more specific than the element in Array's Type.
-    TypeRef ElementType() { return _eltTypeRef; }
+    TypeRef ElementType() const { return _eltTypeRef; }
     Boolean SetElementType(TypeRef, Boolean preserveElements);
 
  protected:
@@ -1151,7 +1152,7 @@ class TypedArrayCore
     Boolean Reserve(IntIndex length) const { return length <= Capacity(); }
 
     //! Calculate the length of a contiguous chunk of elements
-    IntIndex AQBlockLength(IntIndex count) { return ElementType()->TopAQSize() * count; }
+    IntIndex AQBlockLength(IntIndex count) const { return ElementType()->TopAQSize() * count; }
 
     //! Resize for multi dim arrays
     Boolean ResizeDimensions(Int32 rank, IntIndex *dimensionLengths, Boolean preserveElements, Boolean noInit = false);
@@ -1264,8 +1265,8 @@ struct ErrorCluster {
     void SetErrorAndAppendCallChain(Boolean status, Int32 code, ConstCStr source);
     void SetError(Boolean status, Int32 ccode, ConstCStr source);
     void SetError(ErrorCluster error);
-    void AddAppendixPreamble() { source->AppendCStr("<APPEND>\n"); }
-    void AddAppendixPostamble() { }  // no postamble
+    void AddAppendixPreamble() const { source->AppendCStr("<APPEND>\n"); }
+    static void AddAppendixPostamble() { }  // no postamble
     Boolean hasError() const { return status; }
     Boolean hasWarning() const { return !status && code != 0; }
 };

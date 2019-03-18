@@ -87,7 +87,7 @@ void TypeManager::Delete()
     gPlatform.Mem.Free(tm);
 }
 //------------------------------------------------------------
-void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast)
+void TypeManager::PrintMemoryStat(ConstCStr message, Boolean bLast) const
 {
 #ifdef VIREO_PERF_COUNTERS
     if (bLast && (_totalAllocations == 1) && (_totalAQAllocated == sizeof(TypeManager))) {
@@ -510,7 +510,7 @@ TypeRef TypeManager::ResolveToUniqueInstance(TypeRef type, SubString* binaryName
     return type;
 }
 //------------------------------------------------------------
-TypeRef TypeManager::BadType()
+TypeRef TypeManager::BadType() const
 {
     return _badType;
 }
@@ -532,7 +532,7 @@ Int32  TypeManager::AQAlignment(Int32 size)
 #endif
 }
 //------------------------------------------------------------
-Int32 TypeManager::BitLengthToAQSize(IntIndex length)
+Int32 TypeManager::BitLengthToAQSize(IntIndex length) const
 {
     if (IsVariableLengthDim(length)) {
         // All templates turn into anonymous variable sizes
@@ -636,7 +636,7 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _opaqueReference = false;
 }
 //------------------------------------------------------------
-void TypeCommon::ZeroOutTop(void* pData)
+void TypeCommon::ZeroOutTop(void* pData) const
 {
     memset(pData, 0, _topAQSize);
 }
@@ -2067,7 +2067,8 @@ EnumType::EnumType(TypeManagerRef typeManager, TypeRef type)
     _items = (StringRefArray1D*) StringRefArray1D::New(itemType);
     _encoding = kEncoding_Enum;
 }
-void EnumType::AddEnumItem(SubString *name) {
+void EnumType::AddEnumItem(SubString *name) const
+{
     STACK_VAR(String, str);
     str.Value->CopyFromSubString(name);
     _items->Append(str.Value);

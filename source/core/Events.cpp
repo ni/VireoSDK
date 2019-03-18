@@ -414,7 +414,7 @@ class DynamicEventRegInfo {
     // If the registered data is a cluster or nested cluster updated *dynIndexBase with the nested element
     // index as it traverses, and returns a non-zero index if a match occcurs.  (The dynIndex value is
     // the same one storied in the EventSpec in the event structure configuration data.)
-    Int32 DynamicEventMatchCore(TypeRef regRefType, void *pData, RefNum refnum, Int32 *dynIndexBase) {
+    static Int32 DynamicEventMatchCore(TypeRef regRefType, void *pData, RefNum refnum, Int32 *dynIndexBase) {
         Int32 dynIndex = 0;
         if (regRefType->IsRefnum() && pData && (static_cast<RefNumVal*>(pData)->GetRefNum() == refnum)) {
             dynIndex = *dynIndexBase;

@@ -413,7 +413,7 @@ TypeRef ClumpParseState::ReadFormalParameterType()
     return _formalParameterType;
 }
 //------------------------------------------------------------
-void ClumpParseState::SetClumpFireCount(Int32 fireCount)
+void ClumpParseState::SetClumpFireCount(Int32 fireCount) const
 {
     // TODO(PaulAustin): some bootstrap that could be a bit cleaner.
     // If the short count is less than the fire count then the clump was enqueued

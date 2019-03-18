@@ -53,7 +53,7 @@ class VIClumpQueue
  public:
     VIClumpQueue();
     //! True when the VIClumpQueue is empty.
-    Boolean IsEmpty() { return (this->_head == nullptr); }
+    Boolean IsEmpty() const { return (this->_head == nullptr); }
     VIClump* Dequeue();
     void Enqueue(VIClump* elt);
 };
@@ -103,7 +103,7 @@ class ExecutionContext
     ECONTEXT    VIClump*        _triggeredIsrList;  // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
 #endif
-    ECONTEXT    VIClump*        CurrentClump() { return _runningQueueElt; }
+    ECONTEXT    VIClump*        CurrentClump() const { return _runningQueueElt; }
     ECONTEXT    void            CheckOccurrences(PlatformTickType t);    // Will put items on the run queue
                                                                        // if it is time. or ready bit is set.
 
@@ -120,7 +120,7 @@ class ExecutionContext
 
  public:
     // Method for runtime errors to be routed through.
-    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
+    ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...) const;
 
  private:
     static Boolean _classInited;

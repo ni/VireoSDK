@@ -32,7 +32,8 @@ class VireoUnitTest {
             testList->_next = this;
             return testList;
         }
-        TestList *Delete() { TestList *next = _next; delete this; return next; }
+        TestList *Delete() const
+        { TestList *next = _next; delete this; return next; }
     };
     static TestList *_s_unitTests;
 
@@ -41,7 +42,7 @@ class VireoUnitTest {
     virtual ~VireoUnitTest() { }
     virtual const char *Name() = 0;
     virtual bool Execute() = 0;
-    void RegisterTest(VireoUnitTest *test);
+    static void RegisterTest(VireoUnitTest *test);
 
     static bool RunTests(bool * pass);
 };

@@ -45,9 +45,9 @@ class EventLog {
     };
 
     explicit EventLog(StringRef str);
-    Int32 TotalErrorCount()                 { return _softErrorCount + _hardErrorCount; }
-    Int32 HardErrorCount()                  { return  _hardErrorCount; }
-    Int32 WarningCount()                    { return _warningCount; }
+    Int32 TotalErrorCount() const { return _softErrorCount + _hardErrorCount; }
+    Int32 HardErrorCount() const { return  _hardErrorCount; }
+    Int32 WarningCount() const { return _warningCount; }
     void LogEventV(EventSeverity severity, Int32 lineNumber, ConstCStr message, va_list args);
     void LogEvent(EventSeverity severity, Int32 lineNumber, ConstCStr message, ...);
     void LogEventCore(EventSeverity severity, Int32 lineNumber, ConstCStr message);

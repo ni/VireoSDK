@@ -37,9 +37,9 @@ class PlatformMemory {
     size_t _totalAllocated = 0;
  public:
     void* Malloc(size_t countAQ);
-    void* Realloc(void* pBuffer, size_t countAQ);
+    static void* Realloc(void* pBuffer, size_t countAQ);
     void Free(void* pBuffer);
-    size_t TotalAllocated() { return _totalAllocated; }
+    size_t TotalAllocated() const { return _totalAllocated; }
 };
 
 // #define VIREO_TRACK_MALLOC
@@ -54,11 +54,11 @@ class PlatformMemory {
 //! Process level functions for stdio.
 class PlatformIO {
  public:
-    void Print(Int32 len, ConstCStr str);
-    void Print(ConstCStr str);
-    void Printf(ConstCStr format, ...);
-    void ReadFile(SubString *name, StringRef buffer);
-    void ReadStdin(StringRef buffer);
+    static void Print(Int32 len, ConstCStr str);
+    static void Print(ConstCStr str);
+    void Printf(ConstCStr format, ...) const;
+    static void ReadFile(SubString *name, StringRef buffer);
+    static void ReadStdin(StringRef buffer);
 };
 
 //------------------------------------------------------------
@@ -73,14 +73,14 @@ class PlatformIO {
 
 class PlatformTimer {
  public:
-    PlatformTickType TickCount();
-    PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
-    Int64 TickCountToMilliseconds(PlatformTickType);
-    Int64 TickCountToMicroseconds(PlatformTickType);
-    PlatformTickType MillisecondsFromNowToTickCount(Int64 millisecondCount);
-    PlatformTickType MicrosecondsFromNowToTickCount(Int64 microsecondCount);
+    static PlatformTickType TickCount();
+    static PlatformTickType MicrosecondsToTickCount(Int64 microseconds);
+    static Int64 TickCountToMilliseconds(PlatformTickType);
+    static Int64 TickCountToMicroseconds(PlatformTickType);
+    static PlatformTickType MillisecondsFromNowToTickCount(Int64 millisecondCount);
+    static PlatformTickType MicrosecondsFromNowToTickCount(Int64 microsecondCount);
 #if !kVireoOS_emscripten
-    void SleepMilliseconds(Int64 milliseconds);  // Cannot sleep in emscripten code without using interpreter, must sleep in caller on JS side
+    static void SleepMilliseconds(Int64 milliseconds);  // Cannot sleep in emscripten code without using interpreter, must sleep in caller on JS side
 #endif
 };
 
@@ -88,8 +88,8 @@ class PlatformTimer {
 //! Single class to gather platform classes.
 class Platform {
  public:
-    void Setup();
-    void Shutdown();
+    static void Setup();
+    static void Shutdown();
  public:
     PlatformMemory  Mem;
     PlatformIO      IO;

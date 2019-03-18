@@ -993,7 +993,7 @@ struct Sort1DArrayInstruction : public InstructionCore
     _ParamDef(TypedArrayCoreRef, InArray);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 // Emit the sort instruction for specific type
 //------------------------------------------------------------
@@ -1029,7 +1029,7 @@ struct comparator
     Instruction3<void, void, Boolean>* _snippet;
  public:
     explicit comparator(Instruction3<void, void, Boolean>* snippet) {_snippet = snippet;}
-    bool operator()(AQBlock1* i, AQBlock1* j) {
+    bool operator()(AQBlock1* i, AQBlock1* j) const {
         Boolean less = false;
         _snippet->_p0 = i;
         _snippet->_p1 = j;
@@ -1081,7 +1081,7 @@ struct FindArrayMaxMinInstruction : public InstructionCore
     };
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 
 InstructionCore* EmitMaxMinInstruction(ClumpParseState* pInstructionBuilder)

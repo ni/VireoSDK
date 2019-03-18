@@ -241,7 +241,7 @@ void PlatformIO::Print(Int32 len, ConstCStr str)
 }
 //------------------------------------------------------------
 //! Static memory deallocator used for all TM memory management.
-void PlatformIO::Printf(ConstCStr format, ...)
+void PlatformIO::Printf(ConstCStr format, ...) const
 {
     va_list args;
     va_start(args, format);

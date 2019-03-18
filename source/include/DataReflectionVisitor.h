@@ -30,8 +30,8 @@ class DataReflectionVisitor : public TypeVisitor
     DataReflectionVisitor(TypeRef tHaystack, DataPointer pNeedle, StringRef path);
     void Accept(TypeRef tHayStack, DataPointer pHayStack);
     void Accept(TypeManagerRef tm);
-    Boolean Found()         { return _found; }
-    Boolean FoundInVI()     { return _foundInVI; }
+    Boolean Found() const { return _found; }
+    Boolean FoundInVI() const { return _foundInVI; }
 
  private:
     // What is being searched through

@@ -173,7 +173,7 @@ Boolean SubString::ReadRawChar(Utf8Char* token)
     }
 }
 //------------------------------------------------------------
-Boolean SubString::PeekRawChar(Utf8Char* token, IntIndex pos)
+Boolean SubString::PeekRawChar(Utf8Char* token, IntIndex pos) const
 {
     if (_begin + pos < _end) {
         *token = *(_begin + pos);
@@ -743,7 +743,7 @@ Boolean SubString::ReadIntWithBase(Int64 *pValue, Int32 base)
     return _begin > origBegin;
 }
 //---------------------------------------------------
-Boolean SubString::CompareViaEncodedString(SubString* encodedString)
+Boolean SubString::CompareViaEncodedString(SubString* encodedString) const
 {
     Utf8Char c;
     Utf8Char decodedC;
@@ -933,7 +933,7 @@ void SubString::EatToEol()
     return;
 }
 //------------------------------------------------------------
-Int32 SubString::CountMatches(char value)
+Int32 SubString::CountMatches(char value) const
 {
     const Utf8Char* pChar = _begin;
     Int32 matchCount = 0;
@@ -947,7 +947,7 @@ Int32 SubString::CountMatches(char value)
 }
 //------------------------------------------------------------
 //! The length of the string in logical characters, not bytes.
-Int32 SubString::StringLength()
+Int32 SubString::StringLength() const
 {
     const Utf8Char* pCharSequence = _begin;
     const Utf8Char* pEnd = _end;
@@ -1058,7 +1058,7 @@ void SubString::TrimQuotedString(TokenTraits tt)
     }
 }
 //------------------------------------------------------------
-IntIndex SubString::FindFirstMatch(const SubString* searchString, IntIndex offset, Boolean ignoreCase)
+IntIndex SubString::FindFirstMatch(const SubString* searchString, IntIndex offset, Boolean ignoreCase) const
 {
     IntIndex searchStringLength = searchString->Length();
     if (Length() == 0 || searchStringLength > Length())
@@ -1129,7 +1129,7 @@ Int32 PercentEncodedSubString::GetEncodedLength(const SubString &s) {
     return len;
 }
 //------------------------------------------------------------
-void PercentEncodedSubString::Encode(const SubString &s) {
+void PercentEncodedSubString::Encode(const SubString &s) const {
     SubString ss = s;
     Utf8Char c;
     Utf8Char *pDest = _convertedStr;
@@ -1164,7 +1164,8 @@ void PercentEncodedSubString::PercentEncodeUtf8Char(Utf8Char c, Utf8Char **pDest
     (*pDest)++;
 }
 //------------------------------------------------------------
-Int32 PercentDecodedSubString::GetDecodedLength(const SubString &s) {
+Int32 PercentDecodedSubString::GetDecodedLength(const SubString &s)
+{
     const Utf8Char *cp = s.Begin();
     IntIndex len = s.Length();
     while (cp != s.End()) {
@@ -1175,7 +1176,7 @@ Int32 PercentDecodedSubString::GetDecodedLength(const SubString &s) {
     return len;
 }
 //------------------------------------------------------------
-void PercentDecodedSubString::Decode(const SubString &s) {
+void PercentDecodedSubString::Decode(const SubString &s) const {
     SubString ss = s;
     Utf8Char c;
     Int32 value;

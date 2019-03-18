@@ -322,7 +322,7 @@ class FixedCArray : public SubVector<T>
     }
 
     //! Return the maximum capacity of the array.
-    IntIndex Capacity() { return COUNT - 1; }
+    static IntIndex Capacity() { return COUNT - 1; }
 
     //! Return a reference to the indexed element in the vector (no range checking).
     const T&  operator[] (const int i)  { return _buffer[i]; }

@@ -54,16 +54,17 @@ struct ViaFormatChars
     Utf8Char    _quote;
     ViaFormat   _fieldNameFormat;
 
-    Boolean UseFieldNames()        { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
-    Boolean QuoteFieldNames()      {
+    Boolean UseFieldNames() const { return _fieldNameFormat &  kViaFormat_UseFieldNames ? true : false; }
+    Boolean QuoteFieldNames() const
+    {
         return (_fieldNameFormat & kViaFormat_FieldNameMask) == kViaFormat_QuotedFieldNames;
     }
-    Boolean SuppressInfNaN()       { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
-    Boolean LongNameInfNaN()       { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
-    Boolean QuotedNameInfNaN()     { return (_fieldNameFormat & kViaFormat_QuoteInfNanNames) ? true : false; }
-    Boolean JSONStrictValidation() { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
-    Boolean GenerateJSON()         { return strcmp(_name, kJSONEncoding) == 0; }
-    Boolean StopArrayParseOnFirstError() { return (_fieldNameFormat & kViaFormat_StopArrayParseOnFirstError) ? true : false; }
+    Boolean SuppressInfNaN() const { return (_fieldNameFormat & kViaFormat_SuppressInfNaN) ? true : false; }
+    Boolean LongNameInfNaN() const { return (_fieldNameFormat & kViaFormat_UseLongNameInfNaN) ? true : false; }
+    Boolean QuotedNameInfNaN() const { return (_fieldNameFormat & kViaFormat_QuoteInfNanNames) ? true : false; }
+    Boolean JSONStrictValidation() const { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
+    Boolean GenerateJSON() const { return strcmp(_name, kJSONEncoding) == 0; }
+    Boolean StopArrayParseOnFirstError() const { return (_fieldNameFormat & kViaFormat_StopArrayParseOnFirstError) ? true : false; }
 };
 
 struct ViaFormatOptions
@@ -106,9 +107,9 @@ class TDViaParser
     Boolean         _loadVIsImmediately;
     EventLog*       _pLog;
 
-    void    LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...);
-    Int32   ErrorCount() { return _pLog->TotalErrorCount(); }
-    Int32   CalcCurrentLine();
+    void    LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...) const;
+    Int32   ErrorCount() const { return _pLog->TotalErrorCount(); }
+    Int32   CalcCurrentLine() const;
     void    RepinLineNumberBase();
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase,
@@ -122,13 +123,13 @@ class TDViaParser
     NIError ParseREPL();
     TypeRef ParseEnqueue();
     Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth = nullptr);
-    TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
+    static TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
     Int32   ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* viClump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
-    VirtualInstrument *CurrentVIScope() { return _virtualInstrumentScope; }
+    VirtualInstrument *CurrentVIScope() const { return _virtualInstrumentScope; }
 
  public:
     static NIError StaticRepl(TypeManagerRef tm, SubString *replStream);
@@ -136,7 +137,7 @@ class TDViaParser
     static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
 
  private:
-    TypeRef BadType()   {return _typeManager->BadType();}
+    TypeRef BadType() const {return _typeManager->BadType();}
     void    ParseAggregateElementList(std::vector<TypeRef> *elementTypesVector, AggregateAlignmentCalculator* calculator);
     TypeRef ParseArray();
     TypeRef ParseBitBlock();
@@ -153,7 +154,7 @@ class TDViaParser
     TypeRef ParseRefNumType();
     TypeRef ParseControlReference(void *pData = nullptr);
     TypeRef ParseEnumType(SubString *token);
-    EncodingEnum ParseEncoding(SubString* str);
+    static EncodingEnum ParseEncoding(SubString* str);
 };
 
 #if defined (VIREO_VIA_FORMATTER)
@@ -193,9 +194,9 @@ class TDViaFormatter
 
     void    FormatClusterData(TypeRef type, void* pData);
     void    FormatPointerData(TypeRef pointerType, void* pData);
-    void    FormatEncoding(EncodingEnum value);
-    void    FormatElementUsageType(UsageTypeEnum value);
-    void    FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit = false);
+    void    FormatEncoding(EncodingEnum value) const;
+    void    FormatElementUsageType(UsageTypeEnum value) const;
+    void    FormatInt(EncodingEnum encoding, IntMax value, Boolean is64Bit = false) const;
     void    FormatIEEE754(TypeRef type, void* pData);
     Int32   GetError() const { return _errorCode; }
 
