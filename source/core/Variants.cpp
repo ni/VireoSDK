@@ -29,22 +29,13 @@ struct DataToVariantParamBlock : public InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
-TypeRef ConvertDataToVariant(TypeRef inputType, void* inputData)
-{
-    TypeManagerRef tm = THREAD_TADM();
-    TypeRef variant = DefaultValueType::New(tm, inputType, true);
-    variant->CopyData(inputData, variant->Begin(kPAWrite));
-    return variant;
-}
-
 // Convert data of any type to variant
 VIREO_FUNCTION_SIGNATURET(DataToVariant, DataToVariantParamBlock)
 {
     TypeRef inputType = _ParamImmediate(InputData._paramType);
-    void* inputData = _ParamImmediate(InputData._pData);
     TypeManagerRef tm = THREAD_TADM();
 
-    TypeRef variant = DefaultValueType::New(tm, inputType, true);
+	TypeRef variant = DefaultValueType::New(tm, inputType, true);
     variant->CopyData(_ParamImmediate(InputData._pData), variant->Begin(kPAWrite));
     _Param(OutputVariant) = variant;
     return _NextInstruction();
