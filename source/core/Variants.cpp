@@ -35,7 +35,7 @@ VIREO_FUNCTION_SIGNATURET(DataToVariant, DataToVariantParamBlock)
     TypeRef inputType = _ParamImmediate(InputData._paramType);
     TypeManagerRef tm = THREAD_TADM();
 
-	TypeRef variant = DefaultValueType::New(tm, inputType, true);
+    TypeRef variant = DefaultValueType::New(tm, inputType, true);
     variant->CopyData(_ParamImmediate(InputData._pData), variant->Begin(kPAWrite));
     _Param(OutputVariant) = variant;
     return _NextInstruction();
