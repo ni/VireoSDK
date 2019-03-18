@@ -22,6 +22,9 @@ SDG
 
 namespace Vireo {
 
+// For some platforms isnan, isinf, abs are functions in std not macros
+using namespace std;  // NOLINT(build/namespaces)s
+
 //------------------------------------------------------------
 DECLARE_VIREO_PRIMITIVE2(ArrayResize, TypedArrayCoreRef, IntIndex, (_Param(0)->Resize1D(_Param(1)) ))
 DECLARE_VIREO_PRIMITIVE2(ArrayLength, TypedArrayCoreRef, IntIndex, (_Param(1) = _Param(0)->Length()))
