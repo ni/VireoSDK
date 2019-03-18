@@ -16,7 +16,6 @@ SDG
 #include <cmath>
 #include <utility>
 #include <limits>
-#include "Variants.h"
 #if defined(VIREO_INSTRUCTION_REFLECTION)
 #include <map>
 #endif
@@ -75,7 +74,6 @@ VIVM_THREAD_LOCAL TypeManagerRef TypeManagerScope::ThreadsTypeManager;
 //------------------------------------------------------------
 void TypeManager::Delete()
 {
-    VariantAttributeManager::Instance().CleanUp();
     TypeManagerRef tm = this;
 
     // Delete all types owned bye the tm.
@@ -615,6 +613,7 @@ const SubString TypeCommon::TypeJavaScriptRefNum = SubString(tsJavaScriptRefNumT
 const SubString TypeCommon::TypePath = SubString("NIPath");
 const SubString TypeCommon::TypeAnalogWaveform = SubString("AnalogWaveform");
 const SubString TypeCommon::TypeStaticTypeAndData = SubString("StaticTypeAndData");
+const SubString TypeCommon::TypeStaticType = SubString("StaticType");
 
 TypeCommon::TypeCommon(TypeManagerRef typeManager)
 {
@@ -871,6 +870,18 @@ Boolean TypeCommon::IsA(const SubString *otherTypeName)
     }
 
     return otherTypeName->CompareCStr(tsWildCard);
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsStaticTypeWildcard()
+{
+    TypeRef t = this;
+    return t->Name().Compare(&TypeCommon::TypeStaticType);
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsStaticTypeAndDataWildcard()
+{
+    TypeRef t = this;
+    return t->Name().Compare(&TypeCommon::TypeStaticTypeAndData);
 }
 //------------------------------------------------------------
 Boolean TypeCommon::IsNumeric()

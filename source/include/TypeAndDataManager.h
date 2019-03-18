@@ -468,6 +468,7 @@ class TypeCommon
     static const SubString TypePath;
     static const SubString TypeAnalogWaveform;
     static const SubString TypeStaticTypeAndData;
+    static const SubString TypeStaticType;
 
     explicit TypeCommon(TypeManagerRef typeManager);
     TypeManagerRef TheTypeManager() const { return _typeManager; }
@@ -616,6 +617,8 @@ class TypeCommon
     Boolean IsA(ConstCStr typeNameCstr)                 { SubString typeName(typeNameCstr); return IsA(&typeName); }
     Boolean IsA(TypeRef otherType);
     Boolean IsA(TypeRef otherType, Boolean compatibleStructure);
+    Boolean IsStaticTypeWildcard();
+    Boolean IsStaticTypeAndDataWildcard();
     Boolean IsNumeric();
     Boolean IsInteger();
     Boolean IsSignedInteger();

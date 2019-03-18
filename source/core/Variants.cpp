@@ -21,63 +21,45 @@ SDG
 
 namespace Vireo
 {
-//------------------------------------------------------------
-struct DataToVariantParamBlock : public InstructionCore
-{
-    _ParamImmediateDef(StaticTypeAndData, InputData);
-    _ParamDef(TypeRef, OutputVariant);
-    NEXT_INSTRUCTION_METHOD()
-};
 
-// Convert data of any type to variant
-VIREO_FUNCTION_SIGNATURET(DataToVariant, DataToVariantParamBlock)
+bool VariantType::IsNullVariant(VariantTypeRef variant)
 {
-    TypeRef inputType = _ParamImmediate(InputData._paramType);
-    TypeManagerRef tm = THREAD_TADM();
-
-    TypeRef variant = DefaultValueType::New(tm, inputType, true);
-    variant->CopyData(_ParamImmediate(InputData._pData), variant->Begin(kPAWrite));
-    _Param(OutputVariant) = variant;
-    return _NextInstruction();
+    return variant == nullptr;
 }
 
-//------------------------------------------------------------
-struct VariantToDataParamBlock : public InstructionCore
-{
-    _ParamImmediateDef(StaticTypeAndData, InputData);
-    _ParamDef(ErrorCluster, ErrorClust);
-    _ParamImmediateDef(StaticTypeAndData, TargetType);
-    _ParamImmediateDef(StaticTypeAndData, OutputData);
-    NEXT_INSTRUCTION_METHOD()
-};
-
-TypeRef CopyToVariant(TypeRef sourceType)
+VariantTypeRef VariantType::CreateNewVariantFromType(TypeRef inputType)
 {
     TypeManagerRef tm = THREAD_TADM();
-    TypeRef variant = DefaultValueType::New(tm, sourceType, true);
-    variant->CopyData(sourceType->Begin(kPARead), variant->Begin(kPAWrite));
-    return variant;
+    VariantTypeRef newVariant = VariantType::New(tm, inputType == nullptr ? tm->BadType() : inputType);
+    return newVariant;
 }
 
-bool IsTypeUnspecifiedOrVariant(TypeRef destType, void* destData)
+VariantTypeRef VariantType::CreateNewVariantFromStaticTypeAndData(const StaticTypeAndData& input)
 {
-    return !destData || destType->IsVariant();
+    TypeRef inputType = input._paramType;
+    TypeManagerRef tm = THREAD_TADM();
+
+    auto inputData = input._pData;
+    if (inputType->IsVariant()) {
+        VariantTypeRef variant = *reinterpret_cast<VariantTypeRef *>(input._pData);
+        inputType = variant->_underlyingTypeRef;
+        inputData = variant->Begin(kPARead);
+    }
+    VariantTypeRef newVariant = VariantType::New(tm, inputType);
+    newVariant->CopyData(inputData, newVariant->Begin(kPAWrite));
+    return newVariant;
 }
 
-bool IsTargetTypeSameAsOutput(TypeRef targetType, void* targetData, TypeRef outputType, void* outputData)
+VariantTypeRef VariantType::CreateNewVariantFromVariant(const VariantTypeRef& inputVariant)
 {
-    return (IsTypeUnspecifiedOrVariant(targetType, targetData) && IsTypeUnspecifiedOrVariant(outputType, outputData))
-        || targetType->IsA(outputType, true)
-        || !outputData;
+    TypeManagerRef tm = THREAD_TADM();
+    TypeRef underlyingType = inputVariant->_underlyingTypeRef;
+    VariantTypeRef newVariant = VariantType::New(tm, underlyingType);
+    newVariant->CopyData(inputVariant->Begin(kPARead), newVariant->Begin(kPAWrite));
+    return newVariant;
 }
 
-bool IsTargetTypeCompatibleWithInput(TypeRef inputType, TypeRef targetType, void* targetData)
-{
-    // If target type parameter is unspecified, or it is the same as the input, return true.
-    return inputType && (!targetData || inputType->IsA(targetType, true));
-}
-
-void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef outputType, void* outputData, ErrorCluster* errPtr)
+void VariantType::SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef outputType, void* outputData, ErrorCluster* errPtr)
 {
     if (inputType && inputType->IsCluster() && targetType->IsArray()) {
         errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
@@ -89,6 +71,75 @@ void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef ou
     }
 }
 
+VariantTypeRef VariantType::New(TypeManagerRef typeManager, TypeRef type)
+{
+    return TADM_NEW_PLACEMENT(VariantType)(typeManager, type);
+}
+
+//------------------------------------------------------------
+VariantType::VariantType(TypeManagerRef typeManager, TypeRef type)
+    : WrappedType(typeManager, type)
+{
+    _isFlat = false;
+    _ownsDefDefData = true;
+    _isMutableValue = true;
+    _hasCustomDefault = true;
+    _topAQSize = sizeof(void*);
+    _aqAlignment = sizeof(void*);
+    TypeRef copyInputType = DefaultValueType::New(typeManager, type, true);
+    _underlyingTypeRef = copyInputType;
+    _attributeMap = nullptr;
+    _wrapped = copyInputType;
+}
+
+NIError VariantType::ClearData(void*)
+{
+    if (_underlyingTypeRef) {
+        _underlyingTypeRef->ClearData(this->Begin(kPAClear));
+        _underlyingTypeRef = nullptr;
+    }
+    if (_attributeMap) {
+        for (auto attribute : *_attributeMap) {
+            attribute.first->Delete(attribute.first);
+            if (attribute.second && attribute.second->_underlyingTypeRef) {
+                attribute.second->_underlyingTypeRef->ClearData(attribute.second->Begin(kPAClear));
+            }
+        }
+        _attributeMap->clear();
+        delete _attributeMap;
+        _attributeMap = nullptr;
+    }
+    return kNIError_Success;
+}
+
+//------------------------------------------------------------
+struct DataToVariantParamBlock : public InstructionCore
+{
+    _ParamImmediateDef(StaticTypeAndData, InputData);
+    _ParamDef(VariantTypeRef, OutputVariant);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+// Convert data of any type to variant
+VIREO_FUNCTION_SIGNATURET(DataToVariant, DataToVariantParamBlock)
+{
+    if (_ParamPointer(OutputVariant)) {
+        VariantTypeRef variant = VariantType::CreateNewVariantFromStaticTypeAndData(_ParamImmediate(InputData));
+        _Param(OutputVariant) = variant;
+    }
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
+struct VariantToDataParamBlock : public InstructionCore
+{
+    _ParamImmediateDef(StaticTypeAndData, InputData);
+    _ParamDef(ErrorCluster, ErrorClust);
+    _ParamDef(StaticType, TargetType);
+    _ParamImmediateDef(StaticTypeAndData, OutputData);
+    NEXT_INSTRUCTION_METHOD()
+};
+
 // Convert variant to data of given type. Error if the data types don't match
 VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 {
@@ -97,42 +148,47 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         TypeRef inputType = _ParamImmediate(InputData._paramType);
         void* inputData = _ParamImmediate(InputData)._pData;
 
-        TypeRef targetType = _ParamImmediate(TargetType._paramType);
-        void* targetData = _ParamImmediate(TargetType)._pData;
-
+        TypeRef targetType = _ParamPointer(TargetType);
         TypeRef outputType = _ParamImmediate(OutputData._paramType);
         void* outputData = _ParamImmediate(OutputData)._pData;
 
+        if (targetType->IsStaticTypeWildcard() || (!outputType->IsStaticTypeAndDataWildcard() && !outputType->IsA(targetType, true))) {
+            // In VIA, TargetType is a required argument. Generated VIA from G must guarantee this.
+            // If TargetType is optional, just throw internal error and exit.
+            // OutputData is optional. However, if supplied, outputType MUST be same as targetType. Generated VIA from G must guarantee this.
+            // If violated, just throw internal error and exit.
+            // We should not throw valid LV errors.
+            if (errPtr)
+                errPtr->SetErrorAndAppendCallChain(true, kUnspecifiedError, "Variant To Data");
+            return _NextInstruction();
+        }
+
         if (inputType->IsVariant()) {
-            TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
-            if (variantInnerType
-                && IsTargetTypeCompatibleWithInput(variantInnerType, targetType, targetData)
-                && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
-                if (outputData) {
-                    variantInnerType->CopyData(variantInnerType->Begin(kPARead), outputData);
+            VariantTypeRef variant = *reinterpret_cast<VariantTypeRef *>_ParamImmediate(InputData._pData);
+            if (VariantType::IsNullVariant(variant)) {
+                if (errPtr)
+                    errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+            } else {
+                TypeRef underlyingType = variant->_underlyingTypeRef;
+                if (targetType->IsVariant()) {
+                    if (outputData)
+                        *static_cast<VariantTypeRef *>(outputData) = VariantType::CreateNewVariantFromType(underlyingType);
+                } else if (underlyingType->IsA(targetType, true)) {
+                    if (outputData)
+                        targetType->CopyData(underlyingType->Begin(kPARead), outputData);
+                } else if (errPtr) {
+                    VariantType::SetVariantToDataTypeError(underlyingType, targetType, outputType, outputData, errPtr);
                 }
-            } else if (variantInnerType
-                && IsTypeUnspecifiedOrVariant(targetType, targetData)
-                && IsTypeUnspecifiedOrVariant(outputType, outputData)) {
-                if (outputData) {
-                    *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
-                }
-            } else if (errPtr) {
-                SetVariantToDataTypeError(variantInnerType, targetType, outputType, outputData, errPtr);
             }
         } else {
-            if (IsTargetTypeCompatibleWithInput(inputType, targetType, targetData)
-                && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
-                if (outputData) {
-                    inputType->CopyData(inputData, outputData);
-                }
-            } else if (IsTypeUnspecifiedOrVariant(targetType, targetData)
-                && IsTypeUnspecifiedOrVariant(outputType, outputData)) {
-                if (outputData) {
-                    *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
-                }
+            if (inputType->IsA(targetType, true)) {
+                if (outputData)
+                    targetType->CopyData(inputData, outputData);
+            } else if (targetType->IsVariant()) {
+                if (outputData)
+                    *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
             } else if (errPtr) {
-                SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
+                VariantType::SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
             }
         }
     }
@@ -141,7 +197,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 
 struct SetVariantAttributeParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, InputVariant);
+    _ParamDef(VariantTypeRef, InputVariant);
     _ParamDef(StringRef, Name);
     _ParamImmediateDef(StaticTypeAndData, Value);
     _ParamDef(Boolean, Replaced);
@@ -167,27 +223,17 @@ VIREO_FUNCTION_SIGNATURET(SetVariantAttribute, SetVariantAttributeParamBlock)
             stringType->InitData(&nameKeyRef);
             nameKeyRef->Append(name->Length(), name->Begin());
 
-            TypeRef valueType = _ParamImmediate(Value._paramType);
-            TypeRef variantValue = DefaultValueType::New(tm, valueType, true);
-            variantValue->CopyData(_ParamImmediate(Value._pData), variantValue->Begin(kPAWrite));
+            VariantTypeRef variantAttributeValue = VariantType::CreateNewVariantFromStaticTypeAndData(_ParamImmediate(Value));
 
-            TypeRef inputVariant = _Param(InputVariant);
-            VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
-            auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
-            if (variantToAttributeMapIter != variantToAttributeMap.end()) {
-                VariantAttributeManager::AttributeMapType *attributeMap = variantToAttributeMapIter->second;
-
-                auto pairIterBool = attributeMap->insert(VariantAttributeManager::AttributeMapType::value_type(nameKeyRef, variantValue));
-                replaced = !pairIterBool.second;
-                if (replaced) {
-                    pairIterBool.first->second = variantValue;
-                    nameKeyRef->Delete(nameKeyRef);
-                }
-            } else {
-                auto attributeMap = new VariantAttributeManager::AttributeMapType;
-                (*attributeMap)[nameKeyRef] = variantValue;
-                variantToAttributeMap[inputVariant] = attributeMap;
-                replaced = false;
+            VariantTypeRef inputVariant = _Param(InputVariant);
+            if (inputVariant->_attributeMap == nullptr) {
+                inputVariant->_attributeMap = new VariantType::AttributeMapType;
+            }
+            auto pairIterBool = inputVariant->_attributeMap->insert(VariantType::AttributeMapType::value_type(nameKeyRef, variantAttributeValue));
+            replaced = !pairIterBool.second;
+            if (replaced) {
+                pairIterBool.first->second = variantAttributeValue;
+                nameKeyRef->Delete(nameKeyRef);
             }
         }
     }
@@ -198,7 +244,7 @@ VIREO_FUNCTION_SIGNATURET(SetVariantAttribute, SetVariantAttributeParamBlock)
 
 struct GetVariantAttributeParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, InputVariant);
+    _ParamDef(VariantTypeRef, InputVariant);
     _ParamDef(StringRef, Name);
     _ParamImmediateDef(StaticTypeAndData, Value);
     _ParamDef(Boolean, Found);
@@ -210,23 +256,16 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
 {
     ErrorCluster *errPtr = _ParamPointer(ErrorClust);
     bool found = false;
-    if (!errPtr || !errPtr->status) {
-        TypeRef inputVariant = _Param(InputVariant);
+    VariantTypeRef inputVariant = _Param(InputVariant);
+    if ((!errPtr || !errPtr->status) && inputVariant) {
         StringRef name = _Param(Name);
         StaticTypeAndDataRef value = &_ParamImmediate(Value);
-        const VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
-
-        const auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
-        if (variantToAttributeMapIter != variantToAttributeMap.end()) {
-            VariantAttributeManager::AttributeMapType *attributeMap = variantToAttributeMapIter->second;
-            auto attributeMapIter = attributeMap->find(name);
-            if (attributeMapIter != attributeMap->end()) {
-                TypeRef foundValue = attributeMapIter->second;
+        if (inputVariant->_attributeMap) {
+            auto attributeMapIter = inputVariant->_attributeMap->find(name);
+            if (attributeMapIter != inputVariant->_attributeMap->end()) {
+                VariantTypeRef foundValue = attributeMapIter->second;
                 if (value->_paramType->IsVariant()) {
-                    TypeManagerRef tm = THREAD_TADM();
-                    TypeRef variant = DefaultValueType::New(tm, foundValue, true);
-                    variant->CopyData(foundValue->Begin(kPARead), variant->Begin(kPAWrite));
-                    *static_cast<TypeRef*>(value->_pData) = variant;
+                    *static_cast<VariantTypeRef*>(value->_pData) = VariantType::CreateNewVariantFromVariant(foundValue);
                     found = true;
                 } else if (foundValue->IsA(value->_paramType, true)) {
                     found = true;
@@ -246,7 +285,7 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
 
 struct GetVariantAttributesAllParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, InputVariant);
+    _ParamDef(VariantTypeRef, InputVariant);
     _ParamDef(TypedArrayCoreRef, Names);
     _ParamDef(TypedArrayCoreRef, Values);
     _ParamDef(ErrorCluster, ErrorClust);
@@ -260,13 +299,9 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
     TypedArrayCoreRef values = _ParamPointer(Values) ? _Param(Values) : nullptr;
     bool bResetOutputArrays = true;
     if ((!errPtr || !errPtr->status) && (names || values)) {
-        TypeRef inputVariant = _Param(InputVariant);
-        const VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
-
-        const auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
-        if (variantToAttributeMapIter != variantToAttributeMap.end()) {
-            VariantAttributeManager::AttributeMapType *attributeMap = variantToAttributeMapIter->second;
-            const auto mapSize = attributeMap->size();
+        VariantTypeRef inputVariant = _Param(InputVariant);
+        if (inputVariant->_attributeMap != nullptr) {
+            const auto mapSize = inputVariant->_attributeMap->size();
             if (mapSize != 0) {
                 bResetOutputArrays = false;
                 if (names)
@@ -279,22 +314,16 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
                 AQBlock1* pValuesInsert = values ? values->BeginAt(0) : nullptr;
                 TypeRef valuesElementType = values ? values->ElementType() : nullptr;
                 Int32 valuesAQSize = values ? valuesElementType->TopAQSize() : 0;
-                TypeManagerRef tm = THREAD_TADM();
-                for (const auto attributePair : *attributeMap) {
+                for (const auto attributePair : *inputVariant->_attributeMap) {
                     String* const* attributeNameStr = &(attributePair.first);
-                    TypeRef attributeValue = attributePair.second;
+                    VariantTypeRef attributeValue = attributePair.second;
                     if (names) {
                         namesElementType->CopyData(attributeNameStr, pNamesInsert);
                         pNamesInsert += namesAQSize;
                     }
                     if (values) {
-                        if (attributeValue->IsVariant()) {
-                            attributeValue->CopyData(attributeValue->Begin(kPARead), pValuesInsert);
-                        } else {
-                            TypeRef variant = DefaultValueType::New(tm, attributeValue, true);
-                            variant->CopyData(attributeValue->Begin(kPARead), variant->Begin(kPAWrite));
-                            *reinterpret_cast<TypeRef *>(pValuesInsert) = variant;
-                        }
+                        VariantTypeRef newVariant = VariantType::CreateNewVariantFromVariant(attributeValue);
+                        *reinterpret_cast<VariantTypeRef *>(pValuesInsert) = newVariant;
                         pValuesInsert += valuesAQSize;
                     }
                 }
@@ -312,7 +341,7 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
 
 struct DeleteVariantAttributeParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, InputVariant);
+    _ParamDef(VariantTypeRef, InputVariant);
     _ParamDef(StringRef, Name);
     _ParamDef(Boolean, Found);
     _ParamDef(ErrorCluster, ErrorClust);
@@ -326,28 +355,23 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
     bool clearAllAttributes = (!name || (*name)->Length() == 0);
     Boolean found = false;
     if (!errPtr || !errPtr->status) {
-        const TypeRef inputVariant = _Param(InputVariant);
-        VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
-
-        const auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
-        if (variantToAttributeMapIter != variantToAttributeMap.end()) {
-            VariantAttributeManager::AttributeMapType *attributeMap = variantToAttributeMapIter->second;
-            const auto mapSize = attributeMap->size();
+        const VariantTypeRef inputVariant = _Param(InputVariant);
+        if (inputVariant->_attributeMap != nullptr) {
+            const auto mapSize = inputVariant->_attributeMap->size();
             if (mapSize != 0) {
                 if (clearAllAttributes) {
-                    for (auto attribute : *attributeMap) {
+                    for (auto attribute : *inputVariant->_attributeMap)
                         attribute.first->Delete(attribute.first);
-                    }
-                    attributeMap->clear();
-                    variantToAttributeMap.erase(variantToAttributeMapIter);
-                    delete attributeMap;
+                    inputVariant->_attributeMap->clear();
+                    delete inputVariant->_attributeMap;
+                    inputVariant->_attributeMap = nullptr;
                     found = true;
                 } else {
-                    const auto attributeMapIterator = attributeMap->find(*name);
-                    if (attributeMapIterator != attributeMap->end()) {
+                    const auto attributeMapIterator = inputVariant->_attributeMap->find(*name);
+                    if (attributeMapIterator != inputVariant->_attributeMap->end()) {
                         found = true;
                         attributeMapIterator->first->Delete(attributeMapIterator->first);
-                        attributeMap->erase(attributeMapIterator);
+                        inputVariant->_attributeMap->erase(attributeMapIterator);
                     }
                 }
             }
@@ -362,51 +386,48 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
 
 struct CopyVariantParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, InputVariant);
-    _ParamDef(TypeRef, OutputVariant);
-
+    _ParamDef(VariantTypeRef, InputVariant);
+    _ParamDef(VariantTypeRef, OutputVariant);
     NEXT_INSTRUCTION_METHOD()
 };
 
 VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
 {
-    TypeRef inputVariant = _Param(InputVariant);
+    VariantTypeRef inputVariant = _Param(InputVariant);
     TypeManagerRef tm = THREAD_TADM();
 
-    if (inputVariant != nullptr) {
-        TypeRef destType = DefaultValueType::New(tm, inputVariant, true);
-        destType->CopyData(inputVariant->Begin(kPARead), destType->Begin(kPAWrite));
+    if (!VariantType::IsNullVariant(inputVariant)) {
+        VariantTypeRef variantCopy = VariantType::CreateNewVariantFromVariant(inputVariant);
 
-        VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
-
-        const auto variantToAttributeMapIter = variantToAttributeMap.find(inputVariant);
-        if (variantToAttributeMapIter != variantToAttributeMap.end()) {
-            VariantAttributeManager::AttributeMapType* attributeMapInput = variantToAttributeMapIter->second;
-            auto attributeMapOutput = new VariantAttributeManager::AttributeMapType;
+        VariantType::AttributeMapType* attributeMapInput = inputVariant->_attributeMap;
+        if (attributeMapInput != nullptr) {
+            auto attributeMapOutput = new VariantType::AttributeMapType;
             for (auto attribute : *attributeMapInput) {
                 StringRef nameKeyRef = nullptr;
                 TypeRef stringType = tm->FindType("String");
                 stringType->InitData(&nameKeyRef);
                 nameKeyRef->Append(attribute.first->Length(), attribute.first->Begin());
 
-                TypeRef valueType = attribute.second;
-                TypeRef variantValue = DefaultValueType::New(tm, valueType, true);
-                variantValue->CopyData(attribute.second->Begin(kPARead), variantValue->Begin(kPAWrite));
-
-                (*attributeMapOutput)[nameKeyRef] = variantValue;
+                VariantTypeRef attributeValueVariant = attribute.second;
+                (*attributeMapOutput)[nameKeyRef] = VariantType::CreateNewVariantFromVariant(attributeValueVariant);
             }
-            variantToAttributeMap[destType] = attributeMapOutput;
+            variantCopy->_attributeMap = attributeMapOutput;
         }
-        _Param(OutputVariant) = destType;
+        _Param(OutputVariant) = variantCopy;
+    } else {
+        // TODO(sanmut) : This is a workaround. We should create null Variant for local variables to allow
+        // SetVariantAttribute to be called without calling ToVariant.
+        // This works because our tests call copy on a variant constant before calling SetVariantAttribute.
+        _Param(OutputVariant) = VariantType::CreateNewVariantFromType(nullptr);
     }
     return _NextInstruction();
 }
 
 DEFINE_VIREO_BEGIN(Variant)
 
-    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error)"
-                                            "i(StaticTypeAndData targetType) o(StaticTypeAndData outputType))");
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
+    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error)"
+                                            "i(StaticType targetType) o(StaticTypeAndData outputType))");
     DEFINE_VIREO_FUNCTION(SetVariantAttribute, "p(io(Variant inputVariant) i(String name)"
                                                 " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(GetVariantAttribute, "p(i(Variant inputVariant) i(String name)"
