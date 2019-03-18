@@ -42,7 +42,11 @@ VIREO_FUNCTION_SIGNATURET(DataToVariant, DataToVariantParamBlock)
 {
     TypeRef inputType = _ParamImmediate(InputData._paramType);
     void* inputData = _ParamImmediate(InputData._pData);
-    _Param(OutputVariant) = ConvertDataToVariant(inputType, inputData);
+    TypeManagerRef tm = THREAD_TADM();
+
+    TypeRef variant = DefaultValueType::New(tm, inputType, true);
+    variant->CopyData(_ParamImmediate(InputData._pData), variant->Begin(kPAWrite));
+    _Param(OutputVariant) = variant;
     return _NextInstruction();
 }
 
@@ -338,7 +342,7 @@ DEFINE_VIREO_BEGIN(Variant)
                                                    "o(Array values) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(DeleteVariantAttribute, "p(io(Variant inputVariant) i(String name) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(CopyVariant, "p(i(Variant inputVariant) o(Variant outputVariant) )");
-    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertDataToVariant, "p(i(StaticTypeAndData) o(Variant))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, DataToVariant, "p(i(StaticTypeAndData) o(Variant))")
 
 DEFINE_VIREO_END()
 
