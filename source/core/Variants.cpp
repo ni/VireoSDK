@@ -338,7 +338,7 @@ DEFINE_VIREO_BEGIN(Variant)
                                                    "o(Array values) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(DeleteVariantAttribute, "p(io(Variant inputVariant) i(String name) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(CopyVariant, "p(i(Variant inputVariant) o(Variant outputVariant) )");
-    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertToVariant, "p(i(StaticTypeAndData) o(Variant))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertDataToVariant, "p(i(StaticTypeAndData) o(Variant))")
 
 DEFINE_VIREO_END()
 
