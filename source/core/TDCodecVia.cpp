@@ -40,10 +40,6 @@ SDG
 
 namespace Vireo
 {
-
-// For some platforms isnan, isinf, abs are functions in std not macros
-using namespace std;  // NOLINT(build/namespaces)s
-
 //------------------------------------------------------------
 TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog,
     Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/,
