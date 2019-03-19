@@ -1,0 +1,6 @@
+TestResult_Int32 true
+TestResult_Double true
+TestResult_ComplexFloatingPoint true
+TestResult_String true
+TestResult_Boolean true
+TestResult_Timestamp true
