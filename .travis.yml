@@ -24,8 +24,6 @@ install:
 - pip install --user tox
 - nohup npm run httpbin &
 - gcc -v
-- echo $CXX
-- echo $CC
 - git clone https://github.com/juj/emsdk.git
 - (cd emsdk && git checkout 9538381d56272818cba77a808ba46fdac6c961c8)
 - emsdk/emsdk install sdk-1.38.29-64bit
