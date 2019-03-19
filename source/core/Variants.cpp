@@ -61,15 +61,19 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         TypeRef destType = _ParamImmediate(DestData._paramType);
         void* destData = _ParamImmediate(DestData)._pData;
 
-        if (inputType->IsA(destType)) {
-            if (inputType->Name().Compare(&TypeCommon::TypeVariant)) {
-                TypeRef variantData = *(TypeRef *)_ParamImmediate(InputData._pData);
-                variantData->CopyData(variantData->Begin(kPARead), destData);
-            } else {
-                inputType->CopyData(inputData, destData);
+        if (inputType->Name().Compare(&TypeCommon::TypeVariant)) {
+            TypeRef variantType = *(TypeRef *)_ParamImmediate(InputData._pData);
+            if (variantType->IsA(destType)) {
+                variantType->CopyData(variantType->Begin(kPARead), destData);
+            } else if (errPtr) {
+                errPtr->SetErrorAndAppendCallChain(true, 91, "Variant To Data");
             }
-        } else if (errPtr) {
-            errPtr->SetErrorAndAppendCallChain(true, 91, "Variant To Data");
+        } else {
+            if (inputType->IsA(destType)) {
+                inputType->CopyData(inputData, destData);
+            } else if (errPtr) {
+                errPtr->SetErrorAndAppendCallChain(true, 91, "Variant To Data");
+            }
         }
     }
     return _NextInstruction();
