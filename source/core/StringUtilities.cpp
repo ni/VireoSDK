@@ -16,7 +16,7 @@ SDG
 #include "CharConversionsUTF16.h"
 #endif
 #include <stdlib.h>
-#include <math.h>
+#include <cmath>
 #include <limits>
 
 namespace Vireo
@@ -869,11 +869,11 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
 
     Double value = strtod(current, (char**)&end);
     if (suppressInfNaN) {
-        if (isinf(value)) {
+        if (std::isinf(value)) {
             end = (char*)current;
             errCode = kLVError_JSONBadInf;
         }
-        if (isnan(value)) {
+        if (std::isnan(value)) {
             end = (char*)current;
             errCode = kLVError_JSONBadNaN;
         }
@@ -904,7 +904,7 @@ Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*
         }
         if (bParsed && suppressInfNaN) {
             bParsed = false;
-            errCode = isnan(value) ? kLVError_JSONBadNaN : kLVError_JSONBadInf;
+            errCode = std::isnan(value) ? kLVError_JSONBadNaN : kLVError_JSONBadInf;
         }
     }
 

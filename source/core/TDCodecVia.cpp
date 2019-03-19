@@ -1177,7 +1177,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 }
                 if (Fmt().UseFieldNames()) {  // JSON
                     // Check if number was so large it mapped to infinity, but it wasn't really 'inf'.
-                    if (isMundane && (isinf(value) || (aqSize == 4 && isinf(Single(value)))))  // overflowed
+                    if (isMundane && (std::isinf(value) || (aqSize == 4 && std::isinf(Single(value)))))  // overflowed
                         return kLVError_JSONOutOfRange;
                 }
                 if (!pData)
@@ -2126,7 +2126,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
     Boolean suppressInfNaN = _options._fmt.SuppressInfNaN();
     Boolean quotedInfNaN = _options._fmt.QuotedNameInfNaN();
 
-    if (::isnan(value)) {
+    if (std::isnan(value)) {
         if (!suppressInfNaN) {
             pBuff = "\"NaN\"";
             len = 3;
@@ -2137,7 +2137,7 @@ void TDViaFormatter::FormatIEEE754(TypeRef type, void* pData)
         } else {
             _errorCode = kLVError_JSONBadNaN;
         }
-    } else if (::isinf(value)) {
+    } else if (std::isinf(value)) {
         if (!suppressInfNaN) {
             Boolean longForm = _options._fmt.LongNameInfNaN();
             if (value < 0) {
