@@ -5,8 +5,6 @@ branches:
 addons:
   firefox: latest
   apt:
-    sources:
-    - ubuntu-toolchain-r-test
     packages:
     - doxygen
 cache:
