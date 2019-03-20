@@ -192,8 +192,16 @@ struct GetVariantAttributesAllParamBlock : public InstructionCore
 VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBlock)
 {
     ErrorCluster *errPtr = _ParamPointer(ErrorClust);
-    TypedArrayCoreRef names = _Param(Names);
-    TypedArrayCoreRef values = _Param(Values);
+    TypedArrayCoreRef names = nullptr;
+    TypedArrayCoreRef values = nullptr;
+    if (_ParamPointer(Names))
+    {
+        names = _Param(Names);
+    }
+    if (_ParamPointer(Values))
+    {
+        values = _Param(Values);
+    }
     bool bResetOutputArrays = true;
     if (!errPtr || !errPtr->status) {
         TypeRef inputVariant = _Param(InputVariant);
@@ -205,35 +213,59 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
             const auto mapSize = attributeMap->size();
             if (mapSize != 0) {
                 bResetOutputArrays = false;
-                names->Resize1D(mapSize);
-                values->Resize1D(mapSize);
-                AQBlock1* pNamesInsert = names->BeginAt(0);
-                AQBlock1* pValuesInsert = values->BeginAt(0);
-                TypeRef namesElementType = names->ElementType();
-                TypeRef valuesElementType = values->ElementType();
-                const Int32 namesAQSize = namesElementType->TopAQSize();
-                const Int32 valuesAQSize = valuesElementType->TopAQSize();
+                AQBlock1* pNamesInsert = nullptr;
+                AQBlock1* pValuesInsert = nullptr;
+                TypeRef namesElementType = nullptr;
+                TypeRef valuesElementType = nullptr;
+                Int32 namesAQSize = 0;
+                Int32 valuesAQSize = 0;
+                if (names)
+                {
+                    names->Resize1D(mapSize);
+                    pNamesInsert = names->BeginAt(0);
+                    namesElementType = names->ElementType();
+                    namesAQSize = namesElementType->TopAQSize();
+                }
+                if (values)
+                {
+                    values->Resize1D(mapSize);
+                    pValuesInsert = values->BeginAt(0);
+                    valuesElementType = values->ElementType();
+                    valuesAQSize = valuesElementType->TopAQSize();
+                }
                 TypeManagerRef tm = THREAD_TADM();
                 for (const auto attributePair : *attributeMap) {
                     String* const* attributeNameStr = &(attributePair.first);
                     TypeRef attributeValue = attributePair.second;
-                    namesElementType->CopyData(attributeNameStr, pNamesInsert);
-                    if (attributeValue->Name().Compare(&TypeCommon::TypeVariant)) {
-                        attributeValue->CopyData(attributeValue->Begin(kPARead), pValuesInsert);
-                    } else {
-                        TypeRef variant = DefaultValueType::New(tm, attributeValue, true);
-                        variant->CopyData(attributeValue->Begin(kPARead), variant->Begin(kPAWrite));
-                        *reinterpret_cast<TypeRef *>(pValuesInsert) = variant;
+                    if (names)
+                    {
+                        namesElementType->CopyData(attributeNameStr, pNamesInsert);
+                        pNamesInsert += namesAQSize;
                     }
-                    pNamesInsert += namesAQSize;
-                    pValuesInsert += valuesAQSize;
+                    if (values)
+                    {
+                        if (attributeValue->Name().Compare(&TypeCommon::TypeVariant)) {
+                            attributeValue->CopyData(attributeValue->Begin(kPARead), pValuesInsert);
+                        } else {
+                            TypeRef variant = DefaultValueType::New(tm, attributeValue, true);
+                            variant->CopyData(attributeValue->Begin(kPARead), variant->Begin(kPAWrite));
+                            *reinterpret_cast<TypeRef *>(pValuesInsert) = variant;
+                        }
+                        pValuesInsert += valuesAQSize;
+                    }
                 }
             }
         }
     }
     if (bResetOutputArrays) {
-        names->Resize1D(0);
-        values->Resize1D(0);
+        if (names)
+        {
+            names->Resize1D(0);
+        }
+        if (values)
+        {
+            values->Resize1D(0);
+        }
     }
     return _NextInstruction();
 }
@@ -251,7 +283,8 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
 {
     ErrorCluster *errPtr = _ParamPointer(ErrorClust);
     StringRef *name = _ParamPointer(Name);
-    _Param(Found) = false;
+    bool clearAllAttributes = (!name || (*name)->Length() == 0);
+    Boolean found = false;
     if (!errPtr || !errPtr->status) {
         const TypeRef inputVariant = _Param(InputVariant);
         VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
@@ -261,24 +294,30 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
             VariantAttributeManager::AttributeMapType *attributeMap = variantToAttributeMapIter->second;
             const auto mapSize = attributeMap->size();
             if (mapSize != 0) {
-                if (!name) {
+                if (clearAllAttributes) {
                     for (auto attribute : *attributeMap) {
                         attribute.first->Delete(attribute.first);
                     }
                     attributeMap->clear();
                     variantToAttributeMap.erase(variantToAttributeMapIter);
                     delete attributeMap;
-                    _Param(Found) = true;
+                    found = true;
                 } else {
                     const auto attributeMapIterator = attributeMap->find(*name);
                     if (attributeMapIterator != attributeMap->end()) {
-                        _Param(Found) = true;
+                        found = true;
                         attributeMapIterator->first->Delete(attributeMapIterator->first);
                         attributeMap->erase(attributeMapIterator);
                     }
                 }
             }
+        } else if (clearAllAttributes) {  // For LabVIEW NXG Compatibility
+            found = true;
         }
+    }
+    if (_ParamPointer(Found))
+    {
+        _Param(Found) = found;
     }
     return _NextInstruction();
 }
