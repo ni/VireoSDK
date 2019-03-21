@@ -59,6 +59,9 @@ class VariantAttributeManager {
         CleanUp();
     }
 };
+
+enum { kVariantArgErr = 1, kVariantIncompatibleType = 91};
+
 }  // namespace Vireo
 
 #endif

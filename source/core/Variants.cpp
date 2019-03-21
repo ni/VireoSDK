@@ -62,17 +62,17 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         void* destData = _ParamImmediate(DestData)._pData;
 
         if (inputType->Name().Compare(&TypeCommon::TypeVariant)) {
-            TypeRef variantInnerType = *(TypeRef *)_ParamImmediate(InputData._pData);
+            TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
             if (variantInnerType->IsA(destType)) {
                 variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
             } else if (errPtr) {
-                errPtr->SetErrorAndAppendCallChain(true, 91, "Variant To Data");
+                errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
             }
         } else {
             if (inputType->IsA(destType)) {
                 inputType->CopyData(inputData, destData);
             } else if (errPtr) {
-                errPtr->SetErrorAndAppendCallChain(true, 91, "Variant To Data");
+                errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
             }
         }
     }
@@ -97,7 +97,7 @@ VIREO_FUNCTION_SIGNATURET(SetVariantAttribute, SetVariantAttributeParamBlock)
         StringRef name = _Param(Name);
         if (IsStringEmpty(name)) {
             if (errPtr) {
-                errPtr->SetErrorAndAppendCallChain(true, 1, "Set Variant Attribute");
+                errPtr->SetErrorAndAppendCallChain(true, kVariantArgErr, "Set Variant Attribute");
             }
         } else {
             TypeManagerRef tm = THREAD_TADM();
@@ -167,8 +167,8 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
                     found = true;
                     value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
                 } else {
-                    if (errPtr) {
-                        errPtr->SetErrorAndAppendCallChain(true, 91, "Get Variant Attribute");  // Incorrect type for default value for the attribute
+                    if (errPtr) {  // Incorrect type for default attribute value
+                        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Get Variant Attribute");
                     }
                 }
             }
