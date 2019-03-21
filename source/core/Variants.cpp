@@ -131,9 +131,8 @@ VIREO_FUNCTION_SIGNATURET(SetVariantAttribute, SetVariantAttributeParamBlock)
             }
         }
     }
-    if (_ParamPointer(Replaced)) {
+    if (_ParamPointer(Replaced))
         _Param(Replaced) = replaced;
-    }
     return _NextInstruction();
 }
 
@@ -174,9 +173,8 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
             }
         }
     }
-    if (_ParamPointer(Found)) {
+    if (_ParamPointer(Found))
         _Param(Found) = found;
-    }
     return _NextInstruction();
 }
 
@@ -205,12 +203,10 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
             const auto mapSize = attributeMap->size();
             if (mapSize != 0) {
                 bResetOutputArrays = false;
-                if (names) {
+                if (names)
                     names->Resize1D(mapSize);
-                }
-                if (values) {
+                if (values)
                     values->Resize1D(mapSize);
-                }
                 AQBlock1* pNamesInsert = names ? names->BeginAt(0) : nullptr;
                 TypeRef namesElementType = names ? names->ElementType() : nullptr;
                 Int32 namesAQSize = names ? namesElementType->TopAQSize() : 0;
@@ -240,12 +236,10 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
         }
     }
     if (bResetOutputArrays) {
-        if (names) {
+        if (names)
             names->Resize1D(0);
-        }
-        if (values) {
+        if (values)
             values->Resize1D(0);
-        }
     }
     return _NextInstruction();
 }
@@ -296,9 +290,7 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
         }
     }
     if (_ParamPointer(Found))
-    {
         _Param(Found) = found;
-    }
     return _NextInstruction();
 }
 
