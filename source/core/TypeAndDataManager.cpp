@@ -879,6 +879,12 @@ Boolean TypeCommon::IsNumeric()
     return false;
 }
 //------------------------------------------------------------
+Boolean TypeCommon::IsVariant()
+{
+    TypeRef t = this;
+    return t->Name().Compare(&TypeCommon::TypeVariant);
+}
+//------------------------------------------------------------
 Boolean TypeCommon::IsInteger()
 {
     TypeRef t = this;

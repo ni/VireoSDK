@@ -629,6 +629,7 @@ class TypeCommon
     Boolean IsJavaScriptRefNum();
     Boolean IsAnalogWaveform();
     Boolean IsIntrinsicClusterDataType(SubString *foundTypeName);  // Returns true for builtin data types such as Timestamp, Complex, etc
+    Boolean IsVariant();
 
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {
