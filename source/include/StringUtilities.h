@@ -271,12 +271,12 @@ class SubString : public SubVector<Utf8Char>
     }
 
     //! Compare with the encoded string
-    Boolean CompareViaEncodedString(SubString* encodedString);
+    Boolean CompareViaEncodedString(SubString* encodedString) const;
 
     //! Functions to work with backslash '\' escapes in strings
     Int32 ReadEscapeToken(SubString* token);
     Boolean ReadRawChar(Utf8Char* token);
-    Boolean PeekRawChar(Utf8Char* token, IntIndex pos = 0);
+    Boolean PeekRawChar(Utf8Char* token, IntIndex pos = 0) const;
     Int32 LengthAfterProcessingEscapes();
     void ProcessEscapes(Utf8Char* dest, Utf8Char* end);
 
@@ -320,16 +320,16 @@ class SubString : public SubVector<Utf8Char>
     TokenTraits ClassifyNextToken() const;
 
     //! Count occurrences of a specified Ascii character.
-    Int32 CountMatches(char value);
+    Int32 CountMatches(char value) const;
 
     //! Length of the string in logical UTF-8 encoded code points.
-    Int32 StringLength();
+    Int32 StringLength() const;
 
     //! Remove quotes (single or double) from the ends of a string
     //! based on previously determined token trait.
     void TrimQuotedString(TokenTraits tt);
 
-    IntIndex FindFirstMatch(const SubString* searchString, IntIndex offset, Boolean ignoreCase);
+    IntIndex FindFirstMatch(const SubString* searchString, IntIndex offset, Boolean ignoreCase) const;
 };
 
 //------------------------------------------------------------
@@ -405,7 +405,8 @@ class PercentCodecSubString {
 
     void Init(const SubString &s, bool convert, bool alwaysAlloc = false);
 
-    SubString GetSubString() {
+    SubString GetSubString() const
+    {
         SubString s;
         s.AliasAssignLen(_convertedStr, IntIndex(strlen(ConstCStr(_convertedStr))));
         return s;
@@ -459,8 +460,9 @@ class PercentDecodedSubString : public PercentCodecSubString {
     {
         Decode(s);
     }
-    Int32 GetDecodedLength(const SubString &s);
-    void Decode(const SubString &s);
+
+    static Int32 GetDecodedLength(const SubString &s);
+    void Decode(const SubString &s) const;
 };
 
 //------------------------------------------------------------
@@ -477,11 +479,11 @@ class PercentEncodedSubString : public PercentCodecSubString {
         Init(decodedSubstring, encode, alwaysAlloc);
     }
 
-    Boolean NeedsEncoding(Utf8Char c);
-    void PercentEncodeUtf8Char(Utf8Char c, Utf8Char **pDest);
+    static Boolean NeedsEncoding(Utf8Char c);
+    static void PercentEncodeUtf8Char(Utf8Char c, Utf8Char **pDest);
 
  private:
-     Boolean IsReservedChar(Utf8Char c);
+     static Boolean IsReservedChar(Utf8Char c);
      Int32 ComputeConvertedLength(const SubString &s) override
      {
          return GetEncodedLength(s);
@@ -490,8 +492,9 @@ class PercentEncodedSubString : public PercentCodecSubString {
      {
          Encode(s);
      }
-     Int32 GetEncodedLength(const SubString &s);
-     void Encode(const SubString &s);
+
+     static Int32 GetEncodedLength(const SubString &s);
+     void Encode(const SubString &s) const;
 };
 
 }  // namespace Vireo

@@ -145,21 +145,21 @@ namespace Vireo
         return wholeSeconds + fractionalSeconds;
     }
     //------------------------------------------------------------
-    Timestamp Timestamp::operator+(const Int64& value) {
+    Timestamp Timestamp::operator+(const Int64& value) const {
         Timestamp answer;
         answer._integer = _integer + value;
         answer._fraction = _fraction;
         return answer;
     }
     //------------------------------------------------------------
-    Timestamp Timestamp::operator-(const Int64& value) {
+    Timestamp Timestamp::operator-(const Int64& value) const {
         Timestamp answer;
         answer._integer = _integer - value;
         answer._fraction = _fraction;
         return answer;
     }
     //------------------------------------------------------------
-    Timestamp Timestamp::operator+(const Timestamp& value) {
+    Timestamp Timestamp::operator+(const Timestamp& value) const {
         Timestamp answer;
         answer._integer = _integer + value._integer;
         answer._fraction = _fraction + value._fraction;
@@ -169,7 +169,7 @@ namespace Vireo
         return answer;
     }
     //------------------------------------------------------------
-    Timestamp Timestamp::operator-(const Timestamp& value) {
+    Timestamp Timestamp::operator-(const Timestamp& value) const {
         Timestamp answer;
         answer._integer = _integer - value._integer;
         answer._fraction = _fraction - value._fraction;

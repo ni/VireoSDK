@@ -95,7 +95,7 @@ void ObservableCore::ObserveStateChange(IntMax info, Boolean wakeAll)
     }
 }
 
-IntIndex ObservableCore::ObserverCount(IntMax info) {
+IntIndex ObservableCore::ObserverCount(IntMax info) const {
     IntIndex count = 0;
     for (Observer* pObserver = _observerList; pObserver; pObserver = pObserver->_next) {
         if (pObserver->_info == info)
@@ -404,7 +404,7 @@ void OccurrenceCore::SetOccurrence()
     ObserveStateChange(_setCount, true);
 }
 //------------------------------------------------------------
-Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious)
+Boolean OccurrenceCore::HasOccurred(Int32 count, Boolean ignorePrevious) const
 {
     if ((_setCount - count) > 0) {
         return true;
@@ -452,7 +452,7 @@ VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
 enum QueueObserverInfoSentinel { kQueueEnqueueObserverInfo = -1, kQueueDequeueObserverInfo = 1 };
 
 //------------------------------------------------------------
-IntIndex QueueCore::RemoveIndex()
+IntIndex QueueCore::RemoveIndex() const
 {
     if (_count <= _insert) {
         return _insert - _count;
@@ -460,7 +460,7 @@ IntIndex QueueCore::RemoveIndex()
         return _elements->Length() - (_count - _insert);
     }
 }
-Boolean QueueCore::HasRoom(IntIndex additionalCount) {
+Boolean QueueCore::HasRoom(IntIndex additionalCount) const {
     IntIndex length = _elements->Length();
     IntIndex space = length - _count;
 
@@ -550,7 +550,7 @@ Boolean QueueCore::Dequeue(void* pData, bool skipObserver)
     }
 }
 //------------------------------------------------------------
-Boolean QueueCore::Peek(void* pData, IntIndex skipCount)
+Boolean QueueCore::Peek(void* pData, IntIndex skipCount) const
 {
     TypeRef eltType = _elements->ElementType();
     if (_count < skipCount+1) {

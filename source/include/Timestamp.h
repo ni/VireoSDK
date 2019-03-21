@@ -38,14 +38,14 @@ class Timestamp {
     UInt64 Fraction() const { return _fraction; }
 
     //! Add two timestamps, one operand should be relative.
-    Timestamp operator+(const Timestamp & value);
+    Timestamp operator+(const Timestamp & value) const;
 
     //! Add integer number of seconds to a timestamp.
-    Timestamp operator+(const Int64 & value);
-    Timestamp operator-(const Int64 & value);
+    Timestamp operator+(const Int64 & value) const;
+    Timestamp operator-(const Int64 & value) const;
 
     //! Subtract two timestamps, result is a relative value.
-    Timestamp operator-(const Timestamp & value);
+    Timestamp operator-(const Timestamp & value) const;
     Boolean operator==(const Timestamp & value) const {
         return ((_integer == value._integer) && (_fraction == value._fraction));
     }

@@ -73,11 +73,11 @@ class RefNumStorageBase
     virtual ~RefNumStorageBase() { }
 
  public:
-    RefNum  CloneRefNum(RefNum refnum);
+    static RefNum  CloneRefNum(RefNum refnum);
     Int32   ReleaseRefNumRights(const RefNum &refnum);
     bool    IsARefNum(const RefNum &refnum);
-    Int32    GetRefNumCount();
-    NIError    GetRefNumList(RefNumList *list);
+    Int32    GetRefNumCount() const;
+    static NIError    GetRefNumList(RefNumList *list);
 
     static RefNum RefNumFromIndexAndExistingHeader(UInt32 index, const RefNumCommonHeader &header);
 };

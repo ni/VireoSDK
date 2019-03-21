@@ -418,7 +418,7 @@ void ExecutionContext::EnqueueRunQueue(VIClump* elt)
     _runQueue.Enqueue(elt);
 }
 //------------------------------------------------------------
-void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...)
+void ExecutionContext::LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...) const
 {
     EventLog tempLog(EventLog::StdOut);
     va_list args;

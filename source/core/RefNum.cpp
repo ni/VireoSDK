@@ -195,7 +195,7 @@ bool RefNumStorageBase::IsARefNum(const RefNum &refnum) {
     return ValidateRefNumIndex(refnum) != nullptr;
 }
 
-Int32 RefNumStorageBase::GetRefNumCount() {
+Int32 RefNumStorageBase::GetRefNumCount() const {
     return Int32(_numUsed);
 }
 

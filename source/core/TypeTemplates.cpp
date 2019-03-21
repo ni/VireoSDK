@@ -32,8 +32,8 @@ class TypeTemplateVisitor : public TypeVisitor
     AggregateAlignmentCalculator *_alignmentCalculator;
 
  private:
-    TypeRef  LookupParameter(IntIndex i);
-    IntIndex AcceptIntDim(IntIndex value);
+    TypeRef  LookupParameter(IntIndex i) const;
+    IntIndex AcceptIntDim(IntIndex value) const;
 
     void VisitBad(TypeRef type) override;
     void VisitBitBlock(BitBlockType* type) override;
@@ -74,7 +74,7 @@ TypeTemplateVisitor::TypeTemplateVisitor(TypeManagerRef tm, SubVector<TypeRef>* 
     _alignmentCalculator = nullptr;
 }
 //------------------------------------------------------------
-TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
+TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i) const
 {
     if (i >= 0 && i < _parameters->Length()) {
         return _parameters->Begin()[i];
@@ -85,7 +85,7 @@ TypeRef TypeTemplateVisitor::LookupParameter(IntIndex i)
     }
 }
 //------------------------------------------------------------
-IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value)
+IntIndex TypeTemplateVisitor::AcceptIntDim(IntIndex value) const
 {
     if (IsTemplateDim(value)) {
         // Find the template parameter.

@@ -226,10 +226,10 @@ struct AggregateBinOpInstruction : public InstructionCore
         _ParamImmediateDef(InstructionCore*, Accumulator);
     };
     _ParamImmediateDef(InstructionCore*, Snippet);
-    inline InstructionCore* Accumulator()   { return this->_piAccumulator; }
-    inline InstructionCore* Snippet()       { return this->_piSnippet; }
+    inline InstructionCore* Accumulator() const { return this->_piAccumulator; }
+    inline InstructionCore* Snippet() const { return this->_piSnippet; }
     _ParamImmediateDef(InstructionCore*, Next);
-    inline InstructionCore* Next()          { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 //------------------------------------------------------------
 InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilder)
@@ -481,7 +481,7 @@ struct AggregateUnOpInstruction : public InstructionCore
     };
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()          { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 struct AggregateUnOp2OutputInstruction : public InstructionCore
 {
@@ -499,7 +499,7 @@ struct AggregateUnOp2OutputInstruction : public InstructionCore
     };
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 //------------------------------------------------------------
 InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder)
@@ -620,7 +620,7 @@ struct AggregateMaxAndMinInstruction : public InstructionCore
     };
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 
 //------------------------------------------------------------
@@ -945,9 +945,9 @@ struct InRangeAndCoerceInstruction : public InstructionCore
     };
     _ParamImmediateDef(enum IRCFlags, flags);
     _ParamImmediateDef(InstructionCore*, Snippet);
-    inline InstructionCore* Snippet()       { return this->_piSnippet; }
+    inline InstructionCore* Snippet() const { return this->_piSnippet; }
     _ParamImmediateDef(InstructionCore*, Next);
-    inline InstructionCore* Next()          { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 
 struct InRangeAndCoerceInstructionAggregate : public InstructionCore
@@ -962,7 +962,7 @@ struct InRangeAndCoerceInstructionAggregate : public InstructionCore
     _ParamImmediateDef(TypeRef, paramType);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 
 //------------------------------------------------------------
@@ -1224,7 +1224,7 @@ struct AggregateStrToNumInstruction : public InstructionCore
     _ParamImmediateDef(StaticTypeAndData, VOutput[1]);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 typedef Instruction6<AQBlock1, Int32, AQBlock1, Int32, AQBlock1, AQBlock1> StrToNumInstructionArgs;
 
@@ -1326,7 +1326,7 @@ struct MaxMinValueInstruction : public InstructionCore
     _ParamImmediateDef(StaticTypeAndData, MinValue[1]);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 //------------------------------------------------------------
 InstructionCore* EmitMaxMinValueInstruction(ClumpParseState* pInstructionBuilder)
@@ -1396,7 +1396,7 @@ struct Search1DArrayInstruction : public InstructionCore
     _ParamDef(Int32, FoundIndex);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 //------------------------------------------------------------
 InstructionCore* EmitSearchInstruction(ClumpParseState* pInstructionBuilder)
@@ -1464,7 +1464,7 @@ struct VectorOpInstruction : public InstructionCore
     _ParamImmediateDef(Boolean, IsIdentityOne);
     _ParamImmediateDef(InstructionCore*, Next);
     inline InstructionCore* Snippet()   { return this + 1; }
-    inline InstructionCore* Next()      { return this->_piNext; }
+    inline InstructionCore* Next() const { return this->_piNext; }
 };
 //------------------------------------------------------------
 InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)

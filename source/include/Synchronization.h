@@ -53,7 +53,7 @@ class ObservableCore
     void InsertObserver(Observer* pObserver, IntMax info);
     void RemoveObserver(Observer* pObserver);
     void ObserveStateChange(IntMax info, Boolean wakeAll);
-    IntIndex ObserverCount(IntMax info);
+    IntIndex ObserverCount(IntMax info) const;
 };
 typedef TypedObject<ObservableCore> ObservableObject, *ObservableRef;
 
@@ -65,9 +65,9 @@ class OccurrenceCore : public ObservableCore
     Int32 _setCount;
  public:
     OccurrenceCore() : _setCount(0) { }
-    Int32 Count() {return _setCount;}
+    Int32 Count() const {return _setCount;}
     void SetOccurrence();
-    Boolean HasOccurred(Int32 count, Boolean ignorePrevious);
+    Boolean HasOccurred(Int32 count, Boolean ignorePrevious) const;
 };
 typedef TypedObject<OccurrenceCore> OccurrenceObject, *OccurrenceRef;
 
@@ -78,8 +78,8 @@ const Int32 kMaxExecWakeUpTime = 200;  // (milliseconds) TODO spathiwa - increas
 class Timer : public ObservableCore
 {
  public:
-    Boolean AnythingWaiting()                   { return _observerList != nullptr; }
-    IntMax NextWakeUpTime()                     { return _observerList != nullptr ? _observerList->_info : 0; }
+    Boolean AnythingWaiting() const { return _observerList != nullptr; }
+    IntMax NextWakeUpTime() const { return _observerList != nullptr ? _observerList->_info : 0; }
     void QuickCheckTimers(PlatformTickType t)   { if (_observerList) { CheckTimers(t); } }
     void CheckTimers(PlatformTickType t);
     void InitObservableTimerState(Observer* pObserver, PlatformTickType tickCount);
@@ -101,15 +101,15 @@ class QueueCore : public ObservableCore
 
     IntIndex   _maxSize = 0;
 
-    IntIndex RemoveIndex();
+    IntIndex RemoveIndex() const;
  public:
     Boolean Compress();
     Boolean TryMakeRoom(IntIndex additionalCount, IntIndex insert);
     Boolean Enqueue(void* pData);
     Boolean PushFront(void* pData);
     Boolean Dequeue(void* pData, bool skipObserver = false);
-    Boolean Peek(void* pData, IntIndex skipCount = 0);
-    Boolean HasRoom(IntIndex additionalCount);
+    Boolean Peek(void* pData, IntIndex skipCount = 0) const;
+    Boolean HasRoom(IntIndex additionalCount) const;
     IntIndex Count() const { return _count; }
     TypeRef EltType() const { return _elements->ElementType(); }
     IntDim MaxSize() const {
