@@ -192,18 +192,10 @@ struct GetVariantAttributesAllParamBlock : public InstructionCore
 VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBlock)
 {
     ErrorCluster *errPtr = _ParamPointer(ErrorClust);
-    TypedArrayCoreRef names = nullptr;
-    TypedArrayCoreRef values = nullptr;
-    if (_ParamPointer(Names))
-    {
-        names = _Param(Names);
-    }
-    if (_ParamPointer(Values))
-    {
-        values = _Param(Values);
-    }
+    TypedArrayCoreRef names = _ParamPointer(Names) ? _Param(Names) : nullptr;
+    TypedArrayCoreRef values = _ParamPointer(Values) ? _Param(Values) : nullptr;
     bool bResetOutputArrays = true;
-    if (!errPtr || !errPtr->status) {
+    if ((!errPtr || !errPtr->status) && (names || values)) {
         TypeRef inputVariant = _Param(InputVariant);
         const VariantAttributeManager::VariantToAttributeMapType &variantToAttributeMap = VariantAttributeManager::Instance().GetVariantToAttributeMap();
 
@@ -213,37 +205,27 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
             const auto mapSize = attributeMap->size();
             if (mapSize != 0) {
                 bResetOutputArrays = false;
-                AQBlock1* pNamesInsert = nullptr;
-                AQBlock1* pValuesInsert = nullptr;
-                TypeRef namesElementType = nullptr;
-                TypeRef valuesElementType = nullptr;
-                Int32 namesAQSize = 0;
-                Int32 valuesAQSize = 0;
-                if (names)
-                {
+                if (names) {
                     names->Resize1D(mapSize);
-                    pNamesInsert = names->BeginAt(0);
-                    namesElementType = names->ElementType();
-                    namesAQSize = namesElementType->TopAQSize();
                 }
-                if (values)
-                {
+                if (values) {
                     values->Resize1D(mapSize);
-                    pValuesInsert = values->BeginAt(0);
-                    valuesElementType = values->ElementType();
-                    valuesAQSize = valuesElementType->TopAQSize();
                 }
+                AQBlock1* pNamesInsert = names ? names->BeginAt(0) : nullptr;
+                TypeRef namesElementType = names ? names->ElementType() : nullptr;
+                Int32 namesAQSize = names ? namesElementType->TopAQSize() : 0;
+                AQBlock1* pValuesInsert = values ? values->BeginAt(0) : nullptr;
+                TypeRef valuesElementType = values ? values->ElementType() : nullptr;
+                Int32 valuesAQSize = values ? valuesElementType->TopAQSize() : 0;
                 TypeManagerRef tm = THREAD_TADM();
                 for (const auto attributePair : *attributeMap) {
                     String* const* attributeNameStr = &(attributePair.first);
                     TypeRef attributeValue = attributePair.second;
-                    if (names)
-                    {
+                    if (names) {
                         namesElementType->CopyData(attributeNameStr, pNamesInsert);
                         pNamesInsert += namesAQSize;
                     }
-                    if (values)
-                    {
+                    if (values) {
                         if (attributeValue->Name().Compare(&TypeCommon::TypeVariant)) {
                             attributeValue->CopyData(attributeValue->Begin(kPARead), pValuesInsert);
                         } else {
@@ -258,12 +240,10 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
         }
     }
     if (bResetOutputArrays) {
-        if (names)
-        {
+        if (names) {
             names->Resize1D(0);
         }
-        if (values)
-        {
+        if (values) {
             values->Resize1D(0);
         }
     }
@@ -311,7 +291,7 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
                     }
                 }
             }
-        } else if (clearAllAttributes) {  // For LabVIEW NXG Compatibility
+        } else if (clearAllAttributes) {
             found = true;
         }
     }
