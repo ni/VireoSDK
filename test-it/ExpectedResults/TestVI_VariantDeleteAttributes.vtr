@@ -1,0 +1,8 @@
+dataItem_TestResult_AttributeDoesNotExist = true
+dataItem_TestResult_DeleteAllAttributes = true
+dataItem_TestResult_DeleteAllAttributesJustErrorOut = true
+dataItem_TestResult_DeleteAllAttributesTwice = true
+dataItem_TestResult_DeleteAllAttributesWithErrorIn = true
+dataItem_TestResult_DeleteAttribute = true
+dataItem_TestResult_ErrorInCorrectlyPropagated = true
+dataItem_TestResult_GetAttributeUnwiredOutputs = true
