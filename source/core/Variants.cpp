@@ -61,7 +61,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         TypeRef destType = _ParamImmediate(DestData._paramType);
         void* destData = _ParamImmediate(DestData)._pData;
 
-        if (inputType->Name().Compare(&TypeCommon::TypeVariant)) {
+        if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
             if (variantInnerType->IsA(destType)) {
                 variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
@@ -162,7 +162,13 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
             auto attributeMapIter = attributeMap->find(name);
             if (attributeMapIter != attributeMap->end()) {
                 TypeRef foundValue = attributeMapIter->second;
-                if (foundValue->IsA(value->_paramType) || value->_paramType->Name().Compare(&TypeCommon::TypeVariant)) {
+                if (value->_paramType->IsVariant()) {
+                    TypeManagerRef tm = THREAD_TADM();
+                    TypeRef variant = DefaultValueType::New(tm, foundValue, true);
+                    variant->CopyData(foundValue->Begin(kPARead), variant->Begin(kPAWrite));
+                    *static_cast<TypeRef*>(value->_pData) = variant;
+                    found = true;
+                } else if (foundValue->IsA(value->_paramType)) {
                     found = true;
                     value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
                 } else {
@@ -222,7 +228,7 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttributeAll, GetVariantAttributesAllParamBl
                         pNamesInsert += namesAQSize;
                     }
                     if (values) {
-                        if (attributeValue->Name().Compare(&TypeCommon::TypeVariant)) {
+                        if (attributeValue->IsVariant()) {
                             attributeValue->CopyData(attributeValue->Begin(kPARead), pValuesInsert);
                         } else {
                             TypeRef variant = DefaultValueType::New(tm, attributeValue, true);
