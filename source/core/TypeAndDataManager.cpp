@@ -634,6 +634,8 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _pointerType    = kPTNotAPointer;
     _elementUsageType = kUsageTypeSimple;
     _opaqueReference = false;
+    _isDataItem     = false;
+    _updateNeeded   = false;
 }
 //------------------------------------------------------------
 void TypeCommon::ZeroOutTop(void* pData)
@@ -685,6 +687,8 @@ NIError TypeCommon::CopyData(const void* pData, void* pDataCopy)
 {
     VIREO_ASSERT(IsFlat())
     memcpy(pDataCopy, pData, _topAQSize);
+    if (_isDataItem)
+        SetValueRefNeedsUpdate(this, pDataCopy);
     return kNIError_Success;
 }
 //------------------------------------------------------------
@@ -704,6 +708,8 @@ NIError TypeCommon::CopyData(const void* pSource, void* pDest, IntIndex count)
                 break;
         }
     }
+    if (_isDataItem)
+        SetValueRefNeedsUpdate(this, pDest);
     return err;
 }
 //------------------------------------------------------------
@@ -711,6 +717,8 @@ NIError TypeCommon::MultiCopyData(const void* pSource, void* pDest, IntIndex cou
 {
     if (IsFlat() && TopAQSize() == 1) {
         memset(pDest, (int)*(AQBlock1*)pSource, count);
+        if (_isDataItem)
+            SetValueRefNeedsUpdate(this, pDest);
     } else {
         BlockItr iDest(pDest, TopAQSize(), count);
         while (iDest.HasNext()) {
@@ -1180,20 +1188,21 @@ TypeRef WrappedType::GetSubElementAddressFromPath(SubString* name, void *start, 
 //------------------------------------------------------------
 // ElementType
 //------------------------------------------------------------
-ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
+ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset, bool isDataItem)
 {
-    ElementType* type = TADM_NEW_PLACEMENT_DYNAMIC(ElementType, name)(typeManager, name, wrappedType, usageType, offset);
-
+    ElementType* type = TADM_NEW_PLACEMENT_DYNAMIC(ElementType, name)(typeManager, name, wrappedType, usageType, offset, isDataItem);
+    if (isDataItem)
+        return type;
     SubString binaryName((AQBlock1*)&type->_topAQSize, type->_elementName.End());
-
     return (ElementType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
+ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset, bool isDataItem)
 : WrappedType(typeManager, wrappedType), _elementName(name->Length()) {
     _elementName.Assign(name->Begin(), name->Length());
     _elementUsageType = (UInt16)usageType;
     _offset = offset;
+    _isDataItem = isDataItem;
 }
 //------------------------------------------------------------
 // NamedType
@@ -1776,6 +1785,8 @@ NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
             pDestElt += stride;
         }
     }
+    if (_isDataItem)
+        SetValueRefNeedsUpdate(this, pDest->RawBegin());
     return err;
 }
 //------------------------------------------------------------
@@ -2046,6 +2057,8 @@ NIError RefNumValType::InitData(void* pData, TypeRef pattern) {
 }
 NIError RefNumValType::CopyData(const void* pData, void* pDataCopy)  {
     ((RefNumVal*)pDataCopy)->SetRefNum(((RefNumVal*)pData)->GetRefNum());
+    if (_isDataItem)
+        SetValueRefNeedsUpdate(this, pDataCopy);
     return kNIError_Success;
 }
 NIError RefNumValType::ClearData(void* pData) {

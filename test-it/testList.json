@@ -137,6 +137,7 @@
                 "CalVIMultipleTimesObserveOldValues.via",
                 "CaseComparison.via",
                 "CheckCopyDataMemoryLeak.via",
+                "CheckValueNeedsUpdateTest.via",
                 "CheckCoreTypes.via",
                 "ClumpTriggerBug.via",
                 "ClumpTriggerWait.via",

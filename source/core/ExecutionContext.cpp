@@ -25,7 +25,6 @@ namespace Vireo {
 #if kVireoOS_emscripten
 extern "C" {
     extern void jsExecutionContextFPSync(StringRef);
-    extern void jsMarkValueDirty(void* pData);
 }
 #endif
 
@@ -142,28 +141,52 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
-// 
-struct MarkValueDirtyParamBlock : InstructionCore
+//
+void SetValueRefNeedsUpdate(TypeRef typeRef, void *dataPtr) {
+    typeRef->SetUpdateNeeded(true);
+}
+
+struct SetValueNeedsUpdateParamBlock : InstructionCore
 {
     _ParamDef(StaticType, dirtyValueType);
     _ParamDef(void, dirtyValueData);
     NEXT_INSTRUCTION_METHOD()
 };
 
-VIREO_FUNCTION_SIGNATURET(MarkValueDirty, MarkValueDirtyParamBlock)
+VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
 {
-    ExecutionContextRef exec = THREAD_EXEC();
-    VIClump* runningQueueElt = exec->_runningQueueElt;
-    VirtualInstrument* vi = runningQueueElt->OwningVI();
-
-    if (!vi->Clumps()->Begin()->_caller) {
-#if kVireoOS_emscripten
-        jsMarkValueDirty(_ParamPointer(dirtyValueData));
-#endif
-    }
-
+    VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
+    if (!vi->Clumps()->Begin()->_caller)
+        SetValueRefNeedsUpdate(_ParamPointer(dirtyValueType), _ParamPointer(dirtyValueData));
     return _NextInstruction();
 }
+
+Boolean CheckValueRefNeedsUpdate(TypeRef typeRef, const void *, Boolean reset) {
+    Boolean isDirty = typeRef->IsUpdateNeeded();
+    if (isDirty && reset)
+        typeRef->SetUpdateNeeded(false);
+    return isDirty;
+}
+
+struct CheckValueNeedsUpdateParamBlock : InstructionCore
+{
+    _ParamDef(StaticType, dirtyValueType);
+    _ParamDef(void, dirtyValueData);
+    _ParamDef(Boolean, isDirty);
+    NEXT_INSTRUCTION_METHOD()
+};
+VIREO_FUNCTION_SIGNATURET(CheckValueNeedsUpdate, CheckValueNeedsUpdateParamBlock)
+{
+    VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
+    if (!vi->Clumps()->Begin()->_caller) {
+        if (_ParamPointer(isDirty))
+            _Param(isDirty) = CheckValueRefNeedsUpdate(_ParamPointer(dirtyValueType), _ParamPointer(dirtyValueData), true);
+    } else if (_ParamPointer(isDirty)) {
+        _Param(isDirty) = false;
+    }
+    return _NextInstruction();
+}
+
 //------------------------------------------------------------
 // Wait - it target clump is active then it waits for it to complete.
 // if target clump is complete then there is nothing to wait on.
@@ -469,7 +492,8 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
-    DEFINE_VIREO_FUNCTION(MarkValueDirty, "p(i(StaticTypeAndData dirtyValue))")
+    DEFINE_VIREO_FUNCTION(SetValueNeedsUpdate, "p(i(StaticTypeAndData dirtyValue))")
+    DEFINE_VIREO_FUNCTION(CheckValueNeedsUpdate, "p(i(StaticTypeAndData dirtyValue) o(Boolean))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")

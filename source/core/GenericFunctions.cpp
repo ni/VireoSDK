@@ -117,6 +117,13 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         SubString copyOpToken(copyOpName);
         pInstructionBuilder->ReresolveInstruction(&copyOpToken);
         pInstruction = pInstructionBuilder->EmitInstruction();
+        if (destType->IsDataItem()) {
+            SubString valueNeedsUpdateToken("SetValueNeedsUpdate");
+            pInstructionBuilder->StartInstruction(&valueNeedsUpdateToken);
+            pInstructionBuilder->InternalAddArg(nullptr, destType);
+            pInstructionBuilder->InternalAddArg(destType, pDest);
+            pInstruction = pInstructionBuilder->EmitInstruction();
+        }
     } else {
         pInstructionBuilder->LogEvent(EventLog::kSoftDataError, 0, "Type mismatch");
     }
