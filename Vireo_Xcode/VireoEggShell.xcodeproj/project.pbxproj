@@ -18,6 +18,7 @@
 		446506DC206ACCCA00B0CD8E /* ControlRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506DB206ACCCA00B0CD8E /* ControlRef.cpp */; };
 		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
 		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
+		44B625DD2244212B0063A478 /* Variants.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B625DC2244212B0063A478 /* Variants.cpp */; };
 		44C2350E20428CD50064583B /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44C2350D20428CD50064583B /* Events.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
@@ -148,6 +149,17 @@
 		4466C7981E4F08EE004B5E31 /* Waveform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Waveform.cpp; path = core/Waveform.cpp; sourceTree = "<group>"; };
 		4466C79B1E4FEDFB004B5E31 /* Waveform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Waveform.h; path = include/Waveform.h; sourceTree = "<group>"; };
 		44ABE7D61D3D3FEF008EB066 /* test.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = test.js; path = "../test-it/test.js"; sourceTree = "<group>"; };
+		44B625DB2244212B0063A478 /* Variants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Variants.h; path = include/Variants.h; sourceTree = "<group>"; };
+		44B625DC2244212B0063A478 /* Variants.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Variants.cpp; path = core/Variants.cpp; sourceTree = "<group>"; };
+		44B625DE22496B030063A478 /* vireo.loader.wasm32-unknown-emscripten.profile.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "vireo.loader.wasm32-unknown-emscripten.profile.js"; path = "../source/core/vireo.loader.wasm32-unknown-emscripten.profile.js"; sourceTree = "<group>"; };
+		44B625DF22496B030063A478 /* vireo.loader.asmjs-unknown-emscripten.profile.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "vireo.loader.asmjs-unknown-emscripten.profile.js"; path = "../source/core/vireo.loader.asmjs-unknown-emscripten.profile.js"; sourceTree = "<group>"; };
+		44B625E022496B030063A478 /* module_typeHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_typeHelpers.js; path = ../source/core/module_typeHelpers.js; sourceTree = "<group>"; };
+		44B625E122496B040063A478 /* vireo.loader.asmjs-unknown-emscripten.release.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "vireo.loader.asmjs-unknown-emscripten.release.js"; path = "../source/core/vireo.loader.asmjs-unknown-emscripten.release.js"; sourceTree = "<group>"; };
+		44B625E222496B040063A478 /* vireo.loader.staticHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.loader.staticHelpers.js; path = ../source/core/vireo.loader.staticHelpers.js; sourceTree = "<group>"; };
+		44B625E322496B040063A478 /* vireo.loader.asmjs-unknown-emscripten.debug.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "vireo.loader.asmjs-unknown-emscripten.debug.js"; path = "../source/core/vireo.loader.asmjs-unknown-emscripten.debug.js"; sourceTree = "<group>"; };
+		44B625E422496B040063A478 /* vireo.loader.wasm32-unknown-emscripten.release.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "vireo.loader.wasm32-unknown-emscripten.release.js"; path = "../source/core/vireo.loader.wasm32-unknown-emscripten.release.js"; sourceTree = "<group>"; };
+		44B625E522496B040063A478 /* vireo.loader.wasm32-unknown-emscripten.debug.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "vireo.loader.wasm32-unknown-emscripten.debug.js"; path = "../source/core/vireo.loader.wasm32-unknown-emscripten.debug.js"; sourceTree = "<group>"; };
+		44B625E622496B040063A478 /* vireo.loader.shared.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.loader.shared.js; path = ../source/core/vireo.loader.shared.js; sourceTree = "<group>"; };
 		44C2350D20428CD50064583B /* Events.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Events.cpp; path = core/Events.cpp; sourceTree = "<group>"; };
 		44C2350F2045FAD70064583B /* Events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Events.h; path = include/Events.h; sourceTree = "<group>"; };
 		44C295D61F8C037A001877B4 /* module_httpClient.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_httpClient.js; path = ../source/io/module_httpClient.js; sourceTree = "<group>"; };
@@ -363,21 +375,30 @@
 		475F6F0117C3E70900285242 /* IO */ = {
 			isa = PBXGroup;
 			children = (
-				446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */,
-				446506D7206AC83700B0CD8E /* PropertyNode.cpp */,
 				472A078F1AA67EF8008109FA /* DebugGPIO.cpp */,
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
-				47A877751AE6925800EC5D77 /* library_httpClient.js */,
+				446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */,
+				446506D7206AC83700B0CD8E /* PropertyNode.cpp */,
 				441F02CB20D9959B008910D2 /* library_eventHelpers.js */,
-				441F02CC20D9959B008910D2 /* module_eventHelpers.js */,
-				44C295D91F8C037A001877B4 /* module_eggShell.js */,
-				44C295D61F8C037A001877B4 /* module_httpClient.js */,
-				44C295D71F8C037A001877B4 /* module_other.js */,
+				47A877751AE6925800EC5D77 /* library_httpClient.js */,
 				446506D2206AC83600B0CD8E /* library_javaScriptInvoke.js */,
 				446506D6206AC83600B0CD8E /* library_propertyNode.js */,
+				44C295D91F8C037A001877B4 /* module_eggShell.js */,
+				441F02CC20D9959B008910D2 /* module_eventHelpers.js */,
+				44C295D61F8C037A001877B4 /* module_httpClient.js */,
 				446506D5206AC83600B0CD8E /* module_javaScriptInvoke.js */,
+				44C295D71F8C037A001877B4 /* module_other.js */,
 				446506D4206AC83600B0CD8E /* module_propertyNode.js */,
+				44B625E022496B030063A478 /* module_typeHelpers.js */,
+				44B625E322496B040063A478 /* vireo.loader.asmjs-unknown-emscripten.debug.js */,
+				44B625DF22496B030063A478 /* vireo.loader.asmjs-unknown-emscripten.profile.js */,
+				44B625E122496B040063A478 /* vireo.loader.asmjs-unknown-emscripten.release.js */,
+				44B625E622496B040063A478 /* vireo.loader.shared.js */,
+				44B625E222496B040063A478 /* vireo.loader.staticHelpers.js */,
+				44B625E522496B040063A478 /* vireo.loader.wasm32-unknown-emscripten.debug.js */,
+				44B625DE22496B030063A478 /* vireo.loader.wasm32-unknown-emscripten.profile.js */,
+				44B625E422496B040063A478 /* vireo.loader.wasm32-unknown-emscripten.release.js */,
 			);
 			name = IO;
 			sourceTree = "<group>";
@@ -461,6 +482,7 @@
 				47EEBCC11A5EFF0E00B033DC /* TypeAndDataReflection.cpp */,
 				4744A9DC1818594D00E1F7D9 /* TypeDefiner.cpp */,
 				470E20771A36A5DB006FEACC /* TypeTemplates.cpp */,
+				44B625DC2244212B0063A478 /* Variants.cpp */,
 				47D84DE617C2A271009053DB /* VirtualInstrument.cpp */,
 				4466C7981E4F08EE004B5E31 /* Waveform.cpp */,
 				44C295DA1F8C03B7001877B4 /* library_coreHelpers.js */,
@@ -500,6 +522,7 @@
 				47D84DCE17C2A258009053DB /* Thread.h */,
 				476CE4EB18F590DF00399E88 /* Timestamp.h */,
 				444C46911E2D69ED0037FA98 /* UnitTest.h */,
+				44B625DB2244212B0063A478 /* Variants.h */,
 				47D84DD217C2A258009053DB /* VirtualInstrument.h */,
 				4466C79B1E4FEDFB004B5E31 /* Waveform.h */,
 			);
@@ -738,6 +761,7 @@
 				4727170F1828B8F300238283 /* main.cpp in Sources */,
 				47D84DF817C2A271009053DB /* Timestamp.cpp in Sources */,
 				47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */,
+				44B625DD2244212B0063A478 /* Variants.cpp in Sources */,
 				472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */,
 				444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */,
 				470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */,
