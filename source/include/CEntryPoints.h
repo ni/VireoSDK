@@ -45,9 +45,9 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef typeRef, void * pData, const char* eltName,
         TypeRef* typeRefLocation, void** dataRefLocation);
-VIREO_EXPORT Boolean EggShell_CheckAndResetValueRefUpdateNeedsFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData);
-VIREO_EXPORT Boolean EggShell_CheckValueRefUpdateFlag_SkipReset_(TypeManagerRef tm, const TypeRef typeRef, const void* pData);
-// (EggShell_CheckValueRefUpdateFlag_SkipReset_ should only be used for debugging/tests)
+VIREO_EXPORT Boolean EggShell_TestAndResetNeedsUpdateFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData);
+VIREO_EXPORT Boolean EggShell_TestNeedsUpdateFlagWithoutReset(TypeManagerRef tm, const TypeRef typeRef, const void* pData);
+// (EggShell_TestNeedsUpdateFlagWithoutReset should only be used for debugging/tests)
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value);
 VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Double* result);
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);

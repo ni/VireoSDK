@@ -148,8 +148,8 @@ void SetValueRefNeedsUpdate(TypeRef typeRef, void *dataPtr) {
 
 struct SetValueNeedsUpdateParamBlock : InstructionCore
 {
-    _ParamDef(StaticType, dirtyValueType);
-    _ParamDef(void, dirtyValueData);
+    _ParamDef(StaticType, valueType);
+    _ParamDef(void, valueData);
     NEXT_INSTRUCTION_METHOD()
 };
 
@@ -157,11 +157,11 @@ VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
 {
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
     if (!vi->Clumps()->Begin()->_caller)
-        SetValueRefNeedsUpdate(_ParamPointer(dirtyValueType), _ParamPointer(dirtyValueData));
+        SetValueRefNeedsUpdate(_ParamPointer(valueType), _ParamPointer(valueData));
     return _NextInstruction();
 }
 
-Boolean CheckValueRefNeedsUpdate(TypeRef typeRef, const void *, Boolean reset) {
+Boolean TestValueRefNeedsUpdate(TypeRef typeRef, const void *, Boolean reset) {
     Boolean isDirty = typeRef->IsUpdateNeeded();
     if (isDirty && reset)
         typeRef->SetUpdateNeeded(false);
@@ -170,19 +170,19 @@ Boolean CheckValueRefNeedsUpdate(TypeRef typeRef, const void *, Boolean reset) {
 
 struct CheckValueNeedsUpdateParamBlock : InstructionCore
 {
-    _ParamDef(StaticType, dirtyValueType);
-    _ParamDef(void, dirtyValueData);
-    _ParamDef(Boolean, isDirty);
+    _ParamDef(StaticType, valueType);
+    _ParamDef(void, valueData);
+    _ParamDef(Boolean, needsUpdate);
     NEXT_INSTRUCTION_METHOD()
 };
 VIREO_FUNCTION_SIGNATURET(CheckValueNeedsUpdate, CheckValueNeedsUpdateParamBlock)
 {
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
     if (!vi->Clumps()->Begin()->_caller) {
-        if (_ParamPointer(isDirty))
-            _Param(isDirty) = CheckValueRefNeedsUpdate(_ParamPointer(dirtyValueType), _ParamPointer(dirtyValueData), true);
-    } else if (_ParamPointer(isDirty)) {
-        _Param(isDirty) = false;
+        if (_ParamPointer(needsUpdate))
+            _Param(needsUpdate) = TestValueRefNeedsUpdate(_ParamPointer(valueType), _ParamPointer(valueData), true);
+    } else if (_ParamPointer(needsUpdate)) {
+        _Param(needsUpdate) = false;
     }
     return _NextInstruction();
 }

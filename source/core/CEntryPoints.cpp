@@ -185,15 +185,15 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm,
 }
 //------------------------------------------------------------
 //! Check if a value has been written by Vireo (and reset the state)
-VIREO_EXPORT Boolean EggShell_CheckAndResetValueRefUpdateNeedsFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData)
+VIREO_EXPORT Boolean EggShell_TestAndResetNeedsUpdateFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData)
 {
-    return CheckValueRefNeedsUpdate(typeRef, pData, true);
+    return TestValueRefNeedsUpdate(typeRef, pData, true);
 }
 //------------------------------------------------------------
 //! Check if a value has been written by Vireo (without resetting the state; only use for debugging)
-VIREO_EXPORT Boolean EggShell_CheckValueRefUpdateFlag_SkipReset_(TypeManagerRef tm, const TypeRef typeRef, const void* pData)
+VIREO_EXPORT Boolean EggShell_TestNeedsUpdateFlagWithoutReset(TypeManagerRef tm, const TypeRef typeRef, const void* pData)
 {
-    return CheckValueRefNeedsUpdate(typeRef, pData, false);
+    return TestValueRefNeedsUpdate(typeRef, pData, false);
 }
 //------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.

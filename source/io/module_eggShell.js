@@ -250,12 +250,12 @@ var assignEggShell;
             return dispatchFunction(typeVisitor, valueRef, data);
         };
 
-        Module.eggShell.checkAndResetValueRefNeedsUpdateFlag = publicAPI.eggShell.checkAndResetValueRefNeedsUpdateFlag = function (valueRef) {
-            var needsUpdate = Module._EggShell_CheckAndResetValueRefUpdateNeedsFlag(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+        Module.eggShell.testAndResetNeedsUpdateFlag = publicAPI.eggShell.testAndResetNeedsUpdateFlag = function (valueRef) {
+            var needsUpdate = Module._EggShell_TestAndResetNeedsUpdateFlag(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
             return needsUpdate !== 0;
         };
-        Module.eggShell.checkValueRefNeedsUpdateFlag_SkipReset_ = publicAPI.eggShell.checkValueRefNeedsUpdateFlag_SkipReset_ = function (valueRef) {
-            var needsUpdate = Module._EggShell_CheckValueRefUpdateFlag_SkipReset_(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+        Module.eggShell.testNeedsUpdateFlagWithoutReset = function (valueRef) {
+            var needsUpdate = Module._EggShell_TestNeedsUpdateFlagWithoutReset(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
             return needsUpdate !== 0;
         };
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
