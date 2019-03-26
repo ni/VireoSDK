@@ -1,1 +1,2 @@
-TestResult_Pass true
+TestResult_ClusterOfHetergoenousToArrayOfVariants true
+TestResult_ClusterOfIntsToArrayOfInts true
