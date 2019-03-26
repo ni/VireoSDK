@@ -785,10 +785,10 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
         EncodingEnum thisEncoding = BitEncoding();
         EncodingEnum otherEncoding = otherType->BitEncoding();
 
-        if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
+        if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array) {
             if (this->Rank() != otherType->Rank()) {
                 bMatch = false;
-                return bMatch;
+                return bMatch; 
             } else {
                 bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
                 return bMatch;
