@@ -344,7 +344,7 @@
                 "TestVIConversion.via",
                 "TestVI_ClusterDataTypeCoercedToVariant.via",
                 "TestVI_ClustersWiredToVariantToData.via",
-                "TestVI_ClusterWiredToVariantToDataExpectingAnArray_Reports1558Error.via",
+                "TestVI_ClusterWiredToVariantToDataExpectingAnArray_Reports2304Error.via",
                 "TestVI_Compare_Aggregates_InRange.via",
                 "TestVIDeleteFromArray.via",
                 "TestVI_ErrorClusters.via",

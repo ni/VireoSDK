@@ -53,7 +53,7 @@ struct VariantToDataParamBlock : public InstructionCore
 void SetVariantToDataTypeError(TypeRef inputType, TypeRef destType, ErrorCluster* errPtr)
 {
     if (inputType && inputType->IsCluster() && destType->IsArray()) {
-        errPtr->SetErrorAndAppendCallChain(true, kVariantTypeMismatch, "Variant To Data");
+        errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
     } else {
         errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
     }
