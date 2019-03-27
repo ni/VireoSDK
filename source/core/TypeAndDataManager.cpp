@@ -687,8 +687,6 @@ NIError TypeCommon::CopyData(const void* pData, void* pDataCopy)
 {
     VIREO_ASSERT(IsFlat())
     memcpy(pDataCopy, pData, _topAQSize);
-    if (_isDataItem)
-        SetValueRefNeedsUpdate(this, pDataCopy);
     return kNIError_Success;
 }
 //------------------------------------------------------------
@@ -708,8 +706,6 @@ NIError TypeCommon::CopyData(const void* pSource, void* pDest, IntIndex count)
                 break;
         }
     }
-    if (_isDataItem)
-        SetValueRefNeedsUpdate(this, pDest);
     return err;
 }
 //------------------------------------------------------------
@@ -717,8 +713,6 @@ NIError TypeCommon::MultiCopyData(const void* pSource, void* pDest, IntIndex cou
 {
     if (IsFlat() && TopAQSize() == 1) {
         memset(pDest, (int)*(AQBlock1*)pSource, count);
-        if (_isDataItem)
-            SetValueRefNeedsUpdate(this, pDest);
     } else {
         BlockItr iDest(pDest, TopAQSize(), count);
         while (iDest.HasNext()) {
@@ -1785,8 +1779,6 @@ NIError ArrayType::CopyData(const void* pData, void* pDataCopy)
             pDestElt += stride;
         }
     }
-    if (_isDataItem)
-        SetValueRefNeedsUpdate(this, pDest->RawBegin());
     return err;
 }
 //------------------------------------------------------------
@@ -2057,8 +2049,6 @@ NIError RefNumValType::InitData(void* pData, TypeRef pattern) {
 }
 NIError RefNumValType::CopyData(const void* pData, void* pDataCopy)  {
     ((RefNumVal*)pDataCopy)->SetRefNum(((RefNumVal*)pData)->GetRefNum());
-    if (_isDataItem)
-        SetValueRefNeedsUpdate(this, pDataCopy);
     return kNIError_Success;
 }
 NIError RefNumValType::ClearData(void* pData) {

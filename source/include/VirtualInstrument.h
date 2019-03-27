@@ -114,6 +114,7 @@ class VirtualInstrument
     }
     void SetVIName(const SubString &s, bool decode);
     SubString ClumpSource() const       { return _clumpSource; }
+    Boolean IsTopLevelVI() const;
 };
 
 //------------------------------------------------------------
@@ -205,6 +206,13 @@ class VIClump : public FunctionClump
     TypeManagerRef      TheTypeManager()       { return OwningVI()->TheTypeManager(); }
     ExecutionContextRef TheExecutionContext()   { return TheTypeManager()->TheExecutionContext(); }
 };
+
+inline Boolean VirtualInstrument::IsTopLevelVI() const
+{
+    // can't be declared in class because we need VIClump to be defined
+    return _clumps->Begin()->_caller == nullptr;
+}
+
 //------------------------------------------------------------
 //! An instruction that suspends a clump and starts a SubVI's root clump.
 struct CallVIInstruction : public InstructionCore

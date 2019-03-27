@@ -148,41 +148,41 @@ void SetValueRefNeedsUpdate(TypeRef typeRef, void *dataPtr) {
 
 struct SetValueNeedsUpdateParamBlock : InstructionCore
 {
-    _ParamDef(StaticType, valueType);
-    _ParamDef(void, valueData);
+    _ParamDef(StaticType, ValueType);
+    _ParamDef(void, ValueData);
     NEXT_INSTRUCTION_METHOD()
 };
 
 VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
 {
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
-    if (!vi->Clumps()->Begin()->_caller)
-        SetValueRefNeedsUpdate(_ParamPointer(valueType), _ParamPointer(valueData));
+    if (vi->IsTopLevelVI())
+        SetValueRefNeedsUpdate(_ParamPointer(ValueType), _ParamPointer(ValueData));
     return _NextInstruction();
 }
 
 Boolean TestValueRefNeedsUpdate(TypeRef typeRef, const void *, Boolean reset) {
-    Boolean isDirty = typeRef->IsUpdateNeeded();
-    if (isDirty && reset)
+    Boolean needsUpdate = typeRef->IsUpdateNeeded();
+    if (needsUpdate && reset)
         typeRef->SetUpdateNeeded(false);
-    return isDirty;
+    return needsUpdate;
 }
 
 struct CheckValueNeedsUpdateParamBlock : InstructionCore
 {
-    _ParamDef(StaticType, valueType);
-    _ParamDef(void, valueData);
-    _ParamDef(Boolean, needsUpdate);
+    _ParamDef(StaticType, ValueType);
+    _ParamDef(void, ValueData);
+    _ParamDef(Boolean, NeedsUpdate);
     NEXT_INSTRUCTION_METHOD()
 };
 VIREO_FUNCTION_SIGNATURET(CheckValueNeedsUpdate, CheckValueNeedsUpdateParamBlock)
 {
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
-    if (!vi->Clumps()->Begin()->_caller) {
-        if (_ParamPointer(needsUpdate))
-            _Param(needsUpdate) = TestValueRefNeedsUpdate(_ParamPointer(valueType), _ParamPointer(valueData), true);
-    } else if (_ParamPointer(needsUpdate)) {
-        _Param(needsUpdate) = false;
+    if (vi->IsTopLevelVI()) {
+        if (_ParamPointer(NeedsUpdate))
+            _Param(NeedsUpdate) = TestValueRefNeedsUpdate(_ParamPointer(ValueType), _ParamPointer(ValueData), true);
+    } else if (_ParamPointer(NeedsUpdate)) {
+        _Param(NeedsUpdate) = false;
     }
     return _NextInstruction();
 }
@@ -492,8 +492,8 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
-    DEFINE_VIREO_FUNCTION(SetValueNeedsUpdate, "p(i(StaticTypeAndData dirtyValue))")
-    DEFINE_VIREO_FUNCTION(CheckValueNeedsUpdate, "p(i(StaticTypeAndData dirtyValue) o(Boolean))")
+    DEFINE_VIREO_FUNCTION(SetValueNeedsUpdate, "p(i(StaticTypeAndData value))")
+    DEFINE_VIREO_FUNCTION(CheckValueNeedsUpdate, "p(i(StaticTypeAndData value) o(Boolean))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")

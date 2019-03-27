@@ -240,7 +240,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsElementToken          "e"   // used for Cluster, BitCluster, and array aggregate types for simple elements
 #define tsConstElementToken     "ce"  // used for Cluster elements in Locals: section to indicate immutable value
 #define tsDataitemElementToken  "de"  // used for Cluster elements in Locals: section to indicate dataItem value
-                                      // (value will be marked dirty when written from Vireo,
+                                      // (value will be marked 'updateNeeded' when written from Vireo,
                                       // clean when read or written from JS, when accessed in a top-level VI)
 #define tsInputParamToken       "i"   // input parameter
 #define tsOutputParamToken      "o"   // output parameter

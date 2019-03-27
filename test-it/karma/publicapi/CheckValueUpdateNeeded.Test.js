@@ -1,4 +1,4 @@
-describe('The Vireo dirty check api', function () {
+describe('The Vireo needsUpdate flag check api', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
