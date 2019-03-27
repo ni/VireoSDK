@@ -59,6 +59,14 @@ void SetVariantToDataTypeError(TypeRef inputType, TypeRef destType, ErrorCluster
     }
 }
 
+TypeRef CopyToVariant(TypeRef sourceType)
+{
+    TypeManagerRef tm = THREAD_TADM();
+    TypeRef variant = DefaultValueType::New(tm, sourceType, true);
+    variant->CopyData(sourceType->Begin(kPARead), variant->Begin(kPAWrite));
+    return variant;
+}
+
 // Convert variant to data of given type. Error if the data types don't match
 VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 {
@@ -74,12 +82,16 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
             if (variantInnerType && variantInnerType->IsA(destType, true)) {
                 variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
+            } else if (variantInnerType && destType->IsVariant()) {
+                *static_cast<TypeRef*>(destData) = CopyToVariant(variantInnerType);
             } else if (errPtr) {
                 SetVariantToDataTypeError(variantInnerType, destType, errPtr);
             }
         } else {
             if (inputType->IsA(destType, true)) {
                 inputType->CopyData(inputData, destData);
+            } else if (destType->IsVariant()) {
+                *static_cast<TypeRef*>(destData) = CopyToVariant(inputType);
             } else if (errPtr) {
                 SetVariantToDataTypeError(inputType, destType, errPtr);
             }
@@ -171,13 +183,14 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
             auto attributeMapIter = attributeMap->find(name);
             if (attributeMapIter != attributeMap->end()) {
                 TypeRef foundValue = attributeMapIter->second;
-                found = true;
                 if (value->_paramType->IsVariant()) {
                     TypeManagerRef tm = THREAD_TADM();
                     TypeRef variant = DefaultValueType::New(tm, foundValue, true);
                     variant->CopyData(foundValue->Begin(kPARead), variant->Begin(kPAWrite));
                     *static_cast<TypeRef*>(value->_pData) = variant;
+                    found = true;
                 } else if (foundValue->IsA(value->_paramType, true)) {
+                    found = true;
                     value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
                 } else {
                     if (errPtr) {  // Incorrect type for default attribute value
