@@ -739,8 +739,11 @@ Boolean TypeCommon::CompareType(TypeRef otherType)
     if (this == otherType) {
         return true;
     } else if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array) {
-        if (this->Rank() == otherType->Rank())
+        if (this->Rank() != otherType->Rank()) {
+            return false;
+        } else {
             return this->GetSubElement(0)->CompareType(otherType->GetSubElement(0));
+        }
     } else if (thisEncoding == kEncoding_Cluster && otherEncoding == kEncoding_Cluster) {
         SubString thisTypeName, otherTypeName;
         Boolean isThisIntrinsicClusterType = this->IsIntrinsicClusterDataType(&thisTypeName);
@@ -783,8 +786,13 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
         EncodingEnum otherEncoding = otherType->BitEncoding();
 
         if (thisEncoding == kEncoding_Array && otherEncoding == kEncoding_Array && this->Rank() == otherType->Rank()) {
-            bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
-            return bMatch;
+            if (this->Rank() != otherType->Rank()) {
+                bMatch = false;
+                return bMatch;
+            } else {
+                bMatch = this->GetSubElement(0)->IsA(otherType->GetSubElement(0), compatibleStructure);
+                return bMatch;
+            }
         } else if (thisEncoding == kEncoding_UInt || thisEncoding == kEncoding_S2CInt ||
                    thisEncoding == kEncoding_Ascii || thisEncoding == kEncoding_Unicode) {
             if (otherEncoding == kEncoding_UInt || otherEncoding == kEncoding_S2CInt ||
