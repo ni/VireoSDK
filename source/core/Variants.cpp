@@ -50,6 +50,23 @@ struct VariantToDataParamBlock : public InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
+void SetVariantToDataTypeError(TypeRef inputType, TypeRef destType, ErrorCluster* errPtr)
+{
+    if (inputType && inputType->IsCluster() && destType->IsArray()) {
+        errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
+    } else {
+        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+    }
+}
+
+TypeRef CopyToVariant(TypeRef sourceType)
+{
+    TypeManagerRef tm = THREAD_TADM();
+    TypeRef variant = DefaultValueType::New(tm, sourceType, true);
+    variant->CopyData(sourceType->Begin(kPARead), variant->Begin(kPAWrite));
+    return variant;
+}
+
 // Convert variant to data of given type. Error if the data types don't match
 VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 {
@@ -63,16 +80,20 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 
         if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
-            if (variantInnerType->IsA(destType)) {
+            if (variantInnerType && variantInnerType->IsA(destType, true)) {
                 variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
+            } else if (variantInnerType && destType->IsVariant()) {
+                *static_cast<TypeRef*>(destData) = CopyToVariant(variantInnerType);
             } else if (errPtr) {
-                errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+                SetVariantToDataTypeError(variantInnerType, destType, errPtr);
             }
         } else {
-            if (inputType->IsA(destType)) {
+            if (inputType->IsA(destType, true)) {
                 inputType->CopyData(inputData, destData);
+            } else if (destType->IsVariant()) {
+                *static_cast<TypeRef*>(destData) = CopyToVariant(inputType);
             } else if (errPtr) {
-                errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+                SetVariantToDataTypeError(inputType, destType, errPtr);
             }
         }
     }
@@ -168,7 +189,7 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
                     variant->CopyData(foundValue->Begin(kPARead), variant->Begin(kPAWrite));
                     *static_cast<TypeRef*>(value->_pData) = variant;
                     found = true;
-                } else if (foundValue->IsA(value->_paramType)) {
+                } else if (foundValue->IsA(value->_paramType, true)) {
                     found = true;
                     value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
                 } else {
