@@ -518,6 +518,7 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
             usageType = kUsageTypeConst;
         } else if (token.CompareCStr(tsInputParamToken)) {
             usageType = kUsageTypeInput;
+            isDataItem = true;
         } else if (token.CompareCStr(tsOutputParamToken)) {
             usageType = kUsageTypeOutput;
             isDataItem = true;
