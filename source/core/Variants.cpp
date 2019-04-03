@@ -46,6 +46,7 @@ struct VariantToDataParamBlock : public InstructionCore
 {
     _ParamImmediateDef(StaticTypeAndData, InputData);
     _ParamDef(ErrorCluster, ErrorClust);
+    _ParamImmediateDef(StaticTypeAndData, DestType);
     _ParamImmediateDef(StaticTypeAndData, DestData);
     NEXT_INSTRUCTION_METHOD()
 };
@@ -75,23 +76,32 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         TypeRef inputType = _ParamImmediate(InputData._paramType);
         void* inputData = _ParamImmediate(InputData)._pData;
 
-        TypeRef destType = _ParamImmediate(DestData._paramType);
+        TypeRef destType = _ParamImmediate(DestType._paramType);
+
         void* destData = _ParamImmediate(DestData)._pData;
 
         if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
             if (variantInnerType && variantInnerType->IsA(destType, true)) {
-                variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
+                if (destData) {
+                    variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
+                }
             } else if (variantInnerType && destType->IsVariant()) {
-                *static_cast<TypeRef*>(destData) = CopyToVariant(variantInnerType);
+                if (destData) {
+                    *static_cast<TypeRef*>(destData) = CopyToVariant(variantInnerType);
+                }
             } else if (errPtr) {
                 SetVariantToDataTypeError(variantInnerType, destType, errPtr);
             }
         } else {
             if (inputType->IsA(destType, true)) {
-                inputType->CopyData(inputData, destData);
+                if (destData) {
+                    inputType->CopyData(inputData, destData);
+                }
             } else if (destType->IsVariant()) {
-                *static_cast<TypeRef*>(destData) = CopyToVariant(inputType);
+                if (destData) {
+                    *static_cast<TypeRef*>(destData) = CopyToVariant(inputType);
+                }
             } else if (errPtr) {
                 SetVariantToDataTypeError(inputType, destType, errPtr);
             }
@@ -365,7 +375,7 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
 
 DEFINE_VIREO_BEGIN(Variant)
 
-    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData) io(ErrorCluster) o(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData) io(ErrorCluster) i(StaticTypeAndData) o(StaticTypeAndData))");
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
     DEFINE_VIREO_FUNCTION(SetVariantAttribute, "p(io(Variant inputVariant) i(String name)"
                                                 " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
