@@ -95,15 +95,11 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 
         if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
-            if (variantInnerType 
-                && IsTypeCompatibleWithInput(variantInnerType, targetType, targetData) 
-                && IsTypeCompatibleWithInput(variantInnerType, outputType, outputData)) {
+            if (variantInnerType && IsTypeCompatibleWithInput(variantInnerType, targetType, targetData) && IsTypeCompatibleWithInput(variantInnerType, outputType, outputData)) {
                 if (outputData) {
                     variantInnerType->CopyData(variantInnerType->Begin(kPARead), outputData);
                 }
-            } else if (variantInnerType 
-                && IsTerminalUnwiredOrVariant(targetType, targetData) 
-                && IsTerminalUnwiredOrVariant(outputType, outputData)) {
+            } else if (variantInnerType && IsTerminalUnwiredOrVariant(targetType, targetData) && IsTerminalUnwiredOrVariant(outputType, outputData)) {
                 if (outputData) {
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
                 }
@@ -111,13 +107,11 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 SetVariantToDataTypeError(variantInnerType, targetType, errPtr);
             }
         } else {
-            if (IsTypeCompatibleWithInput(inputType, targetType, targetData) 
-                && IsTypeCompatibleWithInput(inputType, outputType, outputData)) {
+            if (IsTypeCompatibleWithInput(inputType, targetType, targetData) && IsTypeCompatibleWithInput(inputType, outputType, outputData)) {
                 if (outputData) {
                     inputType->CopyData(inputData, outputData);
                 }
-            } else if (IsTerminalUnwiredOrVariant(targetType, targetData) 
-                && IsTerminalUnwiredOrVariant(outputType, outputData)) {
+            } else if (IsTerminalUnwiredOrVariant(targetType, targetData) && IsTerminalUnwiredOrVariant(outputType, outputData)) {
                 if (outputData) {
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
                 }
@@ -394,7 +388,7 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
 
 DEFINE_VIREO_BEGIN(Variant)
 
-    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData) io(ErrorCluster) i(StaticTypeAndData) o(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error) i(StaticTypeAndData targetType) o(StaticTypeAndData outputType))");
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
     DEFINE_VIREO_FUNCTION(SetVariantAttribute, "p(io(Variant inputVariant) i(String name)"
                                                 " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
