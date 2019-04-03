@@ -46,8 +46,8 @@ struct VariantToDataParamBlock : public InstructionCore
 {
     _ParamImmediateDef(StaticTypeAndData, InputData);
     _ParamDef(ErrorCluster, ErrorClust);
-    _ParamImmediateDef(StaticTypeAndData, DestType);
-    _ParamImmediateDef(StaticTypeAndData, DestData);
+    _ParamImmediateDef(StaticTypeAndData, TargetType);
+    _ParamImmediateDef(StaticTypeAndData, OutputData);
     NEXT_INSTRUCTION_METHOD()
 };
 
@@ -68,6 +68,17 @@ TypeRef CopyToVariant(TypeRef sourceType)
     return variant;
 }
 
+bool IsTypeCompatibleWithInput(TypeRef inputType, TypeRef destType, void* destData)
+{
+    // If type terminal is unwired, or it is the same as the input, return true.
+    return inputType && (!destData || inputType->IsA(destType, true));
+}
+
+bool IsTerminalUnwiredOrVariant(TypeRef destType, void* destData)
+{
+    return !destData || destType->IsVariant();
+}
+
 // Convert variant to data of given type. Error if the data types don't match
 VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 {
@@ -76,34 +87,42 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         TypeRef inputType = _ParamImmediate(InputData._paramType);
         void* inputData = _ParamImmediate(InputData)._pData;
 
-        TypeRef destType = _ParamImmediate(DestType._paramType);
+        TypeRef targetType = _ParamImmediate(TargetType._paramType);
+        void* targetData = _ParamImmediate(TargetType)._pData;
 
-        void* destData = _ParamImmediate(DestData)._pData;
+        TypeRef outputType = _ParamImmediate(OutputData._paramType);
+        void* outputData = _ParamImmediate(OutputData)._pData;
 
         if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
-            if (variantInnerType && variantInnerType->IsA(destType, true)) {
-                if (destData) {
-                    variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
+            if (variantInnerType 
+                && IsTypeCompatibleWithInput(variantInnerType, targetType, targetData) 
+                && IsTypeCompatibleWithInput(variantInnerType, outputType, outputData)) {
+                if (outputData) {
+                    variantInnerType->CopyData(variantInnerType->Begin(kPARead), outputData);
                 }
-            } else if (variantInnerType && destType->IsVariant()) {
-                if (destData) {
-                    *static_cast<TypeRef*>(destData) = CopyToVariant(variantInnerType);
+            } else if (variantInnerType 
+                && IsTerminalUnwiredOrVariant(targetType, targetData) 
+                && IsTerminalUnwiredOrVariant(outputType, outputData)) {
+                if (outputData) {
+                    *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
                 }
             } else if (errPtr) {
-                SetVariantToDataTypeError(variantInnerType, destType, errPtr);
+                SetVariantToDataTypeError(variantInnerType, targetType, errPtr);
             }
         } else {
-            if (inputType->IsA(destType, true)) {
-                if (destData) {
-                    inputType->CopyData(inputData, destData);
+            if (IsTypeCompatibleWithInput(inputType, targetType, targetData) 
+                && IsTypeCompatibleWithInput(inputType, outputType, outputData)) {
+                if (outputData) {
+                    inputType->CopyData(inputData, outputData);
                 }
-            } else if (destType->IsVariant()) {
-                if (destData) {
-                    *static_cast<TypeRef*>(destData) = CopyToVariant(inputType);
+            } else if (IsTerminalUnwiredOrVariant(targetType, targetData) 
+                && IsTerminalUnwiredOrVariant(outputType, outputData)) {
+                if (outputData) {
+                    *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
                 }
             } else if (errPtr) {
-                SetVariantToDataTypeError(inputType, destType, errPtr);
+                SetVariantToDataTypeError(inputType, targetType, errPtr);
             }
         }
     }
