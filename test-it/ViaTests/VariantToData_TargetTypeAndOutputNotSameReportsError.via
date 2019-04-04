@@ -37,7 +37,7 @@ define (Application%3A%3ATestVI_Foo%2Egviweb dv(.VirtualInstrument (
         IsEQ(c13 local9 local14)
         And(local14 local12 local15)
         Copy(local15 dataItem_TestResult_TargetTypeAndOutputNotSameReportsError)
-        Printf("TestResult_TargetTypeAndOutputNotSameReportsError %z\n" dataItem_TestResult_TargetTypeAndOutputNotSameReportsError)
+        Printf("TestResult_TargetTypeAndOutputNotSameReportsError = %z\n" dataItem_TestResult_TargetTypeAndOutputNotSameReportsError)
 /* Clump Ended. */    )
 )))
 enqueue (Application%3A%3ATestVI_Foo%2Egviweb)
