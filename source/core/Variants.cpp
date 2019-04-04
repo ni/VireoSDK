@@ -68,15 +68,22 @@ TypeRef CopyToVariant(TypeRef sourceType)
     return variant;
 }
 
-bool IsTypeCompatibleWithInput(TypeRef inputType, TypeRef destType, void* destData)
-{
-    // If type terminal is unwired, or it is the same as the input, return true.
-    return inputType && (!destData || inputType->IsA(destType, true));
-}
-
-bool IsTerminalUnwiredOrVariant(TypeRef destType, void* destData)
+bool IsTypeUnspecifiedOrVariant(TypeRef destType, void* destData)
 {
     return !destData || destType->IsVariant();
+}
+
+bool IsTargetTypeSameAsOutput(TypeRef targetType, void* targetData, TypeRef outputType, void* outputData)
+{
+    return (IsTypeUnspecifiedOrVariant(targetType, targetData) && IsTypeUnspecifiedOrVariant(outputType, outputData))
+        || targetType->IsA(outputType, true)
+        || !outputData;
+}
+
+bool IsTargetTypeCompatibleWithInput(TypeRef inputType, TypeRef targetType, void* targetData)
+{
+    // If target type parameter is unspecified, or it is the same as the input, return true.
+    return inputType && (!targetData || inputType->IsA(targetType, true));
 }
 
 // Convert variant to data of given type. Error if the data types don't match
@@ -96,14 +103,14 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
             if (variantInnerType
-                && IsTypeCompatibleWithInput(variantInnerType, targetType, targetData)
-                && IsTypeCompatibleWithInput(variantInnerType, outputType, outputData)) {
+                && IsTargetTypeCompatibleWithInput(variantInnerType, targetType, targetData)
+                && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
                 if (outputData) {
                     variantInnerType->CopyData(variantInnerType->Begin(kPARead), outputData);
                 }
             } else if (variantInnerType
-                && IsTerminalUnwiredOrVariant(targetType, targetData)
-                && IsTerminalUnwiredOrVariant(outputType, outputData)) {
+                && IsTypeUnspecifiedOrVariant(targetType, targetData)
+                && IsTypeUnspecifiedOrVariant(outputType, outputData)) {
                 if (outputData) {
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
                 }
@@ -111,13 +118,13 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 SetVariantToDataTypeError(variantInnerType, targetType, errPtr);
             }
         } else {
-            if (IsTypeCompatibleWithInput(inputType, targetType, targetData)
-                && IsTypeCompatibleWithInput(inputType, outputType, outputData)) {
+            if (IsTargetTypeCompatibleWithInput(inputType, targetType, targetData)
+                && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
                 if (outputData) {
                     inputType->CopyData(inputData, outputData);
                 }
-            } else if (IsTerminalUnwiredOrVariant(targetType, targetData)
-                && IsTerminalUnwiredOrVariant(outputType, outputData)) {
+            } else if (IsTypeUnspecifiedOrVariant(targetType, targetData)
+                && IsTypeUnspecifiedOrVariant(outputType, outputData)) {
                 if (outputData) {
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
                 }
