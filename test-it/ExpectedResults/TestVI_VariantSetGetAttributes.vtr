@@ -6,3 +6,5 @@ dataItem_TestResult_GetAllAttributesReturnsData = true
 dataItem_TestResult_GetAttributeWithUnwiredDefaultValue = true
 dataItem_TestResult_GetAttributeWorksCorrectly = true
 dataItem_TestResult_ReplacedIsCorrectlyUpdated = true
+dataItem_TestResult_GetAttributeUnwiredOutputs = true
+dataItem_TestResult_SplitWireVariantTreatedAsDifferent = true

@@ -46,7 +46,8 @@ struct VariantToDataParamBlock : public InstructionCore
 {
     _ParamImmediateDef(StaticTypeAndData, InputData);
     _ParamDef(ErrorCluster, ErrorClust);
-    _ParamImmediateDef(StaticTypeAndData, DestData);
+    _ParamImmediateDef(StaticTypeAndData, TargetType);
+    _ParamImmediateDef(StaticTypeAndData, OutputData);
     NEXT_INSTRUCTION_METHOD()
 };
 
@@ -67,6 +68,24 @@ TypeRef CopyToVariant(TypeRef sourceType)
     return variant;
 }
 
+bool IsTypeUnspecifiedOrVariant(TypeRef destType, void* destData)
+{
+    return !destData || destType->IsVariant();
+}
+
+bool IsTargetTypeSameAsOutput(TypeRef targetType, void* targetData, TypeRef outputType, void* outputData)
+{
+    return (IsTypeUnspecifiedOrVariant(targetType, targetData) && IsTypeUnspecifiedOrVariant(outputType, outputData))
+        || targetType->IsA(outputType, true)
+        || !outputData;
+}
+
+bool IsTargetTypeCompatibleWithInput(TypeRef inputType, TypeRef targetType, void* targetData)
+{
+    // If target type parameter is unspecified, or it is the same as the input, return true.
+    return inputType && (!targetData || inputType->IsA(targetType, true));
+}
+
 // Convert variant to data of given type. Error if the data types don't match
 VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
 {
@@ -75,25 +94,42 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         TypeRef inputType = _ParamImmediate(InputData._paramType);
         void* inputData = _ParamImmediate(InputData)._pData;
 
-        TypeRef destType = _ParamImmediate(DestData._paramType);
-        void* destData = _ParamImmediate(DestData)._pData;
+        TypeRef targetType = _ParamImmediate(TargetType._paramType);
+        void* targetData = _ParamImmediate(TargetType)._pData;
+
+        TypeRef outputType = _ParamImmediate(OutputData._paramType);
+        void* outputData = _ParamImmediate(OutputData)._pData;
 
         if (inputType->IsVariant()) {
             TypeRef variantInnerType = *reinterpret_cast<TypeRef *>_ParamImmediate(InputData._pData);
-            if (variantInnerType && variantInnerType->IsA(destType, true)) {
-                variantInnerType->CopyData(variantInnerType->Begin(kPARead), destData);
-            } else if (variantInnerType && destType->IsVariant()) {
-                *static_cast<TypeRef*>(destData) = CopyToVariant(variantInnerType);
+            if (variantInnerType
+                && IsTargetTypeCompatibleWithInput(variantInnerType, targetType, targetData)
+                && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
+                if (outputData) {
+                    variantInnerType->CopyData(variantInnerType->Begin(kPARead), outputData);
+                }
+            } else if (variantInnerType
+                && IsTypeUnspecifiedOrVariant(targetType, targetData)
+                && IsTypeUnspecifiedOrVariant(outputType, outputData)) {
+                if (outputData) {
+                    *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
+                }
             } else if (errPtr) {
-                SetVariantToDataTypeError(variantInnerType, destType, errPtr);
+                SetVariantToDataTypeError(variantInnerType, targetType, errPtr);
             }
         } else {
-            if (inputType->IsA(destType, true)) {
-                inputType->CopyData(inputData, destData);
-            } else if (destType->IsVariant()) {
-                *static_cast<TypeRef*>(destData) = CopyToVariant(inputType);
+            if (IsTargetTypeCompatibleWithInput(inputType, targetType, targetData)
+                && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
+                if (outputData) {
+                    inputType->CopyData(inputData, outputData);
+                }
+            } else if (IsTypeUnspecifiedOrVariant(targetType, targetData)
+                && IsTypeUnspecifiedOrVariant(outputType, outputData)) {
+                if (outputData) {
+                    *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
+                }
             } else if (errPtr) {
-                SetVariantToDataTypeError(inputType, destType, errPtr);
+                SetVariantToDataTypeError(inputType, targetType, errPtr);
             }
         }
     }
@@ -365,7 +401,8 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
 
 DEFINE_VIREO_BEGIN(Variant)
 
-    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData) io(ErrorCluster) o(StaticTypeAndData))");
+    DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error)"
+                                            "i(StaticTypeAndData targetType) o(StaticTypeAndData outputType))");
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
     DEFINE_VIREO_FUNCTION(SetVariantAttribute, "p(io(Variant inputVariant) i(String name)"
                                                 " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
