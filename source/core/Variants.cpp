@@ -51,15 +51,6 @@ struct VariantToDataParamBlock : public InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
-void SetVariantToDataTypeError(TypeRef inputType, TypeRef destType, ErrorCluster* errPtr)
-{
-    if (inputType && inputType->IsCluster() && destType->IsArray()) {
-        errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
-    } else {
-        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
-    }
-}
-
 TypeRef CopyToVariant(TypeRef sourceType)
 {
     TypeManagerRef tm = THREAD_TADM();
@@ -84,6 +75,21 @@ bool IsTargetTypeCompatibleWithInput(TypeRef inputType, TypeRef targetType, void
 {
     // If target type parameter is unspecified, or it is the same as the input, return true.
     return inputType && (!targetData || inputType->IsA(targetType, true));
+}
+
+void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, void* targetData, TypeRef outputType, void* outputData, ErrorCluster* errPtr)
+{
+    if (inputType && inputType->IsCluster() && targetType->IsArray()) {
+        errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
+    } else {
+        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+    }
+    if (!targetData
+        && !outputData
+        && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
+        // Emitted via guarantees that  targetData is always the default value of targetType.
+         outputType->CopyData(targetData, outputData);
+    }
 }
 
 // Convert variant to data of given type. Error if the data types don't match
@@ -115,7 +121,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
                 }
             } else if (errPtr) {
-                SetVariantToDataTypeError(variantInnerType, targetType, errPtr);
+                SetVariantToDataTypeError(variantInnerType, targetType, targetData, outputType, outputData, errPtr);
             }
         } else {
             if (IsTargetTypeCompatibleWithInput(inputType, targetType, targetData)
@@ -129,7 +135,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
                 }
             } else if (errPtr) {
-                SetVariantToDataTypeError(inputType, targetType, errPtr);
+                SetVariantToDataTypeError(inputType, targetType, targetData, outputType, outputData, errPtr);
             }
         }
     }
