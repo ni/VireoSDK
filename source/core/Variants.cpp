@@ -84,11 +84,19 @@ void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, void* targ
     } else {
         errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
     }
-    if (!targetData
+    /*if (!targetData
         && !outputData
         && IsTargetTypeSameAsOutput(targetType, targetData, outputType, outputData)) {
         // Emitted via guarantees that  targetData is always the default value of targetType.
-         outputType->CopyData(targetData, outputData);
+        outputType->CopyData(targetData, outputData);*/
+    if (outputData) {
+        TypeRef t = outputType;
+        while (t->HasCustomDefault()) {
+            t = t->BaseType();
+        }
+        if (t) {
+            t->InitData(outputData);
+        }
     }
 }
 
