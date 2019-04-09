@@ -77,7 +77,7 @@ bool IsTargetTypeCompatibleWithInput(TypeRef inputType, TypeRef targetType, void
     return inputType && (!targetData || inputType->IsA(targetType, true));
 }
 
-void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, void* targetData, TypeRef outputType, void* outputData, ErrorCluster* errPtr)
+void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef outputType, void* outputData, ErrorCluster* errPtr)
 {
     if (inputType && inputType->IsCluster() && targetType->IsArray()) {
         errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
@@ -118,7 +118,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(variantInnerType);
                 }
             } else if (errPtr) {
-                SetVariantToDataTypeError(variantInnerType, targetType, targetData, outputType, outputData, errPtr);
+                SetVariantToDataTypeError(variantInnerType, targetType, outputType, outputData, errPtr);
             }
         } else {
             if (IsTargetTypeCompatibleWithInput(inputType, targetType, targetData)
@@ -132,7 +132,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                     *static_cast<TypeRef*>(outputData) = CopyToVariant(inputType);
                 }
             } else if (errPtr) {
-                SetVariantToDataTypeError(inputType, targetType, targetData, outputType, outputData, errPtr);
+                SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
             }
         }
     }
