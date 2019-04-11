@@ -416,8 +416,12 @@ struct VariantComparisonParamBlock : public InstructionCore
 
 bool VariantsAreEqual(TypeRef variantA, TypeRef variantB)
 {
-    TypeRef variantInnerTypeA = reinterpret_cast<TypeRef>(variantA->Begin(kPARead));
-    TypeRef variantInnerTypeB = reinterpret_cast<TypeRef>(variantB->Begin(kPARead));
+    TypeRef variantInnerTypeA = variantA;
+    TypeRef variantInnerTypeB = variantB;
+    if (variantA->IsVariant()) 
+        variantInnerTypeA = *static_cast<TypeRef*>(variantA->Begin(kPARead));
+    if (variantB->IsVariant())
+        variantInnerTypeB = *static_cast<TypeRef*>(variantB->Begin(kPARead));
 
     TwoTypeVisitor visitor;
     TwoTypeEqual twoTypeEqual;

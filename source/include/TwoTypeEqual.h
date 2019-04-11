@@ -21,13 +21,22 @@ namespace Vireo {
     class TwoTypeEqual : public TwoTypeOperation {
 
     private:
-        Boolean _areEqual = true;
+        bool _areEqual = true;
 
     public:
         TwoTypeEqual();
-        Boolean Apply(TypeRef typeRefA, TypeRef typeRefB) override;
-        Boolean AreEqual() { return _areEqual; }
+        bool Apply(TypeRef typeRefA, TypeRef typeRefB) override;
+        bool AreEqual() { return _areEqual; }
+
+    private:
+        bool CompareBooleans(TypeRef typeRefA, TypeRef typeRefB);
+        bool CompareUInts(TypeRef typeRefA, TypeRef typeRefB);
+        bool CompareS2CInts(TypeRef typeRefA, TypeRef typeRefB);
+        bool CompareIEEE754Binaries(TypeRef typeRefA, TypeRef typeRefB);
+        bool CompareClusters(TypeRef typeRefA, TypeRef typeRefB);
+        bool CompareArrays(TypeRef typeRefA, TypeRef typeRefB);
     };
+
 
 }  // namespace Vireo
 
