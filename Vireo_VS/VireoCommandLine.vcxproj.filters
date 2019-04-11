@@ -133,6 +133,15 @@
     <ClCompile Include="..\source\core\Variants.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\TwoTypeOperation.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TwoTypeVisitor.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\TwoTypeEqual.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">
@@ -257,6 +266,15 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\Variants.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TwoTypeOperation.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TwoTypeVisitor.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\TwoTypeEqual.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>
