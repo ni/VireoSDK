@@ -18,6 +18,9 @@ SDG
 #include <limits>
 #include <map>
 #include "Variants.h"
+#include "TwoTypeVisitor.h"
+#include "TwoTypeOperation.h"
+#include "TwoTypeEqual.h"
 
 namespace Vireo
 {
@@ -423,6 +426,45 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
     return _NextInstruction();
 }
 
+struct VariantComparisonParamBlock : public InstructionCore
+{
+    _ParamDef(TypeRef, VariantA);
+    _ParamDef(TypeRef, VariantB);
+    _ParamDef(Boolean, Result);
+
+    NEXT_INSTRUCTION_METHOD()
+};
+
+bool VariantsAreEqual(TypeRef variantA, TypeRef variantB)
+{
+    TypeRef variantInnerTypeA = variantA;
+    TypeRef variantInnerTypeB = variantB;
+    if (variantA->IsVariant())
+        variantInnerTypeA = *static_cast<TypeRef*>(variantA->Begin(kPARead));
+    if (variantB->IsVariant())
+        variantInnerTypeB = *static_cast<TypeRef*>(variantB->Begin(kPARead));
+
+    TwoTypeVisitor visitor;
+    TwoTypeEqual twoTypeEqual;
+
+    visitor.Visit(variantInnerTypeA, variantInnerTypeB, &twoTypeEqual);
+    return twoTypeEqual.AreEqual();
+}
+
+VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {
+    TypeRef variantA = _Param(VariantA);
+    TypeRef variantB = _Param(VariantB);
+    _Param(Result) = VariantsAreEqual(variantA, variantB);
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURET(IsNEVariant, VariantComparisonParamBlock) {
+    TypeRef variantA = _Param(VariantA);
+    TypeRef variantB = _Param(VariantB);
+    _Param(Result) = !VariantsAreEqual(variantA, variantB);
+    return _NextInstruction();
+}
+
 DEFINE_VIREO_BEGIN(Variant)
 
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
@@ -437,6 +479,8 @@ DEFINE_VIREO_BEGIN(Variant)
     DEFINE_VIREO_FUNCTION(DeleteVariantAttribute, "p(io(Variant inputVariant) i(String name) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(CopyVariant, "p(i(Variant inputVariant) o(Variant outputVariant) )");
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, DataToVariant, "p(i(StaticTypeAndData) o(Variant))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQVariant, "p(i(Variant variantA) i(Variant variantB) o(Boolean result))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNEVariant, "p(i(Variant variantA) i(Variant variantB) o(Boolean result))")
 
 DEFINE_VIREO_END()
 

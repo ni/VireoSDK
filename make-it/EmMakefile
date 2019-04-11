@@ -155,7 +155,10 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/HttpClient.bc\
 	$(OBJS)/Waveform.bc\
 	$(OBJS)/JavaScriptInvoke.bc\
-	$(OBJS)/PropertyNode.bc
+	$(OBJS)/PropertyNode.bc\
+	$(OBJS)/TwoTypeOperation.bc\
+	$(OBJS)/TwoTypeVisitor.bc\
+	$(OBJS)/TwoTypeEqual.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
