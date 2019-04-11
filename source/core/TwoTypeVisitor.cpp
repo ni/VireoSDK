@@ -15,9 +15,11 @@ SDG
 namespace Vireo
 {
     //------------------------------------------------------------
-    Boolean TwoTypeVisitor::Visit(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation& operation)
+    Boolean TwoTypeVisitor::Visit(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation* operation)
     {
-        Boolean canContinue = operation.Apply(typeRefA, typeRefB);
+        Boolean canContinue = false;
+        if (operation)
+            canContinue = operation->Apply(typeRefA, typeRefB);
         return canContinue;
     };
 };  // namespace Vireo

@@ -19,14 +19,14 @@ SDG
 
 namespace Vireo {
 
-    //! This class manages the traversal of two similar types as long as they share the same structure
-    //! Applies the TwoTypeOperation and continues visiting if the operation allows the visitor to continue
-    class TwoTypeVisitor {
-    public:
-        TwoTypeVisitor() = default;
+//! This class manages the traversal of two similar types as long as they share the same structure
+//! Applies the TwoTypeOperation and continues visiting if the operation allows the visitor to continue
+class TwoTypeVisitor {
+ public:
+    TwoTypeVisitor() = default;
 
-        Boolean Visit(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation& operation);
-    };
+    bool Visit(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation* operation);
+};
 
 }  // namespace Vireo
 

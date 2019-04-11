@@ -418,7 +418,7 @@ bool VariantsAreEqual(TypeRef variantA, TypeRef variantB)
 {
     TypeRef variantInnerTypeA = variantA;
     TypeRef variantInnerTypeB = variantB;
-    if (variantA->IsVariant()) 
+    if (variantA->IsVariant())
         variantInnerTypeA = *static_cast<TypeRef*>(variantA->Begin(kPARead));
     if (variantB->IsVariant())
         variantInnerTypeB = *static_cast<TypeRef*>(variantB->Begin(kPARead));
@@ -426,7 +426,7 @@ bool VariantsAreEqual(TypeRef variantA, TypeRef variantB)
     TwoTypeVisitor visitor;
     TwoTypeEqual twoTypeEqual;
 
-    visitor.Visit(variantInnerTypeA, variantInnerTypeB, twoTypeEqual);
+    visitor.Visit(variantInnerTypeA, variantInnerTypeB, &twoTypeEqual);
     return twoTypeEqual.AreEqual();
 }
 

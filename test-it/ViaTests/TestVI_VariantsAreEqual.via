@@ -3,18 +3,18 @@
 //---------------------------------------------------
 //VI Definition: ::Web Server::Interactive::Application::Variant_SetGetAttributes_ExpectedResults.gviweb
 define (Application%3A%3AVariant_SetGetAttributes_ExpectedResults%2Egviweb dv(.VirtualInstrument (
-    Locals: c(   // Data Space	
+    Locals: c(   // Data Space
         ce(dv(.Int32 1) int32A)
-        ce(dv(.Int32 2) int32B)		
-        ce(dv(.String 'VARIANT')  stringA)
-        ce(dv(.String 'VARIANT2') stringB)		
+        ce(dv(.Int32 2) int32B)
+        ce(dv(.String 'VARIANT') stringA)
+        ce(dv(.String 'VARIANT2') stringB)
         e(.Variant variantA)
-		e(.Variant variantB)
+        e(.Variant variantB)
         e(.Boolean areVariantsEqual)
     )
         clump(1
         DataToVariant(int32A variantA)
-		DataToVariant(int32B variantB)		
+        DataToVariant(int32B variantB)
         IsEQ(variantA variantB areVariantsEqual)
         Printf("areVariantsEqual = %z\n" areVariantsEqual)
         // Code End

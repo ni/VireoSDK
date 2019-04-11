@@ -17,16 +17,14 @@ SDG
 
 namespace Vireo {
 
-    class TwoTypeOperation {
+class TwoTypeOperation {
+ public:
+    TwoTypeOperation() = default;
 
-
-    public:
-        TwoTypeOperation() = default;
-
-        //! Check if the types are compatible and applies an operation if they are
-        //! Return true if the operation was successful
-        virtual Boolean Apply(TypeRef typeRefA, TypeRef typeRefB) = 0;
-    };
+    //! Check if the types are compatible and applies an operation if they are
+    //! Return true if the operation was successful
+    virtual Boolean Apply(TypeRef typeRefA, TypeRef typeRefB) = 0;
+};
 
 }  // namespace Vireo
 
