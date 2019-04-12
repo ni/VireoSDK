@@ -7,7 +7,7 @@ SDG
 */
 
 /*! \file
-\brief Two type operation mostly for variant support
+\brief Base class for operations on two types for variant support
 */
 
 #ifndef TwoTypeOperation_h
@@ -17,16 +17,17 @@ SDG
 
 namespace Vireo {
 
-class TwoTypeOperation {
- public:
-    TwoTypeOperation() = default;
+    class TwoTypeOperation {
+    public:
+        TwoTypeOperation() = default;
 
-    //! Check if the types are compatible and applies an operation if they are
-    //! Return true if the operation was successful
-    virtual Boolean Apply(TypeRef typeRefA, TypeRef typeRefB) = 0;
-};
+        virtual bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) = 0;
+        virtual bool BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
+        virtual bool UIntCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
+        virtual bool S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
+        virtual bool IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
+    };
 
 }  // namespace Vireo
 
 #endif
-

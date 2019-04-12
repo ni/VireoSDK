@@ -407,59 +407,50 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
 
 struct VariantComparisonParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, VariantA);
-    _ParamDef(TypeRef, VariantB);
+    _ParamDef(TypeRef, VariantX);
+    _ParamDef(TypeRef, VariantY);
     _ParamDef(Boolean, Result);
 
     NEXT_INSTRUCTION_METHOD()
 };
 
-bool VariantsAreEqual(TypeRef variantA, TypeRef variantB)
+bool VariantsAreEqual(TypeRef variantX, TypeRef variantY)
 {
-    TypeRef variantInnerTypeA = variantA;
-    TypeRef variantInnerTypeB = variantB;
-    if (variantA->IsVariant())
-        variantInnerTypeA = *static_cast<TypeRef*>(variantA->Begin(kPARead));
-    if (variantB->IsVariant())
-        variantInnerTypeB = *static_cast<TypeRef*>(variantB->Begin(kPARead));
-
     TwoTypeVisitor visitor;
     TwoTypeEqual twoTypeEqual;
-
-    visitor.Visit(variantInnerTypeA, variantInnerTypeB, &twoTypeEqual);
-    return twoTypeEqual.AreEqual();
+    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &twoTypeEqual);
 }
 
 VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {
-    TypeRef variantA = _Param(VariantA);
-    TypeRef variantB = _Param(VariantB);
-    _Param(Result) = VariantsAreEqual(variantA, variantB);
+    TypeRef variantX = _Param(VariantX);
+    TypeRef variantY = _Param(VariantY);
+    _Param(Result) = VariantsAreEqual(variantX, variantY);
     return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURET(IsNEVariant, VariantComparisonParamBlock) {
-    TypeRef variantA = _Param(VariantA);
-    TypeRef variantB = _Param(VariantB);
-    _Param(Result) = !VariantsAreEqual(variantA, variantB);
+    TypeRef variantX = _Param(VariantX);
+    TypeRef variantY = _Param(VariantY);
+    _Param(Result) = !VariantsAreEqual(variantX, variantY);
     return _NextInstruction();
 }
 
 DEFINE_VIREO_BEGIN(Variant)
 
     DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error)"
-                                            "i(StaticTypeAndData targetType) o(StaticTypeAndData outputType))");
+        "i(StaticTypeAndData targetType) o(StaticTypeAndData outputType))");
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
     DEFINE_VIREO_FUNCTION(SetVariantAttribute, "p(io(Variant inputVariant) i(String name)"
-                                                " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
+        " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(GetVariantAttribute, "p(i(Variant inputVariant) i(String name)"
-                                                "io(StaticTypeAndData value) o(Boolean found) io(ErrorCluster error) )");
+        "io(StaticTypeAndData value) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(GetVariantAttributeAll, "p(i(Variant inputVariant) o(Array names)"
-                                                   "o(Array values) io(ErrorCluster error) )");
+        "o(Array values) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(DeleteVariantAttribute, "p(io(Variant inputVariant) i(String name) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(CopyVariant, "p(i(Variant inputVariant) o(Variant outputVariant) )");
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, DataToVariant, "p(i(StaticTypeAndData) o(Variant))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQVariant, "p(i(Variant variantA) i(Variant variantB) o(Boolean result))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNEVariant, "p(i(Variant variantA) i(Variant variantB) o(Boolean result))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQVariant, "p(i(Variant variantX) i(Variant variantY) o(Boolean result))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNEVariant, "p(i(Variant variantX) i(Variant variantY) o(Boolean result))")
 
 DEFINE_VIREO_END()
 
