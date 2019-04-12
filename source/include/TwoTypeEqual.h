@@ -28,6 +28,7 @@ class TwoTypeEqual : public TwoTypeOperation {
     bool AreEqual() { return _areEqual; }
 
  private:
+    bool CompareVariants(TypeRef typeRefA, TypeRef typeRefB);
     bool CompareBooleans(TypeRef typeRefA, TypeRef typeRefB);
     bool CompareUInts(TypeRef typeRefA, TypeRef typeRefB);
     bool CompareS2CInts(TypeRef typeRefA, TypeRef typeRefB);
