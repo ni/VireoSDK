@@ -30,8 +30,11 @@ namespace Vireo
             return false;
         }
         bool canContinue = false;
-        switch (encodingA)
-        {
+        if (typeRefA->IsVariant() && typeRefB->IsVariant()) {
+            canContinue = CompareVariants(typeRefA, typeRefB);
+        } else {
+            switch (encodingA)
+            {
             case kEncoding_Boolean:
                 canContinue = CompareBooleans(typeRefA, typeRefB);
                 break;
@@ -61,9 +64,18 @@ namespace Vireo
                 break;
             default:
                 _areEqual = false;
+            }
         }
         return canContinue;
     };
+
+    //------------------------------------------------------------
+    bool TwoTypeEqual::CompareVariants(TypeRef typeRefA, TypeRef typeRefB)
+    {
+        TypeRef variantInnerTypeA = *static_cast<TypeRef*>(typeRefA->Begin(kPARead));
+        TypeRef variantInnerTypeB = *static_cast<TypeRef*>(typeRefB->Begin(kPARead));
+        return (!variantInnerTypeA && !variantInnerTypeB) || Apply(variantInnerTypeA, variantInnerTypeB);
+    }
 
     //------------------------------------------------------------
     bool TwoTypeEqual::CompareBooleans(TypeRef typeRefA, TypeRef typeRefB)
@@ -79,35 +91,35 @@ namespace Vireo
     {
         if (typeRefA->TopAQSize() == typeRefB->TopAQSize()) {
             switch (typeRefA->TopAQSize()) {
-                case 0:
-                    _areEqual = true;
+            case 0:
+                _areEqual = true;
+                break;
+            case 1: {
+                UInt8 uInt8ValueA = *static_cast<UInt8*>(typeRefA->Begin(kPARead));
+                UInt8 uInt8ValueB = *static_cast<UInt8*>(typeRefB->Begin(kPARead));
+                _areEqual = (uInt8ValueA == uInt8ValueB);
+            }
                     break;
-                case 1: {
-                        UInt8 uInt8ValueA = *static_cast<UInt8*>(typeRefA->Begin(kPARead));
-                        UInt8 uInt8ValueB = *static_cast<UInt8*>(typeRefB->Begin(kPARead));
-                        _areEqual = (uInt8ValueA == uInt8ValueB);
-                    }
+            case 2: {
+                UInt16 uInt16ValueA = *static_cast<UInt16*>(typeRefA->Begin(kPARead));
+                UInt16 uInt16ValueB = *static_cast<UInt16*>(typeRefB->Begin(kPARead));
+                _areEqual = (uInt16ValueA == uInt16ValueB);
+            }
                     break;
-                case 2: {
-                        UInt16 uInt16ValueA = *static_cast<UInt16*>(typeRefA->Begin(kPARead));
-                        UInt16 uInt16ValueB = *static_cast<UInt16*>(typeRefB->Begin(kPARead));
-                        _areEqual = (uInt16ValueA == uInt16ValueB);
-                    }
+            case 4: {
+                UInt32 uInt32ValueA = *static_cast<UInt32*>(typeRefA->Begin(kPARead));
+                UInt32 uInt32ValueB = *static_cast<UInt32*>(typeRefB->Begin(kPARead));
+                _areEqual = (uInt32ValueA == uInt32ValueB);
+            }
                     break;
-                case 4: {
-                        UInt32 uInt32ValueA = *static_cast<UInt32*>(typeRefA->Begin(kPARead));
-                        UInt32 uInt32ValueB = *static_cast<UInt32*>(typeRefB->Begin(kPARead));
-                        _areEqual = (uInt32ValueA == uInt32ValueB);
-                    }
+            case 8: {
+                UInt64 uInt64ValueA = *static_cast<UInt64*>(typeRefA->Begin(kPARead));
+                UInt64 uInt64ValueB = *static_cast<UInt64*>(typeRefB->Begin(kPARead));
+                _areEqual = (uInt64ValueA == uInt64ValueB);
+            }
                     break;
-                case 8: {
-                        UInt64 uInt64ValueA = *static_cast<UInt64*>(typeRefA->Begin(kPARead));
-                        UInt64 uInt64ValueB = *static_cast<UInt64*>(typeRefB->Begin(kPARead));
-                        _areEqual = (uInt64ValueA == uInt64ValueB);
-                    }
-                    break;
-                default:
-                    _areEqual = false;
+            default:
+                _areEqual = false;
             }
         }
         else {
@@ -125,29 +137,29 @@ namespace Vireo
                 _areEqual = true;
                 break;
             case 1: {
-                    Int8 int8ValueA = *static_cast<Int8*>(typeRefA->Begin(kPARead));
-                    Int8 int8ValueB = *static_cast<Int8*>(typeRefB->Begin(kPARead));
-                    _areEqual = (int8ValueA == int8ValueB);
-                }
-                break;
+                Int8 int8ValueA = *static_cast<Int8*>(typeRefA->Begin(kPARead));
+                Int8 int8ValueB = *static_cast<Int8*>(typeRefB->Begin(kPARead));
+                _areEqual = (int8ValueA == int8ValueB);
+            }
+                    break;
             case 2: {
-                    Int16 int16ValueA = *static_cast<Int16*>(typeRefA->Begin(kPARead));
-                    Int16 int16ValueB = *static_cast<Int16*>(typeRefB->Begin(kPARead));
-                    _areEqual = (int16ValueA == int16ValueB);
-                }
-                break;
+                Int16 int16ValueA = *static_cast<Int16*>(typeRefA->Begin(kPARead));
+                Int16 int16ValueB = *static_cast<Int16*>(typeRefB->Begin(kPARead));
+                _areEqual = (int16ValueA == int16ValueB);
+            }
+                    break;
             case 4: {
-                    Int32 int32ValueA = *static_cast<Int32*>(typeRefA->Begin(kPARead));
-                    Int32 int32ValueB = *static_cast<Int32*>(typeRefB->Begin(kPARead));
-                    _areEqual = (int32ValueA == int32ValueB);
-                }
-                break;
+                Int32 int32ValueA = *static_cast<Int32*>(typeRefA->Begin(kPARead));
+                Int32 int32ValueB = *static_cast<Int32*>(typeRefB->Begin(kPARead));
+                _areEqual = (int32ValueA == int32ValueB);
+            }
+                    break;
             case 8: {
-                    Int64 int64ValueA = *static_cast<Int64*>(typeRefA->Begin(kPARead));
-                    Int64 int64ValueB = *static_cast<Int64*>(typeRefB->Begin(kPARead));
-                    _areEqual = (int64ValueA == int64ValueB);
-                }
-                break;
+                Int64 int64ValueA = *static_cast<Int64*>(typeRefA->Begin(kPARead));
+                Int64 int64ValueB = *static_cast<Int64*>(typeRefB->Begin(kPARead));
+                _areEqual = (int64ValueA == int64ValueB);
+            }
+                    break;
             default:
                 _areEqual = false;
             }
@@ -183,7 +195,26 @@ namespace Vireo
     bool TwoTypeEqual::CompareClusters(TypeRef typeRefA, TypeRef typeRefB)
     {
         _areEqual = false;
-        return false;
+        SubString typeAName, typeBName;
+        Boolean isTypeAIntrinsicClusterType = typeRefA->IsIntrinsicClusterDataType(&typeAName);
+        Boolean isTypeBIntrinsicClusterType = typeRefB->IsIntrinsicClusterDataType(&typeBName);
+        if (isTypeAIntrinsicClusterType && isTypeBIntrinsicClusterType) {
+            bool dataEqual = true; // todo compare data?
+            if (typeAName.Compare(&typeBName) && dataEqual) {
+                return true;
+            }
+        } else if (!isTypeAIntrinsicClusterType && !isTypeBIntrinsicClusterType) {
+            if (typeRefA->SubElementCount() == typeRefB->SubElementCount()) {
+                for (Int32 i = 0; i < typeRefA->SubElementCount(); i++) {
+                    if (!Apply(typeRefA->GetSubElement(i), typeRefB->GetSubElement(i))) {
+                        _areEqual = false;
+                        return false;
+                    }
+                }
+                _areEqual = true;
+            }
+        }
+        return _areEqual;
     }
 
     //------------------------------------------------------------
