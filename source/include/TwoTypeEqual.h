@@ -33,7 +33,8 @@ class TwoTypeEqual : public TwoTypeOperation {
     bool CompareUInts(TypeRef typeRefA, TypeRef typeRefB);
     bool CompareS2CInts(TypeRef typeRefA, TypeRef typeRefB);
     bool CompareIEEE754Binaries(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareClusters(TypeRef typeRefA, TypeRef typeRefB);
+    bool CompareIntrinsicClusters(TypeRef typeRefA, TypeRef typeRefB);
+    bool CompareUserDefinedClusters(TypeRef typeRefA, TypeRef typeRefB);
     bool CompareArrays(TypeRef typeRefA, TypeRef typeRefB);
 };
 

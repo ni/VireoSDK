@@ -1017,6 +1017,30 @@ Boolean TypeCommon::IsComplex()
     return false;
 }
 //------------------------------------------------------------
+Boolean TypeCommon::IsComplexSingle()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeComplexSingle)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsComplexDouble()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeComplexDouble)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
 Boolean TypeCommon::IsJavaScriptRefNum()
 {
     TypeRef t = this;
