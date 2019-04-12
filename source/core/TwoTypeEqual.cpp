@@ -11,6 +11,8 @@ SDG
 */
 
 #include "TwoTypeEqual.h"
+#include "Timestamp.h"
+#include <complex>
 
 namespace Vireo
 {
@@ -57,8 +59,18 @@ namespace Vireo
                 // TODO
                 break;
             case kEncoding_Cluster:
-                canContinue = CompareClusters(typeRefA, typeRefB);
+            {
+                canContinue = false;
+                SubString typeAName, typeBName;
+                Boolean isTypeAIntrinsicClusterType = typeRefA->IsIntrinsicClusterDataType(&typeAName);
+                Boolean isTypeBIntrinsicClusterType = typeRefB->IsIntrinsicClusterDataType(&typeBName);
+                if (isTypeAIntrinsicClusterType && isTypeBIntrinsicClusterType) {
+                    canContinue = CompareIntrinsicClusters(typeRefA, typeRefB);
+                } else if (!isTypeAIntrinsicClusterType && !isTypeBIntrinsicClusterType) {
+                    canContinue = CompareUserDefinedClusters(typeRefA, typeRefB);
+                }
                 break;
+            }
             case kEncoding_Array:
                 canContinue = CompareArrays(typeRefA, typeRefB);
                 break;
@@ -192,27 +204,44 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::CompareClusters(TypeRef typeRefA, TypeRef typeRefB)
+    bool TwoTypeEqual::CompareIntrinsicClusters(TypeRef typeRefA, TypeRef typeRefB)
     {
         _areEqual = false;
         SubString typeAName, typeBName;
         Boolean isTypeAIntrinsicClusterType = typeRefA->IsIntrinsicClusterDataType(&typeAName);
         Boolean isTypeBIntrinsicClusterType = typeRefB->IsIntrinsicClusterDataType(&typeBName);
-        if (isTypeAIntrinsicClusterType && isTypeBIntrinsicClusterType) {
-            bool dataEqual = true; // todo compare data?
-            if (typeAName.Compare(&typeBName) && dataEqual) {
-                return true;
-            }
-        } else if (!isTypeAIntrinsicClusterType && !isTypeBIntrinsicClusterType) {
-            if (typeRefA->SubElementCount() == typeRefB->SubElementCount()) {
-                for (Int32 i = 0; i < typeRefA->SubElementCount(); i++) {
-                    if (!Apply(typeRefA->GetSubElement(i), typeRefB->GetSubElement(i))) {
-                        _areEqual = false;
-                        return false;
-                    }
+        if (!typeAName.Compare(&typeBName)) {
+            return false;
+        }
+
+        if (typeRefA->IsTimestamp()) {
+            Timestamp dataA = *static_cast<Timestamp*>(typeRefA->Begin(kPARead));
+            Timestamp dataB = *static_cast<Timestamp*>(typeRefB->Begin(kPARead));
+            _areEqual = (dataA == dataB);
+        } else if (typeRefA->IsComplexSingle()) {
+            std::complex<Single> dataA = *static_cast<std::complex<Single>*>(typeRefA->Begin(kPARead));
+            std::complex<Single> dataB = *static_cast<std::complex<Single>*>(typeRefB->Begin(kPARead));
+            _areEqual = (dataA == dataB);
+        } else if (typeRefA->IsComplexDouble()) {
+            std::complex<Double> dataA = *static_cast<std::complex<Double>*>(typeRefA->Begin(kPARead));
+            std::complex<Double> dataB = *static_cast<std::complex<Double>*>(typeRefB->Begin(kPARead));
+            _areEqual = (dataA == dataB);
+        }
+        return _areEqual;
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeEqual::CompareUserDefinedClusters(TypeRef typeRefA, TypeRef typeRefB)
+    {
+        _areEqual = false;
+        if (typeRefA->SubElementCount() == typeRefB->SubElementCount()) {
+            for (Int32 i = 0; i < typeRefA->SubElementCount(); i++) {
+                if (!Apply(typeRefA->GetSubElement(i), typeRefB->GetSubElement(i))) {
+                    _areEqual = false;
+                    return false;
                 }
-                _areEqual = true;
             }
+            _areEqual = true;
         }
         return _areEqual;
     }
