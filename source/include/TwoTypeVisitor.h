@@ -19,16 +19,23 @@ SDG
 
 namespace Vireo {
 
-//! This class manages the traversal of two similar types as long as they share the same structure
-//! Applies the TwoTypeOperation and continues visiting if the operation allows the visitor to continue
-class TwoTypeVisitor {
- public:
-    TwoTypeVisitor() = default;
+    //! This class manages the traversal of two similar types as long as they share the same structure
+    //! Applies the TwoTypeOperation and continues visiting if the operation allows the visitor to continue
+    class TwoTypeVisitor {
+    public:
+        TwoTypeVisitor() = default;
+        bool Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
 
-    bool Visit(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation* operation);
-};
+    private:
+        bool TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation);
+        bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
+        bool VariantCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation);
+        bool ClusterCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation);
+        bool IntrinsicClustersCompatible(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation* operation);
+        bool UserDefinedClustersCompatible(TypeRef typeRefA, TypeRef typeRefB, TwoTypeOperation* operation);
+        bool ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation);
+    };
 
 }  // namespace Vireo
 
 #endif
-

@@ -18,27 +18,24 @@ SDG
 
 namespace Vireo {
 
-class TwoTypeEqual : public TwoTypeOperation {
- private:
-    bool _areEqual = true;
+    class TwoTypeEqual : public TwoTypeOperation {
+    public:
+        TwoTypeEqual();
 
- public:
-    TwoTypeEqual();
-    bool Apply(TypeRef typeRefA, TypeRef typeRefB) override;
-    bool AreEqual() { return _areEqual; }
+        bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) override;
+        bool BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+        bool UIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+        bool S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+        bool IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
 
- private:
-    bool CompareVariants(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareBooleans(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareUInts(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareS2CInts(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareIEEE754Binaries(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareIntrinsicClusters(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareUserDefinedClusters(TypeRef typeRefA, TypeRef typeRefB);
-    bool CompareArrays(TypeRef typeRefA, TypeRef typeRefB);
-};
+    private:
+        bool TypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
+        bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+        bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+        bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+        bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+    };
 
 }  // namespace Vireo
 
 #endif
-
