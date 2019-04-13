@@ -4,6 +4,7 @@
 //VI Definition: ::Web Server::Interactive::Application::Variant_SetGetAttributes_ExpectedResults.gviweb
 define (Application%3A%3AVariant_SetGetAttributes_ExpectedResults%2Egviweb dv(.VirtualInstrument (
     Locals: c(   // Data Space
+
         ce(dv(.Int32 1) int32A)
         ce(dv(.Int32 2) int32B)
         e(.Variant variantUInt32A)
@@ -16,9 +17,17 @@ define (Application%3A%3AVariant_SetGetAttributes_ExpectedResults%2Egviweb dv(.V
         e(.Variant variantArrayOfInt32B)
         e(.Boolean int32ArrayVariantsAreEqual)
 
-        ce(dv(.String 'VARIANT') stringA)
-        ce(dv(.String 'VARIANT2') stringB)
+    	e(dv(a(.UInt32 * * *) (((111 112 113)(121 122 123))((211 212 213)(221 222 223)))) arrayX3d)
+        e(dv(a(.UInt32 * * *) (((111 112 113)(121 122 123))((211 212 213)(221 222 223)))) arrayY3d)
+        e(.Variant variantX3d)
+        e(.Variant variantY3d)
+        e(.Boolean arrayVariants3DAreEqual)
 
+        ce(dv(.String 'VARIANT') stringX)
+        ce(dv(.String 'VARIANT2') stringY)
+        e(.Variant variantStringX)
+        e(.Variant variantStringY)
+        e(.Boolean stringVariantsAreEqual)
     )
         clump(1
         // UInt32 tests
@@ -27,11 +36,23 @@ define (Application%3A%3AVariant_SetGetAttributes_ExpectedResults%2Egviweb dv(.V
         // IsEQ(variantUInt32A variantUInt32B uInt32VariantsAreEqual)
         // Printf("uInt32VariantsAreEqual = %z\n" uInt32VariantsAreEqual)
 
-        // Arrays of Int32 tests
-        DataToVariant(arrayA variantArrayOfInt32A)
-        DataToVariant(arrayB variantArrayOfInt32B)
-        IsEQ(variantArrayOfInt32A variantArrayOfInt32B int32ArrayVariantsAreEqual)
-        Printf("int32ArrayVariantsAreEqual = %z\n" int32ArrayVariantsAreEqual)
+        // 1D Array Int32 tests
+        // DataToVariant(arrayA variantArrayOfInt32A)
+        // DataToVariant(arrayB variantArrayOfInt32B)
+        // IsEQ(variantArrayOfInt32A variantArrayOfInt32B int32ArrayVariantsAreEqual)
+        // Printf("int32ArrayVariantsAreEqual = %z\n" int32ArrayVariantsAreEqual)
+
+        // 3D Array Int32 tests
+        // DataToVariant(arrayX3d variantX3d)
+        // DataToVariant(arrayY3d variantY3d)
+        // IsEQ(variantX3d variantY3d arrayVariants3DAreEqual)
+        // Printf("arrayVariants3DAreEqual = %z\n" arrayVariants3DAreEqual)
+
+        // 3D Array Int32 tests
+        DataToVariant(stringX variantStringX)
+        DataToVariant(stringY variantStringY)
+        IsEQ(variantStringX variantStringY stringVariantsAreEqual)
+        Printf("stringVariantsAreEqual = %z\n" stringVariantsAreEqual)
 
         // Code End
 /* Clump Ended. */    )

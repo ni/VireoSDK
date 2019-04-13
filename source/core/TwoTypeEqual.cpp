@@ -11,6 +11,7 @@ SDG
 */
 
 #include "TwoTypeEqual.h"
+#include "Platform.h"
 
 namespace Vireo
 {
@@ -24,23 +25,29 @@ namespace Vireo
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();
         bool success = false;
-        switch (encodingX)
-        {
-        case kEncoding_Boolean:
-            success = ApplyBooleans(typeRefX, pDataX, typeRefY, pDataY);
-            break;
-        case kEncoding_UInt:
-            success = ApplyUInts(typeRefX, pDataX, typeRefY, pDataY);
-            break;
-        case kEncoding_S2CInt:
-            success = ApplyS2CInts(typeRefX, pDataX, typeRefY, pDataY);
-            break;
-        case kEncoding_IEEE754Binary:
-            success = ApplyIEEE754Binaries(typeRefX, pDataX, typeRefY, pDataY);
-            break;
+        switch (encodingX) {
+            case kEncoding_Boolean:
+                success = ApplyBooleans(typeRefX, pDataX, typeRefY, pDataY);
+                break;
+            case kEncoding_UInt:
+                success = ApplyUInts(typeRefX, pDataX, typeRefY, pDataY);
+                break;
+            case kEncoding_S2CInt:
+                success = ApplyS2CInts(typeRefX, pDataX, typeRefY, pDataY);
+                break;
+            case kEncoding_IEEE754Binary:
+                success = ApplyIEEE754Binaries(typeRefX, pDataX, typeRefY, pDataY);
+                break;
         }
         return success;
-    };
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeEqual::Apply(StringRef stringRefX, StringRef stringRefY)
+    {
+        bool success = stringRefX->IsEqual(stringRefY);
+        return success;
+    }
 
     //------------------------------------------------------------
     bool TwoTypeEqual::ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
@@ -56,33 +63,34 @@ namespace Vireo
     {
         bool areEqual = false;
         switch (typeRefX->TopAQSize()) {
-        case 0:
-            areEqual = true;
-            break;
-        case 1: {
-            UInt8 uInt8ValueX = *static_cast<UInt8*>(pDataX);
-            UInt8 uInt8ValueY = *static_cast<UInt8*>(pDataY);
-            areEqual = (uInt8ValueX == uInt8ValueY);
-            break;
-        }
-        case 2: {
-            UInt16 uInt16ValueX = *static_cast<UInt16*>(pDataX);
-            UInt16 uInt16ValueY = *static_cast<UInt16*>(pDataY);
-            areEqual = (uInt16ValueX == uInt16ValueY);
-            break;
-        }
-        case 4: {
-            UInt32 uInt32ValueX = *static_cast<UInt32*>(pDataX);
-            UInt32 uInt32ValueY = *static_cast<UInt32*>(pDataY);
-            areEqual = (uInt32ValueX == uInt32ValueY);
-            break;
-        }
-        case 8: {
-            UInt64 uInt64ValueX = *static_cast<UInt64*>(pDataX);
-            UInt64 uInt64ValueY = *static_cast<UInt64*>(pDataY);
-            areEqual = (uInt64ValueX == uInt64ValueY);
-            break;
-        }
+            case 0:
+                areEqual = true;
+                break;
+            case 1: {
+                UInt8 uInt8ValueX = *static_cast<UInt8*>(pDataX);
+                UInt8 uInt8ValueY = *static_cast<UInt8*>(pDataY);
+                areEqual = (uInt8ValueX == uInt8ValueY);
+                break;
+            }
+            case 2: {
+                UInt16 uInt16ValueX = *static_cast<UInt16*>(pDataX);
+                UInt16 uInt16ValueY = *static_cast<UInt16*>(pDataY);
+                areEqual = (uInt16ValueX == uInt16ValueY);
+                break;
+            }
+            case 4: {
+                UInt32 uInt32ValueX = *static_cast<UInt32*>(pDataX);
+                UInt32 uInt32ValueY = *static_cast<UInt32*>(pDataY);
+                areEqual = (uInt32ValueX == uInt32ValueY);
+                // gPlatform.IO.Printf("are %d and %d equal? %s\n", uInt32ValueX, uInt32ValueY, areEqual ? "true" : "false");
+                break;
+            }
+            case 8: {
+                UInt64 uInt64ValueX = *static_cast<UInt64*>(pDataX);
+                UInt64 uInt64ValueY = *static_cast<UInt64*>(pDataY);
+                areEqual = (uInt64ValueX == uInt64ValueY);
+                break;
+            }
         }
         return areEqual;
     }
@@ -92,33 +100,33 @@ namespace Vireo
     {
         bool areEqual = false;
         switch (typeRefX->TopAQSize()) {
-        case 0:
-            areEqual = true;
-            break;
-        case 1: {
-            Int8 int8ValueX = *static_cast<Int8*>(pDataX);
-            Int8 int8ValueY = *static_cast<Int8*>(pDataY);
-            areEqual = (int8ValueX == int8ValueY);
-            break;
-        }
-        case 2: {
-            Int16 int16ValueX = *static_cast<Int16*>(pDataX);
-            Int16 int16ValueY = *static_cast<Int16*>(pDataY);
-            areEqual = (int16ValueX == int16ValueY);
-            break;
-        }
-        case 4: {
-            Int32 int32ValueX = *static_cast<Int32*>(pDataX);
-            Int32 int32ValueY = *static_cast<Int32*>(pDataY);
-            areEqual = (int32ValueX == int32ValueY);
-            break;
-        }
-        case 8: {
-            Int64 int64ValueX = *static_cast<Int64*>(pDataX);
-            Int64 int64ValueY = *static_cast<Int64*>(pDataY);
-            areEqual = (int64ValueX == int64ValueY);
-            break;
-        }
+            case 0:
+                areEqual = true;
+                break;
+            case 1: {
+                Int8 int8ValueX = *static_cast<Int8*>(pDataX);
+                Int8 int8ValueY = *static_cast<Int8*>(pDataY);
+                areEqual = (int8ValueX == int8ValueY);
+                break;
+            }
+            case 2: {
+                Int16 int16ValueX = *static_cast<Int16*>(pDataX);
+                Int16 int16ValueY = *static_cast<Int16*>(pDataY);
+                areEqual = (int16ValueX == int16ValueY);
+                break;
+            }
+            case 4: {
+                Int32 int32ValueX = *static_cast<Int32*>(pDataX);
+                Int32 int32ValueY = *static_cast<Int32*>(pDataY);
+                areEqual = (int32ValueX == int32ValueY);
+                break;
+            }
+            case 8: {
+                Int64 int64ValueX = *static_cast<Int64*>(pDataX);
+                Int64 int64ValueY = *static_cast<Int64*>(pDataY);
+                areEqual = (int64ValueX == int64ValueY);
+                break;
+            }
         }
         return areEqual;
     }
@@ -173,8 +181,8 @@ namespace Vireo
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();
         EncodingEnum encodingY = typeRefY->BitEncoding();
-        bool sameEnconding = (encodingX == encodingY);
+        bool sameEncoding = (encodingX == encodingY);
         bool sameSize = typeRefX->TopAQSize() == typeRefY->TopAQSize();
-        return sameEnconding && sameSize;
+        return sameEncoding && sameSize;
     }
 };  // namespace Vireo
