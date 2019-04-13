@@ -17,25 +17,22 @@ SDG
 #include "TwoTypeOperation.h"
 
 namespace Vireo {
-
-    class TwoTypeEqual : public TwoTypeOperation {
-    public:
-        TwoTypeEqual();
-
-        bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) override;
-        bool BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-        bool UIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-        bool S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-        bool IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-
-    private:
-        bool TypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
-        bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-        bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-        bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-        bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-    };
-
+class TwoTypeEqual : public TwoTypeOperation {
+ public:
+    TwoTypeEqual();
+    bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) override;
+    bool Apply(StringRef stringRefX, StringRef stringRefY) override;
+    bool BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool UIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+ private:
+    bool TypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
+    bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+    bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+    bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+    bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+};
 }  // namespace Vireo
 
 #endif
