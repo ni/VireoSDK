@@ -38,6 +38,9 @@ namespace Vireo
             case kEncoding_IEEE754Binary:
                 success = ApplyIEEE754Binaries(typeRefX, pDataX, typeRefY, pDataY);
                 break;
+            case kEncoding_Enum:
+                success = ApplyUInts(typeRefX, pDataX, typeRefY, pDataY);
+                break;
             default:
                 break;
         }
