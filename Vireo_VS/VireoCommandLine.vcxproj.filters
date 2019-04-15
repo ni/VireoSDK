@@ -133,13 +133,13 @@
     <ClCompile Include="..\source\core\Variants.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\core\TwoTypeOperation.cpp">
+    <ClCompile Include="..\source\core\DualTypeEqual.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\core\TwoTypeVisitor.cpp">
+    <ClCompile Include="..\source\core\DualTypeOperation.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\core\TwoTypeEqual.cpp">
+    <ClCompile Include="..\source\core\DualTypeVisitor.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
   </ItemGroup>
@@ -268,13 +268,13 @@
     <ClInclude Include="..\source\include\Variants.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\TwoTypeOperation.h">
+    <ClInclude Include="..\source\include\DualTypeVisitor.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\TwoTypeVisitor.h">
+    <ClInclude Include="..\source\include\DualTypeOperation.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\include\TwoTypeEqual.h">
+    <ClInclude Include="..\source\include\DualTypeEqual.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>
