@@ -50,6 +50,9 @@ namespace Vireo
                 case kEncoding_Cluster:
                     success = ClusterCompatible(typeRefX, typeRefY, operation);
                     break;
+                case kEncoding_Enum:
+                    success = EnumCompatible(typeRefX, typeRefY, operation);
+                    break;
                 case kEncoding_Array: {
                     if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode)
                         success = StringCompatible(typeRefX, typeRefY);
@@ -116,6 +119,13 @@ namespace Vireo
                 i++;
             }
         }
+        return success;
+    }
+
+    //------------------------------------------------------------
+    bool DualTypeVisitor::EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    {
+        bool success = TypesAreCompatible(typeRefX->GetSubElement(0), typeRefY->GetSubElement(0), operation);
         return success;
     }
 
@@ -198,42 +208,6 @@ namespace Vireo
 
     //------------------------------------------------------------
     bool DualTypeVisitor::ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
-    {
-        bool success = false;
-        SubString typeXName, typeYName;
-        Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
-        Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
-        if (isTypeXIntrinsicClusterType && isTypeYIntrinsicClusterType) {
-            success = ApplyIntrinsicClusters(typeRefX, pDataX, typeRefY, pDataY, operation);
-        }
-        else if (!isTypeXIntrinsicClusterType && !isTypeYIntrinsicClusterType) {
-            success = ApplyUserDefinedClusters(typeRefX, pDataX, typeRefY, pDataY, operation);
-        }
-        return success;
-    }
-
-    //------------------------------------------------------------
-    bool DualTypeVisitor::ApplyIntrinsicClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
-    {
-        bool success = false;
-        if (typeRefX->IsTimestamp()) {
-            Timestamp* timestampX = static_cast<Timestamp*>(pDataX);
-            Timestamp* timestampY = static_cast<Timestamp*>(pDataY);
-            success = operation->Apply(timestampX, timestampY);
-        } else if (typeRefX->IsComplexSingle()){
-            std::complex<Single>* compleSingleX = static_cast<std::complex<Single>*>(pDataX);
-            std::complex<Single>* compleSingleY = static_cast<std::complex<Single>*>(pDataY);
-            success = operation->Apply(compleSingleX, compleSingleY);
-        } else if (typeRefX->IsComplexDouble()) {
-            std::complex<Double>* compleDoubleX = static_cast<std::complex<Double>*>(pDataX);
-            std::complex<Double>* compleSingleY = static_cast<std::complex<Double>*>(pDataY);
-            success = operation->Apply(compleDoubleX, compleSingleY);
-        }
-        return success;
-    }
-
-    //------------------------------------------------------------
-    bool DualTypeVisitor::ApplyUserDefinedClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = true;
         IntIndex i = 0;

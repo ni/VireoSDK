@@ -29,6 +29,7 @@ class DualTypeVisitor {
     bool TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
     bool VariantCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
     bool ClusterCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
+    bool EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
     bool IntrinsicClustersCompatible(TypeRef typeRefA, TypeRef typeRefB, DualTypeOperation* operation);
     bool UserDefinedClustersCompatible(TypeRef typeRefA, TypeRef typeRefB, DualTypeOperation* operation);
     bool StringCompatible(TypeRef typeRefX, TypeRef typeRefY);
@@ -37,8 +38,6 @@ class DualTypeVisitor {
     bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ApplyIntrinsicClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ApplyUserDefinedClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool ApplyString(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool ApplyArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
 };
