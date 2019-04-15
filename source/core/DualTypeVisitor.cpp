@@ -54,10 +54,11 @@ namespace Vireo
                     success = EnumCompatible(typeRefX, typeRefY, operation);
                     break;
                 case kEncoding_Array: {
-                    if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode)
+                    if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode) {
                         success = StringCompatible(typeRefX, typeRefY);
-                    else 
+                    } else {
                         success = ArrayCompatible(typeRefX, typeRefY, operation);
+                    }
                     break;
                 }
                 default:
@@ -167,8 +168,7 @@ namespace Vireo
         bool success = false;
         if (typeRefX->IsVariant() && typeRefY->IsVariant()) {
             success = ApplyVariant(typeRefX, pDataX, typeRefY, pDataY, operation);
-        }
-        else {
+        } else {
             EncodingEnum encodingX = typeRefX->BitEncoding();
             switch (encodingX)
             {
