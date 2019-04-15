@@ -108,6 +108,7 @@ namespace Vireo
             IntIndex i = 0;
             while (success && i < typeRefX->SubElementCount()) {
                 success = TypesAreCompatible(typeRefX->GetSubElement(i), typeRefY->GetSubElement(i), operation);
+                i++;
             }
         }
         return success;
@@ -175,13 +176,66 @@ namespace Vireo
     //------------------------------------------------------------
     bool TwoTypeVisitor::ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
     {
-        return false;
+        TypeRef variantInnerTypeX = *static_cast<TypeRef*>(typeRefX->Begin(kPARead));
+        TypeRef variantInnerTypeY = *static_cast<TypeRef*>(typeRefY->Begin(kPARead));
+        pDataX = typeRefX->Begin(kPARead);
+        pDataY = typeRefY->Begin(kPARead);
+        bool success = Apply(variantInnerTypeX, pDataX, variantInnerTypeY, pDataY, operation);
+        return success;
     }
 
     //------------------------------------------------------------
     bool TwoTypeVisitor::ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
     {
-        return false;
+        bool success = false;
+        SubString typeXName, typeYName;
+        Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
+        Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
+        if (isTypeXIntrinsicClusterType && isTypeYIntrinsicClusterType) {
+            success = ApplyIntrinsicClusters(typeRefX, pDataX, typeRefY, pDataY, operation);
+        }
+        else if (!isTypeXIntrinsicClusterType && !isTypeYIntrinsicClusterType) {
+            success = ApplyUserDefinedClusters(typeRefX, pDataX, typeRefY, pDataY, operation);
+        }
+        return success;
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeVisitor::ApplyIntrinsicClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    {
+        bool success = false;
+        if (typeRefX->IsTimestamp()) {
+            Timestamp* timestampX = static_cast<Timestamp*>(pDataX);
+            Timestamp* timestampY = static_cast<Timestamp*>(pDataY);
+            success = operation->Apply(timestampX, timestampY);
+        } else if (typeRefX->IsComplexSingle()){
+            std::complex<Single>* compleSingleX = static_cast<std::complex<Single>*>(pDataX);
+            std::complex<Single>* compleSingleY = static_cast<std::complex<Single>*>(pDataY);
+            success = operation->Apply(compleSingleX, compleSingleY);
+        } else if (typeRefX->IsComplexDouble()) {
+            std::complex<Double>* compleDoubleX = static_cast<std::complex<Double>*>(pDataX);
+            std::complex<Double>* compleSingleY = static_cast<std::complex<Double>*>(pDataY);
+            success = operation->Apply(compleDoubleX, compleSingleY);
+        }
+        return success;
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeVisitor::ApplyUserDefinedClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    {
+        bool success = true;
+        IntIndex i = 0;
+        while (success && i < typeRefX->SubElementCount()) {
+            TypeRef elementXType = typeRefX->GetSubElement(i);
+            TypeRef elementYType = typeRefY->GetSubElement(i);
+            IntIndex fieldOffsetX = elementXType->ElementOffset();
+            IntIndex fieldOffsetY = elementYType->ElementOffset();
+            AQBlock1* pDataXElement = static_cast<AQBlock1*>(pDataX) + fieldOffsetX;
+            AQBlock1* pDataYElement = static_cast<AQBlock1*>(pDataY) + fieldOffsetY;
+            success = Apply(elementXType, pDataXElement, elementYType, pDataYElement, operation);
+            i++;
+        }
+        return success;
     }
 
     //------------------------------------------------------------
