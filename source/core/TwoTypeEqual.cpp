@@ -45,8 +45,29 @@ namespace Vireo
     //------------------------------------------------------------
     bool TwoTypeEqual::Apply(StringRef stringRefX, StringRef stringRefY)
     {
-        bool success = stringRefX->IsEqual(stringRefY);
-        return success;
+        bool areEqual = stringRefX->IsEqual(stringRefY);
+        return areEqual;
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeEqual::Apply(Timestamp* timestampX, Timestamp* timestampY)
+    {
+        bool areEqual = (*timestampX == *timestampY);
+        return areEqual;
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeEqual::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY)
+    {
+        bool areEqual = (*complexSingleX == *complexSingleY);
+        return areEqual;
+    }
+
+    //------------------------------------------------------------
+    bool TwoTypeEqual::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY)
+    {
+        bool areEqual = (*complexDoubleX == *complexDoubleY);
+        return areEqual;
     }
 
     //------------------------------------------------------------
@@ -82,7 +103,6 @@ namespace Vireo
                 UInt32 uInt32ValueX = *static_cast<UInt32*>(pDataX);
                 UInt32 uInt32ValueY = *static_cast<UInt32*>(pDataY);
                 areEqual = (uInt32ValueX == uInt32ValueY);
-                // gPlatform.IO.Printf("are %d and %d equal? %s\n", uInt32ValueX, uInt32ValueY, areEqual ? "true" : "false");
                 break;
             }
             case 8: {
@@ -119,6 +139,7 @@ namespace Vireo
                 Int32 int32ValueX = *static_cast<Int32*>(pDataX);
                 Int32 int32ValueY = *static_cast<Int32*>(pDataY);
                 areEqual = (int32ValueX == int32ValueY);
+                // gPlatform.IO.Printf("are %d and %d equal? %s\n", int32ValueX, int32ValueY, areEqual ? "true" : "false");
                 break;
             }
             case 8: {

@@ -37,6 +37,8 @@ class TwoTypeVisitor {
     bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
     bool ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
     bool ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
+    bool ApplyIntrinsicClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
+    bool ApplyUserDefinedClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
     bool ApplyString(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
     bool ApplyArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation);
 };

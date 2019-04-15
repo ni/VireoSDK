@@ -14,6 +14,8 @@ SDG
 #define TwoTypeOperation_h
 
 #include "TypeDefiner.h"
+#include "Timestamp.h"
+#include <complex>
 
 namespace Vireo {
 class TwoTypeOperation {
@@ -22,6 +24,9 @@ class TwoTypeOperation {
 
     virtual bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) = 0;
     virtual bool Apply(StringRef stringRefX, StringRef stringRefY) = 0;
+    virtual bool Apply(Timestamp* timestampX, Timestamp* timestampY) = 0;
+    virtual bool Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY) = 0;
+    virtual bool Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY) = 0;
     virtual bool BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
     virtual bool UIntCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
     virtual bool S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;

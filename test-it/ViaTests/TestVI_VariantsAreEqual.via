@@ -28,6 +28,20 @@ define (Application%3A%3AVariant_SetGetAttributes_ExpectedResults%2Egviweb dv(.V
         e(.Variant variantStringX)
         e(.Variant variantStringY)
         e(.Boolean stringVariantsAreEqual)
+
+        e(c(
+            e(dv(.Int32 1) n1)
+            e(dv(.Int32 2) n2)
+            e(dv(.Int32 3) n3)
+        ) clusterX)
+        e(c(
+            e(dv(.Int32 4) n1)
+            e(dv(.Int32 5) n2)
+            e(dv(.Int32 6) n3)
+        ) clusterY)
+        e(.Variant variantClusterX)
+        e(.Variant variantClusterY)
+        e(.Boolean clusterVariantsAreEqual)
     )
         clump(1
         // UInt32 tests
@@ -49,10 +63,16 @@ define (Application%3A%3AVariant_SetGetAttributes_ExpectedResults%2Egviweb dv(.V
         // Printf("arrayVariants3DAreEqual = %z\n" arrayVariants3DAreEqual)
 
         // 3D Array Int32 tests
-        DataToVariant(stringX variantStringX)
-        DataToVariant(stringY variantStringY)
-        IsEQ(variantStringX variantStringY stringVariantsAreEqual)
-        Printf("stringVariantsAreEqual = %z\n" stringVariantsAreEqual)
+        // DataToVariant(stringX variantStringX)
+        // DataToVariant(stringY variantStringY)
+        // IsEQ(variantStringX variantStringY stringVariantsAreEqual)
+        // Printf("stringVariantsAreEqual = %z\n" stringVariantsAreEqual)
+
+        // Cluster Int32 tests
+        DataToVariant(clusterX variantClusterX)
+        DataToVariant(clusterY variantClusterY)
+        IsEQ(variantClusterX variantClusterY clusterVariantsAreEqual)
+        Printf("clusterVariantsAreEqual = %z\n" clusterVariantsAreEqual)
 
         // Code End
 /* Clump Ended. */    )
