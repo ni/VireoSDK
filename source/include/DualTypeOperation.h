@@ -10,17 +10,17 @@ SDG
 \brief Base class for operations on two types for variant support
 */
 
-#ifndef TwoTypeOperation_h
-#define TwoTypeOperation_h
+#ifndef DualTypeOperation_h
+#define DualTypeOperation_h
 
 #include "TypeDefiner.h"
 #include "Timestamp.h"
 #include <complex>
 
 namespace Vireo {
-class TwoTypeOperation {
+class DualTypeOperation {
  public:
-    TwoTypeOperation() = default;
+    DualTypeOperation() = default;
 
     virtual bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) = 0;
     virtual bool Apply(StringRef stringRefX, StringRef stringRefY) = 0;

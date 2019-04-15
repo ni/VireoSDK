@@ -10,16 +10,16 @@ SDG
 \brief Compares two types to have the same structure and the same values
 */
 
-#ifndef TwoTypeEqual_h
-#define TwoTypeEqual_h
+#ifndef DualTypeEqual_h
+#define DualTypeEqual_h
 
 #include "TypeDefiner.h"
-#include "TwoTypeOperation.h"
+#include "DualTypeOperation.h"
 
 namespace Vireo {
-class TwoTypeEqual : public TwoTypeOperation {
+class DualTypeEqual : public DualTypeOperation {
  public:
-    TwoTypeEqual();
+    DualTypeEqual();
     bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) override;
     bool Apply(StringRef stringRefX, StringRef stringRefY) override;
     bool Apply(Timestamp* timestampX, Timestamp* timestampY) override;

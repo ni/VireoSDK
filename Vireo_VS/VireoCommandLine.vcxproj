@@ -37,9 +37,9 @@
     <ClCompile Include="..\source\core\Thread.cpp" />
     <ClCompile Include="..\source\core\TimeFunctions.cpp" />
     <ClCompile Include="..\source\core\Timestamp.cpp" />
-    <ClCompile Include="..\source\core\TwoTypeEqual.cpp" />
-    <ClCompile Include="..\source\core\TwoTypeOperation.cpp" />
-    <ClCompile Include="..\source\core\TwoTypeVisitor.cpp" />
+    <ClCompile Include="..\source\core\DualTypeEqual.cpp" />
+    <ClCompile Include="..\source\core\DualTypeOperation.cpp" />
+    <ClCompile Include="..\source\core\DualTypeVisitor.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataManager.cpp" />
     <ClCompile Include="..\source\core\TypeAndDataReflection.cpp" />
     <ClCompile Include="..\source\core\TypeDefiner.cpp" />
@@ -93,9 +93,9 @@
     <ClInclude Include="..\source\include\TDCodecVib.h" />
     <ClInclude Include="..\source\include\Thread.h" />
     <ClInclude Include="..\source\include\Timestamp.h" />
-    <ClInclude Include="..\source\include\TwoTypeEqual.h" />
-    <ClInclude Include="..\source\include\TwoTypeOperation.h" />
-    <ClInclude Include="..\source\include\TwoTypeVisitor.h" />
+    <ClInclude Include="..\source\include\DualTypeEqual.h" />
+    <ClInclude Include="..\source\include\DualTypeOperation.h" />
+    <ClInclude Include="..\source\include\DualTypeVisitor.h" />
     <ClInclude Include="..\source\include\TypeAndDataManager.h" />
     <ClInclude Include="..\source\include\TypeDefiner.h" />
     <ClInclude Include="..\source\include\UnitTest.h" />

@@ -10,12 +10,12 @@ SDG
 \brief Variant data type and variant attribute support functions
 */
 
-#include "TwoTypeVisitor.h"
+#include "DualTypeVisitor.h"
 
 namespace Vireo
 {
     //------------------------------------------------------------
-    bool TwoTypeVisitor::Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = false;
         if (operation) {
@@ -27,7 +27,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
         bool success = false;
         if (typeRefX->IsVariant() && typeRefY->IsVariant()) {
@@ -65,18 +65,23 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::VariantCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::VariantCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
         TypeRef variantInnerTypeX = *static_cast<TypeRef*>(typeRefX->Begin(kPARead));
         TypeRef variantInnerTypeY = *static_cast<TypeRef*>(typeRefY->Begin(kPARead));
         bool success = false;
-        if (!variantInnerTypeX && !variantInnerTypeY)
-            success = TypesAreCompatible(typeRefX, typeRefY, operation);
+        if (!variantInnerTypeX && !variantInnerTypeY) {
+            success = true;
+        } else if (!variantInnerTypeX || !variantInnerTypeY) {
+            success = false;
+        } else {
+            success = TypesAreCompatible(variantInnerTypeX, variantInnerTypeY, operation);
+        }
         return success;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ClusterCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ClusterCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
         bool success = false;
         SubString typeXName, typeYName;
@@ -91,7 +96,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::IntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::IntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
         SubString typeXName, typeYName;
         Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
@@ -101,7 +106,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::UserDefinedClustersCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::UserDefinedClustersCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
         bool success = typeRefX->SubElementCount() == typeRefY->SubElementCount();
         if (success) {
@@ -115,7 +120,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::StringCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeVisitor::StringCompatible(TypeRef typeRefX, TypeRef typeRefY)
     {
         bool success =
             typeRefY->BitEncoding() == kEncoding_Array &&
@@ -125,7 +130,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
         // Verify number of dimensions are the same
         bool success = typeRefX->Rank() == typeRefY->Rank();
@@ -147,11 +152,11 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = false;
         if (typeRefX->IsVariant() && typeRefY->IsVariant()) {
-            success = ApplyVariant(typeRefX, pDataX, typeRefX, pDataY, operation);
+            success = ApplyVariant(typeRefX, pDataX, typeRefY, pDataY, operation);
         }
         else {
             EncodingEnum encodingX = typeRefX->BitEncoding();
@@ -174,18 +179,25 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         TypeRef variantInnerTypeX = *static_cast<TypeRef*>(typeRefX->Begin(kPARead));
         TypeRef variantInnerTypeY = *static_cast<TypeRef*>(typeRefY->Begin(kPARead));
         pDataX = typeRefX->Begin(kPARead);
         pDataY = typeRefY->Begin(kPARead);
-        bool success = Apply(variantInnerTypeX, pDataX, variantInnerTypeY, pDataY, operation);
+        bool success = false;
+        if (!variantInnerTypeX && !variantInnerTypeY) {
+            success = true;
+        } else if (!variantInnerTypeX || !variantInnerTypeY){
+            success = false;
+        } else {
+            success = Apply(variantInnerTypeX, pDataX, variantInnerTypeY, pDataY, operation);
+        }
         return success;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = false;
         SubString typeXName, typeYName;
@@ -201,7 +213,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ApplyIntrinsicClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ApplyIntrinsicClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = false;
         if (typeRefX->IsTimestamp()) {
@@ -221,7 +233,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ApplyUserDefinedClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ApplyUserDefinedClusters(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = true;
         IntIndex i = 0;
@@ -239,7 +251,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ApplyString(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ApplyString(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         StringRef  stringRefX = *(static_cast<const StringRef *>(pDataX));
         StringRef  stringRefY = *(static_cast<const StringRef *>(pDataY));
@@ -248,7 +260,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeVisitor::ApplyArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, TwoTypeOperation* operation)
+    bool DualTypeVisitor::ApplyArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         TypedArrayCoreRef arrayX = *(static_cast<const TypedArrayCoreRef*>(pDataX));
         TypedArrayCoreRef arrayY = *(static_cast<const TypedArrayCoreRef*>(pDataY));
