@@ -10,7 +10,7 @@ SDG
 \brief Two type operation mostly for variant support
 */
 
-#include "TwoTypeOperation.h"
+#include "DualTypeOperation.h"
 
 namespace Vireo
 {

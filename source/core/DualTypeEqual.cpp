@@ -10,18 +10,18 @@ SDG
 \brief Compares if two types have the same structure and the same values
 */
 
-#include "TwoTypeEqual.h"
+#include "DualTypeEqual.h"
 #include "Platform.h"
 
 namespace Vireo
 {
     //------------------------------------------------------------
-    TwoTypeEqual::TwoTypeEqual()
+    DualTypeEqual::DualTypeEqual()
     {
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeEqual::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();
         bool success = false;
@@ -45,35 +45,35 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::Apply(StringRef stringRefX, StringRef stringRefY)
+    bool DualTypeEqual::Apply(StringRef stringRefX, StringRef stringRefY)
     {
         bool areEqual = stringRefX->IsEqual(stringRefY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::Apply(Timestamp* timestampX, Timestamp* timestampY)
+    bool DualTypeEqual::Apply(Timestamp* timestampX, Timestamp* timestampY)
     {
         bool areEqual = (*timestampX == *timestampY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY)
+    bool DualTypeEqual::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY)
     {
         bool areEqual = (*complexSingleX == *complexSingleY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY)
+    bool DualTypeEqual::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY)
     {
         bool areEqual = (*complexDoubleX == *complexDoubleY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeEqual::ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         bool booleanValueX = *static_cast<Boolean*>(pDataX);
         bool booleanValueY = *static_cast<Boolean*>(pDataY);
@@ -82,7 +82,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeEqual::ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         bool areEqual = false;
         switch (typeRefX->TopAQSize()) {
@@ -118,7 +118,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeEqual::ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         bool areEqual = false;
         switch (typeRefX->TopAQSize()) {
@@ -155,7 +155,7 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeEqual::ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         bool areEqual = false;
         if (typeRefX->TopAQSize() == sizeof(Single)) {
@@ -172,35 +172,35 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY)
     {
         bool sameEncodingAndSize = TypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::UIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::UIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
     {
         bool sameEncodingAndSize = TypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
     {
         bool sameEncodingAndSize = TypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY)
     {
         bool sameEncodingAndSize = TypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool TwoTypeEqual::TypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::TypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY)
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();
         EncodingEnum encodingY = typeRefY->BitEncoding();

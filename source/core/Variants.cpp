@@ -18,9 +18,9 @@ SDG
 #include <limits>
 #include <map>
 #include "Variants.h"
-#include "TwoTypeVisitor.h"
-#include "TwoTypeOperation.h"
-#include "TwoTypeEqual.h"
+#include "DualTypeVisitor.h"
+#include "DualTypeOperation.h"
+#include "DualTypeEqual.h"
 
 namespace Vireo
 {
@@ -416,9 +416,9 @@ struct VariantComparisonParamBlock : public InstructionCore
 
 bool VariantsAreEqual(TypeRef variantX, TypeRef variantY)
 {
-    TwoTypeVisitor visitor;
-    TwoTypeEqual twoTypeEqual;
-    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &twoTypeEqual);
+    DualTypeVisitor visitor;
+    DualTypeEqual dualTypeEqual;
+    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &dualTypeEqual);
 }
 
 VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {
