@@ -165,8 +165,7 @@ namespace Vireo
             Single singleValueX = *static_cast<Single*>(pDataX);
             Single singleValueY = *static_cast<Single*>(pDataY);
             areEqual = (singleValueX == singleValueY);
-        }
-        else {
+        } else {
             Double doubleValueX = *static_cast<Double*>(pDataX);
             Double doubleValueY = *static_cast<Double*>(pDataY);
             areEqual = (doubleValueX == doubleValueY);
