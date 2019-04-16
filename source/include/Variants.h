@@ -31,6 +31,7 @@ class VariantType : public WrappedType
  private:
     VariantType(TypeManagerRef typeManager, TypeRef type);
  public:
+    SubString Name() override { return SubString(TypeCommon::TypeVariant); }
     static VariantTypeRef New(TypeManagerRef typeManager, TypeRef type);
     static VariantTypeRef CreateNewVariantFromType(TypeRef inputType);
     static VariantTypeRef CreateNewVariantFromStaticTypeAndData(const StaticTypeAndData& input);
