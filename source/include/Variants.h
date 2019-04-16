@@ -8,7 +8,7 @@ SDG
 */
 
 /*! \file
-\brief Variant data type and variant attribute support functions
+\brief Variant data type
 */
 
 #ifndef Variant_h
@@ -19,45 +19,26 @@ SDG
 
 namespace Vireo {
 
-class VariantAttributeManager {
- public:
-    using AttributeMapType = std::map<StringRef, TypeRef, StringRefCmp>;
-    using VariantToAttributeMapType = std::map< DataPointer, AttributeMapType *>;
-    VariantAttributeManager(const VariantAttributeManager&) = delete;
-    VariantAttributeManager& operator=(const VariantAttributeManager&) = delete;
+class VariantType;
+using VariantTypeRef = VariantType*;
 
+class VariantType : public WrappedType
+{
+ public:
+    using AttributeMapType = std::map<StringRef, VariantTypeRef, StringRefCmp>;
+    TypeRef _underlyingTypeRef;
+    AttributeMapType *_attributeMap;
  private:
-    VariantToAttributeMapType _variantToAttributeMap;
-    VariantAttributeManager() = default;
-
+    VariantType(TypeManagerRef typeManager, TypeRef type);
  public:
-    static VariantAttributeManager& Instance() {
-        static VariantAttributeManager _instance;
-        return _instance;
-    }
-
-    const VariantToAttributeMapType& GetVariantToAttributeMap() const {
-        return _variantToAttributeMap;
-    }
-
-    VariantToAttributeMapType& GetVariantToAttributeMap() {
-        return _variantToAttributeMap;
-    }
-
-    void CleanUp()
-    {
-        for (auto entry : _variantToAttributeMap) {
-            for (auto attribute : *entry.second) {
-                attribute.first->Delete(attribute.first);
-            }
-            entry.second->clear();
-        }
-        _variantToAttributeMap.clear();
-    }
-
-    ~VariantAttributeManager() {
-        CleanUp();
-    }
+    static VariantTypeRef New(TypeManagerRef typeManager, TypeRef type);
+    static VariantTypeRef CreateNewVariantFromType(TypeRef inputType);
+    static VariantTypeRef CreateNewVariantFromStaticTypeAndData(const StaticTypeAndData& input);
+    static VariantTypeRef CreateNewVariantFromVariant(const VariantTypeRef& inputVariant);
+    static void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef outputType, void* outputData, ErrorCluster* errPtr);
+    static bool IsNullVariant(VariantTypeRef variant);
+ public:
+    NIError ClearData(void* pData) override;
 };
 
 enum { kVariantArgErr = 1, kVariantIncompatibleType = 91, kUnsupportedOnTarget = 2304 };

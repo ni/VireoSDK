@@ -46,6 +46,44 @@ define(TestDataToVariant dv(.VirtualInstrument (
     )
 )))
 
+define(TestVariantToDataOptionalArgs dv(.VirtualInstrument (
+    Locals: c(
+        e(.Variant myVar)
+        e(.Variant myVar2)
+        e(.Variant myVar3)
+        e(dv(.Int32 23) myInt)
+        e(dv(.Int8 23) myInt8)
+        e(dv(.Int32 23) myInt2)
+        e(dv(.Int32 0) myInt32Type)
+        e(dv(.String '') myStr)
+        ce(dv(.ErrorCluster (false 0 '' ))noError)
+        e(dv(.ErrorCluster (false 0 '' ))error)
+    )
+    clump (1 // top level
+        Copy(noError error)
+        DataToVariant(myInt myVar)
+
+        // Target type and Output type not same and not coercible
+        VariantToData(myVar error myInt32Type myStr)
+        Printf("TestVariantToDataOptionalArgs-1: error=(%z %z)\n" error.status error.code)
+        Copy(noError error)
+
+        // Target type and Output type not same but coercible
+        VariantToData(myVar error myInt32Type myInt8)
+        Printf("TestVariantToDataOptionalArgs-2: error=(%z %z)\n" error.status error.code)
+        Copy(noError error)
+
+        // Target type wildcard, disallowed
+        VariantToData(myVar error * myStr)
+        Printf("TestVariantToDataOptionalArgs-3: error=(%z %z)\n" error.status error.code)
+
+        // Target type wildcard, disallowed
+        Copy(noError error)
+        VariantToData(myVar error * *)
+        Printf("TestVariantToDataOptionalArgs-4: error=(%z %z)\n" error.status error.code)
+    )
+)))
+
 define(TestArrayOfVariants dv(.VirtualInstrument (
     Locals: c(
         e(.Variant myVar1)
@@ -102,6 +140,7 @@ define(videf1 dv(.VirtualInstrument (
 
     TestVariantToData(myVar)
     TestVariantToData(myVar2)
+    TestVariantToDataOptionalArgs()
     TestDataToVariant()
     TestArrayOfVariants()
 //--- end of vi

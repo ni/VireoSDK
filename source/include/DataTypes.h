@@ -131,6 +131,7 @@ typedef enum {
     kLVError_ArgError = 1,
     kLVError_MemFull = 2,
     kLVError_NotSupported = 53,  // Not supported on this platform
+    kUnspecifiedError = -2147467259,
 } LVError;
 
 typedef enum {
