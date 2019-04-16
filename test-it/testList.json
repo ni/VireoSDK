@@ -363,6 +363,7 @@
                 "TestVI_UnflattenFromJSONInvalidCluster.via",
                 "TestVI_VariantDeleteAttributes.via",
                 "TestVI_VariantEquality_Arrays.via",
+                "TestVI_VariantEquality_AttributeComparison.via",
                 "TestVI_VariantEquality_Clusters.via",
                 "TestVI_VariantEquality_NonContainerTypes.via",
                 "TestVI_VariantEquality_Numerics.via",
