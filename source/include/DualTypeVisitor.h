@@ -26,12 +26,12 @@ class DualTypeVisitor {
     bool Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
 
  private:
-    bool TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
-    bool VariantCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
-    bool ClusterCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
+    bool TypesAreCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
+    bool VariantCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
+    bool ClusterCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
-    bool IntrinsicClustersCompatible(TypeRef typeRefA, TypeRef typeRefB, DualTypeOperation* operation);
-    bool UserDefinedClustersCompatible(TypeRef typeRefA, TypeRef typeRefB, DualTypeOperation* operation);
+    bool IntrinsicClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
+    bool UserDefinedClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool StringCompatible(TypeRef typeRefX, TypeRef typeRefY);
     bool ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
 

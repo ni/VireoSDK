@@ -11,6 +11,7 @@ SDG
 */
 
 #include "DualTypeVisitor.h"
+#include "Variants.h"
 
 namespace Vireo
 {
@@ -19,7 +20,7 @@ namespace Vireo
     {
         bool success = false;
         if (operation) {
-            success = TypesAreCompatible(typeRefX, typeRefY, operation);
+            success = TypesAreCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
             if (success)
                 success = Apply(typeRefX, pDataX, typeRefY, pDataY, operation);
         }
@@ -27,11 +28,11 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeVisitor::TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    bool DualTypeVisitor::TypesAreCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = false;
         if (typeRefX->IsVariant() && typeRefY->IsVariant()) {
-            success = VariantCompatible(typeRefX, typeRefX, operation);
+            success = VariantCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
         } else {
             EncodingEnum encodingX = typeRefX->BitEncoding();
             switch (encodingX) {
@@ -48,7 +49,7 @@ namespace Vireo
                     success = operation->IEEE754BinaryCompatible(typeRefX, typeRefY);
                     break;
                 case kEncoding_Cluster:
-                    success = ClusterCompatible(typeRefX, typeRefY, operation);
+                    success = ClusterCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
                     break;
                 case kEncoding_Enum:
                     success = EnumCompatible(typeRefX, typeRefY, operation);
@@ -69,38 +70,69 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeVisitor::VariantCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    bool DualTypeVisitor::VariantCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
-        TypeRef variantInnerTypeX = *static_cast<TypeRef*>(typeRefX->Begin(kPARead));
-        TypeRef variantInnerTypeY = *static_cast<TypeRef*>(typeRefY->Begin(kPARead));
+        VariantTypeRef variantTypeX = reinterpret_cast<VariantTypeRef>(typeRefX);
+        VariantTypeRef variantTypeY = reinterpret_cast<VariantTypeRef>(typeRefY);
+        
+        TypeRef variantDataX = *reinterpret_cast<TypeRef*>(pDataX);
+        TypeRef variantDataY = *reinterpret_cast<TypeRef*>(pDataY);
+
+        TypeRef variantUnderlyingTypeX = variantTypeX->_underlyingTypeRef;
+        TypeRef variantUnderlyingTypeY = variantTypeY->_underlyingTypeRef;
         bool success = false;
-        if (!variantInnerTypeX && !variantInnerTypeY) {
+        if (!variantUnderlyingTypeX && !variantUnderlyingTypeY) {
             success = true;
-        } else if (!variantInnerTypeX || !variantInnerTypeY) {
-            success = false;
+        } else if (!variantUnderlyingTypeX || !variantUnderlyingTypeY) {
+            return false;
         } else {
-            success = TypesAreCompatible(variantInnerTypeX, variantInnerTypeY, operation);
+            success = TypesAreCompatible(variantUnderlyingTypeX, variantUnderlyingTypeX->Begin(kPARead), variantUnderlyingTypeY, variantUnderlyingTypeY->Begin(kPARead), operation);
+        }
+        if (success) {
+            // compare attributes
+            if (!variantTypeX->_attributeMap && !variantTypeY->_attributeMap) {
+                return true;
+            } else if (variantTypeX->_attributeMap && variantTypeY->_attributeMap) {
+                if (variantTypeX->_attributeMap->size() != variantTypeY->_attributeMap->size()) {
+                    return false;
+                }
+                for (const auto attributePairInX : *variantTypeX->_attributeMap) {
+                    StringRef const attributeNameStrInX = attributePairInX.first;
+                    VariantTypeRef attributeValueInX = attributePairInX.second;
+                    auto attributePairInY = variantTypeY->_attributeMap->find(attributeNameStrInX);
+                    if (attributePairInY != variantTypeY->_attributeMap->end()) {
+                        VariantTypeRef attributeValueInY = attributePairInY->second;
+                        if (!TypesAreCompatible(attributeValueInX, attributeValueInX->Begin(kPARead), attributeValueInY, attributeValueInY->Begin(kPARead), operation)) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
         }
         return success;
     }
 
     //------------------------------------------------------------
-    bool DualTypeVisitor::ClusterCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    bool DualTypeVisitor::ClusterCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = false;
         SubString typeXName, typeYName;
         Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
         Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
         if (isTypeXIntrinsicClusterType && isTypeYIntrinsicClusterType) {
-            success = IntrinsicClustersCompatible(typeRefX, typeRefY, operation);
+            success = IntrinsicClustersCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
         } else if (!isTypeXIntrinsicClusterType && !isTypeYIntrinsicClusterType) {
-            success = UserDefinedClustersCompatible(typeRefX, typeRefY, operation);
+            success = UserDefinedClustersCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
         }
         return success;
     }
 
     //------------------------------------------------------------
-    bool DualTypeVisitor::IntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    bool DualTypeVisitor::IntrinsicClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         SubString typeXName, typeYName;
         Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
@@ -110,13 +142,20 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeVisitor::UserDefinedClustersCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    bool DualTypeVisitor::UserDefinedClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         bool success = typeRefX->SubElementCount() == typeRefY->SubElementCount();
         if (success) {
             IntIndex i = 0;
             while (success && i < typeRefX->SubElementCount()) {
-                success = TypesAreCompatible(typeRefX->GetSubElement(i), typeRefY->GetSubElement(i), operation);
+                TypeRef elementXType = typeRefX->GetSubElement(i);
+                TypeRef elementYType = typeRefY->GetSubElement(i);
+                IntIndex fieldOffsetX = elementXType->ElementOffset();
+                IntIndex fieldOffsetY = elementYType->ElementOffset();
+                AQBlock1* pDataXElement = static_cast<AQBlock1*>(pDataX) + fieldOffsetX;
+                AQBlock1* pDataYElement = static_cast<AQBlock1*>(pDataY) + fieldOffsetY;
+
+                success = TypesAreCompatible(elementXType, pDataXElement, elementYType, pDataYElement, operation);
                 i++;
             }
         }
@@ -126,7 +165,7 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeVisitor::EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
-        bool success = TypesAreCompatible(typeRefX->GetSubElement(0), typeRefY->GetSubElement(0), operation);
+        bool success = TypesAreCompatible(typeRefX->GetSubElement(0), typeRefX->Begin(kPARead), typeRefY->GetSubElement(0), typeRefY->Begin(kPARead), operation);
         return success;
     }
 
@@ -157,7 +196,7 @@ namespace Vireo
             }
             // Verify each array has the same element type
             if (success)
-                success = TypesAreCompatible(arrayX->ElementType(), arrayY->ElementType(), operation);
+                success = TypesAreCompatible(arrayX->ElementType(), arrayX->BeginAt(0), arrayY->ElementType(), arrayY->BeginAt(0), operation);
         }
         return success;
     }
@@ -191,17 +230,37 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeVisitor::ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
-        TypeRef variantInnerTypeX = *static_cast<TypeRef*>(typeRefX->Begin(kPARead));
-        TypeRef variantInnerTypeY = *static_cast<TypeRef*>(typeRefY->Begin(kPARead));
+        VariantTypeRef variantTypeX = reinterpret_cast<VariantTypeRef> (typeRefX);
+        VariantTypeRef variantTypeY = reinterpret_cast<VariantTypeRef> (typeRefY);
+        TypeRef variantUnderlyingTypeX = variantTypeX->_underlyingTypeRef;
+        TypeRef variantUnderlyingTypeY = variantTypeY->_underlyingTypeRef;
         pDataX = typeRefX->Begin(kPARead);
         pDataY = typeRefY->Begin(kPARead);
         bool success = false;
-        if (!variantInnerTypeX && !variantInnerTypeY) {
+        if (!variantUnderlyingTypeX && !variantUnderlyingTypeY) {
             success = true;
-        } else if (!variantInnerTypeX || !variantInnerTypeY){
-            success = false;
+        } else if (!variantUnderlyingTypeX || !variantUnderlyingTypeY){
+            return false;
         } else {
-            success = Apply(variantInnerTypeX, pDataX, variantInnerTypeY, pDataY, operation);
+            success = Apply(variantUnderlyingTypeX, pDataX, variantUnderlyingTypeY, pDataY, operation);
+        }
+        if (success) {
+            // compare attributes
+            if (!variantTypeX->_attributeMap && !variantTypeY->_attributeMap) {
+                return true;
+            } else if (variantTypeX->_attributeMap && variantTypeY->_attributeMap) {
+                for (const auto attributePairInX : *variantTypeX->_attributeMap) {
+                    StringRef const attributeNameInX = attributePairInX.first;
+                    VariantTypeRef attributeValueInX = attributePairInX.second;
+                    auto attributePairInY = variantTypeY->_attributeMap->find(attributeNameInX);
+                    VariantTypeRef attributeValueInY = attributePairInY->second;
+                    if (!Apply(attributeValueInX, pDataX, attributeValueInY, pDataY, operation)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
         }
         return success;
     }
