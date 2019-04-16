@@ -415,6 +415,8 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
                 (*attributeMapOutput)[nameKeyRef] = VariantType::CreateNewVariantFromVariant(attributeValueVariant);
             }
             variantCopy->_attributeMap = attributeMapOutput;
+        } else {
+            variantCopy->_attributeMap = nullptr;
         }
         _Param(OutputVariant) = variantCopy;
     } else {
@@ -428,14 +430,14 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
 
 struct VariantComparisonParamBlock : public InstructionCore
 {
-    _ParamDef(TypeRef, VariantX);
-    _ParamDef(TypeRef, VariantY);
+    _ParamDef(VariantTypeRef, VariantX);
+    _ParamDef(VariantTypeRef, VariantY);
     _ParamDef(Boolean, Result);
 
     NEXT_INSTRUCTION_METHOD()
 };
 
-bool VariantsAreEqual(TypeRef variantX, TypeRef variantY)
+bool VariantsAreEqual(VariantTypeRef variantX, VariantTypeRef variantY)
 {
     DualTypeVisitor visitor;
     DualTypeEqual dualTypeEqual;
@@ -443,15 +445,15 @@ bool VariantsAreEqual(TypeRef variantX, TypeRef variantY)
 }
 
 VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {
-    TypeRef variantX = _Param(VariantX);
-    TypeRef variantY = _Param(VariantY);
+    VariantTypeRef variantX = _Param(VariantX);
+    VariantTypeRef variantY = _Param(VariantY);
     _Param(Result) = VariantsAreEqual(variantX, variantY);
     return _NextInstruction();
 }
 
 VIREO_FUNCTION_SIGNATURET(IsNEVariant, VariantComparisonParamBlock) {
-    TypeRef variantX = _Param(VariantX);
-    TypeRef variantY = _Param(VariantY);
+    VariantTypeRef variantX = _Param(VariantX);
+    VariantTypeRef variantY = _Param(VariantY);
     _Param(Result) = !VariantsAreEqual(variantX, variantY);
     return _NextInstruction();
 }
