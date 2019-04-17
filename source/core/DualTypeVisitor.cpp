@@ -74,7 +74,7 @@ namespace Vireo
     {
         VariantTypeRef variantTypeX = reinterpret_cast<VariantTypeRef>(typeRefX);
         VariantTypeRef variantTypeY = reinterpret_cast<VariantTypeRef>(typeRefY);
-        
+
         TypeRef variantDataX = *reinterpret_cast<TypeRef*>(pDataX);
         TypeRef variantDataY = *reinterpret_cast<TypeRef*>(pDataY);
 
@@ -86,7 +86,11 @@ namespace Vireo
         } else if (!variantUnderlyingTypeX || !variantUnderlyingTypeY) {
             return false;
         } else {
-            success = TypesAreCompatible(variantUnderlyingTypeX, variantUnderlyingTypeX->Begin(kPARead), variantUnderlyingTypeY, variantUnderlyingTypeY->Begin(kPARead), operation);
+            success = TypesAreCompatible(variantUnderlyingTypeX,
+                variantUnderlyingTypeX->Begin(kPARead),
+                variantUnderlyingTypeY,
+                variantUnderlyingTypeY->Begin(kPARead),
+                operation);
         }
         if (success) {
             // compare attributes
@@ -102,7 +106,11 @@ namespace Vireo
                     auto attributePairInY = variantTypeY->_attributeMap->find(attributeNameStrInX);
                     if (attributePairInY != variantTypeY->_attributeMap->end()) {
                         VariantTypeRef attributeValueInY = attributePairInY->second;
-                        if (!TypesAreCompatible(attributeValueInX, attributeValueInX->Begin(kPARead), attributeValueInY, attributeValueInY->Begin(kPARead), operation)) {
+                        if (!TypesAreCompatible(attributeValueInX,
+                            attributeValueInX->Begin(kPARead),
+                            attributeValueInY,
+                            attributeValueInY->Begin(kPARead),
+                            operation)) {
                             return false;
                         }
                     } else {
@@ -165,7 +173,10 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeVisitor::EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
     {
-        bool success = TypesAreCompatible(typeRefX->GetSubElement(0), typeRefX->Begin(kPARead), typeRefY->GetSubElement(0), typeRefY->Begin(kPARead), operation);
+        bool success = TypesAreCompatible(typeRefX->GetSubElement(0),
+            typeRefX->Begin(kPARead),
+            typeRefY->GetSubElement(0),
+            typeRefY->Begin(kPARead), operation);
         return success;
     }
 
