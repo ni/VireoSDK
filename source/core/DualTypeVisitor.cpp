@@ -75,9 +75,6 @@ namespace Vireo
         VariantTypeRef variantTypeX = reinterpret_cast<VariantTypeRef>(typeRefX);
         VariantTypeRef variantTypeY = reinterpret_cast<VariantTypeRef>(typeRefY);
 
-        TypeRef variantDataX = *reinterpret_cast<TypeRef*>(pDataX);
-        TypeRef variantDataY = *reinterpret_cast<TypeRef*>(pDataY);
-
         TypeRef variantUnderlyingTypeX = variantTypeX->_underlyingTypeRef;
         TypeRef variantUnderlyingTypeY = variantTypeY->_underlyingTypeRef;
         bool success = false;
@@ -223,13 +220,13 @@ namespace Vireo
             switch (encodingX)
             {
             case kEncoding_Cluster:
-                success = ApplyCluster(typeRefX, pDataX, typeRefX, pDataY, operation);
+                success = ApplyCluster(typeRefX, pDataX, typeRefY, pDataY, operation);
                 break;
             case kEncoding_Array:
                 if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode)
-                    success = ApplyString(typeRefX, pDataX, typeRefX, pDataY, operation);
+                    success = ApplyString(typeRefX, pDataX, typeRefY, pDataY, operation);
                 else
-                    success = ApplyArray(typeRefX, pDataX, typeRefX, pDataY, operation);
+                    success = ApplyArray(typeRefX, pDataX, typeRefY, pDataY, operation);
                 break;
             default:
                 success = operation->Apply(typeRefX, pDataX, typeRefY, pDataY);
@@ -265,7 +262,11 @@ namespace Vireo
                     VariantTypeRef attributeValueInX = attributePairInX.second;
                     auto attributePairInY = variantTypeY->_attributeMap->find(attributeNameInX);
                     VariantTypeRef attributeValueInY = attributePairInY->second;
-                    if (!Apply(attributeValueInX, pDataX, attributeValueInY, pDataY, operation)) {
+                    if (!Apply(attributeValueInX,
+                        attributeValueInX->Begin(kPARead),
+                        attributeValueInY,
+                        attributeValueInY->Begin(kPARead),
+                        operation)) {
                         return false;
                     }
                 }
