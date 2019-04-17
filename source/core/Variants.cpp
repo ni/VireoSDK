@@ -415,8 +415,6 @@ VIREO_FUNCTION_SIGNATURET(CopyVariant, CopyVariantParamBlock)
                 (*attributeMapOutput)[nameKeyRef] = VariantType::CreateNewVariantFromVariant(attributeValueVariant);
             }
             variantCopy->_attributeMap = attributeMapOutput;
-        } else {
-            variantCopy->_attributeMap = nullptr;
         }
         _Param(OutputVariant) = variantCopy;
     } else {
@@ -463,11 +461,11 @@ DEFINE_VIREO_BEGIN(Variant)
     DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error)"
                                             "i(StaticType targetType) o(StaticTypeAndData outputType))");
     DEFINE_VIREO_FUNCTION(SetVariantAttribute, "p(io(Variant inputVariant) i(String name)"
-        " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
+                                                " i(StaticTypeAndData value) o(Boolean replaced) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(GetVariantAttribute, "p(i(Variant inputVariant) i(String name)"
-        "io(StaticTypeAndData value) o(Boolean found) io(ErrorCluster error) )");
+                                                "io(StaticTypeAndData value) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(GetVariantAttributeAll, "p(i(Variant inputVariant) o(Array names)"
-        "o(Array values) io(ErrorCluster error) )");
+                                                    "o(Array values) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(DeleteVariantAttribute, "p(io(Variant inputVariant) i(String name) o(Boolean found) io(ErrorCluster error) )");
     DEFINE_VIREO_FUNCTION(CopyVariant, "p(i(Variant inputVariant) o(Variant outputVariant) )");
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, DataToVariant, "p(i(StaticTypeAndData) o(Variant))")
