@@ -459,7 +459,6 @@ VIREO_FUNCTION_SIGNATURET(IsNEVariant, VariantComparisonParamBlock) {
 }
 
 DEFINE_VIREO_BEGIN(Variant)
-
     DEFINE_VIREO_FUNCTION(DataToVariant, "p(i(StaticTypeAndData) o(Variant))");
     DEFINE_VIREO_FUNCTION(VariantToData, "p(i(StaticTypeAndData inputVariant) io(ErrorCluster error)"
                                             "i(StaticType targetType) o(StaticTypeAndData outputType))");
