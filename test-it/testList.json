@@ -361,6 +361,7 @@
                 "TestVI_SimpleArrayOfRefs.via",
                 "TestVI_SpreadSheetStringToArray.via",
                 "TestVI_UnflattenFromJSONInvalidCluster.via",
+                "TestVI_VariantAsVariantAttribute.via",
                 "TestVI_VariantDeleteAttributes.via",
                 "TestVI_VariantEquality_Arrays.via",
                 "TestVI_VariantEquality_AttributeComparison.via",
