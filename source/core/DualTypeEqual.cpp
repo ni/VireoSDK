@@ -164,11 +164,13 @@ namespace Vireo
         if (typeRefX->TopAQSize() == sizeof(Single)) {
             Single singleValueX = *static_cast<Single*>(pDataX);
             Single singleValueY = *static_cast<Single*>(pDataY);
-            areEqual = (singleValueX == singleValueY);
+            areEqual = (::isnan(singleValueX) && ::isnan(singleValueY))
+                || (singleValueX == singleValueY);
         } else {
             Double doubleValueX = *static_cast<Double*>(pDataX);
             Double doubleValueY = *static_cast<Double*>(pDataY);
-            areEqual = (doubleValueX == doubleValueY);
+            areEqual = (::isnan(doubleValueX) && ::isnan(doubleValueY))
+                || (doubleValueX == doubleValueY);
         }
         return areEqual;
     }
