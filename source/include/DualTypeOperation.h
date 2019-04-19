@@ -21,7 +21,7 @@ namespace Vireo {
 class DualTypeOperation {
  public:
     DualTypeOperation() = default;
-
+    virtual bool ShouldInflateDestination() = 0;
     virtual bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) = 0;
     virtual bool Apply(StringRef stringRefX, StringRef stringRefY) = 0;
     virtual bool Apply(Timestamp* timestampX, Timestamp* timestampY) = 0;

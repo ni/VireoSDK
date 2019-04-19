@@ -21,6 +21,7 @@ SDG
 #include "DualTypeVisitor.h"
 #include "DualTypeOperation.h"
 #include "DualTypeEqual.h"
+#include "DualTypeConversion.h"
 
 namespace Vireo
 {
@@ -172,21 +173,32 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 if (errPtr)
                     errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
             } else {
-                TypeRef underlyingType = variant->_underlyingTypeRef;
+                DualTypeVisitor visitor;
+                DualTypeConversion dualTypeConversion;
+                bool copied = false;
                 if (targetType->IsVariant()) {
                     if (outputData)
                         *static_cast<VariantTypeRef *>(outputData) = VariantType::CreateNewVariantFromType(underlyingType);
-                } else if (underlyingType->IsA(targetType, true)) {
-                    if (outputData)
-                        targetType->CopyData(underlyingType->Begin(kPARead), outputData);
+                } else if (outputData) {
+                    outputType->InitData(outputData);
+                    copied = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
+                } else if (errPtr && outputData && !copied) {
+                    VariantType::SetVariantToDataTypeError(underlyingType, targetType, outputType, outputData, errPtr);
                 } else if (errPtr) {
                     VariantType::SetVariantToDataTypeError(underlyingType, targetType, outputType, outputData, errPtr);
                 }
             }
         } else {
-            if (inputType->IsA(targetType, true)) {
+            DualTypeVisitor visitor;
+            DualTypeConversion dualTypeConversion;
+            bool copied = false;
+            if (outputData) {
+            copied = visitor.Visit(inputType, inputType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
+            } else if (targetType->IsVariant()) {
                 if (outputData)
-                    targetType->CopyData(inputData, outputData);
+                    *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
+            } else if (errPtr && outputData && !copied) {
+                VariantType::SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
             } else if (targetType->IsVariant()) {
                 if (outputData)
                     *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
