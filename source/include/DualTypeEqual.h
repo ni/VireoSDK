@@ -25,16 +25,16 @@ class DualTypeEqual : public DualTypeOperation {
     bool Apply(Timestamp* timestampX, Timestamp* timestampY) override;
     bool Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY) override;
     bool Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY) override;
-    bool BooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool UIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool S2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool IEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
  private:
-    bool TypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
-    bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-    bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-    bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-    bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+     static bool DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
+     static bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+     static bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+     static bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+     static bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
 };
 }  // namespace Vireo
 

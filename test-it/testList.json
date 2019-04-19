@@ -1,5 +1,10 @@
 {
     "tests": {
+        "disabled": {
+            "tests": [
+                "TestVI_VariantEquality_VariantsWithVariantsNestedInsideThem.via"
+            ] 
+        },
         "native": {
             "include": [ "common" ],
             "tests": [

@@ -37,16 +37,16 @@ namespace Vireo
             EncodingEnum encodingX = typeRefX->BitEncoding();
             switch (encodingX) {
                 case kEncoding_Boolean:
-                    success = operation->BooleanCompatible(typeRefX, typeRefY);
+                    success = operation->AreBooleanCompatible(typeRefX, typeRefY);
                     break;
                 case kEncoding_UInt:
-                    success = operation->UIntCompatible(typeRefX, typeRefY);
+                    success = operation->AreUIntCompatible(typeRefX, typeRefY);
                     break;
                 case kEncoding_S2CInt:
-                    success = operation->S2CIntCompatible(typeRefX, typeRefY);
+                    success = operation->AreS2CIntCompatible(typeRefX, typeRefY);
                     break;
                 case kEncoding_IEEE754Binary:
-                    success = operation->IEEE754BinaryCompatible(typeRefX, typeRefY);
+                    success = operation->AreIEEE754BinaryCompatible(typeRefX, typeRefY);
                     break;
                 case kEncoding_Cluster:
                     success = ClusterCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
@@ -257,6 +257,7 @@ namespace Vireo
             if (!variantTypeX->_attributeMap && !variantTypeY->_attributeMap) {
                 return true;
             } else if (variantTypeX->_attributeMap && variantTypeY->_attributeMap) {
+                // TODO(siddhukrs) - since attribute maps are ordered, we can compare them in a single loop for efficiency
                 for (const auto attributePairInX : *variantTypeX->_attributeMap) {
                     StringRef const attributeNameInX = attributePairInX.first;
                     VariantTypeRef attributeValueInX = attributePairInX.second;
