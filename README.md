@@ -70,8 +70,8 @@ The emsdk toolchain is used to cross-compile Vireo to Vireo.js to run in Node.js
 4. From either the extracted folder or the cloned emsdk repository run the following commands:
 
    ```console
-   emsdk install sdk-1.38.29-64bit
-   emsdk activate sdk-1.38.29-64bit
+   emsdk install sdk-1.38.30-64bit
+   emsdk activate sdk-1.38.30-64bit
    emcc -v # should match the sdk version
    ```
 

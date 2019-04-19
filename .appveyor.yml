@@ -18,8 +18,8 @@ install:
   - ps: Start-Process npm "run httpbin" -PassThru
   - git clone https://github.com/juj/emsdk.git
   - cd emsdk && git checkout 9538381d56272818cba77a808ba46fdac6c961c8 && cd ..
-  - ps: emsdk\emsdk install sdk-1.38.29-64bit
-  - ps: emsdk\emsdk activate sdk-1.38.29-64bit
+  - ps: emsdk\emsdk install sdk-1.38.30-64bit
+  - ps: emsdk\emsdk activate sdk-1.38.30-64bit
 platform:
   - Win32
 configuration:
