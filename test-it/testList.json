@@ -1,5 +1,10 @@
 {
     "tests": {
+        "disabled": {
+            "tests": [
+                "TestVI_VariantEquality_VariantsWithVariantsNestedInsideThem.via"
+            ] 
+        },
         "native": {
             "include": [ "common" ],
             "tests": [
@@ -361,7 +366,13 @@
                 "TestVI_SimpleArrayOfRefs.via",
                 "TestVI_SpreadSheetStringToArray.via",
                 "TestVI_UnflattenFromJSONInvalidCluster.via",
+                "TestVI_VariantAsVariantAttribute.via",
                 "TestVI_VariantDeleteAttributes.via",
+                "TestVI_VariantEquality_Arrays.via",
+                "TestVI_VariantEquality_AttributeComparison.via",
+                "TestVI_VariantEquality_Clusters.via",
+                "TestVI_VariantEquality_NonContainerTypes.via",
+                "TestVI_VariantEquality_Numerics.via",
                 "TestVI_VariantSetGetAttributes.via",
                 "TestVI_VariantToData_DefaultValueOfTypeTerminalIsWrittenIntoOutputInCaseOfError.via",
                 "TestVI_Variant_GetAttributesDefaultValue.via",

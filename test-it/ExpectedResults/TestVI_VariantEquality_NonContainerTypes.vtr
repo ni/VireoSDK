@@ -1,0 +1,11 @@
+TestResult_SimpleString true
+TestResult_StringWithUnicodeCharacters true
+TestResult_Booleans true
+TestResult_UnequalBooleans true
+TestResult_Timestamps true
+TestResult_UnequalTimestamps true
+TestResult_Path true
+TestResult_UnequalSimpleString_2 true
+TestResult_UnequalPath true
+TestResult_Enum true
+TestResult_UnequalEnum true
