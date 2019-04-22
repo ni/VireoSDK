@@ -171,15 +171,15 @@ using namespace std;  // NOLINT(build/namespaces)s
 #endif
 #define DECLARE_SCALE2X_REALN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##TYPE(TYPE x, TYPE n) { \
-        if (::isnan(x) || ::isnan(n)) { \
+        if (std::isnan(x) || std::isnan(n)) { \
             return std::numeric_limits<TYPE>::quiet_NaN(); \
         } else if (x == 0.0) { \
-            return (n > 0 && ::isinf(n)) ? std::numeric_limits<TYPE>::quiet_NaN() : TYPE(0.0); \
-        } else if (n < 0 && ::isinf(n)) { \
-            return ::isinf(x) ? std::numeric_limits<TYPE>::quiet_NaN() : TYPE(0.0); \
-        } else if (n > 0 && ::isinf(n)) { \
+            return (n > 0 && std::isinf(n)) ? std::numeric_limits<TYPE>::quiet_NaN() : TYPE(0.0); \
+        } else if (n < 0 && std::isinf(n)) { \
+            return std::isinf(x) ? std::numeric_limits<TYPE>::quiet_NaN() : TYPE(0.0); \
+        } else if (n > 0 && std::isinf(n)) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
-        } else if (n < 0 && ::isinf(x)) { \
+        } else if (n < 0 && std::isinf(x)) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
         } else { \
             return TYPE(x * pow(2.0, ScaleRoundToInt_##TYPE(n)));  \
@@ -187,11 +187,11 @@ TYPE Scale2X_##TYPE##TYPE(TYPE x, TYPE n) { \
     }
 #define DECLARE_SCALE2X_INTN_HELPER(TYPE) \
 TYPE Scale2X_##TYPE##Int32(TYPE x, Int32 n) { \
-        if (::isnan(x)) { \
+        if (std::isnan(x)) { \
             return std::numeric_limits<TYPE>::quiet_NaN(); \
         } else if (x == 0.0) { \
             return 0.0; \
-        } else if (n < 0 && ::isinf(x)) { \
+        } else if (n < 0 && std::isinf(x)) { \
             return x > 0 ? std::numeric_limits<TYPE>::infinity() : -std::numeric_limits<TYPE>::infinity(); \
         } else { \
             return TYPE(x * pow(2.0, n));  \
@@ -305,7 +305,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 #define DECLARE_VIREO_COMPARISON_PRIMITIVES_BASE(TYPE) \
     DECLARE_VIREO_PRIMITIVE3(IsLT##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) < _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsLTSort##TYPE, TYPE, TYPE, Boolean, \
-        if (::isnan((double)_Param(1))) { \
+        if (std::isnan((double)_Param(1))) { \
             _Param(2) = true; \
         } else { \
             _Param(2) = _Param(0) < _Param(1); \
@@ -313,7 +313,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE3(IsLE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) <= _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsEQ##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) == _Param(1))) \
     DECLARE_VIREO_PRIMITIVE3(IsEQSearch##TYPE, TYPE, TYPE, Boolean, \
-        if (::isnan((double)_Param(0)) && ::isnan((double)_Param(1))) { \
+        if (std::isnan((double)_Param(0)) && std::isnan((double)_Param(1))) { \
             _Param(2) = true; \
         } else { \
             _Param(2) = _Param(0) == _Param(1); \
@@ -323,11 +323,11 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     DECLARE_VIREO_PRIMITIVE3(IsGE##TYPE, TYPE, TYPE, Boolean, (_Param(2) = _Param(0) >= _Param(1))) \
     DECLARE_VIREO_PRIMITIVE2(IsEQ0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) == 0)) \
     DECLARE_VIREO_PRIMITIVE2(IsNE0##TYPE, TYPE, Boolean, (_Param(1) = _Param(0) != 0)) \
-    DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = ::isnan((double)_Param(0))) ) \
+    DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnum##TYPE, TYPE, Boolean, (_Param(1) = std::isnan((double)_Param(0))) ) \
     DECLARE_VIREO_PRIMITIVE4(MaxAndMin##TYPE, TYPE, TYPE, TYPE, TYPE,    \
-        if (::isnan((double)_Param(0))) { \
+        if (std::isnan((double)_Param(0))) { \
          _Param(2) = _Param(0); _Param(3) = _Param(1);  \
-        } else if (::isnan((double)_Param(1))) { \
+        } else if (std::isnan((double)_Param(1))) { \
          _Param(2) = _Param(0); _Param(3) = _Param(1);  \
         } else if (_Param(0) >= _Param(1)) { \
          _Param(2) = _Param(0); _Param(3) = _Param(1); \
@@ -335,9 +335,9 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
          _Param(2) = _Param(1); _Param(3) = _Param(0); \
         })    \
     DECLARE_VIREO_PRIMITIVE4(MaxAndMinElts##TYPE, TYPE, TYPE, TYPE, TYPE,    \
-        if (::isnan((double)_Param(0))) { \
+        if (std::isnan((double)_Param(0))) { \
          _Param(2) = _Param(1); _Param(3) = _Param(1);  \
-        } else if (::isnan((double)_Param(1))) { \
+        } else if (std::isnan((double)_Param(1))) { \
          _Param(2) = _Param(0); _Param(3) = _Param(0);  \
         } else if (_Param(0) >= _Param(1)) { \
          _Param(2) = _Param(0); _Param(3) = _Param(1);  \
@@ -348,7 +348,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
          /* Args:  x loLimit hiLimit includeLo includeHi coercedOut  inRangeOut */\
         VIVM_TRACE_FUNCTION(InRangeAndCoerce##TYPE)    \
         if (_ParamPointer(5)) { \
-            if (::isnan((double)_Param(0)) || ::isnan((double)_Param(1)) || ::isnan((double)_Param(2))) { \
+            if (std::isnan((double)_Param(0)) || std::isnan((double)_Param(1)) || std::isnan((double)_Param(2))) { \
                 _Param(5) = std::numeric_limits<TYPE>::quiet_NaN(); \
             } else if (_Param(1) > _Param(2)) { \
                 _Param(5) = _Param(0) < _Param(2) ? _Param(2) : _Param(0) > _Param(1) ? _Param(1) : _Param(0); \
@@ -413,9 +413,9 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
     { \
         SOURCE src = _Param(0); \
-        if (::isnan(src)) { \
+        if (std::isnan(src)) { \
             _Param(1) = numeric_limits<DEST>::max(); \
-        } else if (::isinf(src)) { \
+        } else if (std::isinf(src)) { \
             _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
         } else if (src < numeric_limits<DEST>::min()) { \
             _Param(1) = numeric_limits<DEST>::min(); \
@@ -956,7 +956,7 @@ DECLARE_VIREO_PRIMITIVE2(Log10ComplexSingle, ComplexSingle, ComplexSingle, {
     ComplexSingle x = _Param(0);
     // Log computation in JS and Native handle Inf+NaNi differently. While JS outputs Inf+NaNi, Native outputs NaN+NaNi.
     // To maintain consistency, Inf+NaNi is special cased to always return NaN+NaNi
-    _Param(1) = ::isinf(x.real()) && ::isnan(x.imag()) ? ComplexSingle(NAN, NAN) : log10(x);
+    _Param(1) = std::isinf(x.real()) && std::isnan(x.imag()) ? ComplexSingle(NAN, NAN) : log10(x);
 })
 DECLARE_VIREO_PRIMITIVE2(LogComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0)) ) )
 DECLARE_VIREO_PRIMITIVE2(Log2ComplexSingle, ComplexSingle, ComplexSingle, (_Param(1) = log(_Param(0))/log(2.0f) ) )
@@ -998,7 +998,7 @@ DECLARE_VIREO_PRIMITIVE3(ComplexToReOrImComplexSingle, ComplexSingle, Single, Si
 DECLARE_VIREO_PRIMITIVE3(ReOrImToComplexSingle, Single, Single, ComplexSingle,
     _Param(2) = ComplexSingle(_Param(0), _Param(1)); )
 DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexSingle, ComplexSingle, Boolean,
-    (_Param(1) = ::isnan((Single)_Param(0).real()) || ::isnan((Single)_Param(0).imag())))
+    (_Param(1) = std::isnan((Single)_Param(0).real()) || std::isnan((Single)_Param(0).imag())))
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexSingleMath)
     DEFINE_VIREO_REQUIRE(IEEE754Math)
@@ -1109,7 +1109,7 @@ DECLARE_VIREO_PRIMITIVE2(Log10ComplexDouble, ComplexDouble, ComplexDouble, {
     ComplexDouble x = _Param(0);
     // Log computation in JS and Native handle Inf+NaNi differently. While JS outputs Inf+NaNi, Native outputs NaN+NaNi.
     // To maintain consistency, Inf+NaNi is special cased to always return NaN+NaNi
-    _Param(1) = ::isinf(x.real()) && ::isnan(x.imag()) ? ComplexDouble(NAN, NAN) : log10(x);
+    _Param(1) = std::isinf(x.real()) && std::isnan(x.imag()) ? ComplexDouble(NAN, NAN) : log10(x);
 })
 DECLARE_VIREO_PRIMITIVE2(LogComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))))
 DECLARE_VIREO_PRIMITIVE2(Log2ComplexDouble, ComplexDouble, ComplexDouble, (_Param(1) = log(_Param(0))/log(2.0)) )
@@ -1151,7 +1151,7 @@ DECLARE_VIREO_PRIMITIVE3(ComplexToReOrImComplexDouble, ComplexDouble, Double, Do
     _Param(1) = _Param(0).real(); _Param(2) = _Param(0).imag(); )
 DECLARE_VIREO_PRIMITIVE3(ReOrImToComplexDouble, Double, Double, ComplexDouble,
     _Param(2) = ComplexDouble(_Param(0), _Param(1)); )
-DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexDouble, ComplexDouble, Boolean, (_Param(1) = ::isnan(_Param(0).real()) || ::isnan(_Param(0).imag())) )
+DECLARE_VIREO_PRIMITIVE2(IsNotANumPathRefnumComplexDouble, ComplexDouble, Boolean, (_Param(1) = std::isnan(_Param(0).real()) || std::isnan(_Param(0).imag())) )
 
 DEFINE_VIREO_BEGIN(IEEE754ComplexDoubleMath)
     DEFINE_VIREO_REQUIRE(IEEE754Math)

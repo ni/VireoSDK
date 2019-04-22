@@ -453,7 +453,7 @@ var assignEggShell;
             }
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
             var totalLength = Module.eggShell.dataGetArrayLength(valueRef.dataRef);
-            var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
+            var typedArray = new TypedArrayConstructor(Module.HEAP8.buffer, arrayBegin, totalLength);
             return typedArray;
         };
 
@@ -477,7 +477,7 @@ var assignEggShell;
                 throw new Error('TypedArray total length must be ' + arrayTotalLength + ' instead got ' + totalLength);
             }
             var arrayBegin = Module.eggShell.dataGetArrayBegin(valueRef.dataRef);
-            var typedArray = new TypedArrayConstructor(Module.buffer, arrayBegin, totalLength);
+            var typedArray = new TypedArrayConstructor(Module.HEAP8.buffer, arrayBegin, totalLength);
             typedArray.set(typedArrayValue);
         };
 

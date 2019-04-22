@@ -1126,7 +1126,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
             if (arrayIn->ElementType()->TopAQSize() == sizeof(Double)) {
                 for (IntIndex i = 0; i < len; ++i) {
                     minValue = arrayIn->BeginAt(i);
-                    if (!::isnan(*(Double*)minValue)) {
+                    if (!std::isnan(*(Double*)minValue)) {
                         maxIndex = minIndex = i;
                         maxValue = minValue;
                         break;
@@ -1135,7 +1135,7 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
             } else {
                 for (IntIndex i = 0; i < len; ++i) {
                     minValue = arrayIn->BeginAt(i);
-                    if (!::isnan(*(Single*)minValue)) {
+                    if (!std::isnan(*(Single*)minValue)) {
                         maxIndex = minIndex = i;
                         maxValue = minValue;
                         break;
@@ -1587,9 +1587,9 @@ VIREO_FUNCTION_SIGNATURE4(ArrayThreshold, Double, TypedArrayCoreRef, Double, Int
         _Param(0) = left;
     } else if (leftValue == rightValue) {
         _Param(0) = (left + right) / 2;
-    } else if (::isinf(rightValue)) {
+    } else if (std::isinf(rightValue)) {
         _Param(0) = left;
-    } else if (::isnan(rightValue)) {
+    } else if (std::isnan(rightValue)) {
         _Param(0) = right;
     } else {
         _Param(0) = left*(rightValue - thresholdY) / (rightValue - leftValue) +
