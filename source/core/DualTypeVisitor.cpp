@@ -58,7 +58,7 @@ namespace Vireo
                     if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode) {
                         success = StringCompatible(typeRefX, typeRefY);
                     } else {
-                        success = ArrayCompatible(typeRefX, typeRefY, operation);
+                        success = ArrayCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
                     }
                     break;
                 }
@@ -188,17 +188,20 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeVisitor::ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation)
+    bool DualTypeVisitor::ArrayCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
     {
         // Verify number of dimensions are the same
         bool success = typeRefX->Rank() == typeRefY->Rank();
         // Verify each dimension has the same size
         if (success) {
-            TypedArrayCoreRef arrayX = *(static_cast<const TypedArrayCoreRef*>(typeRefX->Begin(kPARead)));
-            TypedArrayCoreRef arrayY = *(static_cast<const TypedArrayCoreRef*>(typeRefY->Begin(kPARead)));
+            TypedArrayCoreRef arrayX = *(static_cast<const TypedArrayCoreRef*>(pDataX));
+            TypedArrayCoreRef arrayY = *(static_cast<const TypedArrayCoreRef*>(pDataY));
             IntIndex* dimensionLenghtsX = arrayX->DimensionLengths();
             IntIndex* dimensionLenghtsY = arrayY->DimensionLengths();
             IntIndex i = 0;
+            if (operation->ShouldInflateDestination()) {
+                arrayY->ResizeToMatchOrEmpty(arrayX);
+            }
             while (success && i++ < typeRefX->Rank()) {
                 success = (dimensionLenghtsX[i] == dimensionLenghtsY[i]);
             }

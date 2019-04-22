@@ -176,6 +176,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 DualTypeVisitor visitor;
                 DualTypeConversion dualTypeConversion;
                 bool copied = false;
+                TypeRef underlyingType = variant->_underlyingTypeRef;
                 if (targetType->IsVariant()) {
                     if (outputData)
                         *static_cast<VariantTypeRef *>(outputData) = VariantType::CreateNewVariantFromType(underlyingType);

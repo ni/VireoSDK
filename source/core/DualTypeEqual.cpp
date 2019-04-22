@@ -20,6 +20,11 @@ namespace Vireo
     {
     }
 
+    bool DualTypeEqual::ShouldInflateDestination()
+    {
+        return false;
+    }
+
     //------------------------------------------------------------
     bool DualTypeEqual::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {

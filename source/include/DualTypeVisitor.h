@@ -33,7 +33,7 @@ class DualTypeVisitor {
     bool IntrinsicClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool UserDefinedClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool StringCompatible(TypeRef typeRefX, TypeRef typeRefY);
-    bool ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
+    bool ArrayCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
 
     bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);

@@ -20,6 +20,12 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
+    bool DualTypeConversion::ShouldInflateDestination()
+    {
+        return true;
+    }
+
+    //------------------------------------------------------------
     bool DualTypeConversion::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();

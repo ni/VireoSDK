@@ -20,6 +20,7 @@ namespace Vireo {
 class DualTypeEqual : public DualTypeOperation {
  public:
     DualTypeEqual();
+    bool ShouldInflateDestination() override;
     bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) override;
     bool Apply(StringRef stringRefX, StringRef stringRefY) override;
     bool Apply(Timestamp* timestampX, Timestamp* timestampY) override;
