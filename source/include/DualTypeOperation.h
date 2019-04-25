@@ -31,6 +31,7 @@ class DualTypeOperation {
     virtual bool AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
     virtual bool AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
     virtual bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
+    virtual bool AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) = 0;
 };
 }  // namespace Vireo
 

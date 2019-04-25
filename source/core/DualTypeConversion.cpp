@@ -44,6 +44,16 @@ namespace Vireo
             case kEncoding_IEEE754Binary:
                 success = ApplyIEEE754Binaries(typeRefX, pDataX, typeRefY, pDataY);
                 break;
+            case kEncoding_Enum:
+            {
+                TypeRef enumSubElement = typeRefX->GetSubElement(0);
+                IntIndex fieldOffsetX = enumSubElement->ElementOffset();
+                AQBlock1* pDataXElement = static_cast<AQBlock1*>(pDataX) + fieldOffsetX;
+                success = Apply(enumSubElement, pDataXElement, typeRefY, pDataY);
+                break;
+            }
+            default:
+                break;
         }
         return success;
     };
@@ -51,7 +61,8 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeConversion::Apply(StringRef stringRefX, StringRef stringRefY)
     {
-        stringRefY->CopyFromSubString(&stringRefX->MakeSubStringAlias());
+        SubString subString = stringRefX->MakeSubStringAlias();
+        stringRefY->CopyFromSubString(&subString);
         return true;
     }
 
@@ -72,7 +83,6 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeConversion::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY)
     {
-
         *complexDoubleY = *complexDoubleX;
         return true;
     }
@@ -80,9 +90,7 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeConversion::ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
-        bool booleanValueX = *static_cast<Boolean*>(pDataX);
-        bool booleanValueY = *static_cast<Boolean*>(pDataY);
-        booleanValueY = booleanValueX;
+        *reinterpret_cast<Boolean*>(pDataY) = *static_cast<Boolean*>(pDataX);;
         return true;
     }
 
@@ -92,20 +100,70 @@ namespace Vireo
         switch (encodingY) {
             case kEncoding_UInt:
                 switch (typeRefY->TopAQSize()) {
+                case 0:
+                    break;
+                case 1:
+                    *reinterpret_cast<UInt8*>(pDataY) = static_cast<UInt8>(valueX);
+                    break;
+                case 2:
+                    *reinterpret_cast<UInt16*>(pDataY) = static_cast<UInt16>(valueX);
+                    break;
+                case 4:
+                    *reinterpret_cast<UInt32*>(pDataY) = static_cast<UInt32>(valueX);
+                    break;
+                case 8:
+                    *reinterpret_cast<UInt64*>(pDataY) = static_cast<UInt64>(valueX);
+                    break;
+                }
+                break;
+            case kEncoding_Enum:
+                switch (typeRefY->TopAQSize()) {
                     case 0:
                         break;
                     case 1:
-                        *reinterpret_cast<UInt8*>(pDataY) = static_cast<UInt8>(valueX);
+                    {
+                        Int8 integerValueX = static_cast<Int8>(valueX);
+                        UInt8 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
+                        UInt8 numElementsInY = static_cast<UInt8>(typeRefY->GetEnumItemCount());
+                        if (unsignedIntegerValueX >= numElementsInY) {
+                            unsignedIntegerValueX = numElementsInY - 1;
+                        }
+                        *reinterpret_cast<UInt8*>(pDataY) = unsignedIntegerValueX;
                         break;
+                    }
                     case 2:
-                        *reinterpret_cast<UInt16*>(pDataY) = static_cast<UInt16>(valueX);
+                    {
+                        Int16 integerValueX = static_cast<Int16>(valueX);
+                        UInt16 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
+                        UInt16 numElementsInY = static_cast<UInt16>(typeRefY->GetEnumItemCount());
+                        if (unsignedIntegerValueX >= numElementsInY) {
+                            unsignedIntegerValueX = numElementsInY - 1;
+                        }
+                        *reinterpret_cast<UInt16*>(pDataY) = unsignedIntegerValueX;
                         break;
+                    }
                     case 4:
-                        *reinterpret_cast<UInt32*>(pDataY) = static_cast<UInt32>(valueX);
+                    {
+                        Int32 integerValueX = static_cast<Int32>(valueX);
+                        UInt32 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
+                        UInt32 numElementsInY = static_cast<UInt32>(typeRefY->GetEnumItemCount());
+                        if (unsignedIntegerValueX >= numElementsInY) {
+                            unsignedIntegerValueX = numElementsInY - 1;
+                        }
+                        *reinterpret_cast<UInt32*>(pDataY) = unsignedIntegerValueX;
                         break;
+                    }
                     case 8:
-                        *reinterpret_cast<UInt64*>(pDataY) = static_cast<UInt64>(valueX);
+                    {
+                        Int64 integerValueX = static_cast<Int64>(valueX);
+                        UInt64 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
+                        UInt64 numElementsInY = static_cast<UInt64>(typeRefY->GetEnumItemCount());
+                        if (unsignedIntegerValueX >= numElementsInY) {
+                            unsignedIntegerValueX = numElementsInY - 1;
+                        }
+                        *reinterpret_cast<UInt64*>(pDataY) = unsignedIntegerValueX;
                         break;
+                    }
                 }
                 break;
             case kEncoding_S2CInt:
@@ -127,15 +185,15 @@ namespace Vireo
                 }
                 break;
             case kEncoding_IEEE754Binary:
-                if (typeRefY->TopAQSize() == sizeof(Single))
-                {
+            {
+                if (typeRefY->TopAQSize() == sizeof(Single)) {
                     *reinterpret_cast<Single*>(pDataY) = static_cast<Single>(valueX);
-                }
-                else {
+                } else {
                     *reinterpret_cast<Double*>(pDataY) = static_cast<Double>(valueX);
                 }
                 break;
-            case kEncoding_Enum:
+            }
+            default:
                 break;
         }
     }
@@ -239,6 +297,18 @@ namespace Vireo
     {
         bool typesAreCompatible = TypesAreCompatible(typeRefX, typeRefY);
         return typesAreCompatible;
+    }
+
+    //------------------------------------------------------------
+    bool DualTypeConversion::AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    {
+        if (typeRefX->IsComplex() && typeRefY->IsComplex()) {
+            return true;
+        }
+        SubString typeXName, typeYName;
+        Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
+        Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
+        return typeXName.Compare(&typeYName);
     }
 
     //------------------------------------------------------------

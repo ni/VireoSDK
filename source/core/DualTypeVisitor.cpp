@@ -129,20 +129,10 @@ namespace Vireo
         Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
         Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
         if (isTypeXIntrinsicClusterType && isTypeYIntrinsicClusterType) {
-            success = IntrinsicClustersCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
+            success = operation->AreIntrinsicClustersCompatible(typeRefX, typeRefY);
         } else if (!isTypeXIntrinsicClusterType && !isTypeYIntrinsicClusterType) {
             success = UserDefinedClustersCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
         }
-        return success;
-    }
-
-    //------------------------------------------------------------
-    bool DualTypeVisitor::IntrinsicClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation)
-    {
-        SubString typeXName, typeYName;
-        Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
-        Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
-        bool success = typeXName.Compare(&typeYName);
         return success;
     }
 
@@ -196,14 +186,15 @@ namespace Vireo
         if (success) {
             TypedArrayCoreRef arrayX = *(static_cast<const TypedArrayCoreRef*>(pDataX));
             TypedArrayCoreRef arrayY = *(static_cast<const TypedArrayCoreRef*>(pDataY));
-            IntIndex* dimensionLenghtsX = arrayX->DimensionLengths();
-            IntIndex* dimensionLenghtsY = arrayY->DimensionLengths();
-            IntIndex i = 0;
             if (operation->ShouldInflateDestination()) {
                 arrayY->ResizeToMatchOrEmpty(arrayX);
             }
-            while (success && i++ < typeRefX->Rank()) {
+            IntIndex* dimensionLenghtsX = arrayX->DimensionLengths();
+            IntIndex* dimensionLenghtsY = arrayY->DimensionLengths();
+            IntIndex i = 0;
+            while (success && i < typeRefX->Rank()) {
                 success = (dimensionLenghtsX[i] == dimensionLenghtsY[i]);
+                i++;
             }
             // Verify each array has the same element type
             if (success)

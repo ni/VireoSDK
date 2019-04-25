@@ -32,6 +32,7 @@ class DualTypeConversion : public DualTypeOperation {
     bool AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
     bool AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
     bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
 
  private:
     static bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);

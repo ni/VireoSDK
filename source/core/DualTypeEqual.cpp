@@ -136,6 +136,15 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
+    bool DualTypeEqual::AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    {
+        SubString typeXName, typeYName;
+        Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
+        Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
+        return typeXName.Compare(&typeYName);
+    }
+
+    //------------------------------------------------------------
     bool DualTypeEqual::DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY)
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();

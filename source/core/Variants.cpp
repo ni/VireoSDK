@@ -175,35 +175,39 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
             } else {
                 DualTypeVisitor visitor;
                 DualTypeConversion dualTypeConversion;
-                bool copied = false;
+                bool typesCompatible = false;
                 TypeRef underlyingType = variant->_underlyingTypeRef;
                 if (targetType->IsVariant()) {
-                    if (outputData)
+                    if (outputData) {
                         *static_cast<VariantTypeRef *>(outputData) = VariantType::CreateNewVariantFromType(underlyingType);
-                } else if (outputData) {
-                    outputType->InitData(outputData);
-                    copied = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
-                } else if (errPtr && outputData && !copied) {
-                    VariantType::SetVariantToDataTypeError(underlyingType, targetType, outputType, outputData, errPtr);
-                } else if (errPtr) {
+                    }
+                    typesCompatible = true;
+                } else {
+                    if (outputData) {
+                        typesCompatible = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
+                    } else {
+                        typesCompatible = underlyingType->IsA(targetType, true);
+                    }
+                }
+                if (errPtr && !typesCompatible) {
                     VariantType::SetVariantToDataTypeError(underlyingType, targetType, outputType, outputData, errPtr);
                 }
             }
         } else {
             DualTypeVisitor visitor;
             DualTypeConversion dualTypeConversion;
-            bool copied = false;
-            if (outputData) {
-            copied = visitor.Visit(inputType, inputType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
-            } else if (targetType->IsVariant()) {
+            bool typesCompatible = false;
+            if (targetType->IsVariant()) {
                 if (outputData)
                     *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
-            } else if (errPtr && outputData && !copied) {
-                VariantType::SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
-            } else if (targetType->IsVariant()) {
-                if (outputData)
-                    *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
-            } else if (errPtr) {
+            } else {
+                if (outputData) {
+                    typesCompatible = visitor.Visit(inputType, inputData, outputType, outputData, &dualTypeConversion);
+                } else {
+                    typesCompatible = inputType->IsA(targetType, true);
+                }
+            }
+            if (errPtr && !typesCompatible) {
                 VariantType::SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
             }
         }
@@ -277,19 +281,27 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
         StringRef name = _Param(Name);
         StaticTypeAndDataRef value = &_ParamImmediate(Value);
         if (inputVariant->_attributeMap) {
+            DualTypeVisitor visitor;
+            DualTypeConversion dualTypeConversion;
+            bool typesCompatible = false;
             auto attributeMapIter = inputVariant->_attributeMap->find(name);
             if (attributeMapIter != inputVariant->_attributeMap->end()) {
                 VariantTypeRef foundValue = attributeMapIter->second;
                 if (value->_paramType->IsVariant()) {
                     *static_cast<VariantTypeRef*>(value->_pData) = VariantType::CreateNewVariantFromVariant(foundValue);
                     found = true;
-                } else if (foundValue->IsA(value->_paramType, true)) {
-                    found = true;
-                    value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
+                    typesCompatible = true;
                 } else {
-                    if (errPtr) {  // Incorrect type for default attribute value
-                        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Get Variant Attribute");
-                    }
+                    typesCompatible = visitor.Visit(
+                        foundValue->_underlyingTypeRef,
+                        foundValue->_underlyingTypeRef->Begin(kPARead),
+                        value->_paramType,
+                        value->_pData,
+                        &dualTypeConversion);
+                    found = typesCompatible;
+                }
+                if (errPtr && !typesCompatible) {  // Incorrect type for default attribute value
+                    errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Get Variant Attribute");
                 }
             }
         }
