@@ -32,7 +32,6 @@ class DualTypeEqual : public DualTypeOperation {
     bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
     bool AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
  private:
-     static bool DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
      static bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
      static bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
      static bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);

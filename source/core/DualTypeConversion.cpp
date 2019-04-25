@@ -90,8 +90,19 @@ namespace Vireo
     //------------------------------------------------------------
     bool DualTypeConversion::ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
-        *reinterpret_cast<Boolean*>(pDataY) = *static_cast<Boolean*>(pDataX);;
+        *reinterpret_cast<Boolean*>(pDataY) = *static_cast<Boolean*>(pDataX);
         return true;
+    }
+
+    template<typename X, typename Y, typename Z> Y ConvertFromEnum(Z valueX, TypeRef typeRefY)
+    {
+        X integerValueX = static_cast<X>(valueX);
+        Y unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
+        Y numElementsInY = static_cast<Y>(typeRefY->GetEnumItemCount());
+        if (unsignedIntegerValueX >= numElementsInY) {
+            unsignedIntegerValueX = numElementsInY - 1;
+        }
+        return unsignedIntegerValueX;
     }
 
     template<typename T> void ApplyNumeric(T valueX, TypeRef typeRefY, void* pDataY)
@@ -122,46 +133,22 @@ namespace Vireo
                         break;
                     case 1:
                     {
-                        Int8 integerValueX = static_cast<Int8>(valueX);
-                        UInt8 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
-                        UInt8 numElementsInY = static_cast<UInt8>(typeRefY->GetEnumItemCount());
-                        if (unsignedIntegerValueX >= numElementsInY) {
-                            unsignedIntegerValueX = numElementsInY - 1;
-                        }
-                        *reinterpret_cast<UInt8*>(pDataY) = unsignedIntegerValueX;
+                        *reinterpret_cast<UInt8*>(pDataY) = ConvertFromEnum<Int8, UInt8, T>(valueX, typeRefY);
                         break;
                     }
                     case 2:
                     {
-                        Int16 integerValueX = static_cast<Int16>(valueX);
-                        UInt16 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
-                        UInt16 numElementsInY = static_cast<UInt16>(typeRefY->GetEnumItemCount());
-                        if (unsignedIntegerValueX >= numElementsInY) {
-                            unsignedIntegerValueX = numElementsInY - 1;
-                        }
-                        *reinterpret_cast<UInt16*>(pDataY) = unsignedIntegerValueX;
+                        *reinterpret_cast<UInt16*>(pDataY) = ConvertFromEnum<Int16, UInt16, T>(valueX, typeRefY);
                         break;
                     }
                     case 4:
                     {
-                        Int32 integerValueX = static_cast<Int32>(valueX);
-                        UInt32 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
-                        UInt32 numElementsInY = static_cast<UInt32>(typeRefY->GetEnumItemCount());
-                        if (unsignedIntegerValueX >= numElementsInY) {
-                            unsignedIntegerValueX = numElementsInY - 1;
-                        }
-                        *reinterpret_cast<UInt32*>(pDataY) = unsignedIntegerValueX;
+                        *reinterpret_cast<UInt32*>(pDataY) = ConvertFromEnum<Int32, UInt32, T>(valueX, typeRefY);
                         break;
                     }
                     case 8:
                     {
-                        Int64 integerValueX = static_cast<Int64>(valueX);
-                        UInt64 unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
-                        UInt64 numElementsInY = static_cast<UInt64>(typeRefY->GetEnumItemCount());
-                        if (unsignedIntegerValueX >= numElementsInY) {
-                            unsignedIntegerValueX = numElementsInY - 1;
-                        }
-                        *reinterpret_cast<UInt64*>(pDataY) = unsignedIntegerValueX;
+                        *reinterpret_cast<UInt64*>(pDataY) = ConvertFromEnum<Int64, UInt64, T>(valueX, typeRefY);;
                         break;
                     }
                 }
@@ -309,16 +296,6 @@ namespace Vireo
         Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
         Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
         return typeXName.Compare(&typeYName);
-    }
-
-    //------------------------------------------------------------
-    bool DualTypeConversion::DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY)
-    {
-        EncodingEnum encodingX = typeRefX->BitEncoding();
-        EncodingEnum encodingY = typeRefY->BitEncoding();
-        bool sameEnconding = (encodingX == encodingY);
-        bool sameSize = typeRefX->TopAQSize() == typeRefY->TopAQSize();
-        return sameEnconding && sameSize;
     }
 
     //------------------------------------------------------------

@@ -39,7 +39,6 @@ class DualTypeConversion : public DualTypeOperation {
     static bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
     static bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
     static bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
-    static bool DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY);
     static bool TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY);
 };
 }  // namespace Vireo
