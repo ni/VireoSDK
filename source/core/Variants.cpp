@@ -439,7 +439,8 @@ bool VariantsAreEqual(VariantTypeRef variantX, VariantTypeRef variantY)
 {
     DualTypeVisitor visitor;
     DualTypeEqual dualTypeEqual;
-    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &dualTypeEqual);
+    return (!variantX && !variantY)  // Empty variant constant with no attributes are equal
+        || visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &dualTypeEqual);
 }
 
 VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {

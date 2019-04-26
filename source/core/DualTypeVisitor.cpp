@@ -61,6 +61,9 @@ namespace Vireo
                         success = ArrayCompatible(typeRefX, typeRefY, operation);
                     }
                     break;
+                case kEncoding_None:
+                    success = true;
+                    break;
                 }
                 default:
                     success = false;
@@ -227,6 +230,9 @@ namespace Vireo
                     success = ApplyString(typeRefX, pDataX, typeRefY, pDataY, operation);
                 else
                     success = ApplyArray(typeRefX, pDataX, typeRefY, pDataY, operation);
+                break;
+            case kEncoding_None:
+                success = true;
                 break;
             default:
                 success = operation->Apply(typeRefX, pDataX, typeRefY, pDataY);
