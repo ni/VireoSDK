@@ -221,6 +221,9 @@ namespace Vireo
                 else
                     success = ApplyArray(typeRefX, pDataX, typeRefY, pDataY, operation);
                 break;
+            case kEncoding_None:
+                success = true;
+                break;
             default:
                 success = operation.Apply(typeRefX, pDataX, typeRefY, pDataY);
             }
