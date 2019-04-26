@@ -198,8 +198,10 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
             DualTypeConversion dualTypeConversion;
             bool typesCompatible = false;
             if (targetType->IsVariant()) {
-                if (outputData)
+                if (outputData) {
                     *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
+                }
+                typesCompatible = true;
             } else {
                 if (outputData) {
                     typesCompatible = visitor.Visit(inputType, inputData, outputType, outputData, &dualTypeConversion);

@@ -382,6 +382,7 @@
                 "TestVI_VectorScalarBinaryOp.via",
                 "TestVI_VectorUnaryOp.via",
                 "TestVI_VectorUnary2OutputOp.via",
+                "TestVI_VariantToData_VariantWiredToDataTypeTerminal.via",
                 "TestVIMaxAndMin.via",
                 "TestVIMergeErrors.via",
                 "TestVI_TimestampOperations.via",
