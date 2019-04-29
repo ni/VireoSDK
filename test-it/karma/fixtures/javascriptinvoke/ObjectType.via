@@ -11,14 +11,16 @@ define(MyVI dv(VirtualInstrument (
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error9)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error10)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error11)
-        e(.JavaScriptRefNum ref1)
-        e(.JavaScriptRefNum ref2)
-        e(.JavaScriptRefNum ref3)
-        e(.JavaScriptRefNum ref4)
-        e(.JavaScriptRefNum ref5)
-        e(.JavaScriptRefNum ref6)
-        e(.JavaScriptRefNum ref7)
-        e(.JavaScriptRefNum ref8)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) error12)
+        e(.JavaScriptStaticRefNum refStatic1)
+        e(.JavaScriptStaticRefNum refStatic2)
+        e(.JavaScriptStaticRefNum refStatic3)
+        e(.JavaScriptStaticRefNum refStatic4)
+        e(.JavaScriptDynamicRefNum refDynamic1)
+        e(.JavaScriptDynamicRefNum refDynamic2)
+        e(.JavaScriptDynamicRefNum refDynamic3)
+        e(.JavaScriptDynamicRefNum refDynamic4)
+        e(.JavaScriptDynamicRefNum refDynamic5)
         e(dv(.String "Foo") name1)
         e(dv(.String "FooBar") name2)
         e(dv(.String "FooBarBaz") name3)
@@ -30,7 +32,8 @@ define(MyVI dv(VirtualInstrument (
         e(dv(.Boolean false) isNotANumPathRefnum1)
         e(dv(.Boolean false) isNotANumPathRefnum2)
         e(dv(.Boolean false) isNotANumPathRefnum3)
-        e(dv(.Boolean false) isSharedRef)
+        e(dv(.Boolean false) isNotANumPathRefnum4)
+        e(dv(.Boolean false) isSharedStaticRef)
         e(dv(.Boolean false) isSharedDynamicRef)
         e(dv(.Boolean false) isSharedPrimRef)
         e(dv(.Boolean false) isSharedNullRef)
@@ -40,50 +43,52 @@ define(MyVI dv(VirtualInstrument (
     )
     clump (
         // Get js object refs
-        JavaScriptInvoke(occurrence internal error1 'NI_GetObjectFunction' ref1 name1)
-        JavaScriptInvoke(occurrence internal error2 'NI_GetObjectFunction' ref2 name2)
-        IsEQ(ref1 ref2 isEqual)
-        IsNE(ref1 ref2 isNotEqual)
-        IsNotANumPathRefnum(ref1 isNotANumPathRefnum1)
-        IsNotANumPathRefnum(ref2 isNotANumPathRefnum2)
+        JavaScriptInvoke(occurrence internal error1 'NI_GetStaticObjectFunction' refStatic1 name1)
+        JavaScriptInvoke(occurrence internal error2 'NI_GetStaticObjectFunction' refStatic2 name2)
+        IsEQ(refStatic1 refStatic2 isEqual)
+        IsNE(refStatic1 refStatic2 isNotEqual)
+        IsNotANumPathRefnum(refStatic1 isNotANumPathRefnum1)
+        IsNotANumPathRefnum(refStatic2 isNotANumPathRefnum2)
 
         // Use the js object refs
-        JavaScriptInvoke(occurrence internal error3 'NI_UseObjectFunction' length1 ref1)
-        JavaScriptInvoke(occurrence internal error4 'NI_UseObjectFunction' length2 ref2)
+        JavaScriptInvoke(occurrence internal error3 'NI_UseObjectFunction' length1 refStatic1)
+        JavaScriptInvoke(occurrence internal error4 'NI_UseObjectFunction' length2 refStatic2)
         
         // Get the same js object from a static ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetObjectFunction' ref3 name1) 
-        IsEQ(ref1 ref3 isSharedRef)
+        JavaScriptInvoke(occurrence internal error5 'NI_GetStaticObjectFunction' refStatic3 name1) 
+        IsEQ(refStatic1 refStatic3 isSharedStaticRef)
 
         // Get the same js object from a dynamic ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicObjectFunction' ref7 name2) 
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicObjectFunction' ref8 name2) 
-        IsEQ(ref7 ref8 isSharedDynamicRef)
+        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicObjectFunction' refDynamic3 name2) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicObjectFunction' refDynamic4 name2) 
+        IsEQ(refDynamic3 refDynamic4 isSharedDynamicRef)
 
         // Primitive types don't get same js ref
-        JavaScriptInvoke(occurrence internal error6 'NI_GetPrimitiveFunction' ref4)
-        JavaScriptInvoke(occurrence internal error7 'NI_GetPrimitiveFunction' ref5)
-        IsEQ(ref4 ref5 isSharedPrimRef)
+        JavaScriptInvoke(occurrence internal error6 'NI_GetDynamicPrimitiveFunction' refDynamic1)
+        JavaScriptInvoke(occurrence internal error7 'NI_GetDynamicPrimitiveFunction' refDynamic2)
+        IsEQ(refDynamic1 refDynamic2 isSharedPrimRef)
 
         // JS null doesn't get the same js ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetNullFunction' ref7) 
-        JavaScriptInvoke(occurrence internal error5 'NI_GetNullFunction' ref8) 
-        IsEQ(ref7 ref8 isSharedNullRef)
+        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicNullFunction' refDynamic3) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicNullFunction' refDynamic4) 
+        IsEQ(refDynamic3 refDynamic4 isSharedNullRef)
 
         // JS undefined doesn't get the same js ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetUndefinedFunction' ref7) 
-        JavaScriptInvoke(occurrence internal error5 'NI_GetUndefinedFunction' ref8) 
-        IsEQ(ref7 ref8 isSharedUndefinedRef)
+        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicUndefinedFunction' refDynamic3) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicUndefinedFunction' refDynamic4) 
+        IsEQ(refDynamic3 refDynamic4 isSharedUndefinedRef)
 
         // Use un-inialized ref
-        IsNotANumPathRefnum(ref6 isNotANumPathRefnum3)
-        JavaScriptInvoke(occurrence internal error8 'NI_UseObjectFunction' length3 ref6)
+        IsNotANumPathRefnum(refStatic4 isNotANumPathRefnum3)
+        JavaScriptInvoke(occurrence internal error8 'NI_UseObjectFunction' length3 refStatic4)
+        IsNotANumPathRefnum(refDynamic5 isNotANumPathRefnum4)
+        JavaScriptInvoke(occurrence internal error9 'NI_UseObjectFunction' length3 refDynamic5)
 
         // Setting pre-initalized ref to the same js object is ok, this case can happen for JSLI with in/out ref terminal
-        JavaScriptInvoke(occurrence internal error9 'NI_GetObjectFunction' ref1 name1)
+        JavaScriptInvoke(occurrence internal error10 'NI_GetStaticObjectFunction' refStatic1 name1)
 
         // Setting pre-initalized ref to a different object is ok, this case can happen for a reference wire in a loop (ie, reference property read in a loop)
-        JavaScriptInvoke(occurrence internal error10 'NI_GetObjectFunction' ref1 name2)
+        JavaScriptInvoke(occurrence internal error11 'NI_GetStaticObjectFunction' refStatic1 name2)
     )
 ) ) )
 

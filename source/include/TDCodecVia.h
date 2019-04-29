@@ -256,7 +256,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsControlReferenceToken "ControlReference"
 #define tsControlRefNumToken    "ControlRefNum"
 
-#define tsJavaScriptRefNumToken "JavaScriptRefNum"
+#define tsJavaScriptStaticRefNumToken "JavaScriptStaticRefNum"
+#define tsJavaScriptDynamicRefNumToken "JavaScriptDynamicRefNum"
 
 #define tsEnumTypeToken         "Enum"
 #define tsEnumTypeTokenLen      4     // strlen of above

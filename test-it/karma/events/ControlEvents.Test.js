@@ -80,7 +80,7 @@ describe('The Vireo Control Event', function () {
         });
         vireo.javaScriptInvoke.registerInternalFunctions({
             GetJSRef: function (returnValueRef) {
-                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, javaScriptRefNumObject);
+                vireo.eggShell.writeJavaScriptStaticRefNum(returnValueRef, javaScriptRefNumObject);
             }
         });
     });
@@ -258,7 +258,7 @@ describe('The Vireo Control Event', function () {
         triggerEvent();
     });
 
-    it('occurrence updates boolean terminal value when using JavaScriptRefNum', function (done) {
+    it('occurrence updates boolean terminal value when using JavaScriptStaticRefNum', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventJavaScriptRefNum);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'UpdateBooleanOnValueChangeEvent');
         var result = `Waiting on Events
@@ -284,12 +284,12 @@ Event occurred
         triggerEvent();
     });
 
-    it('errors when JavaScriptRefNum is left null', function (done) {
+    it('errors when JavaScriptStaticRefNum is left null', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, updateBooleanOnValueChangeEventNullJavaScriptRefNum);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrintError).toBeEmptyString();
-            expect(rawPrint).toBe('(Error "JavaScriptRefNum must not be null.")\n');
+            expect(rawPrint).toBe('(Error "JavaScriptStaticRefNum must not be null.")\n');
             done();
         });
     });

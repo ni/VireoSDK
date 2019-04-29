@@ -127,7 +127,8 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/Events.bc\
 	$(OBJS)/ExecutionContext.bc\
 	$(OBJS)/GenericFunctions.bc\
-	$(OBJS)/JavaScriptRef.bc\
+	$(OBJS)/JavaScriptStaticRef.bc\
+	$(OBJS)/JavaScriptDynamicRef.bc\
 	$(OBJS)/MatchPat.bc\
 	$(OBJS)/Math.bc\
 	$(OBJS)/NumericString.bc\

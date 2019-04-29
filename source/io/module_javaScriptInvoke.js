@@ -109,7 +109,7 @@ var assignJavaScriptInvoke;
          * Static reference (Static control reference) shares cookie for the same jsValue.
          * Dynamic reference (JS opaque reference from JSLI) always creates a new cookie even for the same jsValue.
          */
-        Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue, isStaticReference) {
+        var writeJavaScriptStaticAndDynamicRefNum = function (javaScriptValueRef, jsValue, isStaticReference) {
             if (isStaticReference) { // static reference (ie, control reference) shares cookie for the same jsValue
                 var cachedCookie = getCachedRefNumCookie(jsValue);
                 if (cachedCookie !== undefined) {
@@ -121,6 +121,14 @@ var assignJavaScriptInvoke;
             var newCookie = generateUniqueRefNumCookie();
             Module.eggShell.writeDouble(javaScriptValueRef, newCookie);
             cacheRefNum(newCookie, jsValue);
+        };
+
+        Module.javaScriptInvoke.writeJavaScriptStaticRefNum = function (javaScriptValueRef, jsValue) {
+            return writeJavaScriptStaticAndDynamicRefNum(javaScriptValueRef, jsValue, true);
+        };
+
+        Module.javaScriptInvoke.writeJavaScriptDynamicRefNum = function (javaScriptValueRef, jsValue) {
+            return writeJavaScriptStaticAndDynamicRefNum(javaScriptValueRef, jsValue, false);
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
@@ -217,7 +225,7 @@ var assignJavaScriptInvoke;
                 }),
 
                 visitJSObjectRefnum: reportReturnSetException(function (valueRef, data) {
-                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.returnValue);
+                    Module.eggShell.writeJavaScriptStaticRefNum(valueRef, data.returnValue);
                 })
             };
         };

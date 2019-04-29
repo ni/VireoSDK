@@ -85,7 +85,8 @@ typedef TypeCommon StaticType;
 //! Names for some cores types.
 #define tsInvalidIntrinsicClusterType       ""
 #define tsBooleanType       "Boolean"
-#define tsJavaScriptRefNumType  "JavaScriptRefNum"
+#define tsJavaScriptStaticRefNumType  "JavaScriptStaticRefNum"
+#define tsJavaScriptDynamicRefNumType  "JavaScriptDynamicRefNum"
 #define tsInt32Type         "Int32"
 #define tsInt64Type         "Int64"
 #define tsDoubleType        "Double"
@@ -464,7 +465,8 @@ class TypeCommon
     static const SubString TypeTimestamp;
     static const SubString TypeComplexSingle;
     static const SubString TypeComplexDouble;
-    static const SubString TypeJavaScriptRefNum;
+    static const SubString TypeJavaScriptStaticRefNum;
+    static const SubString TypeJavaScriptDynamicRefNum;
     static const SubString TypePath;
     static const SubString TypeAnalogWaveform;
     static const SubString TypeStaticTypeAndData;

@@ -127,7 +127,10 @@
     <ClCompile Include="..\source\io\PropertyNode.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\core\JavaScriptRef.cpp">
+    <ClCompile Include="..\source\core\JavaScriptStaticRef.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\core\JavaScriptDynamicRef.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\source\core\Variants.cpp">
