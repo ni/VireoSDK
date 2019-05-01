@@ -186,7 +186,12 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                     if (outputData) {
                         typesCompatible = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
                     } else {
-                        typesCompatible = underlyingType->IsA(targetType, true);
+                        typesCompatible = visitor.TypesAreCompatible(
+                            underlyingType,
+                            underlyingType->Begin(kPARead),
+                            targetType,
+                            targetType->Begin(kPARead),
+                            &dualTypeConversion);
                     }
                 }
                 if (errPtr && !typesCompatible) {
@@ -206,7 +211,7 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 if (outputData) {
                     typesCompatible = visitor.Visit(inputType, inputData, outputType, outputData, &dualTypeConversion);
                 } else {
-                    typesCompatible = inputType->IsA(targetType, true);
+                    typesCompatible = visitor.TypesAreCompatible(inputType, inputData, targetType, targetType->Begin(kPARead), &dualTypeConversion);
                 }
             }
             if (errPtr && !typesCompatible) {

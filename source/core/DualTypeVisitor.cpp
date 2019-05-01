@@ -49,7 +49,7 @@ namespace Vireo
                     success = operation->AreIEEE754BinaryCompatible(typeRefX, typeRefY);
                     break;
                 case kEncoding_Cluster:
-                    success = ClusterCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
+                    success = typeRefY->BitEncoding() == kEncoding_Cluster && ClusterCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
                     break;
                 case kEncoding_Enum:
                     success = EnumCompatible(typeRefX, typeRefY, operation);
@@ -58,7 +58,7 @@ namespace Vireo
                     if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode) {
                         success = StringCompatible(typeRefX, typeRefY);
                     } else {
-                        success = ArrayCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
+                        success = typeRefY->BitEncoding() == kEncoding_Array && ArrayCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
                     }
                     break;
                 }

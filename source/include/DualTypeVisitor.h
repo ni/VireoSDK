@@ -24,9 +24,9 @@ class DualTypeVisitor {
  public:
     DualTypeVisitor() = default;
     bool Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
+    bool TypesAreCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
 
  private:
-    bool TypesAreCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool VariantCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool ClusterCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
     bool EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
