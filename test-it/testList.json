@@ -357,6 +357,7 @@
                 "TestVI_GetVariantAttribute_DefaultAttributeValueOfCompatibleDataTypeDoesNotError.via",
                 "TestVI_CompatibleDataTypes_VariantToData_DoesNotReportError.via",
                 "TestVI_IncompatibleScalarDataTypes_VariantToData.via",
+                "TestVI_IncompatibleAggregateTypes_VariantToData.via",
                 "TestVI_InRangeAndCoerce.via",
                 "TestVI_InRangeAndCoerce_Arrays.via",
                 "TestVIInRangeAndCoerceClusters.via",
