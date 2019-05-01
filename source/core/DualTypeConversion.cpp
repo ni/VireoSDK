@@ -20,13 +20,13 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::ShouldInflateDestination()
+    bool DualTypeConversion::ShouldInflateDestination() const
     {
         return true;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeConversion::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) const
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();
         bool success = false;
@@ -59,7 +59,7 @@ namespace Vireo
     };
 
     //------------------------------------------------------------
-    bool DualTypeConversion::Apply(StringRef stringRefX, StringRef stringRefY)
+    bool DualTypeConversion::Apply(StringRef stringRefX, StringRef stringRefY) const
     {
         SubString subString = stringRefX->MakeSubStringAlias();
         stringRefY->CopyFromSubString(&subString);
@@ -67,21 +67,21 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::Apply(Timestamp* timestampX, Timestamp* timestampY)
+    bool DualTypeConversion::Apply(Timestamp* timestampX, Timestamp* timestampY) const
     {
         *timestampY = *timestampX;
         return true;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY)
+    bool DualTypeConversion::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY) const
     {
         *complexSingleY = *complexSingleX;
         return true;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY)
+    bool DualTypeConversion::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY) const
     {
         *complexDoubleY = *complexDoubleX;
         return true;
@@ -132,25 +132,17 @@ namespace Vireo
                     case 0:
                         break;
                     case 1:
-                    {
                         *reinterpret_cast<UInt8*>(pDataY) = ConvertFromEnum<Int8, UInt8, T>(valueX, typeRefY);
                         break;
-                    }
                     case 2:
-                    {
                         *reinterpret_cast<UInt16*>(pDataY) = ConvertFromEnum<Int16, UInt16, T>(valueX, typeRefY);
                         break;
-                    }
                     case 4:
-                    {
                         *reinterpret_cast<UInt32*>(pDataY) = ConvertFromEnum<Int32, UInt32, T>(valueX, typeRefY);
                         break;
-                    }
                     case 8:
-                    {
                         *reinterpret_cast<UInt64*>(pDataY) = ConvertFromEnum<Int64, UInt64, T>(valueX, typeRefY);;
                         break;
-                    }
                 }
                 break;
             case kEncoding_S2CInt:
@@ -259,37 +251,37 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeConversion::AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool sameEncodingAndSize = DoTypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeConversion::AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool typesAreCompatible = TypesAreCompatible(typeRefX, typeRefY);
         return typesAreCompatible;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeConversion::AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool typesAreCompatible = TypesAreCompatible(typeRefX, typeRefY);
         return typesAreCompatible;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeConversion::AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool typesAreCompatible = TypesAreCompatible(typeRefX, typeRefY);
         return typesAreCompatible;
     }
 
     //------------------------------------------------------------
-    bool DualTypeConversion::AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeConversion::AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
-        if (typeRefX->IsComplex() && typeRefY->IsComplex()) {
+        if (typeRefX->IsComplex() && typeRefY->IsComplex()) {  // Complex single and complex double are compatible types.
             return true;
         }
         SubString typeXName, typeYName;

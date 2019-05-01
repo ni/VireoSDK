@@ -184,14 +184,14 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                     typesCompatible = true;
                 } else {
                     if (outputData) {
-                        typesCompatible = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, &dualTypeConversion);
+                        typesCompatible = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, dualTypeConversion);
                     } else {
                         typesCompatible = visitor.TypesAreCompatible(
                             underlyingType,
                             underlyingType->Begin(kPARead),
                             targetType,
                             targetType->Begin(kPARead),
-                            &dualTypeConversion);
+                            dualTypeConversion);
                     }
                 }
                 if (errPtr && !typesCompatible) {
@@ -209,9 +209,9 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 typesCompatible = true;
             } else {
                 if (outputData) {
-                    typesCompatible = visitor.Visit(inputType, inputData, outputType, outputData, &dualTypeConversion);
+                    typesCompatible = visitor.Visit(inputType, inputData, outputType, outputData, dualTypeConversion);
                 } else {
-                    typesCompatible = visitor.TypesAreCompatible(inputType, inputData, targetType, targetType->Begin(kPARead), &dualTypeConversion);
+                    typesCompatible = visitor.TypesAreCompatible(inputType, inputData, targetType, targetType->Begin(kPARead), dualTypeConversion);
                 }
             }
             if (errPtr && !typesCompatible) {
@@ -304,7 +304,7 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
                         foundValue->_underlyingTypeRef->Begin(kPARead),
                         value->_paramType,
                         value->_pData,
-                        &dualTypeConversion);
+                        dualTypeConversion);
                     found = typesCompatible;
                 }
                 if (errPtr && !typesCompatible) {  // Incorrect type for default attribute value
@@ -471,7 +471,7 @@ bool VariantsAreEqual(VariantTypeRef variantX, VariantTypeRef variantY)
 {
     DualTypeVisitor visitor;
     DualTypeEqual dualTypeEqual;
-    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &dualTypeEqual);
+    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), dualTypeEqual);
 }
 
 VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {

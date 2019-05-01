@@ -22,17 +22,17 @@ class DualTypeConversion : public DualTypeOperation {
  public:
     DualTypeConversion();
 
-    bool ShouldInflateDestination() override;
-    bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) override;
-    bool Apply(StringRef stringRefX, StringRef stringRefY) override;
-    bool Apply(Timestamp* timestampX, Timestamp* timestampY) override;
-    bool Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY) override;
-    bool Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY) override;
-    bool AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
-    bool AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) override;
+    bool ShouldInflateDestination() const override;
+    bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) const override;
+    bool Apply(StringRef stringRefX, StringRef stringRefY) const override;
+    bool Apply(Timestamp* timestampX, Timestamp* timestampY) const override;
+    bool Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY) const override;
+    bool Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY) const override;
+    bool AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
+    bool AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
+    bool AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
+    bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
+    bool AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
 
  private:
     static bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
