@@ -142,6 +142,9 @@
     <ClCompile Include="..\source\core\DualTypeVisitor.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\DualTypeConversion.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">
@@ -275,6 +278,9 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\DualTypeEqual.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\DualTypeConversion.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
   </ItemGroup>

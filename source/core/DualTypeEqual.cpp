@@ -20,8 +20,13 @@ namespace Vireo
     {
     }
 
+    bool DualTypeEqual::ShouldInflateDestination() const
+    {
+        return false;
+    }
+
     //------------------------------------------------------------
-    bool DualTypeEqual::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
+    bool DualTypeEqual::Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) const
     {
         EncodingEnum encodingX = typeRefX->BitEncoding();
         bool success = false;
@@ -48,28 +53,28 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::Apply(StringRef stringRefX, StringRef stringRefY)
+    bool DualTypeEqual::Apply(StringRef stringRefX, StringRef stringRefY) const
     {
         bool areEqual = stringRefX->IsEqual(stringRefY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::Apply(Timestamp* timestampX, Timestamp* timestampY)
+    bool DualTypeEqual::Apply(Timestamp* timestampX, Timestamp* timestampY) const
     {
         bool areEqual = (*timestampX == *timestampY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY)
+    bool DualTypeEqual::Apply(std::complex<Single>* complexSingleX, std::complex<Single>* complexSingleY) const
     {
         bool areEqual = (*complexSingleX == *complexSingleY);
         return areEqual;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY)
+    bool DualTypeEqual::Apply(std::complex<Double>* complexDoubleX, std::complex<Double>* complexDoubleY) const
     {
         bool areEqual = (*complexDoubleX == *complexDoubleY);
         return areEqual;
@@ -103,40 +108,39 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::AreBooleanCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool sameEncodingAndSize = DoTypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::AreUIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool sameEncodingAndSize = DoTypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool sameEncodingAndSize = DoTypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
         bool sameEncodingAndSize = DoTypesHaveSameEncodingAndSize(typeRefX, typeRefY);
         return sameEncodingAndSize;
     }
 
     //------------------------------------------------------------
-    bool DualTypeEqual::DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY)
+    bool DualTypeEqual::AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) const
     {
-        EncodingEnum encodingX = typeRefX->BitEncoding();
-        EncodingEnum encodingY = typeRefY->BitEncoding();
-        bool sameEncoding = (encodingX == encodingY);
-        bool sameSize = typeRefX->TopAQSize() == typeRefY->TopAQSize();
-        return sameEncoding && sameSize;
+        SubString typeXName, typeYName;
+        Boolean isTypeXIntrinsicClusterType = typeRefX->IsIntrinsicClusterDataType(&typeXName);
+        Boolean isTypeYIntrinsicClusterType = typeRefY->IsIntrinsicClusterDataType(&typeYName);
+        return typeXName.Compare(&typeYName);
     }
 };  // namespace Vireo

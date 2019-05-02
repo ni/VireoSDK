@@ -21,6 +21,7 @@ SDG
 #include "DualTypeVisitor.h"
 #include "DualTypeOperation.h"
 #include "DualTypeEqual.h"
+#include "DualTypeConversion.h"
 
 namespace Vireo
 {
@@ -172,25 +173,58 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
                 if (errPtr)
                     errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
             } else {
+                DualTypeVisitor visitor;
+                DualTypeConversion dualTypeConversion;
+                bool typesCompatible = false;
                 TypeRef underlyingType = variant->_underlyingTypeRef;
                 if (targetType->IsVariant()) {
-                    if (outputData)
+                    if (outputData) {
                         *static_cast<VariantTypeRef *>(outputData) = VariantType::CreateNewVariantFromType(underlyingType);
-                } else if (underlyingType->IsA(targetType, true)) {
-                    if (outputData)
-                        targetType->CopyData(underlyingType->Begin(kPARead), outputData);
-                } else if (errPtr) {
+                    }
+                    typesCompatible = true;
+                } else {
+                    if (outputData) {
+                        if (underlyingType->IsA(targetType, true)) {
+                            typesCompatible = true;
+                            outputType->CopyData(underlyingType->Begin(kPARead), outputData);
+                        } else {
+                            typesCompatible = visitor.Visit(underlyingType, underlyingType->Begin(kPARead), outputType, outputData, dualTypeConversion);
+                        }
+                    } else {
+                        typesCompatible = visitor.TypesAreCompatible(
+                            underlyingType,
+                            underlyingType->Begin(kPARead),
+                            targetType,
+                            targetType->Begin(kPARead),
+                            dualTypeConversion);
+                    }
+                }
+                if (errPtr && !typesCompatible) {
                     VariantType::SetVariantToDataTypeError(underlyingType, targetType, outputType, outputData, errPtr);
                 }
             }
         } else {
-            if (inputType->IsA(targetType, true)) {
-                if (outputData)
-                    targetType->CopyData(inputData, outputData);
-            } else if (targetType->IsVariant()) {
-                if (outputData)
+            DualTypeVisitor visitor;
+            DualTypeConversion dualTypeConversion;
+            bool typesCompatible = false;
+            if (targetType->IsVariant()) {
+                if (outputData) {
                     *static_cast<VariantTypeRef*>(outputData) = VariantType::CreateNewVariantFromType(inputType);
-            } else if (errPtr) {
+                }
+                typesCompatible = true;
+            } else {
+                if (outputData) {
+                    if (inputType->IsA(targetType, true)) {
+                        typesCompatible = true;
+                        targetType->CopyData(inputData, outputData);
+                    } else {
+                        typesCompatible = visitor.Visit(inputType, inputData, outputType, outputData, dualTypeConversion);
+                    }
+                } else {
+                    typesCompatible = visitor.TypesAreCompatible(inputType, inputData, targetType, targetType->Begin(kPARead), dualTypeConversion);
+                }
+            }
+            if (errPtr && !typesCompatible) {
                 VariantType::SetVariantToDataTypeError(inputType, targetType, outputType, outputData, errPtr);
             }
         }
@@ -264,19 +298,33 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
         StringRef name = _Param(Name);
         StaticTypeAndDataRef value = &_ParamImmediate(Value);
         if (inputVariant->_attributeMap) {
+            DualTypeVisitor visitor;
+            DualTypeConversion dualTypeConversion;
+            bool typesCompatible = false;
             auto attributeMapIter = inputVariant->_attributeMap->find(name);
             if (attributeMapIter != inputVariant->_attributeMap->end()) {
                 VariantTypeRef foundValue = attributeMapIter->second;
                 if (value->_paramType->IsVariant()) {
                     *static_cast<VariantTypeRef*>(value->_pData) = VariantType::CreateNewVariantFromVariant(foundValue);
                     found = true;
-                } else if (foundValue->IsA(value->_paramType, true)) {
-                    found = true;
-                    value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
+                    typesCompatible = true;
                 } else {
-                    if (errPtr) {  // Incorrect type for default attribute value
-                        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Get Variant Attribute");
+                    if (foundValue->IsA(value->_paramType, true)) {
+                        found = true;
+                        typesCompatible = true;
+                        value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
+                    } else {
+                        typesCompatible = visitor.Visit(
+                            foundValue->_underlyingTypeRef,
+                            foundValue->_underlyingTypeRef->Begin(kPARead),
+                            value->_paramType,
+                            value->_pData,
+                            dualTypeConversion);
+                        found = typesCompatible;
                     }
+                }
+                if (errPtr && !typesCompatible) {  // Incorrect type for default attribute value
+                    errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Get Variant Attribute");
                 }
             }
         }
@@ -439,7 +487,7 @@ bool VariantsAreEqual(VariantTypeRef variantX, VariantTypeRef variantY)
 {
     DualTypeVisitor visitor;
     DualTypeEqual dualTypeEqual;
-    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), &dualTypeEqual);
+    return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), dualTypeEqual);
 }
 
 VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {
