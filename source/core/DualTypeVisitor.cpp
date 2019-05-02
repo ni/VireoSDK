@@ -186,13 +186,14 @@ namespace Vireo
             TypedArrayCoreRef arrayY = *(static_cast<const TypedArrayCoreRef*>(pDataY));
             if (operation.ShouldInflateDestination()) {
                 arrayY->ResizeToMatchOrEmpty(arrayX);
-            }
-            IntIndex* dimensionLenghtsX = arrayX->DimensionLengths();
-            IntIndex* dimensionLenghtsY = arrayY->DimensionLengths();
-            IntIndex i = 0;
-            while (success && i < typeRefX->Rank()) {
-                success = (dimensionLenghtsX[i] == dimensionLenghtsY[i]);
-                i++;
+            } else {
+                IntIndex* dimensionLenghtsX = arrayX->DimensionLengths();
+                IntIndex* dimensionLenghtsY = arrayY->DimensionLengths();
+                IntIndex i = 0;
+                while (success && i < typeRefX->Rank()) {
+                    success = (dimensionLenghtsX[i] == dimensionLenghtsY[i]);
+                    i++;
+                }
             }
             // Verify each array has the same element type
             if (success)
