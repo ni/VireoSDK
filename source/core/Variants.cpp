@@ -309,13 +309,19 @@ VIREO_FUNCTION_SIGNATURET(GetVariantAttribute, GetVariantAttributeParamBlock)
                     found = true;
                     typesCompatible = true;
                 } else {
-                    typesCompatible = visitor.Visit(
-                        foundValue->_underlyingTypeRef,
-                        foundValue->_underlyingTypeRef->Begin(kPARead),
-                        value->_paramType,
-                        value->_pData,
-                        dualTypeConversion);
-                    found = typesCompatible;
+                    if (foundValue->IsA(value->_paramType, true)) {
+                        found = true;
+                        typesCompatible = true;
+                        value->_paramType->CopyData(foundValue->Begin(kPARead), value->_pData);
+                    } else {
+                        typesCompatible = visitor.Visit(
+                            foundValue->_underlyingTypeRef,
+                            foundValue->_underlyingTypeRef->Begin(kPARead),
+                            value->_paramType,
+                            value->_pData,
+                            dualTypeConversion);
+                        found = typesCompatible;
+                    }
                 }
                 if (errPtr && !typesCompatible) {  // Incorrect type for default attribute value
                     errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Get Variant Attribute");
