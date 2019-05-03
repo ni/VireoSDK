@@ -430,8 +430,6 @@ VIREO_FUNCTION_SIGNATURET(DeleteVariantAttribute, DeleteVariantAttributeParamBlo
                     }
                 }
             }
-        } else if (clearAllAttributes) {
-            found = true;
         }
     }
     if (_ParamPointer(Found))

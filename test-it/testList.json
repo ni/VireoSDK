@@ -173,6 +173,7 @@
                 "DeeplyNestedInitializer.via",
                 "DefaultOutputs.via",
                 "DefaultTM.via",
+                "DeleteVariantAttributeWithNoName_DeletesAllAttributesAndReturnsFalse.via",
                 "DHOStringToNumber.via",
                 "DuplicateSymbol.via",
                 "EggShellError1.via",
