@@ -23,23 +23,22 @@ namespace Vireo {
 class DualTypeVisitor {
  public:
     DualTypeVisitor() = default;
-    bool Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
+    bool Visit(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    bool TypesAreCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
 
  private:
-    bool TypesAreCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool VariantCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ClusterCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
-    bool IntrinsicClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool UserDefinedClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool StringCompatible(TypeRef typeRefX, TypeRef typeRefY);
-    bool ArrayCompatible(TypeRef typeRefX, TypeRef typeRefY, DualTypeOperation* operation);
+    bool VariantCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    bool ClusterCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    bool EnumCompatible(TypeRef typeRefX, TypeRef typeRefY, const DualTypeOperation &operation);
+    bool UserDefinedClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    static bool StringCompatible(TypeRef typeRefX, TypeRef typeRefY);
+    bool ArrayCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
 
-    bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ApplyString(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
-    bool ApplyArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, DualTypeOperation* operation);
+    static bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    static bool ApplyVariant(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    static bool ApplyCluster(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    static bool ApplyString(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
+    static bool ApplyArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation);
 };
 }  // namespace Vireo
 #endif

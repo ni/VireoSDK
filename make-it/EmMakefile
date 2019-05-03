@@ -158,6 +158,7 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/JavaScriptInvoke.bc\
 	$(OBJS)/PropertyNode.bc\
 	$(OBJS)/DualTypeOperation.bc\
+	$(OBJS)/DualTypeConversion.bc\
 	$(OBJS)/DualTypeVisitor.bc\
 	$(OBJS)/DualTypeEqual.bc
 

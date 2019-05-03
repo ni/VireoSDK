@@ -14,5 +14,13 @@ SDG
 
 namespace Vireo
 {
-
+    //------------------------------------------------------------
+    bool DualTypeOperation::DoTypesHaveSameEncodingAndSize(TypeRef typeRefX, TypeRef typeRefY)
+    {
+        EncodingEnum encodingX = typeRefX->BitEncoding();
+        EncodingEnum encodingY = typeRefY->BitEncoding();
+        bool sameEnconding = (encodingX == encodingY);
+        bool sameSize = typeRefX->TopAQSize() == typeRefY->TopAQSize();
+        return sameEnconding && sameSize;
+    }
 };  // namespace Vireo

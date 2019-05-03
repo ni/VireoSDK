@@ -18,6 +18,7 @@
     <ClCompile Include="..\source\core\ControlRef.cpp" />
     <ClCompile Include="..\source\core\DataQueue.cpp" />
     <ClCompile Include="..\source\core\Date.cpp" />
+    <ClCompile Include="..\source\core\DualTypeConversion.cpp" />
     <ClCompile Include="..\source\core\EventLog.cpp" />
     <ClCompile Include="..\source\core\Events.cpp" />
     <ClCompile Include="..\source\core\ExecutionContext.cpp" />
@@ -79,6 +80,7 @@
     <ClInclude Include="..\source\include\DataReflectionVisitor.h" />
     <ClInclude Include="..\source\include\DataTypes.h" />
     <ClInclude Include="..\source\include\Date.h" />
+    <ClInclude Include="..\source\include\DualTypeConversion.h" />
     <ClInclude Include="..\source\include\EventLog.h" />
     <ClInclude Include="..\source\include\Events.h" />
     <ClInclude Include="..\source\include\ExecutionContext.h" />

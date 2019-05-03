@@ -7,19 +7,21 @@ SDG
 */
 
 /*! \file
-\brief Compares two types to have the same structure and the same values
+\brief Compares if two types have the same structure and does conversion for numeric values
 */
 
-#ifndef DualTypeEqual_h
-#define DualTypeEqual_h
+#ifndef DualTypeConversion_h
+#define DualTypeConversion_h
 
 #include "TypeDefiner.h"
 #include "DualTypeOperation.h"
 
 namespace Vireo {
-class DualTypeEqual : public DualTypeOperation {
+
+class DualTypeConversion : public DualTypeOperation {
  public:
-    DualTypeEqual();
+    DualTypeConversion();
+
     bool ShouldInflateDestination() const override;
     bool Apply(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY) const override;
     bool Apply(StringRef stringRefX, StringRef stringRefY) const override;
@@ -31,11 +33,13 @@ class DualTypeEqual : public DualTypeOperation {
     bool AreS2CIntCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
     bool AreIEEE754BinaryCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
     bool AreIntrinsicClustersCompatible(TypeRef typeRefX, TypeRef typeRefY) const override;
+
  private:
     static bool ApplyBooleans(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
     static bool ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
     static bool ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
     static bool ApplyIEEE754Binaries(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY);
+    static bool TypesAreCompatible(TypeRef typeRefX, TypeRef typeRefY);
 };
 }  // namespace Vireo
 
