@@ -80,7 +80,7 @@ describe('The Vireo Control Event', function () {
         });
         vireo.javaScriptInvoke.registerInternalFunctions({
             GetJSRef: function (returnValueRef) {
-                vireo.eggShell.writeJavaScriptStaticRefNum(returnValueRef, javaScriptRefNumObject);
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, javaScriptRefNumObject);
             }
         });
     });

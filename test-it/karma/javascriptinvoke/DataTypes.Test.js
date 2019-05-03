@@ -125,16 +125,10 @@ describe('A JavaScript function invoke', function () {
         };
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_GetDynamicObjectFunction: function (returnValueRef, nameValueRef) {
+            NI_GetObjectFunction: function (returnValueRef, nameValueRef) {
                 var name = vireo.eggShell.readString(nameValueRef);
                 var objectToWrite = getObjectByName(name);
-                vireo.eggShell.writeJavaScriptDynamicRefNum(returnValueRef, objectToWrite);
-                return;
-            },
-            NI_GetStaticObjectFunction: function (returnValueRef, nameValueRef) {
-                var name = vireo.eggShell.readString(nameValueRef);
-                var objectToWrite = getObjectByName(name);
-                vireo.eggShell.writeJavaScriptStaticRefNum(returnValueRef, objectToWrite, true);
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, objectToWrite);
                 return;
             }
         });
@@ -153,14 +147,14 @@ describe('A JavaScript function invoke', function () {
         });
 
         vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_GetDynamicPrimitiveFunction: function (returnValueRef) {
-                vireo.eggShell.writeJavaScriptDynamicRefNum(returnValueRef, 'foo');
+            NI_GetPrimitiveFunction: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, 'foo');
             },
-            NI_GetDynamicNullFunction: function (returnValueRef) {
-                vireo.eggShell.writeJavaScriptDynamicRefNum(returnValueRef, null);
+            NI_GetNullFunction: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, null);
             },
-            NI_GetDynamicUndefinedFunction: function (returnValueRef) {
-                vireo.eggShell.writeJavaScriptDynamicRefNum(returnValueRef, undefined);
+            NI_GetUndefinedFunction: function (returnValueRef) {
+                vireo.eggShell.writeJavaScriptRefNum(returnValueRef, undefined);
             }
         });
     });

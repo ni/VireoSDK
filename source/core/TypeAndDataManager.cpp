@@ -1030,6 +1030,18 @@ Boolean TypeCommon::IsJavaScriptRefNum()
     return false;
 }
 //------------------------------------------------------------
+Boolean TypeCommon::IsJavaScriptStaticRefNum()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeJavaScriptStaticRefNum)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
 Boolean TypeCommon::IsAnalogWaveform()
 {
     TypeRef t = this;

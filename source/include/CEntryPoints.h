@@ -87,7 +87,8 @@ VIREO_EXPORT Boolean TypeRef_IsPath(TypeRef typeRef);
 VIREO_EXPORT Boolean TypeRef_IsTimestamp(TypeRef typeRef);
 VIREO_EXPORT Boolean TypeRef_IsComplex(TypeRef typeRef);
 VIREO_EXPORT Boolean TypeRef_IsAnalogWaveform(TypeRef typeRef);
-VIREO_EXPORT Boolean TypeRef_IsJavascriptRefnum(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsJavaScriptRefNum(TypeRef typeRef);
+VIREO_EXPORT Boolean TypeRef_IsJavaScriptStaticRefNum(TypeRef typeRef);
 //------------------------------------------------------------
 //! TypedBlock functions
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object);

@@ -632,6 +632,7 @@ class TypeCommon
     Boolean IsTimestamp();
     Boolean IsComplex();
     Boolean IsJavaScriptRefNum();
+    Boolean IsJavaScriptStaticRefNum();
     Boolean IsAnalogWaveform();
     Boolean IsIntrinsicClusterDataType(SubString *foundTypeName);  // Returns true for builtin data types such as Timestamp, Complex, etc
     Boolean IsVariant();

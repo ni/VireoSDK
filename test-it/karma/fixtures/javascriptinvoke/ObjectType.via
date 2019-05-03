@@ -43,8 +43,8 @@ define(MyVI dv(VirtualInstrument (
     )
     clump (
         // Get js object refs
-        JavaScriptInvoke(occurrence internal error1 'NI_GetStaticObjectFunction' refStatic1 name1)
-        JavaScriptInvoke(occurrence internal error2 'NI_GetStaticObjectFunction' refStatic2 name2)
+        JavaScriptInvoke(occurrence internal error1 'NI_GetObjectFunction' refStatic1 name1)
+        JavaScriptInvoke(occurrence internal error2 'NI_GetObjectFunction' refStatic2 name2)
         IsEQ(refStatic1 refStatic2 isEqual)
         IsNE(refStatic1 refStatic2 isNotEqual)
         IsNotANumPathRefnum(refStatic1 isNotANumPathRefnum1)
@@ -55,27 +55,27 @@ define(MyVI dv(VirtualInstrument (
         JavaScriptInvoke(occurrence internal error4 'NI_UseObjectFunction' length2 refStatic2)
         
         // Get the same js object from a static ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetStaticObjectFunction' refStatic3 name1) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetObjectFunction' refStatic3 name1) 
         IsEQ(refStatic1 refStatic3 isSharedStaticRef)
 
         // Get the same js object from a dynamic ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicObjectFunction' refDynamic3 name2) 
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicObjectFunction' refDynamic4 name2) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetObjectFunction' refDynamic3 name2) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetObjectFunction' refDynamic4 name2) 
         IsEQ(refDynamic3 refDynamic4 isSharedDynamicRef)
 
         // Primitive types don't get same js ref
-        JavaScriptInvoke(occurrence internal error6 'NI_GetDynamicPrimitiveFunction' refDynamic1)
-        JavaScriptInvoke(occurrence internal error7 'NI_GetDynamicPrimitiveFunction' refDynamic2)
+        JavaScriptInvoke(occurrence internal error6 'NI_GetPrimitiveFunction' refDynamic1)
+        JavaScriptInvoke(occurrence internal error7 'NI_GetPrimitiveFunction' refDynamic2)
         IsEQ(refDynamic1 refDynamic2 isSharedPrimRef)
 
         // JS null doesn't get the same js ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicNullFunction' refDynamic3) 
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicNullFunction' refDynamic4) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetNullFunction' refDynamic3) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetNullFunction' refDynamic4) 
         IsEQ(refDynamic3 refDynamic4 isSharedNullRef)
 
         // JS undefined doesn't get the same js ref
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicUndefinedFunction' refDynamic3) 
-        JavaScriptInvoke(occurrence internal error5 'NI_GetDynamicUndefinedFunction' refDynamic4) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetUndefinedFunction' refDynamic3) 
+        JavaScriptInvoke(occurrence internal error5 'NI_GetUndefinedFunction' refDynamic4) 
         IsEQ(refDynamic3 refDynamic4 isSharedUndefinedRef)
 
         // Use un-inialized ref
@@ -85,10 +85,10 @@ define(MyVI dv(VirtualInstrument (
         JavaScriptInvoke(occurrence internal error9 'NI_UseObjectFunction' length3 refDynamic5)
 
         // Setting pre-initalized ref to the same js object is ok, this case can happen for JSLI with in/out ref terminal
-        JavaScriptInvoke(occurrence internal error10 'NI_GetStaticObjectFunction' refStatic1 name1)
+        JavaScriptInvoke(occurrence internal error10 'NI_GetObjectFunction' refStatic1 name1)
 
         // Setting pre-initalized ref to a different object is ok, this case can happen for a reference wire in a loop (ie, reference property read in a loop)
-        JavaScriptInvoke(occurrence internal error11 'NI_GetStaticObjectFunction' refStatic1 name2)
+        JavaScriptInvoke(occurrence internal error11 'NI_GetObjectFunction' refStatic1 name2)
     )
 ) ) )
 
