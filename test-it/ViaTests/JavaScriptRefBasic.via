@@ -18,7 +18,7 @@ define(subVI dv(.VirtualInstrument (
         i(JavaScriptStaticRefNum refarg)  // parameter javascript ref, passed from caller
     )
     Locals: c(
-        e(JavaScriptStaticRefNum subref) // javascript ref in subVI
+        e(JavaScriptStaticRefNum subref) // static javascript ref in subVI
         e(Boolean bool)
     )
     clump (1 // top level
