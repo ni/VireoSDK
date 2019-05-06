@@ -60,6 +60,9 @@ namespace Vireo
                 }
                 break;
             }
+            case kEncoding_None:
+                success = typeRefY->BitEncoding() == kEncoding_None;
+                break;
             default:
                 success = false;
             }
@@ -222,7 +225,7 @@ namespace Vireo
                     success = ApplyArray(typeRefX, pDataX, typeRefY, pDataY, operation);
                 break;
             case kEncoding_None:
-                success = true;
+                success = typeRefY->BitEncoding() == kEncoding_None;
                 break;
             default:
                 success = operation.Apply(typeRefX, pDataX, typeRefY, pDataY);
