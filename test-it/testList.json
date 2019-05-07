@@ -180,6 +180,7 @@
                 "EggShellError3.via",
                 "EggShellError4.via",
                 "EggShellError5.via",
+                "EmptyVariantConstant_ComputeEqualsAndNotEquals_ReturnsExpected.via",
                 "EnumBasic.via",
                 "Equals1DArr.via",
                 "Equals2DArr.via",
