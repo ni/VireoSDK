@@ -170,8 +170,12 @@ VIREO_FUNCTION_SIGNATURET(VariantToData, VariantToDataParamBlock)
         if (inputType->IsVariant()) {
             VariantTypeRef variant = *reinterpret_cast<VariantTypeRef *>_ParamImmediate(InputData._pData);
             if (VariantType::IsNullVariant(variant)) {
-                if (errPtr)
-                    errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+                if (errPtr) {
+                    if (targetType->IsVariant())
+                        errPtr->SetErrorAndAppendCallChain(true, kVariantArgErr, "Variant To Data");
+                    else
+                        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
+                }
             } else {
                 DualTypeVisitor visitor;
                 DualTypeConversion dualTypeConversion;
