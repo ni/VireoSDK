@@ -1018,11 +1018,11 @@ Boolean TypeCommon::IsComplex()
     return false;
 }
 //------------------------------------------------------------
-Boolean TypeCommon::IsJavaScriptRefNum()
+Boolean TypeCommon::IsJavaScriptStaticRefNum()
 {
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(&TypeJavaScriptStaticRefNum) || t->Name().Compare(&TypeJavaScriptDynamicRefNum)) {
+        if (t->Name().Compare(&TypeJavaScriptStaticRefNum)) {
             return true;
         }
         t = t->BaseType();
@@ -1030,11 +1030,11 @@ Boolean TypeCommon::IsJavaScriptRefNum()
     return false;
 }
 //------------------------------------------------------------
-Boolean TypeCommon::IsJavaScriptStaticRefNum()
+Boolean TypeCommon::IsJavaScriptDynamicRefNum()
 {
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(&TypeJavaScriptStaticRefNum)) {
+        if (t->Name().Compare(&TypeJavaScriptDynamicRefNum)) {
             return true;
         }
         t = t->BaseType();

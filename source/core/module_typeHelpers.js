@@ -257,11 +257,16 @@ var assignTypeHelpers;
         };
 
         Module.typeHelpers.isJSObjectRefnum = function (typeRef) {
-            return Module._TypeRef_IsJavaScriptRefNum(typeRef) !== 0;
+            return Module._TypeRef_IsJavaScriptStaticRefNum(typeRef) !== 0 ||
+                   Module._TypeRef_IsJavaScriptDynamicRefNum(typeRef) !== 0;
         };
 
         Module.typeHelpers.isJSObjectStaticRefnum = function (typeRef) {
             return Module._TypeRef_IsJavaScriptStaticRefNum(typeRef) !== 0;
+        };
+
+        Module.typeHelpers.isJSObjectDynamicRefnum = function (typeRef) {
+            return Module._TypeRef_IsJavaScriptDynamicRefNum(typeRef) !== 0;
         };
 
         var typeHandlers = [
