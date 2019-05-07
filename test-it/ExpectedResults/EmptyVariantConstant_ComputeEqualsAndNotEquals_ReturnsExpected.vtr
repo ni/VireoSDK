@@ -1,0 +1,4 @@
+TestResult_EmptyVariantConstantsWithUnequalAttributesSet true
+TestResult_EmptyVariantConstantsWithEqualAttributesSet true
+TestResult_EmptyVariantConstantVsVariantWithData true
+TestResult_EmptyVariantConstants true
