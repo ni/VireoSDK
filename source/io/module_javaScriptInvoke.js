@@ -428,7 +428,7 @@ var assignJavaScriptInvoke;
             };
 
             var jsapi;
-            if (functionToCall.length === parameters.length + 1) {
+            if (isInternalFunction || functionToCall.length === parameters.length + 1) {
                 jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
                 parameters.push(jsapi);
             }
