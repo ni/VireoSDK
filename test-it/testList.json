@@ -1,10 +1,5 @@
 {
     "tests": {
-        "disabled": {
-            "tests": [
-                "TestVI_VariantEquality_VariantsWithVariantsNestedInsideThem.via"
-            ] 
-        },
         "native": {
             "include": [ "common" ],
             "tests": [
@@ -382,6 +377,10 @@
                 "TestVI_VariantSetGetAttributes.via",
                 "TestVI_VariantToData_DefaultValueOfTypeTerminalIsWrittenIntoOutputInCaseOfError.via",
                 "TestVI_Variant_GetAttributesDefaultValue.via",
+                "TestVI_SetVariantWithAttributeAsVariantAttribute_AndGetAttributeOneByOne.via",
+                "TestVI_SetVariantWithAttributeAsVariantAttribute_AndGetAttributesAll.via",
+                "TestVI_VariantEquality_VariantsWithVariantsNestedInsideThem.via",
+                "TestVI_NestedVariantWithAttributesAtNestedLevels.via",
                 "TestVI_VectorMaxMinOp.via",
                 "TestVI_VectorScalarBinaryOp.via",
                 "TestVI_VectorUnaryOp.via",

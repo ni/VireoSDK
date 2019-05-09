@@ -1,0 +1,6 @@
+TestResult_SetVariantAttribute_Replaced_Is_False true
+TestResult_TopLevelVariantToData_DataOutput true
+TestResult_GetVariantAttribute2 true
+TestResult_VariantToData2_Data_Output true
+TestResult_RetrievedVariantWithAttribute true
+TestResult_NoError true

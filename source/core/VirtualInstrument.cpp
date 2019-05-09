@@ -647,7 +647,7 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean addType
     if (addType) {
         // StaticTypeAndData formal parameters get passed the type and pointer to the data.
         // they are fully polymorphic.
-        InternalAddArg(nullptr, ActualArgumentType());
+        InternalAddArgBack(nullptr, ActualArgumentType());
         static SubString etad("EnumTypeAndData");
         if (FormalParameterType()->IsA(&etad)) {
             if (!ActualArgumentType()->IsEnum()) {
@@ -669,11 +669,11 @@ void ClumpParseState::AddDataTargetArgument(SubString* argument, Boolean addType
     }
 
     if (addAddress) {
-        InternalAddArg(ActualArgumentType(), pData);
+        InternalAddArgBack(ActualArgumentType(), pData);
     }
 }
 //------------------------------------------------------------
-void ClumpParseState::InternalAddArg(TypeRef actualType, void* address)
+void ClumpParseState::InternalAddArgBack(TypeRef actualType, void* address)
 {
     _argTypes.push_back(actualType);
     _argPointers.push_back(address);
@@ -683,6 +683,17 @@ void ClumpParseState::InternalAddArg(TypeRef actualType, void* address)
         ++_varArgCount;
         _argPointers[0] = reinterpret_cast<void*>(_varArgCount);  // VargArgCount is always first argument; update
     }
+}
+//------------------------------------------------------------
+void ClumpParseState::InternalAddArgFront(TypeRef actualType, void* address)
+{
+    VIREO_ASSERT(!VarArgParameterDetected());
+    auto argTypesIter = _argTypes.begin();
+    auto argPointersIter = _argPointers.begin();
+
+    _argTypes.insert(argTypesIter, actualType);
+    _argPointers.insert(argPointersIter, address);
+    ++_argCount;
 }
 //------------------------------------------------------------
 void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, intptr_t whereToPeek)
@@ -697,7 +708,7 @@ void ClumpParseState::InternalAddArgNeedingPatch(PatchInfo::PatchType patchType,
     PatchInfo *pPatch = &_patchInfos[_patchInfoCount];
     pPatch->_patchType = patchType;
     pPatch->_whereToPeek = IntIndex(whereToPeek);
-    InternalAddArg(nullptr, reinterpret_cast<void*>(_patchInfoCount));
+    InternalAddArgBack(nullptr, reinterpret_cast<void*>(_patchInfoCount));
     ++_patchInfoCount;
 }
 //------------------------------------------------------------
@@ -754,7 +765,7 @@ void ClumpParseState::AddBranchTargetArgument(SubString* branchTargetToken)
         if ((_perches[perchIndex] != kPerchUndefined) && (_perches[perchIndex] != kPerchBeingAllocated)) {
             // The perch address is already known, use it.
             _argumentState = kArgumentResolvedToPerch;
-            InternalAddArg(nullptr, _perches[perchIndex]);
+            InternalAddArgBack(nullptr, _perches[perchIndex]);
         } else {
             // Remember the address of this perch as place to patch
             // once the clump is finished.
@@ -777,7 +788,7 @@ void ClumpParseState::AddClumpTargetArgument(SubString* clumpIndexToken)
     }
 
     _argumentState = kArgumentResolvedToClump;
-    InternalAddArg(nullptr, _vi->Clumps()->BeginAt((IntIndex)clumpIndex));
+    InternalAddArgBack(nullptr, _vi->Clumps()->BeginAt((IntIndex)clumpIndex));
 }
 //------------------------------------------------------------
 VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
@@ -805,7 +816,7 @@ VirtualInstrument* ClumpParseState::AddSubVITargetArgument(TypeRef viType)
 
     if (vi != nullptr) {
         _argumentState = kArgumentResolvedToClump;
-        InternalAddArg(nullptr, vi->Clumps()->Begin());
+        InternalAddArgBack(nullptr, vi->Clumps()->Begin());
     }
     return vi;
 }
@@ -817,7 +828,7 @@ Int32 ClumpParseState::AddSubSnippet()
     // has been emitted so the memory will be allocated in the correct order.
     // However the parameter position can be returned
 
-    InternalAddArg(nullptr, nullptr);
+    InternalAddArgBack(nullptr, nullptr);
     return _argCount - 1;
 }
 //------------------------------------------------------------
@@ -961,8 +972,8 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
             if (viArgPointers[i] != nullptr) {
                 // For parameters to subVIs that are objects, only the pointer is copied.
                 snippetBuilder.StartInstruction(&copyTopOpName);
-                snippetBuilder.InternalAddArg(viArgTypes[i], viArgPointers[i]);
-                snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+                snippetBuilder.InternalAddArgBack(viArgTypes[i], viArgPointers[i]);
+                snippetBuilder.InternalAddArgBack(paramType, pParamData + offset);
                 snippetBuilder.EmitInstruction();
             }
         } else {
@@ -971,8 +982,8 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
             if (viArgPointers[i] != nullptr && paramType->IsInputParam()) {
                 // Not an object, do a normal copy.
                 snippetBuilder.StartInstruction(&copyOpName);
-                snippetBuilder.InternalAddArg(viArgTypes[i], viArgPointers[i]);
-                snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+                snippetBuilder.InternalAddArgBack(viArgTypes[i], viArgPointers[i]);
+                snippetBuilder.InternalAddArgBack(paramType, pParamData + offset);
                 snippetBuilder.EmitInstruction();
             }
         }
@@ -981,8 +992,8 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
             // Generate instruction to initialize parameter to default value.
             // For outputs we re-init to the default value if there is one.(in case the subvi does not write to it, or reads it locally)
             snippetBuilder.StartInstruction(&initOpName);
-            snippetBuilder.InternalAddArg(nullptr, paramType);
-            snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+            snippetBuilder.InternalAddArgBack(nullptr, paramType);
+            snippetBuilder.InternalAddArgBack(paramType, pParamData + offset);
             snippetBuilder.EmitInstruction();
         }
     }
@@ -1003,8 +1014,8 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
             // If ArgPointer is nullptr no output provided, don't copy out, it was a temporary allocation.
             snippetBuilder.StartInstruction(&copyTopOpName);
             // Reverse direction for output parameters
-            snippetBuilder.InternalAddArg(paramType, pParamData + offset);
-            snippetBuilder.InternalAddArg(viArgTypes[i], viArgPointers[i]);
+            snippetBuilder.InternalAddArgBack(paramType, pParamData + offset);
+            snippetBuilder.InternalAddArgBack(viArgTypes[i], viArgPointers[i]);
             snippetBuilder.EmitInstruction();
         }
         if (!paramType->IsFlat()) {
@@ -1012,14 +1023,14 @@ InstructionCore* ClumpParseState::EmitCallVIInstruction()
                 // If it is non flat then it has to be owned. (Unwired parameters should have been allocated a private copy, handled in else)
                 // Zero out all traces of the non flat value passed in
                 snippetBuilder.StartInstruction(&zeroOutTopOpName);
-                snippetBuilder.InternalAddArg(nullptr, paramType);
-                snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+                snippetBuilder.InternalAddArgBack(nullptr, paramType);
+                snippetBuilder.InternalAddArgBack(paramType, pParamData + offset);
                 snippetBuilder.EmitInstruction();
             } else {
                 // Wild card argument was passed, so it was locally allocated in param block. We should clear the data.
                 snippetBuilder.StartInstruction(&clearOpName);
-                snippetBuilder.InternalAddArg(nullptr, paramType);
-                snippetBuilder.InternalAddArg(paramType, pParamData + offset);
+                snippetBuilder.InternalAddArgBack(nullptr, paramType);
+                snippetBuilder.InternalAddArgBack(paramType, pParamData + offset);
                 snippetBuilder.EmitInstruction();
             }
         }
@@ -1049,7 +1060,7 @@ InstructionCore* ClumpParseState::EmitInstruction(SubString* opName, Int32 argCo
             void* actualData = va_arg(args, void*);
 
             if (actualType->IsA(formalType, false)) {
-                InternalAddArg(actualType, actualData);
+                InternalAddArgBack(actualType, actualData);
             } else {
                 keepTrying = false;
             }
@@ -1096,7 +1107,7 @@ InstructionCore* ClumpParseState::EmitInstruction()
                 DefaultValueType *cdt = DefaultValueType::New(_clump->TheTypeManager(), type, true);
                 cdt = cdt->FinalizeDVT();
                 void* pData = static_cast<AQBlock1*>(cdt->Begin(kPAReadWrite));  // * passed as a param means nullptr
-                InternalAddArg(type, pData);
+                InternalAddArgBack(type, pData);
             } else {
 //              foundMissing = true;
             }

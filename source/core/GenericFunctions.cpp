@@ -82,8 +82,6 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 extraParam = (void*)(uintptr_t)destType->GetEnumItemCount();
             } else if (destType->BitEncoding() == kEncoding_RefNum) {
                 copyOpName = "CopyRefnum";
-            } else if (destType->Name().Compare(&TypeCommon::TypeVariant)) {
-                copyOpName = "CopyVariant";
             } else {
                 copyOpName = GetCopyOpName(pSource, pDest, sourceType);
                 if (!copyOpName) {
@@ -102,6 +100,8 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
                 // Objects require a deep copy (e.g. arrays will copy over all values)
                 copyOpName = "CopyObject";
             }
+        } else if (destType->BitEncoding() == kEncoding_Variant && sourceType->BitEncoding() == kEncoding_Variant) {
+                copyOpName = "CopyVariant";
         } else {
             // Non flat clusters (e.g clusters with arrays) need type info passed
             // so the general purpose copy function can get to the types copy proc.
@@ -111,7 +111,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
 
         if (extraParam) {
             // Some copy operations take an additional parameter, pass it at the end.
-            pInstructionBuilder->InternalAddArg(nullptr, extraParam);
+            pInstructionBuilder->InternalAddArgBack(nullptr, extraParam);
         }
 
         SubString copyOpToken(copyOpName);
@@ -384,7 +384,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
                 pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, vectorBinOp, accumulatorOpArgId);
                 snippetBuilder.StartInstruction(&accumulatorToken);
-                snippetBuilder.InternalAddArg(nullptr, vectorBinOp == kFakedInstruction ?
+                snippetBuilder.InternalAddArgBack(nullptr, vectorBinOp == kFakedInstruction ?
                                         nullptr : vectorBinOp->_piSnippet);  // TODO(PaulAustin): this seems redundant
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
@@ -457,12 +457,25 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
                 pInstructionBuilder->BeginEmitSubSnippet(&snippetBuilder, clusterOp, accumulatorOpArgId);
                 snippetBuilder.StartInstruction(&accumulatorToken);
-                snippetBuilder.InternalAddArg(nullptr, clusterOp == kFakedInstruction ? nullptr : clusterOp->_piSnippet);
+                snippetBuilder.InternalAddArgBack(nullptr, clusterOp == kFakedInstruction ? nullptr : clusterOp->_piSnippet);
                 snippetBuilder.EmitInstruction();
                 pInstructionBuilder->EndEmitSubSnippet(&snippetBuilder);
             }
 
             pInstructionBuilder->RecordNextHere(&clusterOp->_piNext);
+            break;
+        }
+        case kEncoding_Variant:
+        {
+            if (operationName.ComparePrefixCStr("Is") && (sourceYType->BitEncoding() != kEncoding_Variant || destType->BitEncoding() != kEncoding_Boolean))
+                break;
+
+            TempStackCString opToken(&operationName);
+            SubString typeToken("Variant");
+            opToken.Append(&typeToken);
+            SubString binaryOpToken(opToken.BeginCStr());
+            pInstructionBuilder->ReresolveInstruction(&binaryOpToken);
+            pInstruction = pInstructionBuilder->EmitInstruction();
             break;
         }
     }
@@ -531,6 +544,15 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
 
     InstructionCore* pInstruction = nullptr;
     switch (destType->BitEncoding()) {
+        case kEncoding_Variant:
+        {
+            ConstCStr unaryOpName = "DataToVariant";
+            SubString unaryOpToken(unaryOpName);
+            pInstructionBuilder->InternalAddArgFront(nullptr, pInstructionBuilder->_argTypes[0]);
+            pInstructionBuilder->ReresolveInstruction(&unaryOpToken);
+            pInstruction = pInstructionBuilder->EmitInstruction();
+            break;
+        }
         case kEncoding_Array:
         {
             ConstCStr pVectorUnOpName = isTwoOutput ? "VectorUnary2OutputOp" : "VectorUnaryOp";
@@ -998,7 +1020,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
         SubString LTName("IsLT");
 
         // Add param slot to hold the snippet
-        pInstructionBuilder->InternalAddArg(nullptr, coercedType);
+        pInstructionBuilder->InternalAddArgBack(nullptr, coercedType);
         Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
 
         InRangeAndCoerceInstructionAggregate* ircOp = (InRangeAndCoerceInstructionAggregate*)pInstructionBuilder->EmitInstruction();
@@ -1046,7 +1068,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
                 flags |= InRangeAndCoerceInstruction::kLoIsScalar;
             if (!sourceHiType->IsArray())
                 flags |= InRangeAndCoerceInstruction::kHiIsScalar;
-            pInstructionBuilder->InternalAddArg(Int32Type, (void*)(size_t)flags);
+            pInstructionBuilder->InternalAddArgBack(Int32Type, (void*)(size_t)flags);
             // This would be easier if the vector bin op was at the end...
             Int32 snippetArgId = pInstructionBuilder->AddSubSnippet();
 
@@ -1090,7 +1112,7 @@ InstructionCore* EmitGenericInRangeAndCoerceInstruction(ClumpParseState* pInstru
                 || (sourceHiType->IsCluster() && coercedType->SubElementCount() != sourceHiType->SubElementCount()))
                 return nullptr;
 
-            pInstructionBuilder->InternalAddArg(Int32Type, (void*)(size_t)0);  // flags only used in array case
+            pInstructionBuilder->InternalAddArgBack(Int32Type, (void*)(size_t)0);  // flags only used in array case
 
             Int32 binOpArgId = pInstructionBuilder->AddSubSnippet();  // Add param slots to hold the snippets
 
@@ -1496,7 +1518,7 @@ InstructionCore* EmitVectorOp(ClumpParseState* pInstructionBuilder)
     ConstCStr vectorOpName = "VectorOpInternal";
     SubString vectorOpToken(vectorOpName);
     pInstructionBuilder->ReresolveInstruction(&vectorOpToken);
-    pInstructionBuilder->InternalAddArg(nullptr, (void *) (size_t)isIdentityOne);
+    pInstructionBuilder->InternalAddArgBack(nullptr, (void *) (size_t)isIdentityOne);
     Int32 scalarOpSnippetArgId = pInstructionBuilder->AddSubSnippet();
     VectorOpInstruction* vectorOp = (VectorOpInstruction*) pInstructionBuilder->EmitInstruction();
 
@@ -1579,13 +1601,13 @@ InstructionCore* EmitArrayConcatenateInstruction(ClumpParseState* pInstructionBu
     // indicates whether input's type is the same as ArrayOut's type or ArrayOut's element type.
     for (Int32 i = 2; i < argCount; i++) {
         if (pDestType->CompareType(pInstructionBuilder->_argTypes[i]))  // input is an array
-            pInstructionBuilder->InternalAddArg(nullptr, pInstructionBuilder->_argPointers[i]);
+            pInstructionBuilder->InternalAddArgBack(nullptr, pInstructionBuilder->_argPointers[i]);
         else if (destEncoding == kEncoding_Array && pDestType->Rank() == 1
             && pDestType->GetSubElement(0)->CompareType(pInstructionBuilder->_argTypes[i]))  // input is a single element
-            pInstructionBuilder->InternalAddArg(nullptr, nullptr);
+            pInstructionBuilder->InternalAddArgBack(nullptr, nullptr);
         else if (destEncoding == kEncoding_Array && pInstructionBuilder->_argTypes[i]->BitEncoding() == kEncoding_Array
             && pDestType->Rank() == pInstructionBuilder->_argTypes[i]->Rank()+1)  // input is array one rank less than output
-            pInstructionBuilder->InternalAddArg(nullptr, pInstructionBuilder->_argPointers[i]);
+            pInstructionBuilder->InternalAddArgBack(nullptr, pInstructionBuilder->_argPointers[i]);
         else  // type mismatch
             VIREO_ASSERT(false);
     }
