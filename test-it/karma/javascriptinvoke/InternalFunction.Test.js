@@ -313,4 +313,73 @@ describe('A JavaScriptInvoke for an internal function', function () {
         expect(viPathParser('error.source')).toBeEmptyString();
         expect(viPathParser('returnValue')).toBe(2);
     });
+
+    it('includes the jsAPI if explicit in signature for internal functions', function (done) {
+        var viName = 'NI_InternalFunction';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var argumentsCount;
+        var jsAPIReference;
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                argumentsCount = arguments.length;
+                jsAPIReference = jsAPI;
+                jsAPI.setLabVIEWError(false, 0, '');
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
+            }
+        });
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(argumentsCount).toBe(3);
+            expect(jsAPIReference).toHaveMember('getCompletionCallback');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+            expect(viPathParser('returnValue')).toBe(2);
+            done();
+        });
+    });
+
+    it('still includes the jsAPI even if not explicit in signature for internal functions', function (done) {
+        var viName = 'NI_InternalFunction';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        var argumentsCount;
+        var jsAPIReference;
+
+        vireo.javaScriptInvoke.registerInternalFunctions({
+            NI_InternalFunction: function () {
+                var returnValueRef = arguments[0];
+                var inputIntegerValueRef = arguments[1];
+                var jsAPI = arguments[2];
+                argumentsCount = arguments.length;
+                jsAPIReference = jsAPI;
+                jsAPI.setLabVIEWError(false, 0, '');
+                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                var returnValue = inputInteger + 1;
+                vireo.eggShell.writeDouble(returnValueRef, returnValue);
+            }
+        });
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(argumentsCount).toBe(3);
+            expect(jsAPIReference).toHaveMember('getCompletionCallback');
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+            expect(viPathParser('returnValue')).toBe(2);
+            done();
+        });
+    });
 });
