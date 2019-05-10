@@ -786,4 +786,77 @@ describe('A JavaScript function invoke', function () {
             await test();
         });
     });
+
+    describe('includes the jsapi reference when requested in arguments for normal functions', function () {
+        var argumentsCount;
+        var jsAPIReference;
+        beforeEach(function () {
+            argumentsCount = 0;
+            jsAPIReference = false;
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 3);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(argumentsCount).toBe(2);
+                expect(jsAPIReference).toHaveMember('getCompletionCallback');
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(9);
+            };
+        });
+        it('using the completion callback', async function () {
+            window.SingleFunction = function (input, jsapi) {
+                argumentsCount = arguments.length;
+                jsAPIReference = arguments[1];
+                var completionCallback = jsapi.getCompletionCallback();
+                Promise.resolve().then(function () {
+                    completionCallback(input * input);
+                });
+            };
+            await test();
+        });
+    });
+
+    describe('does not include jsapi reference in arguments by default for normal functions', function () {
+        var argumentsCount;
+        var jsAPIReference;
+        beforeEach(function () {
+            argumentsCount = 0;
+            jsAPIReference = false;
+            test = async function () {
+                var viName = 'SingleFunction';
+                var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsAsyncFunctionsUrl);
+                var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+                var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+                viPathWriter('input', 3);
+                vireoRunner.enqueueVI(vireo, viName);
+
+                const {rawPrint, rawPrintError} = await runSlicesAsync();
+                expect(argumentsCount).toBe(1);
+                expect(jsAPIReference).not.toBeDefined();
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeFalse();
+                expect(viPathParser('error.code')).toBe(0);
+                expect(viPathParser('error.source')).toBeEmptyString();
+                expect(viPathParser('return')).toBe(9);
+            };
+        });
+        it('using promises', async function () {
+            window.SingleFunction = async function (input) {
+                argumentsCount = arguments.length;
+                jsAPIReference = arguments[1];
+                return input * input;
+            };
+            await test();
+        });
+    });
 });
