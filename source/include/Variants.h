@@ -38,6 +38,8 @@ class VariantType : public WrappedType
     static VariantTypeRef CreateNewVariantFromVariant(const VariantTypeRef& inputVariant);
     static void SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef outputType, void* outputData, ErrorCluster* errPtr);
     static bool IsNullVariant(VariantTypeRef variant);
+    static bool IsNullOrEmptyVariant(VariantTypeRef variant);
+    static bool IsAttributeMapNullOrEmpty(VariantTypeRef variant);
  public:
     NIError ClearData(void* pData) override;
 };

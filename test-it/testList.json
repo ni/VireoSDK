@@ -181,6 +181,7 @@
                 "EggShellError4.via",
                 "EggShellError5.via",
                 "EmptyVariantConstant_ComputeEqualsAndNotEquals_ReturnsExpected.via",
+                "EmptyVariantConstant_SetAndDeleteAttribute_EqualsEmptyVariant.via",
                 "EnumBasic.via",
                 "Equals1DArr.via",
                 "Equals2DArr.via",
