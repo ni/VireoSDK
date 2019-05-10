@@ -153,7 +153,7 @@ define (Application%3A%3ATestVI_VariantDeleteAttributes%2Egviweb dv(.VirtualInst
         ce(dv(.Boolean true)c146)
         ce(dv(.ErrorCluster (false 0 '' ))c147)
         e(.Boolean local148)
-        ce(dv(.Boolean true)c149)
+        ce(dv(.Boolean false)c149)
         e(.Boolean local150)
         ce(dv(.String 'VARIANT')c151)
         ce(dv(.Int32 0)c152)
