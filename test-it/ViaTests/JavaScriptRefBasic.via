@@ -1,7 +1,7 @@
 define(PrintJavaScriptRef dv(.VirtualInstrument (
     Params:c(
         i(String refName)
-        i(JavaScriptRefNum ref)
+        i(JavaScriptStaticRefNum ref)
     )
     Locals:c(
         e(String out)
@@ -15,10 +15,10 @@ define(PrintJavaScriptRef dv(.VirtualInstrument (
 
 define(subVI dv(.VirtualInstrument (
     Params:c(
-        i(JavaScriptRefNum refarg)  // parameter javascript ref, passed from caller
+        i(JavaScriptStaticRefNum refarg)  // parameter javascript ref, passed from caller
     )
     Locals: c(
-        e(JavaScriptRefNum subref) // javascript ref in subVI
+        e(JavaScriptStaticRefNum subref) // static javascript ref in subVI
         e(Boolean bool)
     )
     clump (1 // top level
@@ -34,8 +34,8 @@ define(subVI dv(.VirtualInstrument (
 
 define(JavaScriptRefTestProgram dv(.VirtualInstrument (
     Locals:c(
-		e(JavaScriptRefNum ref1)      // static javascript ref 
-        e(dv(JavaScriptRefNum) ref2)  // static javascript ref 
+		e(JavaScriptStaticRefNum ref1)      // static javascript ref 
+        e(dv(JavaScriptStaticRefNum) ref2)  // static javascript ref 
         e(Boolean bool)
     )
 

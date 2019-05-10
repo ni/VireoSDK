@@ -23,7 +23,8 @@
     <ClCompile Include="..\source\core\Events.cpp" />
     <ClCompile Include="..\source\core\ExecutionContext.cpp" />
     <ClCompile Include="..\source\core\GenericFunctions.cpp" />
-    <ClCompile Include="..\source\core\JavaScriptRef.cpp" />
+    <ClCompile Include="..\source\core\JavaScriptStaticRef.cpp" />
+    <ClCompile Include="..\source\core\JavaScriptDynamicRef.cpp" />
     <ClCompile Include="..\source\core\MatchPat.cpp" />
     <ClCompile Include="..\source\core\Math.cpp" />
     <ClCompile Include="..\source\core\NumericString.cpp" />

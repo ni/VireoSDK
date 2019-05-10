@@ -1,14 +1,14 @@
-Ref ref1: JavaScriptRefNum(0x0)
-Ref ref2: JavaScriptRefNum(0x0)
+Ref ref1: JavaScriptStaticRefNum(0x0)
+Ref ref2: JavaScriptStaticRefNum(0x0)
 IsEQ ref1 ref2: true
 IsNE ref1 ref2: false
 IsNotARefNum: true
 IsNotARefNum: true
-Ref ref2: JavaScriptRefNum(0x0)
+Ref ref2: JavaScriptStaticRefNum(0x0)
 IsNotARefNum: true
 IsEQ ref1 ref2: true
 In SubVI:
-Ref refarg: JavaScriptRefNum(0x0)
+Ref refarg: JavaScriptStaticRefNum(0x0)
 IsNotARefNum: true
-Ref subref: JavaScriptRefNum(0x0)
+Ref subref: JavaScriptStaticRefNum(0x0)
 IsNotARefNum: true

@@ -51,7 +51,7 @@ define (StaticControlRef%2Egviweb dv(.VirtualInstrument (
         e(dv(ControlRefNum ControlReference("18")) controlRef)
     )
         clump(1
-	// Note:  No explicit register is generated here, unlike the JavaScriptRefNum static version.
+	// Note:  No explicit register is generated here, unlike the JavaScriptStaticRefNum version.
 	// The register is done automatically; before the VI’s first clump runs (or at parse time), we call:
 	//  jsRegisterForControlEvent(StringRef viName, UInt32 controlID, UInt32 eventType, UInt32 eventOracleIdx);
 	// Since the controlRefnum is a Vireo-side reference, OccurEvent will look up the refnum from the eventOracleIdx

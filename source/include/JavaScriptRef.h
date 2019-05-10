@@ -17,10 +17,10 @@
  
     define(MyVI dv(.VirtualInstrument (
     Locals: c(
-        e(JavaScriptRefNum  jsref)  // JavaScript ref that is not statically linked
+        e(JavaScriptStaticRefNum  jsref)  // JavaScript ref that is not statically linked
     ) ...
  
- The actual Type of jsref is JavaScriptRefNum and stores a refnum (cookie) which
+ The actual Type of jsref is JavaScriptStaticRefNum or JavaScriptDynamicRefNum and stores a refnum (cookie) which
  opaquely holds onto the javascript object. The refnum is managed on the JS side 
  and does not use the Vireo RefNumManager.
   
@@ -36,7 +36,15 @@
 namespace Vireo
 {
 
-typedef RefNum JavaScriptRefNum;  // RefNum to be used with JavaScript Ref Num API
+typedef RefNum JavaScriptStaticRefNum;  // RefNum to be used with JavaScript Ref Num API
+typedef RefNum JavaScriptDynamicRefNum;  // RefNum to be used with JavaScript Ref Num API
+
+
+#if kVireoOS_emscripten
+extern "C" {
+    extern void jsIsNotAJavaScriptRefnum(TypeRef, JavaScriptStaticRefNum*, TypeRef, Boolean*);
+}
+#endif
 
 }  // namespace Vireo
 

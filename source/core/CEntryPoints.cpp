@@ -526,9 +526,14 @@ VIREO_EXPORT Boolean TypeRef_IsAnalogWaveform(TypeRef typeRef)
     return typeRef->IsAnalogWaveform();
 }
 //------------------------------------------------------------
-VIREO_EXPORT Boolean TypeRef_IsJavascriptRefnum(TypeRef typeRef)
+VIREO_EXPORT Boolean TypeRef_IsJavaScriptStaticRefNum(TypeRef typeRef)
 {
-    return typeRef->IsJavaScriptRefNum();
+    return typeRef->IsJavaScriptStaticRefNum();
+}
+//------------------------------------------------------------
+VIREO_EXPORT Boolean TypeRef_IsJavaScriptDynamicRefNum(TypeRef typeRef)
+{
+    return typeRef->IsJavaScriptDynamicRefNum();
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object)

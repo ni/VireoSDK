@@ -9,7 +9,7 @@
  */
 
 /*! \file
- \brief JavaScript reference
+ \brief JavaScript dynamic reference
  */
 
 #include "TypeDefiner.h"
@@ -18,18 +18,12 @@
 
 namespace Vireo {
 
-#if kVireoOS_emscripten
-extern "C" {
-    extern void jsIsNotAJavaScriptRefnum(TypeRef, JavaScriptRefNum*, TypeRef, Boolean*);
-}
-#endif
-
-VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptRefnum, JavaScriptRefNum, Boolean)
+VIREO_FUNCTION_SIGNATURE2(IsNotAJavaScriptDynamicRefnum, JavaScriptDynamicRefNum, Boolean)
 {
     Boolean isNotARefnum = false;
-    JavaScriptRefNum* refnumPtr = _ParamPointer(0);
+    JavaScriptDynamicRefNum* refnumPtr = _ParamPointer(0);
 #if kVireoOS_emscripten
-    TypeRef typeRefJavaScriptRefNum = TypeManagerScope::Current()->FindType(tsJavaScriptRefNumType);
+    TypeRef typeRefJavaScriptRefNum = TypeManagerScope::Current()->FindType(tsJavaScriptDynamicRefNumType);
     TypeRef typeRefIsNotARefNum = TypeManagerScope::Current()->FindType(tsBooleanType);
         jsIsNotAJavaScriptRefnum(typeRefJavaScriptRefNum, refnumPtr, typeRefIsNotARefNum, &isNotARefnum);
 #else
@@ -46,11 +40,11 @@ VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean);
 DEFINE_VIREO_BEGIN(JavaScriptRefs)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
 
-    DEFINE_VIREO_TYPE(JavaScriptRefNum, "refnum(UInt32)")
+    DEFINE_VIREO_TYPE(JavaScriptDynamicRefNum, "refnum(UInt32)")
 
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAJavaScriptRefnum, "p(i(JavaScriptRefNum) o(Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(JavaScriptRefNum) i(JavaScriptRefNum) o(Boolean))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(JavaScriptRefNum) i(JavaScriptRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAJavaScriptDynamicRefnum, "p(i(JavaScriptDynamicRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(JavaScriptDynamicRefNum) i(JavaScriptDynamicRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(JavaScriptDynamicRefNum) i(JavaScriptDynamicRefNum) o(Boolean))")
 
 DEFINE_VIREO_END()
 }  // namespace Vireo

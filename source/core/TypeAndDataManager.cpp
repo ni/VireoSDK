@@ -609,7 +609,8 @@ const SubString TypeCommon::TypeVariant = SubString(tsVariantType);
 const SubString TypeCommon::TypeTimestamp = SubString("Timestamp");
 const SubString TypeCommon::TypeComplexSingle = SubString("ComplexSingle");
 const SubString TypeCommon::TypeComplexDouble = SubString("ComplexDouble");
-const SubString TypeCommon::TypeJavaScriptRefNum = SubString(tsJavaScriptRefNumToken);
+const SubString TypeCommon::TypeJavaScriptStaticRefNum = SubString(tsJavaScriptStaticRefNumToken);
+const SubString TypeCommon::TypeJavaScriptDynamicRefNum = SubString(tsJavaScriptDynamicRefNumToken);
 const SubString TypeCommon::TypePath = SubString("NIPath");
 const SubString TypeCommon::TypeAnalogWaveform = SubString("AnalogWaveform");
 const SubString TypeCommon::TypeStaticTypeAndData = SubString("StaticTypeAndData");
@@ -1017,11 +1018,23 @@ Boolean TypeCommon::IsComplex()
     return false;
 }
 //------------------------------------------------------------
-Boolean TypeCommon::IsJavaScriptRefNum()
+Boolean TypeCommon::IsJavaScriptStaticRefNum()
 {
     TypeRef t = this;
     while (t) {
-        if (t->Name().Compare(&TypeJavaScriptRefNum)) {
+        if (t->Name().Compare(&TypeJavaScriptStaticRefNum)) {
+            return true;
+        }
+        t = t->BaseType();
+    }
+    return false;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsJavaScriptDynamicRefNum()
+{
+    TypeRef t = this;
+    while (t) {
+        if (t->Name().Compare(&TypeJavaScriptDynamicRefNum)) {
             return true;
         }
         t = t->BaseType();
