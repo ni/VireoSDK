@@ -1,2 +1,4 @@
-TestResult_EmptyVariantConstant true
-TestResult_VariantWithData true
+TestResult_EmptyVariantConstantWithNameUnwired true
+TestResult_EmptyVariantConstantWithNameEmpty true
+TestResult_VariantWithDataWithNameUnwired true
+TestResult_VariantWithDataWithNameEmpty true
