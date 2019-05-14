@@ -429,6 +429,7 @@
                 "VariantCopy.via",
                 "VariantDataConversion.via",
                 "VariantToData_EmptyVariantConstantAsInput_ReportsError.via",
+                "VariantWithNoAttributes_DeleteVariantAttributeWithNameUnspecified_ReturnsFoundAsFalse.via",
                 "V3.via",
                 "VectorOps.via",
                 "VectorReduce.via",
