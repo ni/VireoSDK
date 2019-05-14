@@ -31,6 +31,18 @@ bool VariantType::IsNullVariant(VariantTypeRef variant)
     return variant == nullptr;
 }
 
+bool VariantType::IsNullOrEmptyVariant(VariantTypeRef variant)
+{
+    return variant == nullptr
+        || (variant->_underlyingTypeRef->BitEncoding() == kEncoding_None  // variant's data is empty
+            && IsAttributeMapNullOrEmpty(variant));  // variant's attributes are not set or empty.
+}
+
+bool VariantType::IsAttributeMapNullOrEmpty(VariantTypeRef variant)
+{
+    return variant->_attributeMap == nullptr || variant->_attributeMap->size() == 0;
+}
+
 VariantTypeRef VariantType::CreateNewVariantFromType(TypeRef inputType)
 {
     TypeManagerRef tm = THREAD_TADM();
@@ -491,9 +503,9 @@ bool VariantsAreEqual(VariantTypeRef variantX, VariantTypeRef variantY)
 {
     DualTypeVisitor visitor;
     DualTypeEqual dualTypeEqual;
-    if (!variantX && !variantY) {
+    if (VariantType::IsNullOrEmptyVariant(variantX) && VariantType::IsNullOrEmptyVariant(variantY)) {
         return true;  // Empty variant constant with no attributes are equal
-    } else if (!variantX || !variantY) {
+    } else if (VariantType::IsNullOrEmptyVariant(variantX) || VariantType::IsNullOrEmptyVariant(variantY)) {
         return false;
     }
     return visitor.Visit(variantX, variantX->Begin(kPARead), variantY, variantY->Begin(kPARead), dualTypeEqual);
