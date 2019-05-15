@@ -181,8 +181,8 @@
 
     // Process the via files for the provided tester function and compare with
     // the results file of the same name but with a '.vtr' extension
-    var runTestCore = function (testName, tester, testFinished, execOnly) {
-        var resultsFileName = 'ExpectedResults/' + path.basename(testName, '.via') + '.vtr';
+    var runTestCore = function (testName, tester, testFinished, execOnly, testsBaseDir) {
+        var resultsFileName = path.join(testsBaseDir, 'ExpectedResults', path.basename(testName, '.via') + '.vtr');
         var oldResults = '';
         var noOldResults = false;
 
@@ -210,13 +210,13 @@
                 compareResults(testName, oldResults, newResults, msec);
             }
             testFinished();
-        });
+        }, testsBaseDir);
     };
 
     // Process a provided test and return the stdout from the vireo.js runtime
-    var RunVJSTest = function (testName, testFinishedCB) {
+    var RunVJSTest = function (testName, testFinishedCB, testsBaseDir) {
         var viaCode;
-        var viaPath = 'ViaTests/' + testName;
+        var viaPath = path.join(testsBaseDir, 'ViaTests', testName);
         vireo.eggShell.reboot();
         try {
             viaCode = fs.readFileSync(viaPath).toString();
@@ -258,10 +258,10 @@
     };
 
     // Setup the esh binary for via execution
-    var RunNativeTest = function (testName, testFinishedCB) {
+    var RunNativeTest = function (testName, testFinishedCB, testsBaseDir) {
         var newResults = '';
         var exec = '../dist/esh';
-        var viaPath = 'ViaTests/' + testName;
+        var viaPath = path.join(testsBaseDir, 'ViaTests', testName);
         // Look for Windows exec or Linux/Unix
         if (process.platform === 'win32') {
             exec = '../dist/Debug/esh';
@@ -285,12 +285,12 @@
     };
 
     // Testing functions for processing the tests against vireo.js or esh binary
-    var JSTester = function (testName, testFinishedCB, execOnly) {
-        runTestCore(testName, RunVJSTest, testFinishedCB, execOnly);
+    var JSTester = function (testName, testFinishedCB, execOnly, testsBaseDir) {
+        runTestCore(testName, RunVJSTest, testFinishedCB, execOnly, testsBaseDir);
     };
 
-    var NativeTester = function (testName, testFinishedCB, execOnly) {
-        runTestCore(testName, RunNativeTest, testFinishedCB, execOnly);
+    var NativeTester = function (testName, testFinishedCB, execOnly, testsBaseDir) {
+        runTestCore(testName, RunNativeTest, testFinishedCB, execOnly, testsBaseDir);
     };
     var errorCode = 0;
 
@@ -455,6 +455,12 @@
             testSet = new Set(getTests(testObj, testCategory, testMap));
         }
 
+        var testsBaseDir = (function () {
+            var filePath = Array.from(testSet).filter(isViaFile)[0];
+            var dirName = path.dirname(path.dirname(filePath));
+            return dirName;
+        }());
+
         // Filter the test list just in case
         testFiles = Array.from(testSet).filter(isViaFile).map(function (filePath) {
             var testFileName = path.basename(filePath);
@@ -493,7 +499,7 @@
                     var testName = testFiles.shift();
                     tester(testName, function () {
                         runNextTest(testFiles, chain);
-                    }, execOnly);
+                    }, execOnly, testsBaseDir);
                 } else if (!execOnly) {
                     chain();
                 }
@@ -510,7 +516,7 @@
                         process.exit(errorCode);
                     });
                 }
-            });
+            }, execOnly, testsBaseDir);
         } else {
             console.log('Nothing to test.  Use test.js -h for help');
             process.exit(1);
