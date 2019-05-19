@@ -45,8 +45,14 @@ namespace Vireo
             success = operation.AreIEEE754BinaryCompatible(typeRefX, typeRefY);
             break;
         case kEncoding_Cluster:
-            success = typeRefY->BitEncoding() == kEncoding_Cluster && ClusterCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
+        {
+            EncodingEnum encodingY = typeRefY->BitEncoding();
+            if (encodingY == kEncoding_Array)
+                success = ClusterArrayCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
+            else if (encodingY == kEncoding_Cluster)
+                success = ClusterCompatible(typeRefX, pDataX, typeRefY, pDataY, operation);
             break;
+        }
         case kEncoding_Enum:
             success = EnumCompatible(typeRefX, typeRefY, operation);
             break;
@@ -140,6 +146,30 @@ namespace Vireo
     }
 
     //------------------------------------------------------------
+    bool DualTypeVisitor::ClusterArrayCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation& operation)
+    {
+        bool success = true;
+        Int32 numberOfClusterFields = typeRefX->SubElementCount();
+
+        TypedArrayCoreRef arrayY = *(static_cast<const TypedArrayCoreRef*>(pDataY));
+        if (arrayY->Rank() != 1)
+            return false;
+        TypeRef elementYType = arrayY->ElementType();
+        if (!elementYType->IsVariant()) {
+            for (IntIndex i = 0; success && i < typeRefX->SubElementCount(); i++) {
+                TypeRef elementXType = typeRefX->GetSubElement(i);
+                IntIndex fieldOffsetX = elementXType->ElementOffset();
+                AQBlock1* pDataXElement = static_cast<AQBlock1*>(pDataX) + fieldOffsetX;
+                success = TypesAreCompatible(elementXType, pDataXElement, elementYType, pDataY, operation);
+            }
+        }
+        if (success && operation.ShouldInflateDestination()) {
+            arrayY->Resize1D(numberOfClusterFields);
+        }
+        return success;
+    }
+
+    //------------------------------------------------------------
     bool DualTypeVisitor::UserDefinedClustersCompatible(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation)
     {
         bool success = typeRefX->SubElementCount() == typeRefY->SubElementCount();
@@ -214,8 +244,14 @@ namespace Vireo
         EncodingEnum encodingX = typeRefX->BitEncoding();
         switch (encodingX) {
         case kEncoding_Cluster:
-            success = ApplyCluster(typeRefX, pDataX, typeRefY, pDataY, operation);
+        {
+            EncodingEnum encodingY = typeRefY->BitEncoding();
+            if (encodingY == kEncoding_Array)
+                success = ApplyClusterToArray(typeRefX, pDataX, typeRefY, pDataY, operation);
+            else
+                success = ApplyCluster(typeRefX, pDataX, typeRefY, pDataY, operation);
             break;
+        }
         case kEncoding_Array:
             if (typeRefX->Rank() == 1 && typeRefX->GetSubElement(0)->BitEncoding() == kEncoding_Unicode)
                 success = ApplyString(typeRefX, pDataX, typeRefY, pDataY, operation);
@@ -285,6 +321,40 @@ namespace Vireo
             AQBlock1* pDataYElement = static_cast<AQBlock1*>(pDataY) + fieldOffsetY;
             success = Apply(elementXType, pDataXElement, elementYType, pDataYElement, operation);
             i++;
+        }
+        return success;
+    }
+
+    //------------------------------------------------------------
+    bool DualTypeVisitor::ApplyClusterToArray(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY, const DualTypeOperation &operation)
+    {
+        bool success = true;
+        IntIndex i = 0;
+        TypedArrayCoreRef pDataArrayY = *static_cast<TypedArrayCoreRef*>(pDataY);
+        TypeRef elementYType = pDataArrayY->ElementType();
+        AQBlock1* pValuesInsertY = pDataArrayY->BeginAt(0);
+        Int32 dataArrayYOffset = elementYType->TopAQSize();
+        while (success && i < typeRefX->SubElementCount()) {
+            TypeRef elementXType = typeRefX->GetSubElement(i);
+            IntIndex fieldOffsetX = elementXType->ElementOffset();
+            AQBlock1* pDataXElement = static_cast<AQBlock1*>(pDataX) + fieldOffsetX;
+
+            if (elementYType->IsVariant()) {
+                VariantDataRef outputVariant = *reinterpret_cast<VariantDataRef *>(pValuesInsertY);
+                outputVariant->AQFree();
+                if (elementXType->IsVariant()) {
+                    elementXType->CopyData(pDataXElement, pValuesInsertY);
+                } else {
+                    StaticTypeAndData td{};
+                    td._paramType = elementXType;
+                    td._pData = pDataXElement;
+                    outputVariant->InitializeFromStaticTypeAndData(td);
+                }
+            } else {
+                success = Apply(elementXType, pDataXElement, elementYType, pValuesInsertY, operation);
+            }
+            i++;
+            pValuesInsertY += dataArrayYOffset;
         }
         return success;
     }

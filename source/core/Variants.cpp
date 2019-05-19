@@ -100,11 +100,7 @@ VariantTypeRef VariantType::New(TypeManagerRef typeManager)
 
 void VariantType::SetVariantToDataTypeError(TypeRef inputType, TypeRef targetType, TypeRef outputType, void* outputData, ErrorCluster* errPtr)
 {
-    if (inputType && inputType->IsCluster() && targetType->IsArray()) {
-        errPtr->SetErrorAndAppendCallChain(true, kUnsupportedOnTarget, "Variant To Data");
-    } else {
-        errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
-    }
+    errPtr->SetErrorAndAppendCallChain(true, kVariantIncompatibleType, "Variant To Data");
     if (outputType && outputData) {
         outputType->ClearData(outputData);
         outputType->InitData(outputData);
