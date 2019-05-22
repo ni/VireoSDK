@@ -368,7 +368,8 @@ class ClumpParseState
     TypeRef         ReresolveInstruction(SubString* opName);
     void            ResolveActualArgument(SubString* argument, void** ppData , Boolean needsAddress);
     void            AddDataTargetArgument(SubString* argument, Boolean addType, Boolean addAddress);
-    void            InternalAddArg(TypeRef actualType, void* address);
+    void            InternalAddArgBack(TypeRef actualType, void* address);
+    void            InternalAddArgFront(TypeRef actualType, void* address);
     void            InternalAddArgNeedingPatch(PatchInfo::PatchType patchType, intptr_t whereToPeek);
     Boolean         VarArgParameterDetected() const { return _varArgCount >= 0; }
     void            AddVarArgCount();

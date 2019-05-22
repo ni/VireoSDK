@@ -818,6 +818,8 @@ Boolean TypeCommon::IsA(TypeRef otherType, Boolean compatibleStructure)
                         bMatch = true;
                 }
             }
+        } else if (thisEncoding == kEncoding_Variant && otherEncoding == kEncoding_Variant) {
+            bMatch = true;
         }
     }
 
@@ -902,7 +904,13 @@ Boolean TypeCommon::IsNumeric()
 Boolean TypeCommon::IsVariant()
 {
     TypeRef t = this;
-    return t->Name().Compare(&TypeCommon::TypeVariant);
+    return t->_encoding == kEncoding_Variant;
+}
+//------------------------------------------------------------
+Boolean TypeCommon::IsBadType()
+{
+    TypeRef t = this;
+    return t == TheTypeManager()->BadType();
 }
 //------------------------------------------------------------
 Boolean TypeCommon::IsInteger()
@@ -1764,6 +1772,17 @@ NIError ArrayType::InitData(void* pData, TypeRef pattern)
         } else if (pattern->HasCustomDefault()) {
             // The top part has been setup, now the code needs to be finished
             err = CopyData(pattern->Begin(kPARead), pData);
+            // TODO(smuthukr) Looks like CopyData is called too many times.
+            // This InitData() here calls CopyData with default value.
+            // DefaultValueType::InitData calls CopyData again with default value of source type. So,
+            // exact default value gets copied again.
+            // Then, the caller of InitData() almost always has to copy some value into destination data
+            // that is not default value of the source -- which will immediately overwrite the two copies
+            // just done earlier by InitData().
+            // This being array, the extra copies can hurt performance significantly.
+            // This has to be fixed. Need to think more. Provide an overload or
+            // an optional boolean argument to control whether InitData should copy default value of source
+            // to destination data. This will give the caller to decide the behavior of InitData.
         }
     }
     return err;

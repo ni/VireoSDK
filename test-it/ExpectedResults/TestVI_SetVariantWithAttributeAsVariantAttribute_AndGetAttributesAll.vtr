@@ -1,0 +1,7 @@
+TestResult_SetVariantAttribute_Replaced_Is_False true
+TestResult_AttributeNanes true
+TestResult_VariantToData_Data_Output true
+TestResult_GetAttributsAndThenVariantToData_Data true
+TestResult_GetAttributsAndThenVariantToData_Data_2 true
+TestResult_Attribute_Values true
+TestResult_NoError true

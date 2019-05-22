@@ -27,6 +27,7 @@ SDG
 #include <vector>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
+#include "Variants.h"
 
 #if !kVireoOS_windows
     #include <math.h>
@@ -300,8 +301,11 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
     } else if ((tt == TokenTraits_SymbolName) && (!bTypeFunction)) {
         // Eat the deprecated dot prefix if it exists.
         typeFunction.EatChar('.');
-
         type = _typeManager->FindType(&typeFunction, true);
+        if (type != nullptr && type->Name().CompareCStr(tsVariantType)) {
+            VariantTypeRef variant = VariantType::New(_typeManager);
+            type = variant;
+        }
         if (!type) {
             LOG_EVENTV(kSoftDataError, "Unrecognized data type '%.*s'", FMT_LEN_BEGIN(&typeFunction));
             type = BadType();
@@ -877,6 +881,23 @@ TokenTraits TDViaParser::ReadArrayItem(SubString* input, SubString* token, Boole
 }
 
 //------------------------------------------------------------
+Int32 TDViaParser::ParseVariantData(VariantDataRef pData)
+{
+    LVError err = kLVError_NoError;
+    VIREO_ASSERT(pData != nullptr);
+
+    if (!_string.EatChar('(')) {
+        err = kLVError_ArgError;
+    } else if (!_string.EatChar(')')) {
+        err = kLVError_ArgError;
+    }
+    if (err == kLVError_ArgError) {
+        LOG_EVENT(kHardDataError, "default value for variant must be empty");
+    }
+    return err;
+}
+
+//------------------------------------------------------------
 Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level)
 {
     VIREO_ASSERT(pArray != nullptr);
@@ -1061,6 +1082,9 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
             if (!pData)
                 return kLVError_NoError;
             return ParseArrayData(*(TypedArrayCoreRef*) pData, nullptr, 0);
+            break;
+        case kEncoding_Variant:
+            return ParseVariantData(*static_cast<VariantDataRef*>(pData));
             break;
         case kEncoding_Enum:
         case kEncoding_UInt:
@@ -2356,6 +2380,9 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
         case kEncoding_Cluster:
             FormatClusterData(type, pData);
+            break;
+        case kEncoding_Variant:
+            _string->AppendCStr("^Variant");
             break;
         case kEncoding_RefNum:
             {

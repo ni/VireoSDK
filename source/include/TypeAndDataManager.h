@@ -146,6 +146,7 @@ enum EncodingEnum {
     kEncoding_ZigZagInt,        // Protocol buffers
     kEncoding_S1CInt,           // In case we ever run on a CDC 170 Cyber mainframe ;)
     kEncoding_RefNum,           // LV-style refnum, holds type and Int value
+    kEncoding_Variant,           // Variant (holds data and attributes)
 
     kEncodingBitFieldSize = 5,  // Room for up to 32 primitive encoding types
 };
@@ -636,6 +637,7 @@ class TypeCommon
     Boolean IsAnalogWaveform();
     Boolean IsIntrinsicClusterDataType(SubString *foundTypeName);  // Returns true for builtin data types such as Timestamp, Complex, etc
     Boolean IsVariant();
+    Boolean IsBadType();
 
     //! Size of the type in bits including padding. If the type is bit level it's the raw bit size with no padding.
     virtual IntIndex BitLength()  {

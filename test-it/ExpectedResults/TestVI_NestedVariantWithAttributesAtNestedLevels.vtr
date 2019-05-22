@@ -1,0 +1,5 @@
+TestResult_OuterVariantAttributes true
+TestResult_InnerVariantAttributes true
+TestResult_GetInnerData_From_Inner_Variant_2 true
+TestResult_GetInnerData_From_Inner_Variant true
+TestResult_GetInnerData_FromOuterVariant true

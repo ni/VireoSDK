@@ -17,6 +17,7 @@ SDG
 #include "TypeAndDataManager.h"
 #include "EventLog.h"
 #include <vector>
+#include "Variants.h"
 
 namespace Vireo
 {
@@ -125,6 +126,7 @@ class TDViaParser
     Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth = nullptr);
     static TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
     Int32   ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level);
+    Int32   ParseVariantData(VariantDataRef pData);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
     void    ParseClump(VIClump* viClump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
@@ -148,7 +150,6 @@ class TDViaParser
     TypeRef ParseContext();
     TypeRef ParseDefaultValue(Boolean mutableValue);
     TypeRef ParseEquivalence();
-    TypeRef ParseNamedType();
     TypeRef ParseParamBlock();
     TypeRef ParsePointerType(Boolean shortNotation);
     TypeRef ParseRefNumType();
