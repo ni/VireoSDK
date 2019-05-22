@@ -531,7 +531,8 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
         }
     }
 
-    if (savedOperation.CompareCStr("Convert")) {
+    bool isConvertInstruction = savedOperation.CompareCStr("Convert");
+    if (isConvertInstruction) {
         // Special case for convert, if the types are the same go straight to the more efficient copy
         SubString destTypeName = destType->Name();
         if (destTypeName.Length() > 0 && sourceXType->CompareType(destType)) {
@@ -546,11 +547,13 @@ InstructionCore* EmitGenericUnOpInstruction(ClumpParseState* pInstructionBuilder
     switch (destType->BitEncoding()) {
         case kEncoding_Variant:
         {
-            ConstCStr unaryOpName = "DataToVariant";
-            SubString unaryOpToken(unaryOpName);
-            pInstructionBuilder->InternalAddArgFront(nullptr, pInstructionBuilder->_argTypes[0]);
-            pInstructionBuilder->ReresolveInstruction(&unaryOpToken);
-            pInstruction = pInstructionBuilder->EmitInstruction();
+            if (isConvertInstruction) {
+                ConstCStr unaryOpName = "DataToVariant";
+                SubString unaryOpToken(unaryOpName);
+                pInstructionBuilder->InternalAddArgFront(nullptr, pInstructionBuilder->_argTypes[0]);
+                pInstructionBuilder->ReresolveInstruction(&unaryOpToken);
+                pInstruction = pInstructionBuilder->EmitInstruction();
+            }
             break;
         }
         case kEncoding_Array:

@@ -51,7 +51,7 @@ NIError VariantType::InitData(void* pData, TypeRef pattern)
             pattern = this;
         }
         VariantDataRef newVariant = VariantData::New(pattern);
-        *static_cast<VariantDataRef*>(variantValue) = newVariant;
+        *variantValue = newVariant;
         if (!newVariant) {
             err = kNIError_kInsufficientResources;
         }
