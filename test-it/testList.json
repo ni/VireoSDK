@@ -387,6 +387,7 @@
                 "TestVI_VariantToData_VariantWiredToDataTypeTerminal.via",
                 "TestVI_VariantOfClusterToArrayOfVariants.via",
                 "TestVI_VariantOfClusterToArrayOfInnerType.via",
+                "TestVI_VariantOfClusterToArrayExpectedErrors.via",
                 "TestVIMaxAndMin.via",
                 "TestVIMergeErrors.via",
                 "TestVI_TimestampOperations.via",
