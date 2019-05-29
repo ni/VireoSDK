@@ -57,7 +57,9 @@ define(HelloWorld dv(.VirtualInstrument (
         IsEQ(a_wave a_wave2 isEqual)
         Printf("Analog waveform (a_wave == a_wave2) is %s\n" isEqual)
 
-        AnalogWaveformBuild(a_wave3 a_timestamp 5.8 a_data)
+        Copy(a_data a_wave3.Y)
+        Copy(5.8 a_wave3.dt)
+        Copy(a_timestamp a_wave3.t0)
         IsEQ(a_wave2 a_wave3 isEqual)
         Printf("Analog waveform (a_wave2 == a_wave3) is %s\n" isEqual)
 
@@ -76,16 +78,35 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf("wave_ComplexSingle=%z\n" wave_ComplexSingle)
         Printf("wave_ComplexDouble=%z\n" wave_ComplexDouble)
 
-        AnalogWaveformBuild(wave_Int8 wave_Int8.t0 1.9 a_i8_1)
-        AnalogWaveformBuild(wave_Int16 wave_Int16.t0 2.9 a_i16_1)
-        AnalogWaveformBuild(wave_Int32 wave_Int32.t0 3.9 a_i32_1)
-        AnalogWaveformBuild(wave_Int64 wave_Int64.t0 4.9 a_i64_1)
-        AnalogWaveformBuild(wave_UInt8 wave_UInt8.t0 5.9 a_ui8_1)
-        AnalogWaveformBuild(wave_UInt16 wave_UInt16.t0 6.9 a_ui16_1)
-        AnalogWaveformBuild(wave_UInt32 wave_UInt32.t0 7.9 a_ui32_1)
-        AnalogWaveformBuild(wave_UInt64 wave_UInt64.t0 8.9 a_ui64_1)
-        AnalogWaveformBuild(wave_ComplexSingle wave_ComplexSingle.t0 9.9 a_cs_1)
-        AnalogWaveformBuild(wave_ComplexDouble wave_ComplexDouble.t0 8.9 a_cd_1)
+        Copy(a_i8_1 wave_Int8.Y)
+        Copy(1.9 wave_Int8.dt)
+
+        Copy(a_i16_1 wave_Int16.Y)
+        Copy(2.9 wave_Int16.dt)
+
+        Copy(a_i32_1 wave_Int32.Y)
+        Copy(3.9 wave_Int32.dt)
+
+        Copy(a_i64_1 wave_Int64.Y)
+        Copy(4.9 wave_Int64.dt)
+
+        Copy(a_ui8_1 wave_UInt8.Y)
+        Copy(5.9 wave_UInt8.dt)
+        
+        Copy(a_ui16_1 wave_UInt16.Y)
+        Copy(6.9 wave_UInt16.dt)
+        
+        Copy(a_ui32_1 wave_UInt32.Y)
+        Copy(7.9 wave_UInt32.dt)
+        
+        Copy(a_ui64_1 wave_UInt64.Y)
+        Copy(8.9 wave_UInt64.dt)
+        
+        Copy(a_cs_1 wave_ComplexSingle.Y)
+        Copy(9.9 wave_ComplexSingle.dt)
+        
+        Copy(a_cd_1 wave_ComplexDouble.Y)
+        Copy(8.9 wave_ComplexDouble.dt)
 
         Printf("After AnalogWaveformBuild\n")
         Printf("wave_Int8=%z\n" wave_Int8)
