@@ -1053,7 +1053,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 },
                 dt: 8.8,
                 Y: [5.5, 6.6, 7.7, 8.8], // eslint-disable-line id-length
-                attributes: { value: null, attributes: null }
+                attributes: {value: null, attributes: null}
             };
             var sameSize = {
                 t0: {
@@ -1062,7 +1062,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 },
                 dt: 1234.5678,
                 Y: ['NaN', 'Infinity', '-Infinity', -0], // eslint-disable-line id-length
-                attributes: { value: null, attributes: null }
+                attributes: {value: null, attributes: null}
             };
             var moreVals = {
                 t0: {
@@ -1071,7 +1071,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 },
                 dt: 8.89,
                 Y: [5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11], // eslint-disable-line id-length
-                attributes: { value: null, attributes: null }
+                attributes: {value: null, attributes: null}
             };
             var lessVals = {
                 t0: {
@@ -1080,7 +1080,7 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                 },
                 dt: 3,
                 Y: [4], // eslint-disable-line id-length
-                attributes: { value: null, attributes: null }
+                attributes: {value: null, attributes: null}
             };
 
             writeTest('wave_Double', original, sameSize);

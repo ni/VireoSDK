@@ -37,7 +37,7 @@ describe('Vireo public API allows', function () {
     };
 
     // Vireo does not yet support writeJSON on Variant data types.
-    var allocateWaveformTest = function (viName, path, value) {
+    var allocateWaveformTest = function (viName, path) {
         var dataValueRef = allocateData(viName, path);
         expectValidValueRef(dataValueRef);
         internalEggShell.deallocateData(dataValueRef);
@@ -249,15 +249,7 @@ describe('Vireo public API allows', function () {
                 [true, false],
                 [false, true]
             ]);
-            allocateWaveformTest(viName, 'wave_Double', {
-                t0: {
-                    seconds: '300',
-                    fraction: '123'
-                },
-                dt: 8.8,
-                Y: [5.5, 6.6, 7.7, 8.8], // eslint-disable-line id-length
-                attributes: { value: null, attributes: null }
-            });
+            allocateWaveformTest(viName, 'wave_Double');
             allocateTest(viName, 'nipath', {
                 type: 'ABSOLUTE',
                 components: ['C', 'Windows', 'System32']

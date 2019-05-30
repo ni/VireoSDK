@@ -603,7 +603,7 @@ describe('The Vireo EggShell readJSON api can read', function () {
                 },
                 dt: 8.8,
                 Y: [5.5, 6.6, 7.7, 8.8], // eslint-disable-line id-length
-                attributes: { value: null, attributes: null }
+                attributes: {value: null, attributes: null}
             });
         });
     });
