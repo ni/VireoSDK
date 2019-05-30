@@ -279,8 +279,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsTypeManagerType       "TypeManager"
 #define tsVIClumpType           "Clump"
 
-#define variantInnerValue       "value"
-#define variantAttributes       "attributes"
+#define variantInnerData        "_data"
+#define variantAttributes       "_attributes"
 }  // namespace Vireo
 
 #endif  // TDCodecVia_h

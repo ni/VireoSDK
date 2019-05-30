@@ -2337,7 +2337,7 @@ void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
 
     if (useQuotes)
         _string->Append('\"');
-    _string->AppendCStr(variantInnerValue);
+    _string->AppendCStr(variantInnerData);
     if (useQuotes)
         _string->Append('\"');
     _string->Append(*tsNameSuffix);
@@ -2356,17 +2356,23 @@ void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
         _string->Append('\"');
     _string->Append(*tsNameSuffix);
     if (variantData->HasMap()) {
-        _string->Append(Fmt()._arrayPre);
-        auto iterator = variantData->GetMap_cbegin(), iteratorEnd = variantData->GetMap_cend();
+        _string->Append(Fmt()._clusterPre);
+        auto iterator = variantData->GetMap_cbegin(), iteratorBegin = variantData->GetMap_cbegin(), iteratorEnd = variantData->GetMap_cend();
         for (; iterator != iteratorEnd; ++iterator) {
+            if (iterator != iteratorBegin) {
+                _string->Append(Fmt()._itemSeparator);
+            }
             StringRef attributeName = iterator->first;
+            if (useQuotes)
+                _string->Append('\"');
             _string->Append(attributeName);
+            if (useQuotes)
+                _string->Append('\"');
             _string->Append(*tsNameSuffix);
             VariantDataRef attributeValue = iterator->second;
             FormatVariant(attributeValue->Type(), &attributeValue);
-            _string->Append(Fmt()._itemSeparator);
         }
-        _string->Append(Fmt()._arrayPost);
+        _string->Append(Fmt()._clusterPost);
     } else {
         _string->AppendCStr("null");
     }
