@@ -37,6 +37,7 @@ VariantType::VariantType(TypeManagerRef typeManager)
     _topAQSize = TypeManager::HostPointerToAQSize();
     _aqAlignment = TypeManager::AQAlignment(sizeof(void*));
     _encoding = kEncoding_Variant;
+    _isValid = 1;
 }
 
 NIError VariantType::InitData(void* pData, TypeRef pattern)

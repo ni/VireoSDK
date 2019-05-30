@@ -2329,6 +2329,50 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
     _string->Append(Fmt()._clusterPost);
 }
 //------------------------------------------------------------
+void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
+{
+    _string->Append(Fmt()._clusterPre);
+    Boolean useQuotes = Fmt().QuoteFieldNames();
+    VariantDataRef variantData = *reinterpret_cast<VariantDataRef *>(pData);
+
+    if (useQuotes)
+        _string->Append('\"');
+    _string->AppendCStr(variantInnerValue);
+    if (useQuotes)
+        _string->Append('\"');
+    _string->Append(*tsNameSuffix);
+
+    TypeRef underlyingType = variantData->GetInnerType();
+    if (underlyingType) {
+        FormatData(underlyingType, underlyingType->Begin(kPARead));
+    } else {
+        _string->AppendCStr("null");
+    }
+    _string->Append(Fmt()._itemSeparator);
+    if (useQuotes)
+        _string->Append('\"');
+    _string->AppendCStr(variantAttributes);
+    if (useQuotes)
+        _string->Append('\"');
+    _string->Append(*tsNameSuffix);
+    if (variantData->HasMap()) {
+        _string->Append(Fmt()._arrayPre);
+        auto iterator = variantData->GetMap_cbegin(), iteratorEnd = variantData->GetMap_cend();
+        for (; iterator != iteratorEnd; ++iterator) {
+            StringRef attributeName = iterator->first;
+            _string->Append(attributeName);
+            _string->Append(*tsNameSuffix);
+            VariantDataRef attributeValue = iterator->second;
+            FormatVariant(attributeValue->Type(), &attributeValue);
+            _string->Append(Fmt()._itemSeparator);
+        }
+        _string->Append(Fmt()._arrayPost);
+    } else {
+        _string->AppendCStr("null");
+    }
+    _string->Append(Fmt()._clusterPost);
+}
+//------------------------------------------------------------
 void TDViaFormatter::FormatData(TypeRef type, void *pData)
 {
     char buffer[kTempFormattingBufferSize];
@@ -2382,7 +2426,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatClusterData(type, pData);
             break;
         case kEncoding_Variant:
-            _string->AppendCStr("^Variant");
+            FormatVariant(type, pData);
             break;
         case kEncoding_RefNum:
             {

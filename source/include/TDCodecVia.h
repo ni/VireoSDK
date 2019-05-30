@@ -193,6 +193,7 @@ class TDViaFormatter
     void    FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
                 IntIndex *pDimLengths, IntIndex *pSlabLengths);
 
+    void    FormatVariant(TypeRef type, void* pData);
     void    FormatClusterData(TypeRef type, void* pData);
     void    FormatPointerData(TypeRef pointerType, void* pData);
     void    FormatEncoding(EncodingEnum value) const;
@@ -278,6 +279,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsTypeManagerType       "TypeManager"
 #define tsVIClumpType           "Clump"
 
+#define variantInnerValue       "value"
+#define variantAttributes       "attributes"
 }  // namespace Vireo
 
 #endif  // TDCodecVia_h

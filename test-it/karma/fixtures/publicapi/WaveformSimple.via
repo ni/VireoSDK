@@ -8,7 +8,9 @@ define(MyVI dv(.VirtualInstrument (
         e(dv(.Timestamp (456 123)) timestamp)
     )
     clump (
-        AnalogWaveformBuild(wave_i32_1 timestamp 6.8 a_i32_1)
+        Copy(a_i32_1 wave_i32_1.Y)
+        Copy(6.8 wave_i32_1.dt)
+        Copy(timestamp wave_i32_1.t0)
     )
 ) ) )
 
