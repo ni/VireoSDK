@@ -303,6 +303,29 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
+//! Read
+VIREO_EXPORT EggShellResult EggShell_ReadVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr, TypeRef* typeRefLocation, void** dataRefLocation)
+{
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
+
+    STACK_VAR(String, attributeSV);
+    StringRef attributeName = attributeSV.Value;
+    attributeName->AppendCStr(attributeNameCStr);
+
+    VariantDataRef variant = *(static_cast<const VariantDataRef*>(pData));
+    VariantDataRef attributeVariant = variant->GetAttribute(attributeName);
+    if (attributeVariant == nullptr)
+        return kEggShellResult_ObjectNotFoundAtPath;
+
+    *typeRefLocation = attributeVariant->GetInnerType();
+    *dataRefLocation = attributeVariant->GetInnerData();
+    return kEggShellResult_Success;
+}
+
+//------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));

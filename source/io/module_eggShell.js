@@ -507,6 +507,32 @@ var assignEggShell;
             Module.stackRestore(stack);
         };
 
+        Module.eggShell.readVariantAttribute = publicAPI.eggShell.readVariantAttribute = function (valueRef, attributeName) {
+            var stack = Module.stackSave();
+
+            var attributeNameStackPointer = Module.coreHelpers.writeJSStringToStack(attributeName);
+            var typeStackPointer = Module.stackAlloc(POINTER_SIZE);
+            var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
+
+            var eggShellResult = Module._EggShell_ReadVariantAttribute(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, attributeNameStackPointer, typeStackPointer, dataStackPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS && eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+                throw new Error('Could not read variant attribute for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
+                    ' (subpath: ' + attributeName + ')');
+            }
+
+            var typeRef, dataRef, subValueRef;
+            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+                typeRef = Module.getValue(typeStackPointer, 'i32');
+                dataRef = Module.getValue(dataStackPointer, 'i32');
+                subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            }
+
+            Module.stackRestore(stack);
+            return subValueRef;
+        };
+
         // **DEPRECATED**
         Module.eggShell.dataReadString = function (stringPointer) {
             var begin = Module._Data_GetStringBegin(stringPointer);
