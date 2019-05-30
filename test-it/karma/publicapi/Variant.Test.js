@@ -1,17 +1,12 @@
 describe('The Vireo EggShell api', function () {
     'use strict';
     // Reference aliases
-    var vireoHelpers = window.vireoHelpers;
-    var vireoRunner = window.testHelpers.vireoRunner;
-    var fixtures = window.testHelpers.fixtures;
+    const vireoHelpers = window.vireoHelpers;
+    const vireoRunner = window.testHelpers.vireoRunner;
+    const fixtures = window.testHelpers.fixtures;
 
-    var vireo;
-    beforeAll(async function () {
-        vireo = await vireoHelpers.createInstance();
-    });
-
-    var publicApiVariantTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/VariantTypes.via');
-    var viName = 'MyVI';
+    const publicApiVariantTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/VariantTypes.via');
+    const viName = 'MyVI';
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -19,7 +14,12 @@ describe('The Vireo EggShell api', function () {
         ], done);
     });
 
-    beforeAll(async function () {
+    let vireo;
+    beforeEach(async function () {
+        vireo = await vireoHelpers.createInstance();
+    });
+
+    beforeEach(async function () {
         const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiVariantTypesViaUrl);
         const {rawPrint, rawPrintError} = await runSlicesAsync();
         expect(rawPrint).toBe('');
@@ -71,6 +71,21 @@ describe('The Vireo EggShell api', function () {
                 expect(attributeValueRef).toBeObject();
                 expect(value).toEqual([-1000, -10, 42, 9876543, 123]);
             });
+        });
+    });
+
+    describe('can use writeVariantAttribute to', function () {
+        it('throw for none variant types', function () {
+            const valueRef = vireo.eggShell.findValueRef(viName, 'utf8string');
+            expect(() => vireo.eggShell.writeVariantAttributeAsString(valueRef, 'nonexistant', 'test')).toThrowError(/InvalidTypeRef/);
+        });
+
+        it('wite an attribute in an empty variant without attributes', function () {
+            const valueRef = vireo.eggShell.findValueRef(viName, 'emptyAttributesVariant');
+            vireo.eggShell.writeVariantAttributeAsString(valueRef, 'myattribute', 'hello world');
+            const resultValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'myattribute');
+            const result = vireo.eggShell.readString(resultValueRef);
+            expect(result).toBe('hello world');
         });
     });
 });

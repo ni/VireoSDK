@@ -310,7 +310,8 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
 }
 //------------------------------------------------------------
 //! Reads a variant attribute of a given type and data pointer
-VIREO_EXPORT EggShellResult EggShell_ReadVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr, TypeRef* typeRefLocation, void** dataRefLocation)
+VIREO_EXPORT EggShellResult EggShell_ReadVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
+                                                        TypeRef* typeRefLocation, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
     *typeRefLocation = nullptr;
@@ -333,7 +334,33 @@ VIREO_EXPORT EggShellResult EggShell_ReadVariantAttribute(TypeManagerRef tm, con
     *dataRefLocation = attributeVariant->GetInnerData();
     return kEggShellResult_Success;
 }
+//------------------------------------------------------------
+//! Writes a variant attribute of a given type and data pointer
+VIREO_EXPORT EggShellResult EggShell_WriteVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
+                                                        TypeRef attributeTypeRef, void* attributeDataRef)
+{
+    TypeManagerScope scope(tm);
 
+    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
+
+    if (attributeTypeRef == nullptr || !attributeTypeRef->IsValid()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
+
+    STACK_VAR(String, attributeSV);
+    StringRef attributeName = attributeSV.Value;
+    attributeName->AppendCStr(attributeNameCStr);
+
+    VariantDataRef variant = *(static_cast<const VariantDataRef*>(pData));
+    StaticTypeAndData attributeValue = {
+        attributeTypeRef,
+        attributeDataRef
+    };
+    variant->SetAttribute(attributeName, attributeValue);
+    return kEggShellResult_Success;
+}
 //------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
 {
