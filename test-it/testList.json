@@ -192,6 +192,7 @@
                 "FlattenJSON.via",
                 "FlattenJSONStrings.via",
                 "FlattenToJSONInfNaN.via",
+                "FlattenVariantToJSON.via",
                 "FlattenScalar.via",
                 "FlattenUnflattenJSONCleanError.via",
                 "FloatConvertInteger.via",

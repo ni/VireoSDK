@@ -208,6 +208,10 @@ class TDViaFormatter
     static ViaFormatChars formatJSONLVExt;
     static ViaFormatChars formatJSONEggShell;
     static ViaFormatChars formatC;
+
+    Boolean IsFormatJSONEggShell(ViaFormatChars format) const {
+        return format.GenerateJSON() && ((format._fieldNameFormat & formatJSONEggShell._fieldNameFormat) == formatJSONEggShell._fieldNameFormat);
+    }
 };
 
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr);

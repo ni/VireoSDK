@@ -2054,7 +2054,6 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._precision = 17;
         _options._bEscapeStrings = true;
-        _options._bQuote64BitNumbers = encoding == kJSONEncodingEggShell;
         switch (encoding) {
             case kJSONEncodingRegular:
                 _options._fmt = formatJSON;
@@ -2063,6 +2062,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
                 _options._fmt = formatJSONLVExt;
                 break;
             case kJSONEncodingEggShell:
+                _options._bQuote64BitNumbers = true;
                 _options._fmt = formatJSONEggShell;
                 break;
         }
@@ -2432,7 +2432,9 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatClusterData(type, pData);
             break;
         case kEncoding_Variant:
-            FormatVariant(type, pData);
+            if (!Fmt().GenerateJSON() || TDViaFormatter::IsFormatJSONEggShell(Fmt())) {
+                FormatVariant(type, pData);
+            }
             break;
         case kEncoding_RefNum:
             {
