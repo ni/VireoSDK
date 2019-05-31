@@ -309,8 +309,8 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! Reads a variant attribute of a given type and data pointer
-VIREO_EXPORT EggShellResult EggShell_ReadVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
+//! Gets a variant attribute of a given type and data pointer
+VIREO_EXPORT EggShellResult EggShell_GetVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
                                                         TypeRef* typeRefLocation, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
@@ -335,8 +335,8 @@ VIREO_EXPORT EggShellResult EggShell_ReadVariantAttribute(TypeManagerRef tm, con
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! Writes a variant attribute of a given type and data pointer
-VIREO_EXPORT EggShellResult EggShell_WriteVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
+//! Sets a variant attribute of a given type and data pointer
+VIREO_EXPORT EggShellResult EggShell_SetVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
                                                         TypeRef attributeTypeRef, void* attributeDataRef)
 {
     TypeManagerScope scope(tm);

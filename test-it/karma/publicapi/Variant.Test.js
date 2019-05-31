@@ -26,21 +26,21 @@ describe('The Vireo EggShell api', function () {
         expect(rawPrintError).toBe('');
     });
 
-    describe('can use readVariantAttribute to', function () {
-        it('throw for none variant types', function () {
+    describe('can use getVariantAttribute', function () {
+        it('to throw for none variant types', function () {
             const valueRef = vireo.eggShell.findValueRef(viName, 'utf8string');
-            expect(() => vireo.eggShell.readVariantAttribute(valueRef, 'nonexistant')).toThrowError(/InvalidTypeRef/);
+            expect(() => vireo.eggShell.getVariantAttribute(valueRef, 'nonexistant')).toThrowError(/InvalidTypeRef/);
         });
 
-        it('not find an attribute in an empty variant without attributes', function () {
+        it('to not find an attribute in an empty variant without attributes', function () {
             const valueRef = vireo.eggShell.findValueRef(viName, 'emptyAttributesVariant');
-            const attributeValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'nonexistant');
+            const attributeValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'nonexistant');
             expect(attributeValueRef).toBeUndefined();
         });
 
         it('to find a string attribute in an empty variant with attribute key1:value1', function () {
             const valueRef = vireo.eggShell.findValueRef(viName, 'stringAttributeVariant');
-            const attributeValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'key1');
+            const attributeValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'key1');
             const value = vireo.eggShell.readString(attributeValueRef);
             expect(attributeValueRef).toBeObject();
             expect(value).toBe('value1');
@@ -49,7 +49,7 @@ describe('The Vireo EggShell api', function () {
         describe('with an empty variant with several different attributes of varied types', function () {
             it('to find a string attribute with name Iñtërnâtiônàlizætiøn☃💩', function () {
                 const valueRef = vireo.eggShell.findValueRef(viName, 'multipleAttributeVariant');
-                const attributeValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'Iñtërnâtiônàlizætiøn☃💩');
+                const attributeValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'Iñtërnâtiônàlizætiøn☃💩');
                 const value = vireo.eggShell.readString(attributeValueRef);
                 expect(attributeValueRef).toBeObject();
                 expect(value).toBe('value1');
@@ -57,7 +57,7 @@ describe('The Vireo EggShell api', function () {
 
             it('to find a string attribute with name key1', function () {
                 const valueRef = vireo.eggShell.findValueRef(viName, 'multipleAttributeVariant');
-                const attributeValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'key1');
+                const attributeValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'key1');
                 const value = vireo.eggShell.readString(attributeValueRef);
                 expect(attributeValueRef).toBeObject();
                 expect(value).toBe('Iñtërnâtiônàlizætiøn☃💩');
@@ -65,7 +65,7 @@ describe('The Vireo EggShell api', function () {
 
             it('to find a string attribute with name key2', function () {
                 const valueRef = vireo.eggShell.findValueRef(viName, 'multipleAttributeVariant');
-                const attributeValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'key2');
+                const attributeValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'key2');
                 const valueTypedArray = vireo.eggShell.readTypedArray(attributeValueRef);
                 const value = Array.from(valueTypedArray);
                 expect(attributeValueRef).toBeObject();
@@ -74,18 +74,31 @@ describe('The Vireo EggShell api', function () {
         });
     });
 
-    describe('can use writeVariantAttribute to', function () {
+    describe('can use setVariantAttributeAsString to', function () {
         it('throw for none variant types', function () {
             const valueRef = vireo.eggShell.findValueRef(viName, 'utf8string');
-            expect(() => vireo.eggShell.writeVariantAttributeAsString(valueRef, 'nonexistant', 'test')).toThrowError(/InvalidTypeRef/);
+            expect(() => vireo.eggShell.setVariantAttributeAsString(valueRef, 'nonexistant', 'test')).toThrowError(/InvalidTypeRef/);
         });
 
         it('wite an attribute in an empty variant without attributes', function () {
             const valueRef = vireo.eggShell.findValueRef(viName, 'emptyAttributesVariant');
-            vireo.eggShell.writeVariantAttributeAsString(valueRef, 'myattribute', 'hello world');
-            const resultValueRef = vireo.eggShell.readVariantAttribute(valueRef, 'myattribute');
+            vireo.eggShell.setVariantAttributeAsString(valueRef, 'myattribute', 'hello world');
+            const resultValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'myattribute');
             const result = vireo.eggShell.readString(resultValueRef);
             expect(result).toBe('hello world');
+        });
+
+        it('overrites an existing attribute in an empty variant with attributes', function () {
+            const valueRef = vireo.eggShell.findValueRef(viName, 'stringAttributeVariant');
+            const attributeValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'key1');
+            const value = vireo.eggShell.readString(attributeValueRef);
+            expect(attributeValueRef).toBeObject();
+            expect(value).toBe('value1');
+
+            vireo.eggShell.setVariantAttributeAsString(valueRef, 'key1', 'new updated value');
+            const resultValueRef = vireo.eggShell.getVariantAttribute(valueRef, 'key1');
+            const result = vireo.eggShell.readString(resultValueRef);
+            expect(result).toBe('new updated value');
         });
     });
 });
