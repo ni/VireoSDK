@@ -104,6 +104,7 @@
     <ClInclude Include="..\source\include\UnitTest.h" />
     <ClInclude Include="..\source\include\Variants.h" />
     <ClInclude Include="..\source\include\VirtualInstrument.h" />
+    <ClInclude Include="..\source\include\Waveform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{113F876C-CB35-4D2F-A3EF-C72215B288F7}</ProjectGuid>

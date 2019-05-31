@@ -257,6 +257,9 @@
     <ClInclude Include="..\source\include\LVDateTimeRecord.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\Waveform.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\include\RefNum.h" />
     <ClInclude Include="..\source\include\UnitTest.h" />
     <ClInclude Include="..\source\include\Array.h">
