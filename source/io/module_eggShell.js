@@ -540,7 +540,7 @@ var assignEggShell;
 
             var attributeNameStackPointer = Module.coreHelpers.writeJSStringToStack(attributeName);
             var eggShellResult = Module._EggShell_SetVariantAttribute(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, attributeNameStackPointer, attributeValueRef.typeRef, attributeValueRef.dataRef);
-            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS && eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
                 throw new Error('Could not set variant attribute for the following reason: ' + eggShellResultEnum[eggShellResult] +
                     ' (error code: ' + eggShellResult + ')' +
                     ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
