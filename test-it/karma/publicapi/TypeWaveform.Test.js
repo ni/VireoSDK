@@ -45,20 +45,6 @@ describe('Peek/Poke different datatypes', function () {
             attributes: {_data: null, _attributes: null}
         });
 
-        /*
-        Vireo does not yet support writeJSON on Variant data types.
-        var newValue = {
-            t0: {
-                seconds: '50000',
-                fraction: '456'
-            },
-            dt: 10.5,
-            Y: [5, 25] // eslint-disable-line id-length
-        };
-        viPathWriter('wave_i32_1', newValue);
-        expect(viPathParser('wave_i32_1')).toEqual(newValue);
-        */
-
         var newValue2 = {
             t0: {
                 seconds: '60000',
@@ -85,5 +71,26 @@ describe('Peek/Poke different datatypes', function () {
             });
             done();
         });
+    });
+
+    // Vireo does not yet support writeJSON on Variant data types.
+    xit('peeks and pokes on analog waveform type with write attribute values', function () {
+        var viName = 'MyVI';
+
+        vireoRunner.rebootAndLoadVia(vireo, publicApiWaveformSimpleViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+
+        var newValue = {
+            t0: {
+                seconds: '50000',
+                fraction: '456'
+            },
+            dt: 10.5,
+            Y: [5, 25], // eslint-disable-line id-length
+            attributes: {_data: null, _attributes: null}
+        };
+        viPathWriter('wave_i32_1', newValue);
+        expect(viPathParser('wave_i32_1')).toEqual(newValue);
     });
 });

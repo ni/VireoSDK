@@ -2331,29 +2331,29 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
 //------------------------------------------------------------
 void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
 {
+    _options._bQuoteStrings = true;
     _string->Append(Fmt()._clusterPre);
-    Boolean useQuotes = Fmt().QuoteFieldNames();
+    Boolean useQuotesForFieldNames = Fmt().QuoteFieldNames();
     VariantDataRef variantData = *reinterpret_cast<VariantDataRef *>(pData);
-
-    if (useQuotes)
-        _string->Append('\"');
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
     _string->AppendCStr(variantInnerData);
-    if (useQuotes)
-        _string->Append('\"');
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
     _string->Append(*tsNameSuffix);
 
-    TypeRef underlyingType = variantData->GetInnerType();
-    if (underlyingType) {
-        FormatData(underlyingType, underlyingType->Begin(kPARead));
+    TypeRef innerType = variantData->GetInnerType();
+    if (innerType) {
+        FormatData(innerType, innerType->Begin(kPARead));
     } else {
         _string->AppendCStr("null");
     }
     _string->Append(Fmt()._itemSeparator);
-    if (useQuotes)
-        _string->Append('\"');
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
     _string->AppendCStr(variantAttributes);
-    if (useQuotes)
-        _string->Append('\"');
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
     _string->Append(*tsNameSuffix);
     if (variantData->HasMap()) {
         _string->Append(Fmt()._clusterPre);
@@ -2363,11 +2363,15 @@ void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
                 _string->Append(Fmt()._itemSeparator);
             }
             StringRef attributeName = iterator->first;
-            if (useQuotes)
-                _string->Append('\"');
-            _string->Append(attributeName);
-            if (useQuotes)
-                _string->Append('\"');
+            if (_options._bQuoteStrings)
+                _string->Append(Fmt()._quote);
+            if (_options._bEscapeStrings) {
+                _string->AppendEscapeEncoded(attributeName->Begin(), attributeName->End() - attributeName->Begin());
+            } else {
+                _string->Append(attributeName);
+            }
+            if (_options._bQuoteStrings)
+                _string->Append(Fmt()._quote);
             _string->Append(*tsNameSuffix);
             VariantDataRef attributeValue = iterator->second;
             FormatVariant(attributeValue->Type(), &attributeValue);

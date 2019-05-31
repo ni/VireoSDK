@@ -184,7 +184,7 @@ define (MyVI dv(.VirtualInstrument (
         e(dv(.NIPath (('C' 'Windows' 'System32') 'ABSOLUTE')) win32Path)
         e(dv(.String 'hello') attributeValueSimple)
         e(dv(.String 'hi') utf8string)
-        e(dv(.String 'key1') key1)
+        e(dv(.String 'key"1') key1)
         e(dv(.String 'key2') key2)
     )
     clump(
