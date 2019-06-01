@@ -443,50 +443,33 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
     return typeRef->AQAlignment();
 }
 //------------------------------------------------------------
-VIREO_EXPORT StringRef TypeRef_Name(TypeManagerRef tm, TypeRef typeRef)
+VIREO_EXPORT void TypeRef_Name(TypeManagerRef tm, TypeRef typeRef, TypeRef responseTypeRef, void* responseDataRef)
 {
     TypeManagerScope scope(tm);
+
+    StringRef returnBuffer = *(static_cast<const StringRef*>(responseDataRef));
+    if (typeRef == nullptr || !typeRef->IsValid()) {
+        returnBuffer->Resize1D(0);
+        return;
+    }
+
     SubString name = typeRef->Name();
-
-    static StringRef returnBuffer = nullptr;
-    if (returnBuffer == nullptr) {
-        // Allocate a string the first time it is used.
-        // After that it will be resized as needed.
-        STACK_VAR(String, tempReturn);
-        returnBuffer = tempReturn.DetachValue();
-    } else {
-        returnBuffer->Resize1D(name.Length());
-    }
-
-    if (returnBuffer) {
-        returnBuffer->CopyFromSubString(&name);
-        return returnBuffer;
-    }
-
-    return nullptr;
+    returnBuffer->Resize1D(name.Length());
+    returnBuffer->CopyFromSubString(&name);
 }
 //------------------------------------------------------------
-VIREO_EXPORT StringRef TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef)
+VIREO_EXPORT void TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef, TypeRef responseTypeRef, void* responseDataRef)
 {
     TypeManagerScope scope(tm);
-    SubString name = typeRef->ElementName();
-
-    static StringRef returnBuffer = nullptr;
-    if (returnBuffer == nullptr) {
-        // Allocate a string the first time it is used.
-        // After that it will be resized as needed.
-        STACK_VAR(String, tempReturn);
-        returnBuffer = tempReturn.DetachValue();
-    } else {
-        returnBuffer->Resize1D(name.Length());
+    StringRef returnBuffer = *(static_cast<const StringRef*>(responseDataRef));
+    if (typeRef == nullptr || !typeRef->IsValid()) {
+        returnBuffer->Resize1D(0);
+        return;
     }
 
-    if (returnBuffer) {
-        returnBuffer->CopyFromSubString(&name);
-        return returnBuffer;
-    }
-
-    return nullptr;
+    SubString elementName = typeRef->ElementName();
+    returnBuffer->Resize1D(elementName.Length());
+    returnBuffer->CopyFromSubString(&elementName);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)

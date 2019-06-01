@@ -187,8 +187,12 @@ var assignTypeHelpers;
         };
 
         Module.typeHelpers.typeName = function (typeRef) {
-            var stringRef = Module._TypeRef_Name(Module.eggShell.v_userShell, typeRef);
-            return Module.eggShell.dataReadString(stringRef);
+            var stringTypeRef = Module.typeHelpers.findType('String');
+            var responseValueRef = Module.eggShell.allocateData(stringTypeRef);
+            Module._TypeRef_Name(Module.eggShell.v_userShell, typeRef, responseValueRef.typeRef, responseValueRef.dataRef);
+            var response = Module.eggShell.readString(responseValueRef);
+            Module.eggShell.deallocateData(responseValueRef);
+            return response;
         };
 
         Module.typeHelpers.findType = function (typeName) {
@@ -205,8 +209,12 @@ var assignTypeHelpers;
         };
 
         Module.typeHelpers.elementName = function (typeRef) {
-            var stringRef = Module._TypeRef_ElementName(Module.eggShell.v_userShell, typeRef);
-            return Module.eggShell.dataReadString(stringRef);
+            var stringTypeRef = Module.typeHelpers.findType('String');
+            var responseValueRef = Module.eggShell.allocateData(stringTypeRef);
+            Module._TypeRef_ElementName(Module.eggShell.v_userShell, typeRef, responseValueRef.typeRef, responseValueRef.dataRef);
+            var response = Module.eggShell.readString(responseValueRef);
+            Module.eggShell.deallocateData(responseValueRef);
+            return response;
         };
 
         Module.typeHelpers.subElementCount = function (typeRef) {
