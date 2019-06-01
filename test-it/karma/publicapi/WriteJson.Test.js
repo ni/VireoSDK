@@ -9,6 +9,11 @@ describe('The Vireo EggShell writeJSON api can write', function () {
     beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
     });
+
+    afterAll(function () {
+        vireo = undefined;
+    });
+
     var viName = 'MyVI';
 
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');

@@ -12,6 +12,11 @@ describe('Vireo public API allows', function () {
         internalEggShell = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.eggShell;
     });
 
+    afterAll(function () {
+        vireo = undefined;
+        internalEggShell = undefined;
+    });
+
     var publicApiAllocateTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/AllocateTypes.via');
     var viName = 'AllocateTypes';
 

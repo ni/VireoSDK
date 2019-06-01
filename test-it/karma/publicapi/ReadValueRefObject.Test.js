@@ -11,6 +11,10 @@ describe('The Vireo EggShell readValueRefObject', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
+    afterAll(function () {
+        vireo = undefined;
+    });
+
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
     var viName = 'MyVI';
 

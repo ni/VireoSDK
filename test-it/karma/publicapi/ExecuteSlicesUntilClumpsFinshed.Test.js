@@ -46,9 +46,14 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
         ], done);
     });
 
+    // This suite relies on a unique vireo instance per spec
     var vireo;
     beforeEach(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterEach(function () {
+        vireo = undefined;
     });
 
     it('can run many HTTP requests quickly when HTTP is resolved immediately', function (done) {

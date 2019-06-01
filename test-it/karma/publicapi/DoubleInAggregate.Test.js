@@ -6,9 +6,12 @@ describe('The Vireo EggShell Double and FindSubValueRef api over aggregate types
     var fixtures = window.testHelpers.fixtures;
 
     var vireo;
-
     beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
     });
 
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
