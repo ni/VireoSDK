@@ -2201,21 +2201,21 @@ void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
     } else {
         // For types that do not support serialization
         // serialize the pointer type and whether it is null or not
-        if(Fmt().UseFieldNames())
+        if (Fmt().UseFieldNames())
             _string->Append(Fmt()._quote);
         _string->Append('^');
         _string->Append(name.Length(), (Utf8Char*)name.Begin());
         if ((*(void**)pData) == nullptr) {
             _string->Append(5, (Utf8Char*)"_null");
         }
-        if(Fmt().UseFieldNames())
+        if (Fmt().UseFieldNames())
             _string->Append(Fmt()._quote);
     }
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatType(TypeRef type)
 {
-    if(Fmt().UseFieldNames())
+    if (Fmt().UseFieldNames())
         _string->Append(Fmt()._quote);
     if (type) {
         TDViaFormatterTypeVisitor visitor(this);
@@ -2223,7 +2223,7 @@ void TDViaFormatter::FormatType(TypeRef type)
     } else {
         _string->Append(4, (Utf8Char*)"null");
     }
-    if(Fmt().UseFieldNames())
+    if (Fmt().UseFieldNames())
         _string->Append(Fmt()._quote);
 }
 //------------------------------------------------------------
@@ -2433,10 +2433,10 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
             break;
         case kEncoding_Generic:
-            if(Fmt().UseFieldNames())
+            if (Fmt().UseFieldNames())
                 _string->Append(Fmt()._quote);
             _string->Append('*');
-            if(Fmt().UseFieldNames())
+            if (Fmt().UseFieldNames())
                 _string->Append(Fmt()._quote);
             break;
         case kEncoding_Array:
@@ -2454,7 +2454,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
         case kEncoding_RefNum:
             {
-                if(Fmt().UseFieldNames())
+                if (Fmt().UseFieldNames())
                     _string->Append(Fmt()._quote);
                 RefNumVal *refVal = (RefNumVal*)pData;
                 SubString name = type->Name();
@@ -2468,7 +2468,7 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
                 _string->Append('(');
                 FormatInt(kEncoding_RefNum, refnum);
                 _string->Append(')');
-                if(Fmt().UseFieldNames())
+                if (Fmt().UseFieldNames())
                     _string->Append(Fmt()._quote);
             }
             break;

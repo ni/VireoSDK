@@ -247,34 +247,23 @@ VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const T
 }
 //------------------------------------------------------------
 //! Read a symbol's value as a string. Value will be formatted according to designated format.
-VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format, UInt8** valueString)
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format,
+                                                    TypeRef responseJSONTypeRef, void* responseJSONDataRef)
 {
     TypeManagerScope scope(tm);
 
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
 
-    static StringRef returnBuffer = nullptr;
-    if (returnBuffer == nullptr) {
-        // Allocate a string the first time it is used.
-        // After that it will be resized as needed.
-        STACK_VAR(String, tempReturn);
-        returnBuffer = tempReturn.DetachValue();
-    } else {
-        returnBuffer->Resize1D(0);
-    }
+    if (responseJSONTypeRef == nullptr || !responseJSONTypeRef->IsValid() || !responseJSONTypeRef->IsString())
+        return kEggShellResult_InvalidTypeRef;
 
-    if (returnBuffer) {
-        SubString formatss(format);
-        TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
-        formatter.FormatData(typeRef, pData);
-        // Add an explicit null terminator so it looks like a C string.
-        returnBuffer->Append((Utf8Char)'\0');
-        *valueString = returnBuffer->Begin();
-        return kEggShellResult_Success;
-    }
-
-    return kEggShellResult_UnableToCreateReturnBuffer;
+    StringRef returnBuffer = *(static_cast<const StringRef*>(responseJSONDataRef));
+    returnBuffer->Resize1D(0);
+    SubString formatss(format);
+    TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
+    formatter.FormatData(typeRef, pData);
+    return kEggShellResult_Success;
 }
 void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
 {

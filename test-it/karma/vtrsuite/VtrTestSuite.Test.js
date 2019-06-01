@@ -20,6 +20,10 @@ describe('The Vireo VTR test suite', function () {
             // no-op
         });
     });
+    afterAll(function () {
+        vireo = undefined;
+    });
+
     var viaTestNames = testListLoader.getTestNamesForEnvironment('browser');
 
     var viaTestConfigs = viaTestNames.map(function (testName) {
