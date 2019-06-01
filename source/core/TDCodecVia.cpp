@@ -2201,22 +2201,30 @@ void TDViaFormatter::FormatPointerData(TypeRef pointerType, void* pData)
     } else {
         // For types that do not support serialization
         // serialize the pointer type and whether it is null or not
+        if(Fmt().UseFieldNames())
+            _string->Append(Fmt()._quote);
         _string->Append('^');
         _string->Append(name.Length(), (Utf8Char*)name.Begin());
         if ((*(void**)pData) == nullptr) {
             _string->Append(5, (Utf8Char*)"_null");
         }
+        if(Fmt().UseFieldNames())
+            _string->Append(Fmt()._quote);
     }
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatType(TypeRef type)
 {
+    if(Fmt().UseFieldNames())
+        _string->Append(Fmt()._quote);
     if (type) {
         TDViaFormatterTypeVisitor visitor(this);
         type->Accept(&visitor);
     } else {
         _string->Append(4, (Utf8Char*)"null");
     }
+    if(Fmt().UseFieldNames())
+        _string->Append(Fmt()._quote);
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank)
@@ -2425,7 +2433,11 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
             break;
         case kEncoding_Generic:
+            if(Fmt().UseFieldNames())
+                _string->Append(Fmt()._quote);
             _string->Append('*');
+            if(Fmt().UseFieldNames())
+                _string->Append(Fmt()._quote);
             break;
         case kEncoding_Array:
             // For array and object types pass the array ref (e.g. handle)
@@ -2442,6 +2454,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             break;
         case kEncoding_RefNum:
             {
+                if(Fmt().UseFieldNames())
+                    _string->Append(Fmt()._quote);
                 RefNumVal *refVal = (RefNumVal*)pData;
                 SubString name = type->Name();
                 UInt32 refnum = refVal->GetRefNum();
@@ -2454,6 +2468,8 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
                 _string->Append('(');
                 FormatInt(kEncoding_RefNum, refnum);
                 _string->Append(')');
+                if(Fmt().UseFieldNames())
+                    _string->Append(Fmt()._quote);
             }
             break;
         default:

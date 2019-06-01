@@ -56,6 +56,18 @@ describe('The Vireo VTR test suite', function () {
                 var {rawPrint, rawPrintError} = await runSlicesAsync();
                 expect(rawPrintError).toBeEmptyString();
                 expect(rawPrint).toMatchVtrText(vtrText);
+
+                // The readJSON test is used to make sure the readJSON function is compatible with all Vireo types
+                var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaFile);
+                var enqueueRegex = /^enqueue\s*\((\S*)\)$/m;
+                const matches = viaText.match(enqueueRegex);
+                const viName = matches === null ? undefined : matches[1];
+                var viValueRef = viName === undefined ? undefined : vireo.eggShell.findValueRef(viName, '');
+                // viName can be undefined if the test VI never runs enqueue() in the via
+                // viValueRef can be undefined if the vi reference has no associated data (data pointer null)
+                if (viName !== undefined && viValueRef !== undefined) {
+                    expect(() => JSON.parse(vireo.eggShell.readJSON(viValueRef))).not.toThrow();
+                }
             };
 
             beforeEach(function (done) {
