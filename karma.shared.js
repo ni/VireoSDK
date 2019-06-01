@@ -114,7 +114,8 @@
             // Settings to pass to frameworks and plugins
             client: {
                 jasmine: {
-                    random: true
+                    random: true,
+                    oneFailurePerSpec: true
                 }
             }
         };
