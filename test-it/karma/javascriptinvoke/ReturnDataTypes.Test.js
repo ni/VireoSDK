@@ -23,10 +23,15 @@ describe('A JavaScript function invoke', function () {
         ], done);
     });
 
-    beforeEach(async function () {
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
+    beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
 
+    afterAll(function () {
+        vireo = undefined;
+    });
+
+    beforeEach(async function () {
         // Add functions to exercise JavaScriptInvoke behavior with parameters of different types
         window.NI_TrueBooleanFunction = function () {
             return true;

@@ -1,4 +1,4 @@
-define(HelloWorld dv(.VirtualInstrument (
+start( VI<(
   c(
 //    e(obj(e(.Int32))        v0)
     e(a(.* )                v0DGeneric)
@@ -80,11 +80,4 @@ define(HelloWorld dv(.VirtualInstrument (
 */
 
   )
-) ) )
-enqueue(HelloWorld)
-
-
-
-
-
-
+) > )

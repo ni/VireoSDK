@@ -28,10 +28,13 @@ describe('Timeout test suite #Slow', function () {
         httpBinHelpers.forceHttpBinQuery('get?show_env=1', done);
     });
 
-    beforeEach(async function () {
+    beforeAll(async function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
     });
 
     it('GET method with timeout 0s times out with httpbin delay of 10s', function (done) {

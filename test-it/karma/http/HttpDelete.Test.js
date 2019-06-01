@@ -34,10 +34,13 @@ describe('Performing a DELETE request', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
-    beforeEach(async function () {
+    beforeAll(async function () {
         httpBinHelpers.makeTestPendingIfHttpBinOffline();
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
     });
 
     it('with a simple 200 response', function (done) {

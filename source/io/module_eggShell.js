@@ -110,6 +110,8 @@ var assignEggShell;
         };
 
         Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {
+            // TODO abort all http requests
+            // TODO reset internal jsli functions
             Module.eggShell.delete(Module.eggShell.v_userShell);
             Module.eggShell.delete(Module.eggShell.v_root);
             Module.eggShell.v_root = Module.eggShell.create(0);
