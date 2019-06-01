@@ -29,21 +29,24 @@ describe('Vireo loaded as a global in the browser', function () {
     });
 
     it('throws when running HelloWorld async using a callback', async function () {
-        var vireo = await window.vireoHelpers.createInstance();
+        var vireoRef = {
+            vireo: await window.vireoHelpers.createInstance()
+        };
         var viaCode = 'start( VI<( clump( Println("Hello, sky. I can fly.") ) ) > )';
 
-        vireo.eggShell.setPrintFunction(function () {
+        vireoRef.vireo.eggShell.setPrintFunction(function () {
             // intentionally left blank
         });
 
-        vireo.eggShell.loadVia(viaCode);
+        vireoRef.vireo.eggShell.loadVia(viaCode);
 
         var tryToUseCallback = function () {
-            vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
+            vireoRef.vireo.eggShell.executeSlicesUntilClumpsFinished(function () {
                 // intentionally left blank
             });
         };
         expect(tryToUseCallback).toThrowError(/no longer takes a callback/);
+        vireoRef.vireo = undefined;
     });
 
     it('can run HelloWorld async using a promise', async function () {

@@ -160,6 +160,7 @@ describe('A JavaScript function invoke', function () {
     });
 
     afterEach(function () {
+        vireo = undefined;
         // Cleanup functions
         window.NI_BooleanFunction = undefined;
         window.NI_Int8Function = undefined;

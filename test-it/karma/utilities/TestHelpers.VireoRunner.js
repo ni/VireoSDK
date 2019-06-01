@@ -62,11 +62,14 @@
                 });
             }
 
-            var complete = function () {
+            vireo.eggShell.executeSlicesUntilClumpsFinished().then(function () {
+                var noop = function () {
+                    // intentionally blank
+                };
+                vireo.eggShell.setPrintFunction(noop);
+                vireo.eggShell.setPrintErrorFunction(noop);
                 cb(rawPrint, rawPrintError);
-            };
-
-            vireo.eggShell.executeSlicesUntilClumpsFinished().then(complete);
+            });
 
             return undefined;
         };
