@@ -34,12 +34,15 @@ describe('Performing a HEAD request', function () {
     });
 
     beforeAll(async function () {
-        httpBinHelpers.makeTestPendingIfHttpBinOffline();
         vireo = await vireoHelpers.createInstance();
     });
 
     afterAll(function () {
         vireo = undefined;
+    });
+
+    beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
     });
 
     it('with a simple 200 response', function (done) {

@@ -20,9 +20,16 @@ describe('Performing a CORS request', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
-    beforeEach(async function () {
-        httpBinHelpers.makeTestPendingIfHttpBinOffline();
+    beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
+    });
+
+    beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
     });
 
     beforeEach(function (done) {
