@@ -172,10 +172,12 @@ var assignEggShell;
             }
 
             var typeRef, dataRef, valueRef;
-            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+            if (eggShellResult === EGGSHELL_RESULT.SUCCESS) {
                 typeRef = Module.getValue(typeStackPointer, 'i32');
                 dataRef = Module.getValue(dataStackPointer, 'i32');
                 valueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            } else {
+                valueRef = undefined;
             }
 
             Module.stackRestore(stack);
@@ -198,10 +200,12 @@ var assignEggShell;
             }
 
             var typeRef, dataRef, subValueRef;
-            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+            if (eggShellResult === EGGSHELL_RESULT.SUCCESS) {
                 typeRef = Module.getValue(typeStackPointer, 'i32');
                 dataRef = Module.getValue(dataStackPointer, 'i32');
                 subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            } else {
+                subValueRef = undefined;
             }
 
             Module.stackRestore(stack);
@@ -505,6 +509,58 @@ var assignEggShell;
                 ' (dataRef: ' + valueRef.dataRef + ')');
             }
             Module.stackRestore(stack);
+        };
+
+        Module.eggShell.getVariantAttribute = publicAPI.eggShell.getVariantAttribute = function (valueRef, attributeName) {
+            var stack = Module.stackSave();
+
+            var attributeNameStackPointer = Module.coreHelpers.writeJSStringToStack(attributeName);
+            var typeStackPointer = Module.stackAlloc(POINTER_SIZE);
+            var dataStackPointer = Module.stackAlloc(POINTER_SIZE);
+
+            var eggShellResult = Module._EggShell_GetVariantAttribute(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, attributeNameStackPointer, typeStackPointer, dataStackPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS && eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+                throw new Error('Could not get variant attribute for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
+                    ' (subpath: ' + attributeName + ')');
+            }
+
+            var typeRef, dataRef, resultValueRef;
+            if (eggShellResult === EGGSHELL_RESULT.SUCCESS) {
+                typeRef = Module.getValue(typeStackPointer, 'i32');
+                dataRef = Module.getValue(dataStackPointer, 'i32');
+                resultValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            } else {
+                resultValueRef = undefined;
+            }
+
+            Module.stackRestore(stack);
+            return resultValueRef;
+        };
+
+        // Note: Not exported as public api does not have ability to allocate arbitrary types
+        // Instead call setVariantAttributeAs<Typename> for current allocatable types as variant attributes
+        Module.eggShell.setVariantAttribute = function (valueRef, attributeName, attributeValueRef) {
+            var stack = Module.stackSave();
+
+            var attributeNameStackPointer = Module.coreHelpers.writeJSStringToStack(attributeName);
+            var eggShellResult = Module._EggShell_SetVariantAttribute(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, attributeNameStackPointer, attributeValueRef.typeRef, attributeValueRef.dataRef);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('Could not set variant attribute for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
+                    ' (subpath: ' + attributeName + ')');
+            }
+            Module.stackRestore(stack);
+        };
+
+        Module.eggShell.setVariantAttributeAsString = publicAPI.eggShell.setVariantAttributeAsString = function (valueRef, attributeName, attributeValueString) {
+            var stringTypeRef = Module.typeHelpers.findType('String');
+            var attributeValueRef = Module.eggShell.allocateData(stringTypeRef);
+            Module.eggShell.writeString(attributeValueRef, attributeValueString);
+            Module.eggShell.setVariantAttribute(valueRef, attributeName, attributeValueRef);
+            Module.eggShell.deallocateData(attributeValueRef);
         };
 
         // **DEPRECATED**

@@ -44,13 +44,17 @@ VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeR
 VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef);
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef typeRef, void * pData, const char* eltName,
-        TypeRef* typeRefLocation, void** dataRefLocation);
+                                                TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value);
 VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Double* result);
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);
 VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
 VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef typeRef, const void* pData,
-                                                 Int32 rank, Int32 dimensionLengths[]);
+                                                Int32 rank, Int32 dimensionLengths[]);
+VIREO_EXPORT EggShellResult EggShell_GetVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
+                                                        TypeRef* typeRefLocation, void** dataRefLocation);
+VIREO_EXPORT EggShellResult EggShell_SetVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
+                                                        TypeRef attributeTypeRef, void* attributeDataRef);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);

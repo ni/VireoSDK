@@ -191,6 +191,15 @@ var assignTypeHelpers;
             return Module.eggShell.dataReadString(stringRef);
         };
 
+        Module.typeHelpers.findType = function (typeName) {
+            var stack = Module.stackSave();
+
+            var typeNamePointer = Module.coreHelpers.writeJSStringToStack(typeName);
+            const typeRef = Module._TypeManager_FindType(Module.eggShell.v_userShell, typeNamePointer);
+            Module.stackRestore(stack);
+            return typeRef;
+        };
+
         Module.typeHelpers.typeRank = function (typeRef) {
             return Module._TypeRef_Rank(typeRef);
         };
