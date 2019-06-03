@@ -9,7 +9,7 @@ TestVariantToDataOptionalArgs-1: error=(true -2147467259)
 TestVariantToDataOptionalArgs-2: error=(true -2147467259)
 TestVariantToDataOptionalArgs-3: error=(true -2147467259)
 TestVariantToDataOptionalArgs-4: error=(true -2147467259)
-TestDataToVariant: myVar3=^Variant, error=(false 0)
+TestDataToVariant: myVar3=(_data:23 _attributes:null), error=(false 0)
 TestDataToVariant: myInt2=23, error2=(false 0)
-TestArrayOfVariants: myVar1_out=^Variant, error=(false 0) myInt1_out=255
-TestArrayOfVariants: myVar2_out=^Variant, error2=(false 0) myInt2_out=254
+TestArrayOfVariants: myVar1_out=(_data:255 _attributes:null), error=(false 0) myInt1_out=255
+TestArrayOfVariants: myVar2_out=(_data:254 _attributes:null), error2=(false 0) myInt2_out=254

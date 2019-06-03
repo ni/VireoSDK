@@ -31,7 +31,8 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: '123'
             },
             dt: 5.8,
-            Y: [1.2, 1.3, 1, -0.5] // eslint-disable-line id-length
+            Y: [1.2, 1.3, 1, -0.5], // eslint-disable-line id-length
+            attributes: {_data: null, _attributes: null}
         });
 
         expect(viPathParser('wave_i32_1')).toEqual({
@@ -40,19 +41,9 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: '0'
             },
             dt: 0,
-            Y: [] // eslint-disable-line id-length
+            Y: [], // eslint-disable-line id-length
+            attributes: {_data: null, _attributes: null}
         });
-
-        var newValue = {
-            t0: {
-                seconds: '50000',
-                fraction: '456'
-            },
-            dt: 10.5,
-            Y: [5, 25] // eslint-disable-line id-length
-        };
-        viPathWriter('wave_i32_1', newValue);
-        expect(viPathParser('wave_i32_1')).toEqual(newValue);
 
         var newValue2 = {
             t0: {
@@ -60,7 +51,8 @@ describe('Peek/Poke different datatypes', function () {
                 fraction: '656'
             },
             dt: 20.5,
-            Y: [45, 55] // eslint-disable-line id-length
+            Y: [45, 55], // eslint-disable-line id-length
+            attributes: {_data: null, _attributes: null}
         };
         viPathWriter('wave_i32_1.t0', newValue2.t0);
         viPathWriter('wave_i32_1.dt', newValue2.dt);
@@ -74,9 +66,31 @@ describe('Peek/Poke different datatypes', function () {
                     fraction: '123'
                 },
                 dt: 6.8,
-                Y: [10, 20, 30] // eslint-disable-line id-length
+                Y: [10, 20, 30], // eslint-disable-line id-length
+                attributes: {_data: null, _attributes: null}
             });
             done();
         });
+    });
+
+    // Vireo does not yet support writeJSON on Variant data types.
+    xit('peeks and pokes on analog waveform type with write attribute values', function () {
+        var viName = 'MyVI';
+
+        vireoRunner.rebootAndLoadVia(vireo, publicApiWaveformSimpleViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        var viPathWriter = vireoRunner.createVIPathWriter(vireo, viName);
+
+        var newValue = {
+            t0: {
+                seconds: '50000',
+                fraction: '456'
+            },
+            dt: 10.5,
+            Y: [5, 25], // eslint-disable-line id-length
+            attributes: {_data: null, _attributes: null}
+        };
+        viPathWriter('wave_i32_1', newValue);
+        expect(viPathParser('wave_i32_1')).toEqual(newValue);
     });
 });

@@ -1,0 +1,14 @@
+define(_Functionghtmlvi dv(.VirtualInstrument (
+    Locals: c(
+        e(.Variant inVarX)
+        e(dv(.String "defaulttext")local8)
+        e(dv(.Boolean true)local37)
+        e(a(.String *) local38)
+        e(.String temp)
+    )
+        clump(1
+        FlattenToJSON(inVarX local37 local8 )
+        Printf("%s\n" local8)
+/* Clump Ended. */    )
+)))
+enqueue(_Functionghtmlvi)

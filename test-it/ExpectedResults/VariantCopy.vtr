@@ -1,18 +1,18 @@
 TestCopyVariantWithAttributes()
-Set: myVar=^Variant, replaced=false error=(false 0)
-Set: myVar=^Variant, replaced=false error=(false 0)
+Set: myVar=(_data:245 _attributes:('aaa':(_data:'xxx' _attributes:null))), replaced=false error=(false 0)
+Set: myVar=(_data:245 _attributes:('aaa':(_data:'xxx' _attributes:null) 'bbb':(_data:255 _attributes:null))), replaced=false error=(false 0)
 
 Before Copy():
 attribNamesArrayLength = 2, attribValuesArrayLength = 2
-Get: myVar=^Variant, error=(false 0) error2=(false 0) attribNames=('aaa' 'bbb') values=(xxx 255) data=245
+Get: myVar=(_data:245 _attributes:('aaa':(_data:'xxx' _attributes:null) 'bbb':(_data:255 _attributes:null))), error=(false 0) error2=(false 0) attribNames=('aaa' 'bbb') values=(xxx 255) data=245
 
 After Copy():
 attribNamesArrayLength = 2, attribValuesArrayLength = 2
-Get: myVar2=^Variant, error=(false 0) error2=(false 0) attribNames=('aaa' 'bbb') values=(xxx 255) data=245
+Get: myVar2=(_data:245 _attributes:('aaa':(_data:'xxx' _attributes:null) 'bbb':(_data:255 _attributes:null))), error=(false 0) error2=(false 0) attribNames=('aaa' 'bbb') values=(xxx 255) data=245
 
 After Delete in myVar():
 attribNamesArrayLength = 0, attribValuesArrayLength = 0
-Get: myVar=^Variant, error=(false 0), NoAttribs, data=245
+Get: myVar=(_data:245 _attributes:null), error=(false 0), NoAttribs, data=245
 attribNamesArrayLength = 2, attribValuesArrayLength = 2
-Get: myVar2=^Variant, error=(false 0) error2=(false 0) attribNames=('aaa' 'bbb') values=(xxx 255) data=245
+Get: myVar2=(_data:245 _attributes:('aaa':(_data:'xxx' _attributes:null) 'bbb':(_data:255 _attributes:null))), error=(false 0) error2=(false 0) attribNames=('aaa' 'bbb') values=(xxx 255) data=245
 

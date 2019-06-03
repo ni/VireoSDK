@@ -2054,7 +2054,6 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._precision = 17;
         _options._bEscapeStrings = true;
-        _options._bQuote64BitNumbers = encoding == kJSONEncodingEggShell;
         switch (encoding) {
             case kJSONEncodingRegular:
                 _options._fmt = formatJSON;
@@ -2063,6 +2062,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
                 _options._fmt = formatJSONLVExt;
                 break;
             case kJSONEncodingEggShell:
+                _options._bQuote64BitNumbers = true;
                 _options._fmt = formatJSONEggShell;
                 break;
         }
@@ -2329,6 +2329,60 @@ void TDViaFormatter::FormatClusterData(TypeRef type, void *pData)
     _string->Append(Fmt()._clusterPost);
 }
 //------------------------------------------------------------
+void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
+{
+    _options._bQuoteStrings = true;
+    _string->Append(Fmt()._clusterPre);
+    Boolean useQuotesForFieldNames = Fmt().QuoteFieldNames();
+    VariantDataRef variantData = *reinterpret_cast<VariantDataRef *>(pData);
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
+    _string->AppendCStr(variantInnerData);
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
+    _string->Append(*tsNameSuffix);
+
+    TypeRef innerType = variantData->GetInnerType();
+    if (innerType) {
+        FormatData(innerType, innerType->Begin(kPARead));
+    } else {
+        _string->AppendCStr("null");
+    }
+    _string->Append(Fmt()._itemSeparator);
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
+    _string->AppendCStr(variantAttributes);
+    if (useQuotesForFieldNames)
+        _string->Append(Fmt()._quote);
+    _string->Append(*tsNameSuffix);
+    if (variantData->HasMap()) {
+        _string->Append(Fmt()._clusterPre);
+        auto iterator = variantData->GetMap_cbegin(), iteratorBegin = variantData->GetMap_cbegin(), iteratorEnd = variantData->GetMap_cend();
+        for (; iterator != iteratorEnd; ++iterator) {
+            if (iterator != iteratorBegin) {
+                _string->Append(Fmt()._itemSeparator);
+            }
+            StringRef attributeName = iterator->first;
+            if (_options._bQuoteStrings)
+                _string->Append(Fmt()._quote);
+            if (_options._bEscapeStrings) {
+                _string->AppendEscapeEncoded(attributeName->Begin(), attributeName->End() - attributeName->Begin());
+            } else {
+                _string->Append(attributeName);
+            }
+            if (_options._bQuoteStrings)
+                _string->Append(Fmt()._quote);
+            _string->Append(*tsNameSuffix);
+            VariantDataRef attributeValue = iterator->second;
+            FormatVariant(attributeValue->Type(), &attributeValue);
+        }
+        _string->Append(Fmt()._clusterPost);
+    } else {
+        _string->AppendCStr("null");
+    }
+    _string->Append(Fmt()._clusterPost);
+}
+//------------------------------------------------------------
 void TDViaFormatter::FormatData(TypeRef type, void *pData)
 {
     char buffer[kTempFormattingBufferSize];
@@ -2382,7 +2436,9 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatClusterData(type, pData);
             break;
         case kEncoding_Variant:
-            _string->AppendCStr("^Variant");
+            if (!Fmt().GenerateJSON() || TDViaFormatter::IsFormatJSONEggShell(Fmt())) {
+                FormatVariant(type, pData);
+            }
             break;
         case kEncoding_RefNum:
             {

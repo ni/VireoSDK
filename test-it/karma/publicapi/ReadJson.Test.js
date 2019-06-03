@@ -39,8 +39,11 @@ describe('The Vireo EggShell readJSON api can read', function () {
         ], done);
     });
 
-    beforeAll(function () {
-        vireoRunner.rebootAndLoadVia(vireo, publicApiMultipleTypesViaUrl);
+    beforeAll(async function () {
+        const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiMultipleTypesViaUrl);
+        const {rawPrint, rawPrintError} = await runSlicesAsync();
+        expect(rawPrint).toBe('');
+        expect(rawPrintError).toBe('');
     });
 
     describe('scalars of type', function () {
@@ -602,7 +605,8 @@ describe('The Vireo EggShell readJSON api can read', function () {
                     fraction: '123'
                 },
                 dt: 8.8,
-                Y: [5.5, 6.6, 7.7, 8.8] // eslint-disable-line id-length
+                Y: [5.5, 6.6, 7.7, 8.8], // eslint-disable-line id-length
+                attributes: {_data: null, _attributes: {key1: {_data: 'hello', _attributes: null}, key2: {_data: 'hi', _attributes: null}}}
             });
         });
     });

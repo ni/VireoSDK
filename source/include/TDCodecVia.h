@@ -193,6 +193,7 @@ class TDViaFormatter
     void    FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
                 IntIndex *pDimLengths, IntIndex *pSlabLengths);
 
+    void    FormatVariant(TypeRef type, void* pData);
     void    FormatClusterData(TypeRef type, void* pData);
     void    FormatPointerData(TypeRef pointerType, void* pData);
     void    FormatEncoding(EncodingEnum value) const;
@@ -207,6 +208,10 @@ class TDViaFormatter
     static ViaFormatChars formatJSONLVExt;
     static ViaFormatChars formatJSONEggShell;
     static ViaFormatChars formatC;
+
+    Boolean IsFormatJSONEggShell(ViaFormatChars format) const {
+        return format.GenerateJSON() && ((format._fieldNameFormat & formatJSONEggShell._fieldNameFormat) == formatJSONEggShell._fieldNameFormat);
+    }
 };
 
 void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr);
@@ -278,6 +283,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsTypeManagerType       "TypeManager"
 #define tsVIClumpType           "Clump"
 
+#define variantInnerData        "_data"
+#define variantAttributes       "_attributes"
 }  // namespace Vireo
 
 #endif  // TDCodecVia_h
