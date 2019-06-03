@@ -172,10 +172,12 @@ var assignEggShell;
             }
 
             var typeRef, dataRef, valueRef;
-            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+            if (eggShellResult === EGGSHELL_RESULT.SUCCESS) {
                 typeRef = Module.getValue(typeStackPointer, 'i32');
                 dataRef = Module.getValue(dataStackPointer, 'i32');
                 valueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            } else {
+                valueRef = undefined;
             }
 
             Module.stackRestore(stack);
@@ -198,10 +200,12 @@ var assignEggShell;
             }
 
             var typeRef, dataRef, subValueRef;
-            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+            if (eggShellResult === EGGSHELL_RESULT.SUCCESS) {
                 typeRef = Module.getValue(typeStackPointer, 'i32');
                 dataRef = Module.getValue(dataStackPointer, 'i32');
                 subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            } else {
+                subValueRef = undefined;
             }
 
             Module.stackRestore(stack);
@@ -522,15 +526,17 @@ var assignEggShell;
                     ' (subpath: ' + attributeName + ')');
             }
 
-            var typeRef, dataRef, subValueRef;
-            if (eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+            var typeRef, dataRef, resultValueRef;
+            if (eggShellResult === EGGSHELL_RESULT.SUCCESS) {
                 typeRef = Module.getValue(typeStackPointer, 'i32');
                 dataRef = Module.getValue(dataStackPointer, 'i32');
-                subValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+                resultValueRef = Module.eggShell.createValueRef(typeRef, dataRef);
+            } else {
+                resultValueRef = undefined;
             }
 
             Module.stackRestore(stack);
-            return subValueRef;
+            return resultValueRef;
         };
 
         // Note: Not exported as public api does not have ability to allocate arbitrary types
