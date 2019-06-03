@@ -115,13 +115,11 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm,
 VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeRef typeRef, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
-    if (typeRef == nullptr || !typeRef->IsValid()) {
+    if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
-    }
 
-    if (dataRefLocation == nullptr) {
+    if (dataRefLocation == nullptr)
         return kEggShellResult_InvalidDataPointer;
-    }
 
     *dataRefLocation = nullptr;
     Int32 topSize = typeRef->TopAQSize();
@@ -138,13 +136,11 @@ VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeR
 VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef)
 {
     TypeManagerScope scope(tm);
-    if (typeRef == nullptr || !typeRef->IsValid()) {
+    if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
-    }
 
-    if (dataRef == nullptr) {
+    if (dataRef == nullptr)
         return kEggShellResult_InvalidDataPointer;
-    }
 
     NIError error = typeRef->ClearData(dataRef);
     THREAD_TADM()->Free(dataRef);
@@ -159,6 +155,9 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
+    if (typeRefLocation == nullptr || dataRefLocation == nullptr)
+        return kEggShellResult_InvalidResultPointer;
+
     *typeRefLocation = nullptr;
     *dataRefLocation = nullptr;
 
@@ -176,11 +175,17 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm,
         const TypeRef typeRef, void * pData, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
-    *typeRefLocation = nullptr;
-    *dataRefLocation = nullptr;
-
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
+
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    if (typeRefLocation == nullptr || dataRefLocation == nullptr)
+        return kEggShellResult_InvalidResultPointer;
+
+    *typeRefLocation = nullptr;
+    *dataRefLocation = nullptr;
 
     SubString path(eltName);
     *typeRefLocation = typeRef->GetSubElementAddressFromPath(&path, pData, dataRefLocation, true);
@@ -300,6 +305,9 @@ VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRe
     if (typeRef->Rank() != rank)
         return kEggShellResult_MismatchedArrayRank;
 
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
     TypedArrayCoreRef arrayObject = *(static_cast<const TypedArrayCoreRef*>(pData));
     VIREO_ASSERT(TypedArrayCore::ValidateHandle(arrayObject));
 
@@ -314,12 +322,17 @@ VIREO_EXPORT EggShellResult EggShell_GetVariantAttribute(TypeManagerRef tm, cons
                                                         TypeRef* typeRefLocation, void** dataRefLocation)
 {
     TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant())
+        return kEggShellResult_InvalidTypeRef;
+
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    if (typeRefLocation == nullptr || dataRefLocation == nullptr)
+        return kEggShellResult_InvalidResultPointer;
+
     *typeRefLocation = nullptr;
     *dataRefLocation = nullptr;
-
-    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant()) {
-        return kEggShellResult_InvalidTypeRef;
-    }
 
     STACK_VAR(String, attributeSV);
     StringRef attributeName = attributeSV.Value;
@@ -340,14 +353,11 @@ VIREO_EXPORT EggShellResult EggShell_SetVariantAttribute(TypeManagerRef tm, cons
                                                         TypeRef attributeTypeRef, void* attributeDataRef)
 {
     TypeManagerScope scope(tm);
-
-    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant()) {
+    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant() || attributeTypeRef == nullptr || !attributeTypeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
-    }
 
-    if (attributeTypeRef == nullptr || !attributeTypeRef->IsValid()) {
-        return kEggShellResult_InvalidTypeRef;
-    }
+    if (pData == nullptr || attributeDataRef == nullptr)
+        return kEggShellResult_InvalidDataPointer;
 
     STACK_VAR(String, attributeSV);
     StringRef attributeName = attributeSV.Value;
@@ -717,4 +727,3 @@ VIREO_EXPORT void Occurrence_Set(OccurrenceRef occurrence)
 
 }  // namespace Vireo
 #endif  // VIREO_C_ENTRY_POINTS
-
