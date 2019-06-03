@@ -119,7 +119,7 @@ VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeR
         return kEggShellResult_InvalidTypeRef;
 
     if (dataRefLocation == nullptr)
-        return kEggShellResult_InvalidDataPointer;
+        return kEggShellResult_InvalidResultPointer;
 
     *dataRefLocation = nullptr;
     Int32 topSize = typeRef->TopAQSize();
@@ -202,6 +202,9 @@ VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRe
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
 
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
     NIError error = WriteDoubleToMemory(typeRef, pData, value);
     if (error)
         return kEggShellResult_UnexpectedObjectType;
@@ -214,6 +217,9 @@ VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef
     TypeManagerScope scope(tm);
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
+
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
 
     if (result == nullptr)
         return kEggShellResult_InvalidResultPointer;
@@ -229,12 +235,13 @@ VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format, const char* value)
 {
     TypeManagerScope scope(tm);
-
-    SubString valueString(value);
-
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
 
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    SubString valueString(value);
     EventLog log(EventLog::DevNull);
     SubString formatss(format);
     TDViaParser parser(tm, &valueString, &log, 1, &formatss, true, true, true);
@@ -251,12 +258,14 @@ VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const Ty
                                                     TypeRef responseJSONTypeRef, void* responseJSONDataRef)
 {
     TypeManagerScope scope(tm);
-
     if (typeRef == nullptr || !typeRef->IsValid())
         return kEggShellResult_InvalidTypeRef;
 
-    if (responseJSONTypeRef == nullptr || !responseJSONTypeRef->IsValid() || !responseJSONTypeRef->IsString())
-        return kEggShellResult_InvalidTypeRef;
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    if (responseJSONTypeRef == nullptr || !responseJSONTypeRef->IsValid() || !responseJSONTypeRef->IsString() || responseJSONDataRef == nullptr)
+        return kEggShellResult_InvalidResultPointer;
 
     StringRef returnBuffer = *(static_cast<const StringRef*>(responseJSONDataRef));
     returnBuffer->Resize1D(0);
@@ -264,20 +273,6 @@ VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const Ty
     TDViaFormatter formatter(returnBuffer, true, 0, &formatss, kJSONEncodingEggShell);
     formatter.FormatData(typeRef, pData);
     return kEggShellResult_Success;
-}
-void CopyArrayTypeNameStringToBuffer(StringRef arrayTypeNameBuffer, SubString arrayTypeName)
-{
-    arrayTypeNameBuffer->Append(arrayTypeName.Length(), static_cast<const Utf8Char*>(arrayTypeName.Begin()));
-    arrayTypeNameBuffer->Append((Utf8Char)'\0');
-}
-
-unsigned char* GetArrayBeginAt(TypedArrayCoreRef arrayObject)
-{
-    if (arrayObject->GetLength(0) <= 0) {
-        return nullptr;
-    } else {
-        return arrayObject->BeginAt(0);
-    }
 }
 //------------------------------------------------------------
 //! Resizes a variable size Array symbol to have new dimension lengths specified by newLengths, it also initializes cells for non-flat data.
@@ -446,30 +441,35 @@ VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef)
 VIREO_EXPORT void TypeRef_Name(TypeManagerRef tm, TypeRef typeRef, TypeRef responseTypeRef, void* responseDataRef)
 {
     TypeManagerScope scope(tm);
+    if (responseTypeRef == nullptr || !responseTypeRef->IsValid() || !responseTypeRef->IsString() || responseDataRef == nullptr)
+        return;
 
-    StringRef returnBuffer = *(static_cast<const StringRef*>(responseDataRef));
+    StringRef response = *(static_cast<const StringRef*>(responseDataRef));
     if (typeRef == nullptr || !typeRef->IsValid()) {
-        returnBuffer->Resize1D(0);
+        response->Resize1D(0);
         return;
     }
 
     SubString name = typeRef->Name();
-    returnBuffer->Resize1D(name.Length());
-    returnBuffer->CopyFromSubString(&name);
+    response->Resize1D(name.Length());
+    response->CopyFromSubString(&name);
 }
 //------------------------------------------------------------
 VIREO_EXPORT void TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef, TypeRef responseTypeRef, void* responseDataRef)
 {
     TypeManagerScope scope(tm);
-    StringRef returnBuffer = *(static_cast<const StringRef*>(responseDataRef));
+    if (responseTypeRef == nullptr || !responseTypeRef->IsValid() || !responseTypeRef->IsString() || responseDataRef == nullptr)
+        return;
+
+    StringRef response = *(static_cast<const StringRef*>(responseDataRef));
     if (typeRef == nullptr || !typeRef->IsValid()) {
-        returnBuffer->Resize1D(0);
+        response->Resize1D(0);
         return;
     }
 
     SubString elementName = typeRef->ElementName();
-    returnBuffer->Resize1D(elementName.Length());
-    returnBuffer->CopyFromSubString(&elementName);
+    response->Resize1D(elementName.Length());
+    response->CopyFromSubString(&elementName);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef)

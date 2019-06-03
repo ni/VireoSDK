@@ -125,7 +125,7 @@
                     } else {
                         // Result is they are not equal, but should be equal (normal case)
                         result.message = 'Expected Vireo output to match VTR text, instead saw:\n';
-                        result.message += window.JsDiff.createTwoFilesPatch('VTR Text', 'Vireo Output', expectedNoComments, actualNoComments);
+                        result.message += window.Diff.createTwoFilesPatch('VTR Text', 'Vireo Output', expectedNoComments, actualNoComments);
                     }
 
                     return result;
