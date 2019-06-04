@@ -1,0 +1,22 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(   // Data Space
+        ce(dv(.Double 380)c1)
+        e(dv(.Double 1280)dataItem_Numeric)
+        e(.Double local3)
+        e(dv(.String "") returnString)
+        e(dv(.String 'MyVI') viName)
+        e(dv(.String 'dataItem_Numeric') dataItemName)
+        e(.Occurrence occurrence)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) error)
+    )
+        clump(
+        Copy(c1 dataItem_Numeric)
+        JavaScriptInvoke(occurrence false error 'NI_InternalFunctionReinitialize' * viName dataItemName)
+/* Clump Ended. */    )
+)))
+
+enqueue(MyVI)

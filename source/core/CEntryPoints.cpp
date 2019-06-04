@@ -154,6 +154,36 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
 
     return kEggShellResult_Success;
 }
+
+//------------------------------------------------------------
+//! ReinitializeToDefault
+VIREO_EXPORT EggShellResult EggShell_ReinitializeToDefaultData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef)
+{
+	TypeManagerScope scope(tm);
+
+	if (typeRef == nullptr || !typeRef->IsValid()) {
+		return kEggShellResult_InvalidTypeRef;
+	}
+
+	if (dataRef == nullptr) {
+		return kEggShellResult_InvalidDataPointer;
+	}
+
+	NIError error = typeRef->ClearData(dataRef);
+
+	if (error != kNIError_Success) {
+		return kEggShellResult_UnableToDeallocateData;
+	}
+
+	error = typeRef->InitData(dataRef);
+
+	if (error != kNIError_Success) {
+		return kEggShellResult_UnableToAllocateData;
+	}
+
+	return kEggShellResult_Success;
+}
+
 //------------------------------------------------------------
 //! Get a reference to the type pointer and data for a symbol.
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation)

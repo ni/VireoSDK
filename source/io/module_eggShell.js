@@ -155,6 +155,15 @@ var assignEggShell;
             }
         };
 
+        Module.eggShell.reinitializeToDefaultData = publicAPI.eggShell.reinitializeToDefaultData = function (valueRef) {
+            var eggShellResult = Module._EggShell_ReinitializeToDefaultData(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('The ValueRef could not be reinitialized to default for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')');
+            }
+        };
+
         Module.eggShell.findValueRef = publicAPI.eggShell.findValueRef = function (vi, path) {
             var stack = Module.stackSave();
 

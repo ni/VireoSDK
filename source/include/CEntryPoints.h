@@ -42,6 +42,7 @@ VIREO_EXPORT Int32 EggShell_PokeMemory(TypeManagerRef tm, const char* viName, co
                                        Int32 bufferSize, char* buffer);
 VIREO_EXPORT EggShellResult EggShell_AllocateData(TypeManagerRef tm, const TypeRef typeRef, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef);
+VIREO_EXPORT EggShellResult EggShell_ReinitializeToDefaultData(TypeManagerRef tm, const TypeRef typeRef, void *dataRef);
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef typeRef, void * pData, const char* eltName,
         TypeRef* typeRefLocation, void** dataRefLocation);
