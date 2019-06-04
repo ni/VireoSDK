@@ -159,29 +159,29 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
 //! ReinitializeToDefault
 VIREO_EXPORT EggShellResult EggShell_ReinitializeToDefaultData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef)
 {
-	TypeManagerScope scope(tm);
+    TypeManagerScope scope(tm);
 
-	if (typeRef == nullptr || !typeRef->IsValid()) {
-		return kEggShellResult_InvalidTypeRef;
-	}
+    if (typeRef == nullptr || !typeRef->IsValid()) {
+        return kEggShellResult_InvalidTypeRef;
+    }
 
-	if (dataRef == nullptr) {
-		return kEggShellResult_InvalidDataPointer;
-	}
+    if (dataRef == nullptr) {
+        return kEggShellResult_InvalidDataPointer;
+    }
 
-	NIError error = typeRef->ClearData(dataRef);
+    NIError error = typeRef->ClearData(dataRef);
 
-	if (error != kNIError_Success) {
-		return kEggShellResult_UnableToDeallocateData;
-	}
+    if (error != kNIError_Success) {
+        return kEggShellResult_UnableToDeallocateData;
+    }
 
-	error = typeRef->InitData(dataRef);
+    error = typeRef->InitData(dataRef);
 
-	if (error != kNIError_Success) {
-		return kEggShellResult_UnableToAllocateData;
-	}
+    if (error != kNIError_Success) {
+        return kEggShellResult_UnableToAllocateData;
+    }
 
-	return kEggShellResult_Success;
+    return kEggShellResult_Success;
 }
 
 //------------------------------------------------------------
