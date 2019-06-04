@@ -16,10 +16,8 @@ describe('A JavaScript function invoke', function () {
     });
 
     beforeEach(async function () {
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = await vireoHelpers.createInstance();
 
-        // Add functions to exercise JavaScriptInvoke behavior
         window.NI_InternalFunctionReinitialize = function (viName, path) {
             var valueRef = vireo.eggShell.findValueRef(viName, path);
             vireo.eggShell.reinitializeToDefaultData(valueRef);
