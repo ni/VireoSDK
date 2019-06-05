@@ -95,7 +95,7 @@ comment`
         });
     };
 
-    const jsReinitializeToDefaultViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/ReinitializeToDefault.via');
+    const jsReinitializeToDefaultViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ReinitializeToDefault.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -105,11 +105,6 @@ comment`
 
     beforeEach(async function () {
         vireo = await vireoHelpers.createInstance();
-    });
-
-    afterEach(function () {
-        // Cleanup functions
-        window.NI_ConcatenateValue = undefined;
     });
 
     it('with no parameters succesfully works', async function () {
