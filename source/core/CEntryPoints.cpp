@@ -156,8 +156,8 @@ VIREO_EXPORT EggShellResult EggShell_DeallocateData(TypeManagerRef tm, const Typ
 }
 
 //------------------------------------------------------------
-//! ReinitializeToDefault
-VIREO_EXPORT EggShellResult EggShell_ReinitializeToDefaultData(TypeManagerRef tm, const TypeRef typeRef, void* dataRef)
+//! Clears data and reinitializes to default dataRef described by typeRef.
+VIREO_EXPORT EggShellResult EggShell_ReinitializeToDefault(TypeManagerRef tm, const TypeRef typeRef, void* dataRef)
 {
     TypeManagerScope scope(tm);
 
