@@ -63,6 +63,8 @@
             }
 
             vireo.eggShell.executeSlicesUntilClumpsFinished().then(function () {
+                // Cleanup the configured print functions in-case the Vireo instance is used for further tests
+                // by replacing them with a noop callback
                 var noop = function () {
                     // intentionally blank
                 };
