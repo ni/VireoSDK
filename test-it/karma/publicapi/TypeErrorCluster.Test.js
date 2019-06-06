@@ -5,10 +5,13 @@ describe('Cluster test suite', function () {
     var vireoRunner = window.testHelpers.vireoRunner;
     var fixtures = window.testHelpers.fixtures;
 
-    // Sharing Vireo instances across tests make them run soooo much faster
     var vireo;
     beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
     });
 
     var publicApiErrorClusterViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/ErrorCluster.via');

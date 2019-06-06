@@ -33,10 +33,16 @@ describe('Performing a HEAD request', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
-    beforeEach(async function () {
-        httpBinHelpers.makeTestPendingIfHttpBinOffline();
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
+    beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
+    });
+
+    beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
     });
 
     it('with a simple 200 response', function (done) {

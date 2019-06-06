@@ -17,8 +17,12 @@ describe('The Vireo CoreHelpers setFPSyncFunction api', function () {
         ], done);
     });
 
-    beforeEach(async function () {
+    beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
     });
 
     it('can perform a simple fpsync', function (done) {

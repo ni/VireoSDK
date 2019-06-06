@@ -10,6 +10,10 @@ describe('Arrays in Vireo', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
+    afterAll(function () {
+        vireo = undefined;
+    });
+
     var testsArrayDemoViaUrl = fixtures.convertToAbsoluteFromViaTestsDir('ArrayDemo.via');
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
     var runSlicesAsync;

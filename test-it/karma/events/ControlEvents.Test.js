@@ -85,6 +85,10 @@ describe('The Vireo Control Event', function () {
         });
     });
 
+    afterEach(function () {
+        vireo = undefined;
+    });
+
     it('registration callback is called on parse and unregister callback on exit', function (done) {
         var registerCallbackExecuted = false;
         var unregisterCallbackExecuted = false;

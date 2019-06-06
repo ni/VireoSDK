@@ -28,7 +28,7 @@ define(TopVI dv(.VirtualInstrument (
         e(dv(.BigInt ((2 2 3) true ) ) ybi)
         e(dv(.BigInt ((2 2 3) true ) ) zbi)
 
-        e(dv(a(.BigInt *) (((1) true) ((1) true))  xabi)
+//        e(dv(a(.BigInt *) (((1) true) ((1) true))  xabi)
         e(.BigInt  ybi)
         e(a(.BigInt *)  zabi)
 

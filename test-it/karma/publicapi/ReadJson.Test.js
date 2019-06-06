@@ -10,6 +10,10 @@ describe('The Vireo EggShell readJSON api can read', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
+    afterAll(function () {
+        vireo = undefined;
+    });
+
     var publicApiMultipleTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/MultipleTypes.via');
     var viName = 'MyVI';
 

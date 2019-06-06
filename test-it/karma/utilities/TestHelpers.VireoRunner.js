@@ -62,11 +62,16 @@
                 });
             }
 
-            var complete = function () {
+            vireo.eggShell.executeSlicesUntilClumpsFinished().then(function () {
+                // Cleanup the configured print functions in-case the Vireo instance is used for further tests
+                // by replacing them with a noop callback
+                var noop = function () {
+                    // intentionally blank
+                };
+                vireo.eggShell.setPrintFunction(noop);
+                vireo.eggShell.setPrintErrorFunction(noop);
                 cb(rawPrint, rawPrintError);
-            };
-
-            vireo.eggShell.executeSlicesUntilClumpsFinished().then(complete);
+            });
 
             return undefined;
         };
@@ -122,7 +127,7 @@
                     } else {
                         // Result is they are not equal, but should be equal (normal case)
                         result.message = 'Expected Vireo output to match VTR text, instead saw:\n';
-                        result.message += window.JsDiff.createTwoFilesPatch('VTR Text', 'Vireo Output', expectedNoComments, actualNoComments);
+                        result.message += window.Diff.createTwoFilesPatch('VTR Text', 'Vireo Output', expectedNoComments, actualNoComments);
                     }
 
                     return result;

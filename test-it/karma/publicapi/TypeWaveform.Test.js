@@ -10,6 +10,10 @@ describe('Peek/Poke different datatypes', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
+    afterAll(function () {
+        vireo = undefined;
+    });
+
     var publicApiWaveformSimpleViaUrl = fixtures.convertToAbsoluteFromFixturesDir('publicapi/WaveformSimple.via');
 
     beforeAll(function (done) {

@@ -19,6 +19,10 @@ describe('A JavaScriptInvoke for an internal function', function () {
         vireo = await vireoHelpers.createInstance();
     });
 
+    afterEach(function () {
+        vireo = undefined;
+    });
+
     it('works for the simple case', function (done) {
         var viName = 'NI_InternalFunction';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);

@@ -15,10 +15,15 @@ describe('A JavaScript function invoke', function () {
         ], done);
     });
 
-    beforeEach(async function () {
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
+    beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
 
+    afterAll(function () {
+        vireo = undefined;
+    });
+
+    beforeEach(async function () {
         // Add functions to exercise JavaScriptInvoke behavior
         window.NI_ConcatenateValue = function (fieldName, value) {
             var returnString = fieldName + value;

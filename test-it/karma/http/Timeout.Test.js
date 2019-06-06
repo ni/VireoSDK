@@ -23,15 +23,21 @@ describe('Timeout test suite #Slow', function () {
         httpBinHelpers.queryHttpBinStatus(done);
     });
 
+    beforeAll(async function () {
+        vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
+    });
+
+    beforeEach(function () {
+        httpBinHelpers.makeTestPendingIfHttpBinOffline();
+    });
+
     beforeEach(function (done) {
         // The timeout tests sometimes need a recovery period so perform a full get request and wait for it before continuing
         httpBinHelpers.forceHttpBinQuery('get?show_env=1', done);
-    });
-
-    beforeEach(async function () {
-        httpBinHelpers.makeTestPendingIfHttpBinOffline();
-        // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
-        vireo = await vireoHelpers.createInstance();
     });
 
     it('GET method with timeout 0s times out with httpbin delay of 10s', function (done) {

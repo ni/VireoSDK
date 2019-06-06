@@ -25,8 +25,12 @@ describe('A JavaScript function invoke', function () {
         ], done);
     });
 
-    beforeEach(async function () {
+    beforeAll(async function () {
         vireo = await vireoHelpers.createInstance();
+    });
+
+    afterAll(function () {
+        vireo = undefined;
     });
 
     beforeEach(function () {

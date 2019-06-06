@@ -48,7 +48,8 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeR
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value);
 VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Double* result);
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);
-VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, UInt8** valueString);
+VIREO_EXPORT EggShellResult EggShell_ReadValueString(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* format,
+                                                    TypeRef responseJSONTypeRef, void* responseJSONDataRef);
 VIREO_EXPORT EggShellResult EggShell_ResizeArray(TypeManagerRef tm, const TypeRef typeRef, const void* pData,
                                                 Int32 rank, Int32 dimensionLengths[]);
 VIREO_EXPORT EggShellResult EggShell_GetVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
@@ -70,8 +71,8 @@ VIREO_EXPORT Boolean TypeRef_IsValid(TypeRef typeRef);
 VIREO_EXPORT Boolean TypeRef_HasCustomDefault(TypeRef typeRef);
 VIREO_EXPORT EncodingEnum TypeRef_BitEncoding(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Alignment(TypeRef typeRef);
-VIREO_EXPORT StringRef TypeRef_Name(TypeManagerRef tm, TypeRef typeRef);
-VIREO_EXPORT StringRef TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef);
+VIREO_EXPORT void TypeRef_Name(TypeManagerRef tm, TypeRef typeRef, TypeRef responseTypeRef, void* responseDataRef);
+VIREO_EXPORT void TypeRef_ElementName(TypeManagerRef tm, TypeRef typeRef, TypeRef responseTypeRef, void* responseDataRef);
 VIREO_EXPORT Int32 TypeRef_ElementOffset(TypeRef typeRef);
 VIREO_EXPORT Int32 TypeRef_Rank(TypeRef typeRef);
 VIREO_EXPORT PointerTypeEnum TypeRef_PointerType(TypeRef typeRef);

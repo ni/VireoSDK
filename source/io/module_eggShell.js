@@ -110,6 +110,8 @@ var assignEggShell;
         };
 
         Module.eggShell.reboot = publicAPI.eggShell.reboot = function () {
+            // TODO abort all http requests
+            // TODO reset internal jsli functions
             Module.eggShell.delete(Module.eggShell.v_userShell);
             Module.eggShell.delete(Module.eggShell.v_root);
             Module.eggShell.v_root = Module.eggShell.create(0);
@@ -290,11 +292,11 @@ var assignEggShell;
             var stack = Module.stackSave(); // Stack save only needed for input parameter string or array
 
             var type = 'JSON';
-            var jsonStackDoublePointer = Module.stackAlloc(POINTER_SIZE);
             var typeStackPointer = Module.coreHelpers.writeJSStringToStack(type);
 
-            var eggShellError = Module._EggShell_ReadValueString(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, typeStackPointer, jsonStackDoublePointer);
-
+            var stringTypeRef = Module.typeHelpers.findType('String');
+            var jsonResponseValueRef = Module.eggShell.allocateData(stringTypeRef);
+            var eggShellError = Module._EggShell_ReadValueString(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, typeStackPointer, jsonResponseValueRef.typeRef, jsonResponseValueRef.dataRef);
             if (eggShellError !== 0) {
                 throw new Error('Performing readJSON failed for the following reason: ' + eggShellResultEnum[eggShellError] +
                     ' (error code: ' + eggShellError + ')' +
@@ -302,10 +304,8 @@ var assignEggShell;
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
-            var jsonStackPointer = Module.getValue(jsonStackDoublePointer, 'i32');
-            var responseLength = Module.coreHelpers.findCStringLength(Module.HEAPU8, jsonStackPointer);
-            var response = Module.coreHelpers.sizedUtf8ArrayToJSString(Module.HEAPU8, jsonStackPointer, responseLength);
-
+            var response = Module.eggShell.readString(jsonResponseValueRef);
+            Module.eggShell.deallocateData(jsonResponseValueRef);
             Module.stackRestore(stack);
             return response;
         };
