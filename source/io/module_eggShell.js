@@ -572,6 +572,23 @@ var assignEggShell;
             Module.eggShell.deallocateData(attributeValueRef);
         };
 
+        Module.eggShell.deleteVariantAttribute = publicAPI.eggShell.deleteVariantAttribute = function (valueRef, attributeName) {
+            var stack = Module.stackSave();
+
+            var attributeNameStackPointer = Module.coreHelpers.writeJSStringToStack(attributeName);
+            var eggShellResult = Module._EggShell_DeleteVariantAttribute(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, attributeNameStackPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS && eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH) {
+                throw new Error('Could not delete variant attribute for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (type name: ' + Module.typeHelpers.typeName(valueRef.typeRef) + ')' +
+                    ' (subpath: ' + attributeName + ')');
+            }
+            var found = eggShellResult !== EGGSHELL_RESULT.OBJECT_NOT_FOUND_AT_PATH;
+
+            Module.stackRestore(stack);
+            return found;
+        };
+
         // **DEPRECATED**
         Module.eggShell.dataReadString = function (stringPointer) {
             var begin = Module._Data_GetStringBegin(stringPointer);

@@ -386,6 +386,28 @@ VIREO_EXPORT EggShellResult EggShell_SetVariantAttribute(TypeManagerRef tm, cons
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
+//! Deletes a variant attribute of a given type and data pointer
+VIREO_EXPORT EggShellResult EggShell_DeleteVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr)
+{
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid() || !typeRef->IsVariant())
+        return kEggShellResult_InvalidTypeRef;
+
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    STACK_VAR(String, attributeSV);
+    StringRef attributeName = attributeSV.Value;
+    attributeName->AppendCStr(attributeNameCStr);
+
+    VariantDataRef variant = *(static_cast<const VariantDataRef*>(pData));
+    Boolean found = variant->DeleteAttribute(&attributeName);
+    if (!found)
+        return kEggShellResult_ObjectNotFoundAtPath;
+
+    return kEggShellResult_Success;
+}
+//------------------------------------------------------------
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject)
 {
     VIREO_ASSERT(String::ValidateHandle(stringObject));

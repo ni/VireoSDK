@@ -101,4 +101,34 @@ describe('The Vireo EggShell api', function () {
             expect(result).toBe('new updated value');
         });
     });
+
+    describe('can use deleteVariantAttribute', function () {
+        it('to throw for none variant types', function () {
+            const valueRef = vireo.eggShell.findValueRef(viName, 'utf8string');
+            expect(() => vireo.eggShell.deleteVariantAttribute(valueRef, 'nonexistant')).toThrowError(/InvalidTypeRef/);
+        });
+
+        it('to not find an attribute in an empty variant without attributes', function () {
+            const valueRef = vireo.eggShell.findValueRef(viName, 'emptyAttributesVariant');
+            const found = vireo.eggShell.deleteVariantAttribute(valueRef, 'nonexistant');
+            expect(found).toBeFalse();
+        });
+
+        it('to find a string attribute in an empty variant with attribute key1:value1', function () {
+            const valueRef = vireo.eggShell.findValueRef(viName, 'stringAttributeVariant');
+            const attributeValueRefBefore = vireo.eggShell.getVariantAttribute(valueRef, 'key1');
+            const value = vireo.eggShell.readString(attributeValueRefBefore);
+            expect(attributeValueRefBefore).toBeObject();
+            expect(value).toBe('value1');
+
+            const found = vireo.eggShell.deleteVariantAttribute(valueRef, 'key1');
+            expect(found).toBe(true);
+
+            const attributeValueRefAfter = vireo.eggShell.getVariantAttribute(valueRef, 'key1');
+            expect(attributeValueRefAfter).toBeUndefined();
+
+            const foundAfter = vireo.eggShell.deleteVariantAttribute(valueRef, 'key1');
+            expect(foundAfter).toBe(false);
+        });
+    });
 });
