@@ -2283,11 +2283,13 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
 
     _string->Append(Fmt()._arrayPre);
     IntIndex origLen = *_string->DimensionLengths();
+
+    if (rank != 0) {
+        FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths);
+    }
     if (dimensionLength-- > 0) {
         if (rank == 0) {
             FormatData(elementType, pElement);
-        } else {
-            FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths);
         }
         pElement += elementLength;
         if (rank == 0) {  // estimate total array size based on first element and pre-allocate
