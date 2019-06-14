@@ -96,7 +96,7 @@ module.exports = {
         'func-names': ['error', 'never'],
         'func-style': 'error',
         'id-blacklist': 'error',
-        'id-length': ['error',  { 'exceptions': ['e', 'i', 'j'] }],
+        'id-length': ['error',  { 'exceptions': ['e', 'i', 'j', 'Y'] }],
         'id-match': 'error',
         'indent': 'error',
         'jsx-quotes': 'error',
