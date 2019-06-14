@@ -156,6 +156,7 @@ class TDViaParser
     TypeRef ParseControlReference(void *pData = nullptr);
     TypeRef ParseEnumType(SubString *token);
     static EncodingEnum ParseEncoding(SubString* str);
+    static Boolean EatJSONItem(SubString* input);
 };
 
 #if defined (VIREO_VIA_FORMATTER)

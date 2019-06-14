@@ -886,10 +886,18 @@ Int32 TDViaParser::ParseVariantData(VariantDataRef pData)
     LVError err = kLVError_NoError;
     VIREO_ASSERT(pData != nullptr);
 
-    if (!_string.EatChar('(')) {
-        err = kLVError_ArgError;
-    } else if (!_string.EatChar(')')) {
-        err = kLVError_ArgError;
+    // For JSON encodings skip variant parsing altogether
+    // Not possible until we include type information in FormatVariant
+    if (Fmt().QuoteFieldNames()) {
+        if (!EatJSONItem(&_string)) {
+            err = kLVError_ArgError;
+        }
+    } else {
+        if (!_string.EatChar('(')) {
+            err = kLVError_ArgError;
+        } else if (!_string.EatChar(')')) {
+            err = kLVError_ArgError;
+        }
     }
     if (err == kLVError_ArgError) {
         LOG_EVENT(kHardDataError, "default value for variant must be empty");
@@ -1030,7 +1038,7 @@ Int32 TDViaParser::ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSli
 
 //------------------------------------------------------------
 //! Skip over a JSON item.  TODO(PaulAustin): merge with ReadSubexpression
-Boolean EatJSONItem(SubString* input)
+Boolean TDViaParser::EatJSONItem(SubString* input)
 {
     SubString token;
 

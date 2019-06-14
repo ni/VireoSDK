@@ -41,13 +41,6 @@ describe('Vireo public API allows', function () {
         return JSON.parse(vireo.eggShell.readJSON(valueRef));
     };
 
-    // Vireo does not yet support writeJSON on Variant data types.
-    var allocateWaveformTest = function (viName, path) {
-        var dataValueRef = allocateData(viName, path);
-        expectValidValueRef(dataValueRef);
-        internalEggShell.deallocateData(dataValueRef);
-    };
-
     var allocateTest = function (viName, path, value) {
         var dataValueRef = allocateData(viName, path);
         expectValidValueRef(dataValueRef);
@@ -207,59 +200,89 @@ describe('Vireo public API allows', function () {
             });
         });
 
-        it('local variables in a VI', function () {
-            allocateTest(viName, 'booleans', [true, false, true, false]);
-            allocateTest(viName, 'strings', [
-                'everyone you know',
-                'everyone you ever heard of',
-                'every human being who ever was',
-                'lived out their lives'
-            ]);
-            allocateTest(viName, 'doubles', [1.2, 3.4, 5.6, 7.89, 1234.5678]);
-            allocateTest(viName, 'int32s', [-1000, -10, 42, 9876543, 123]);
-            allocateTest(viName, 'int64s', [
-                '-8989',
-                '9090',
-                '36028797018963968',
-                '-72057594037927936'
-            ]);
-            allocateTest(viName, 'uint64s', [
-                '9223372041149743104',
-                '0',
-                '9223376434901286912'
-            ]);
-            allocateTest(viName, 'complexes', [
-                {
-                    real: 0,
-                    imaginary: 0
-                }, {
-                    real: 10,
-                    imaginary: -10
-                }, {
-                    real: 5.045,
-                    imaginary: -5.67
-                }
-            ]);
-            allocateTest(viName, 'times', [
-                {
-                    seconds: '3564057536',
-                    fraction: '7811758927381448193'
-                }, {
-                    seconds: '3564057542',
-                    fraction: '16691056759750171331'
-                }
-            ]);
-
-            allocateTest(viName, 'fixedBooleans', [
-                [true, false],
-                [false, true]
-            ]);
-            allocateWaveformTest(viName, 'wave_Double');
-            allocateTest(viName, 'nipath', {
-                type: 'ABSOLUTE',
-                components: ['C', 'Windows', 'System32']
+        describe('local variables in a VI of type', function () {
+            it('Boolean', function () {
+                allocateTest(viName, 'booleans', [true, false, true, false]);
             });
-            allocateTest(viName, 'enum16numbers', 1);
+
+            it('String', function () {
+                allocateTest(viName, 'strings', [
+                    'everyone you know',
+                    'everyone you ever heard of',
+                    'every human being who ever was',
+                    'lived out their lives'
+                ]);
+            });
+
+            it('Numeric', function () {
+                allocateTest(viName, 'doubles', [1.2, 3.4, 5.6, 7.89, 1234.5678]);
+                allocateTest(viName, 'int32s', [-1000, -10, 42, 9876543, 123]);
+                allocateTest(viName, 'int64s', [
+                    '-8989',
+                    '9090',
+                    '36028797018963968',
+                    '-72057594037927936'
+                ]);
+                allocateTest(viName, 'uint64s', [
+                    '9223372041149743104',
+                    '0',
+                    '9223376434901286912'
+                ]);
+                allocateTest(viName, 'complexes', [
+                    {
+                        real: 0,
+                        imaginary: 0
+                    }, {
+                        real: 10,
+                        imaginary: -10
+                    }, {
+                        real: 5.045,
+                        imaginary: -5.67
+                    }
+                ]);
+            });
+
+            it('Timestamp', function () {
+                allocateTest(viName, 'times', [
+                    {
+                        seconds: '3564057536',
+                        fraction: '7811758927381448193'
+                    }, {
+                        seconds: '3564057542',
+                        fraction: '16691056759750171331'
+                    }
+                ]);
+            });
+
+            it('FixedBoolean', function () {
+                allocateTest(viName, 'fixedBooleans', [
+                    [true, false],
+                    [false, true]
+                ]);
+            });
+
+            it('AnalogWaveform', function () {
+                allocateTest(viName, 'wave_Double', {
+                    t0: {
+                        seconds: '50000',
+                        fraction: '456'
+                    },
+                    dt: 10.5,
+                    Y: [5, 25, 'NaN', '-Infinity', 'Infinity'],
+                    attributes: {_data: null, _attributes: null}
+                });
+            });
+
+            it('Path', function () {
+                allocateTest(viName, 'nipath', {
+                    type: 'ABSOLUTE',
+                    components: ['C', 'Windows', 'System32']
+                });
+            });
+
+            it('Enum', function () {
+                allocateTest(viName, 'enum16numbers', 1);
+            });
         });
 
         it('local constants in a VI', function () {

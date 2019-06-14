@@ -1049,16 +1049,16 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             writeTest('dataItem_ClusterOfArrays', original, lessVals);
         });
 
-        // Vireo does not yet support writeJSON on Variant data types.
-        xit('analog waveform of double', function () {
+        // Vireo does not yet support writeJSON on Variant data types so any provided attributes value will be ignored on write
+        it('analog waveform of double', function () {
             var original = {
                 t0: {
                     seconds: '300',
                     fraction: '123'
                 },
                 dt: 8.8,
-                Y: [5.5, 6.6, 7.7, 8.8], // eslint-disable-line id-length
-                attributes: {value: null, attributes: null}
+                Y: [5.5, 6.6, 7.7, 8.8],
+                attributes: {_data: null, _attributes: null}
             };
             var sameSize = {
                 t0: {
@@ -1066,8 +1066,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     fraction: '0'
                 },
                 dt: 1234.5678,
-                Y: ['NaN', 'Infinity', '-Infinity', -0], // eslint-disable-line id-length
-                attributes: {value: null, attributes: null}
+                Y: ['NaN', 'Infinity', '-Infinity', -0],
+                attributes: {_data: null, _attributes: null}
             };
             var moreVals = {
                 t0: {
@@ -1075,8 +1075,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     fraction: '1231'
                 },
                 dt: 8.89,
-                Y: [5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11], // eslint-disable-line id-length
-                attributes: {value: null, attributes: null}
+                Y: [5.5, 6.6, 7.7, 8.8, 9.9, 10.1, 11],
+                attributes: {_data: null, _attributes: null}
             };
             var lessVals = {
                 t0: {
@@ -1084,8 +1084,8 @@ describe('The Vireo EggShell writeJSON api can write', function () {
                     fraction: '2'
                 },
                 dt: 3,
-                Y: [4], // eslint-disable-line id-length
-                attributes: {value: null, attributes: null}
+                Y: [4],
+                attributes: {_data: null, _attributes: null}
             };
 
             writeTest('wave_Double', original, sameSize);
