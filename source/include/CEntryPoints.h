@@ -57,6 +57,7 @@ VIREO_EXPORT EggShellResult EggShell_GetVariantAttribute(TypeManagerRef tm, cons
                                                         TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_SetVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr,
                                                         TypeRef attributeTypeRef, void* attributeDataRef);
+VIREO_EXPORT EggShellResult EggShell_DeleteVariantAttribute(TypeManagerRef tm, const TypeRef typeRef, void* pData, const char* attributeNameCStr);
 VIREO_EXPORT void* Data_GetStringBegin(StringRef stringObject);
 VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
