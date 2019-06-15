@@ -33,7 +33,7 @@ wave_ComplexDouble=((300 123) 8.9 ((50.5 60.6) (70.7 80.8)) (_data:null _attribu
 
 Digital Waveform Testing
 ***********************
-Empty digtal waveform (() ())
-Digtal parts () ()
+Empty digtal waveform ((()) ())
+Digtal parts (()) ()
 Digtal parts ((1 0 1 0 1 0 1 0) (1 1 1 1 1 1 1 1)) ()
 Digtal parts ((1 0 1 0 1 0 1 0) (1 1 1 1 1 1 1 1)) (0 200)
