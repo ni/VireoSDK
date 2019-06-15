@@ -11,9 +11,9 @@ JSON null array regression test
  Err = (true -375008 'Unflatten From JSON in _Functionghtmlvi')
 2D Empty Unflattened JSON |{"array":[[]]}| to mismatched 1D array : (())
  Err = (true -375008 'Unflatten From JSON in _Functionghtmlvi')
-1D Unflattened JSON |{"array":[1,2,3]}| to mismatched 2D array : (())
+1D Unflattened JSON |{"array":[1,2,3]}| to mismatched 2D array : ((()))
  Err = (true -375008 'Unflatten From JSON in _Functionghtmlvi')
-1D Empty Unflattened JSON |{"array":[]}| to mismatched 2D array : (())
+1D Empty Unflattened JSON |{"array":[]}| to mismatched 2D array : ((()))
  Err = (true -375008 'Unflatten From JSON in _Functionghtmlvi')
 FlattenJSON ((11 22 33) () (77 88 99)) : |{"array1":[11,22,33],"array2":[],"array3":[77,88,99]}|
 Unflattened JSON |{"array1":[11,22,33],"array2":[],"array3":[77,88,99]}| : ((11 22 33) () (77 88 99))
