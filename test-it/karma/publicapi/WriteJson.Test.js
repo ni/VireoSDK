@@ -1093,4 +1093,10 @@ describe('The Vireo EggShell writeJSON api can write', function () {
             writeTest('wave_Double', original, lessVals);
         });
     });
+
+    it('empty arrays', function () {
+        writeTest('dataItem_Empty1DArray', [], [true]);
+        writeTest('dataItem_Empty2DArray', [[]], [[true]]);
+        writeTest('dataItem_Empty3DArray', [[[]]], [[[true]]]);
+    });
 });
