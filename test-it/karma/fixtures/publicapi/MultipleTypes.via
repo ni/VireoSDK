@@ -3,6 +3,9 @@
 //VI Definition: Function.gvi
 define (MyVI dv(.VirtualInstrument (
     Locals: c(   // Data Space1
+        e(dv(a(.Boolean *) () ) dataItem_Empty1DArray)
+        e(dv(a(.Boolean * *) (()) ) dataItem_Empty2DArray)
+        e(dv(a(.Boolean * * *) ((())) ) dataItem_Empty3DArray)
         e(dv(a(.Boolean *) (true true false true false)) dataItem_ArrayOfBoolean)
         e(dv(a(.String *) ('Lorem' 'ipsum' 'dolor' 'sit' 'amet')) dataItem_ArrayOfString)
         e(dv(a(.Double *) (1.2 3.4 5.6 7.89 1234.5678)) dataItem_ArrayOfDouble)

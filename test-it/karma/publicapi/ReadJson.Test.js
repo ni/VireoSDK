@@ -613,5 +613,11 @@ describe('The Vireo EggShell readJSON api can read', function () {
                 attributes: {_data: null, _attributes: {key1: {_data: 'hello', _attributes: null}, key2: {_data: 'hi', _attributes: null}}}
             });
         });
+
+        it('empty arrays', function () {
+            readTest('dataItem_Empty1DArray', []);
+            readTest('dataItem_Empty2DArray', [[]]);
+            readTest('dataItem_Empty3DArray', [[[]]]);
+        });
     });
 });
