@@ -2305,8 +2305,7 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
             _string->Append(Fmt()._itemSeparator);
             if (rank == 0) {
                 FormatData(elementType, pElement);
-            }
-            else {
+            } else {
                 FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths, totalLength);
             }
             pElement += elementLength;
