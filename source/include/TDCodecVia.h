@@ -192,7 +192,7 @@ class TDViaFormatter
     void    FormatData(TypeRef type, void* pData);
     void    FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank);
     void    FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
-                IntIndex *pDimLengths, IntIndex *pSlabLengths);
+                IntIndex *pDimLengths, IntIndex *pSlabLengths, IntIndex totalLength);
 
     void    FormatVariant(TypeRef type, void* pData);
     void    FormatClusterData(TypeRef type, void* pData);

@@ -2266,14 +2266,15 @@ void TDViaFormatter::FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray
         _options._bQuoteStrings = true;
         FormatArrayDataRecurse(elementType, rank, pArray->BeginAt(0),
                                pArray->DimensionLengths(),
-                               pArray->SlabLengths());
+                               pArray->SlabLengths(),
+                               pArray->Length());
     } else if (rank == 0) {
         FormatData(elementType, pArray->RawObj());
     }
 }
 //------------------------------------------------------------
 void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQBlock1* pBegin,
-    IntIndex *pDimLengths, IntIndex *pSlabLengths )
+    IntIndex *pDimLengths, IntIndex *pSlabLengths, IntIndex totalLength)
 {
     rank = rank - 1;
 
@@ -2285,28 +2286,31 @@ void TDViaFormatter::FormatArrayDataRecurse(TypeRef elementType, Int32 rank, AQB
     IntIndex origLen = *_string->DimensionLengths();
 
     if (rank != 0) {
-        FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths);
+        FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths, totalLength);
     }
-    if (dimensionLength-- > 0) {
-        if (rank == 0) {
-            FormatData(elementType, pElement);
+    if (totalLength > 0) {
+        if (dimensionLength-- > 0) {
+            if (rank == 0) {
+                FormatData(elementType, pElement);
+            }
+            pElement += elementLength;
+            if (rank == 0) {  // estimate total array size based on first element and pre-allocate
+                IntIndex preAlloc = origLen + (1 + dimensionLength) * (*_string->DimensionLengths() - origLen + 1);
+                origLen = *_string->DimensionLengths();
+                _string->ResizeDimensions(1, &preAlloc, true, true);
+                *_string->DimensionLengths() = origLen;
+            }
         }
-        pElement += elementLength;
-        if (rank == 0) {  // estimate total array size based on first element and pre-allocate
-            IntIndex preAlloc = origLen + (1+dimensionLength) * (*_string->DimensionLengths() - origLen+1);
-            origLen = *_string->DimensionLengths();
-            _string->ResizeDimensions(1, &preAlloc, true, true);
-            *_string->DimensionLengths() = origLen;
+        while (dimensionLength-- > 0) {
+            _string->Append(Fmt()._itemSeparator);
+            if (rank == 0) {
+                FormatData(elementType, pElement);
+            }
+            else {
+                FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths, totalLength);
+            }
+            pElement += elementLength;
         }
-    }
-    while (dimensionLength-- > 0) {
-        _string->Append(Fmt()._itemSeparator);
-        if (rank == 0) {
-            FormatData(elementType, pElement);
-        } else {
-            FormatArrayDataRecurse(elementType, rank, pElement, pDimLengths, pSlabLengths);
-        }
-        pElement += elementLength;
     }
     _string->Append(Fmt()._arrayPost);
 }
