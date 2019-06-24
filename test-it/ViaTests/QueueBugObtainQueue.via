@@ -30,7 +30,6 @@ define (_TestVIObtainQueue%2Egviweb dv(.VirtualInstrument (
         ) local21)   // Cluster
         e(dv(.Boolean false)dataItem_TestResultNew2)   // Boolean
         e(.QueueRefNum<.String> local23)   // QueueRefNum
-        e(.QueueRefNum<.String> local59)   // QueueRefNum
         e(.Boolean local24)   // Boolean
         e(c(
             e(.Boolean status)   // Boolean
@@ -62,16 +61,17 @@ define (_TestVIObtainQueue%2Egviweb dv(.VirtualInstrument (
         ObtainQueue(local16 * g0 c1 local9 *)
         Not(local9 local14 )
         Copy(local14 dataItem_TestResultNotNew )
+        //ObtainQueue(* * g2 c3 local17 *)
         ObtainQueue(local34 * g2 c3 local17 *)
         Copy(local17 dataItem_TestResultNew2 )
-        Printf ("\nValue for dataItem_TestResultNew2 is '%s', expected value is 'true'.\n" dataItem_TestResultNew2 )
+        Printf ("\nValue for dataItem_TestResultNew2 is '%s', expected value is 'true'.\n" dataItem_TestResultNew2 )        
         ObtainQueue(local23 c5 g4 * local24 *)
         Copy(local24 dataItem_TestResultNew )
         IsNotANumPathRefnum(local23 local30 )
         Not(local30 local31 )
         Copy(local31 dataItem_TestResultIsARefnum )
         And(local31 local24 local33)
-        ObtainQueue(local59 * g6 c7 local35 *)
+        ObtainQueue(* * g6 c7 local35 *)
         Not(local35 local40 )
         Copy(local40 dataItem_TestResultNotNew2 )
         And(local40 local33 local42)
@@ -79,7 +79,7 @@ define (_TestVIObtainQueue%2Egviweb dv(.VirtualInstrument (
         And(local17 local47 local47)
         Copy(local47 local43 )
         Copy(local43 dataItem_Pass )
-        Printf ("\nAll tests pass: '%s'.\n" dataItem_Pass )
+        Printf ("\nAll tests pass: '%s'.\n" dataItem_Pass )        
 /* Clump Ended. */    )
 )))
 enqueue (_TestVIObtainQueue%2Egviweb)

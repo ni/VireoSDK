@@ -686,20 +686,22 @@ VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringR
     RefNum refnumVal = 0;
     QueueRef queueRef = nullptr;
 
-    VIREO_ASSERT(refnumPtr != nullptr);
     if (name && name->Length() == 0)
         name = nullptr;
     ErrorCluster *errPtr = _ParamPointer(6);
     if (errPtr && errPtr->status) {
-        refnumPtr->SetRefNum(0);
+        if (refnumPtr)
+            refnumPtr->SetRefNum(0);
         if (createdPtr)
             *createdPtr = false;
         return _NextInstruction();
     }
-    TypeRef type = _ParamPointer(0)->GetSubElement(0);
-    TypeRef queueType = GetQueueArrayTypeRef(type);
+    TypeRef type = refnumPtr ? _ParamPointer(0)->GetSubElement(0) : nullptr;
+    TypeRef queueType = refnumPtr ? GetQueueArrayTypeRef(type) : nullptr;
 
-    if (name) {
+    if (!refnumPtr) {
+        errCode = kQueueArgErr;
+    } else if (name) {
         // see if named queue already exists
         QueueRefNumManager::NamedRefNumMapType::iterator it = QueueRefNumManager::QueueRefManager().NamedRefNumMap().find(name);
         if (it != QueueRefNumManager::QueueRefManager().NamedRefNumMap().end()) {
@@ -745,7 +747,8 @@ VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringR
             } else {  // must be named to already have refnumVal defined, create alias
                 refnumVal = QueueRefNumManager::QueueRefManager().NewRefnumAlias(refnumVal);
             }
-            refnumPtr->SetRefNum(refnumVal);
+            if (refnumPtr)
+                refnumPtr->SetRefNum(refnumVal);
             VirtualInstrument* vi = THREAD_CLUMP()->TopVI();
             QueueRefNumManager::AddCleanupProc(vi, CleanUpQueueRefNum, refnumVal);
         } else {
@@ -753,7 +756,8 @@ VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringR
         }
     }
     if (errCode) {
-        refnumPtr->SetRefNum(0);
+        if (refnumPtr)
+            refnumPtr->SetRefNum(0);
         if (createdPtr)
             *createdPtr = false;
         if (errPtr)
