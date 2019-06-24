@@ -685,6 +685,7 @@ VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringR
     RefNumVal* refnumPtr = _ParamPointer(1);
     RefNum refnumVal = 0;
     QueueRef queueRef = nullptr;
+
     if (name && name->Length() == 0)
         name = nullptr;
     ErrorCluster *errPtr = _ParamPointer(6);
@@ -746,7 +747,8 @@ VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringR
             } else {  // must be named to already have refnumVal defined, create alias
                 refnumVal = QueueRefNumManager::QueueRefManager().NewRefnumAlias(refnumVal);
             }
-            refnumPtr->SetRefNum(refnumVal);
+            if (refnumPtr)
+                refnumPtr->SetRefNum(refnumVal);
             VirtualInstrument* vi = THREAD_CLUMP()->TopVI();
             QueueRefNumManager::AddCleanupProc(vi, CleanUpQueueRefNum, refnumVal);
         } else {
@@ -793,17 +795,23 @@ VIREO_FUNCTION_SIGNATURE5(QueueRef_Release, TypeCommon, RefNumVal, StringRef, Ty
 {
     RefNumVal* refnumPtr = _ParamPointer(1);
     ErrorCluster *errPtr = _ParamPointer(4);
+    QueueRef queueRef = nullptr;
 
-    if (!refnumPtr) {
+    VIREO_ASSERT(refnumPtr != nullptr);
+    bool isValidRefnum = (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success) && queueRef;
+    bool isInputError = errPtr && errPtr->status;
+    if (isInputError || !isValidRefnum) {
+        if (_ParamPointer(3) != nullptr) {
+            _Param(3)->Resize1D(0);
+        }
         if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, kQueueArgErr, "ReleaseQueue");
         return _NextInstruction();
     }
 
-    QueueRef queueRef = nullptr;
     TypeRef type = _ParamPointer(0)->GetSubElement(0);
     QueueCore *pQV = nullptr;
-    if (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success && queueRef) {
+    if (isValidRefnum) {
         pQV = queueRef->ObjBegin();
     }
     if (_ParamPointer(3)) {  // elements array
@@ -836,8 +844,10 @@ VIREO_FUNCTION_SIGNATURE3(QueueRef_FlushQueue, RefNumVal, TypedArrayCoreRef, Err
     TypedArrayCoreRef remainingElts = _ParamPointer(1) ? _Param(1) : nullptr;
     ErrorCluster *errPtr = _ParamPointer(2);
     QueueRef queueRef = nullptr;
-    if ((errPtr && errPtr->status)
-        || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef) {
+    VIREO_ASSERT(refnumPtr != nullptr);
+    bool isValidRefnum = (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success) && queueRef;
+    bool isInputError = errPtr && errPtr->status;
+    if (isInputError || !isValidRefnum) {
         if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, kQueueArgErr, "FlushQueue");
         if (remainingElts)
@@ -872,8 +882,11 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumVal, Boolean, Int32, St
     Int32 maxSize = -1;
     QueueRef queueRef = nullptr;
     QueueCore *pQV = nullptr;
-    if ((errPtr && errPtr->status)
-        || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
+
+    VIREO_ASSERT(refnumPtr != nullptr);
+    bool isValidRefnum = (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success) && queueRef;
+    bool isInputError = errPtr && errPtr->status;
+    if (isInputError || !isValidRefnum) {
         if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, kQueueArgErr, "GetQueueStatus");
     } else {
@@ -948,13 +961,16 @@ static InstructionCore* QueueRef_EnqueueCore(Instruction6<TypeCommon, RefNumVal,
     Boolean *boolOut = _ParamPointer(4);
     void *overflowElem = lossy ? _ParamPointer(3) : nullptr;
     QueueRef queueRef = nullptr;
-    if ((errPtr && errPtr->status)
-        || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
+
+    VIREO_ASSERT(refnumPtr != nullptr);
+    bool isValidRefnum = (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success) && queueRef;
+    bool isInputError = errPtr && errPtr->status;
+    if (isInputError || !isValidRefnum) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, primName);
         if (boolOut)
-            *boolOut = false;
+            *boolOut = isInputError ? false : !lossy;
         if (overflowElem) {
             TypeRef eltType = GetQueueElemTypeRef(_ParamPointer(0));
             if (eltType)
@@ -1004,15 +1020,19 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_LossyEnqueue, TypeCommon, RefNumVal, void, vo
 static InstructionCore* QueueRef_DequeueCore(Instruction6<TypeCommon, RefNumVal, void, Int32, Boolean, ErrorCluster>* _this, Boolean preview)
 {
     RefNumVal* refnumPtr = _ParamPointer(1);
+    Boolean* timedOutPtr = _ParamPointer(4);
     ErrorCluster *errPtr = _ParamPointer(5);
     QueueRef queueRef = nullptr;
-    if ((errPtr && errPtr->status)
-        || (refnumPtr && QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success) || !queueRef) {
+    VIREO_ASSERT(refnumPtr != nullptr);
+    bool isValidRefnum = (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success) && queueRef;
+    bool isInputError = errPtr && errPtr->status;
+    if (isInputError || !isValidRefnum) {
         Observer* pObserver = THREAD_CLUMP()->GetObservationStates(2);
         if (errPtr && !errPtr->status)
             errPtr->SetErrorAndAppendCallChain(true, pObserver ? kQueueDestroyedWhileWaiting : kQueueArgErr, preview ? "Preview Queue":"Dequeue");
-        if (_ParamPointer(4))
-            _Param(4) = false;
+        if (timedOutPtr) {
+            *timedOutPtr = !isInputError;
+        }
         if (_ParamPointer(2)) {
             TypeRef eltType = GetQueueElemTypeRef(_ParamPointer(0));
             if (eltType)
@@ -1045,8 +1065,8 @@ VIREO_FUNCTION_SIGNATURE6(QueueRef_PeekQueue, TypeCommon, RefNumVal, void, Int32
 VIREO_FUNCTION_SIGNATURE3(IsEQRefnum, RefNumVal, RefNumVal, Boolean) {
     RefNumVal* refnumPtrA = _ParamPointer(0);
     RefNumVal* refnumPtrB = _ParamPointer(1);
-    UInt32 refA = refnumPtrA ? refnumPtrA->GetRefNum() : 0;
-    UInt32 refB = refnumPtrB ? refnumPtrB->GetRefNum() : 0;
+    UInt32 refA = refnumPtrA->GetRefNum();
+    UInt32 refB = refnumPtrB->GetRefNum();
     _Param(2) = refA == refB;
     return _NextInstruction();
 }
@@ -1054,8 +1074,8 @@ VIREO_FUNCTION_SIGNATURE3(IsEQRefnum, RefNumVal, RefNumVal, Boolean) {
 VIREO_FUNCTION_SIGNATURE3(IsNERefnum, RefNumVal, RefNumVal, Boolean) {
     RefNumVal* refnumPtrA = _ParamPointer(0);
     RefNumVal* refnumPtrB = _ParamPointer(1);
-    UInt32 refA = refnumPtrA ? refnumPtrA->GetRefNum() : 0;
-    UInt32 refB = refnumPtrB ? refnumPtrB->GetRefNum() : 0;
+    UInt32 refA = refnumPtrA->GetRefNum();
+    UInt32 refB = refnumPtrB->GetRefNum();
     _Param(2) = refA != refB;
     return _NextInstruction();
 }
@@ -1064,7 +1084,10 @@ VIREO_FUNCTION_SIGNATURE2(IsNotAQueueRefnum, RefNumVal, Boolean)
 {
     RefNumVal* refnumPtr = _ParamPointer(0);
     QueueRef queueRef = nullptr;
-    if (!refnumPtr || QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) != kNIError_Success || !queueRef)
+    VIREO_ASSERT(refnumPtr != nullptr);
+    bool isValidRefnum = (QueueRefNumManager::QueueRefManager().LookupQueueRef(refnumPtr->GetRefNum(), &queueRef) == kNIError_Success) && queueRef;
+
+    if (!isValidRefnum)
         _Param(1) = true;
     else
         _Param(1) = false;

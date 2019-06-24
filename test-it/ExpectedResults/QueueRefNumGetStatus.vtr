@@ -9,5 +9,5 @@ GQS Q pendingRemove 1 numElts 1
 Dequeued1 value is 1.1 to:false err:(false 0 '')
 >>Added1 new value 1.2
 Dequeued2 value is 1.2 to:false err:(false 0 '')
-Dequeued3 value is 0.0 to:false err:(true 1122 'Dequeue in TestProgram')
+Dequeued3 value is 0.0 to:true err:(true 1122 'Dequeue in TestProgram')
 Done
