@@ -94,25 +94,24 @@ namespace Vireo
         return true;
     }
 
-    template<typename X, typename Y, typename Z> Y ConvertFromEnum(Z valueX, TypeRef typeRefY)
+    template<typename TSource, typename TDest> TDest ConvertFromEnum(TSource src, TypeRef destTypeRef)
     {
-        X integerValueX = static_cast<X>(valueX);
-        Y unsignedIntegerValueX = integerValueX >= 0 ? integerValueX : 0;
-        Y numElementsInY = static_cast<Y>(typeRefY->GetEnumItemCount());
-        if (unsignedIntegerValueX >= numElementsInY) {
-            unsignedIntegerValueX = numElementsInY - 1;
-        }
-        return unsignedIntegerValueX;
+        src = src >= 0 ? src : 0;
+        auto destEnumCount = static_cast<TDest>(destTypeRef->GetEnumItemCount());
+#pragma warning(push)
+#pragma warning(disable : 4018)  // Warning C4018 '>=': signed / unsigned mismatch
+        // It is safe to disable this warning because 'src' should be >= 0 here.
+        TDest dest = (src >= destEnumCount) ? destEnumCount - 1 : static_cast<TDest>(src);
+#pragma warning(pop)
+        return dest;
     }
 
-    template<typename T> void ApplyNumeric(T valueX, TypeRef typeRefY, void* pDataY)
+    template<typename T> void ApplyIntegralToNumeric(T valueX, TypeRef typeRefY, void* pDataY)
     {
         EncodingEnum encodingY = typeRefY->BitEncoding();
         switch (encodingY) {
             case kEncoding_UInt:
                 switch (typeRefY->TopAQSize()) {
-                case 0:
-                    break;
                 case 1:
                     *reinterpret_cast<UInt8*>(pDataY) = static_cast<UInt8>(valueX);
                     break;
@@ -125,30 +124,30 @@ namespace Vireo
                 case 8:
                     *reinterpret_cast<UInt64*>(pDataY) = static_cast<UInt64>(valueX);
                     break;
+                default:
+                    VIREO_ASSERT(false);
                 }
                 break;
             case kEncoding_Enum:
                 switch (typeRefY->TopAQSize()) {
-                    case 0:
-                        break;
                     case 1:
-                        *reinterpret_cast<UInt8*>(pDataY) = ConvertFromEnum<Int8, UInt8, T>(valueX, typeRefY);
+                        *reinterpret_cast<UInt8*>(pDataY) = ConvertFromEnum<T, UInt8>(valueX, typeRefY);
                         break;
                     case 2:
-                        *reinterpret_cast<UInt16*>(pDataY) = ConvertFromEnum<Int16, UInt16, T>(valueX, typeRefY);
+                        *reinterpret_cast<UInt16*>(pDataY) = ConvertFromEnum<T, UInt16>(valueX, typeRefY);
                         break;
                     case 4:
-                        *reinterpret_cast<UInt32*>(pDataY) = ConvertFromEnum<Int32, UInt32, T>(valueX, typeRefY);
+                        *reinterpret_cast<UInt32*>(pDataY) = ConvertFromEnum<T, UInt32>(valueX, typeRefY);
                         break;
                     case 8:
-                        *reinterpret_cast<UInt64*>(pDataY) = ConvertFromEnum<Int64, UInt64, T>(valueX, typeRefY);;
+                        *reinterpret_cast<UInt64*>(pDataY) = ConvertFromEnum<T, UInt64>(valueX, typeRefY);;
                         break;
+                    default:
+                        VIREO_ASSERT(false);
                 }
                 break;
             case kEncoding_S2CInt:
                 switch (typeRefY->TopAQSize()) {
-                    case 0:
-                        break;
                     case 1:
                         *reinterpret_cast<Int8*>(pDataY) = static_cast<Int8>(valueX);
                         break;
@@ -161,6 +160,8 @@ namespace Vireo
                     case 8:
                         *reinterpret_cast<Int64*>(pDataY) = static_cast<Int64>(valueX);
                         break;
+                    default:
+                        VIREO_ASSERT(false);
                 }
                 break;
             case kEncoding_IEEE754Binary:
@@ -170,8 +171,80 @@ namespace Vireo
                 } else {
                     *reinterpret_cast<Double*>(pDataY) = static_cast<Double>(valueX);
                 }
-                break;
             }
+                break;
+            default:
+                break;
+        }
+    }
+
+    template<typename TSource> void ApplyFloatToNumeric(TSource src, TypeRef destTypeRef, void* pDestData)
+    {
+        EncodingEnum destEncoding = destTypeRef->BitEncoding();
+        switch (destEncoding) {
+            case kEncoding_UInt:
+                switch (destTypeRef->TopAQSize()) {
+                case 1:
+                    *reinterpret_cast<UInt8*>(pDestData) = ConvertFloatToInt<TSource, UInt8>(src);
+                    break;
+                case 2:
+                    *reinterpret_cast<UInt16*>(pDestData) = ConvertFloatToInt<TSource, UInt16>(src);
+                    break;
+                case 4:
+                    *reinterpret_cast<UInt32*>(pDestData) = ConvertFloatToInt<TSource, UInt32>(src);
+                    break;
+                case 8:
+                    *reinterpret_cast<UInt64*>(pDestData) = ConvertFloatToInt<TSource, UInt64>(src);
+                    break;
+                default:
+                    VIREO_ASSERT(false);
+                }
+                break;
+            case kEncoding_Enum:
+                switch (destTypeRef->TopAQSize()) {
+                    case 1:
+                        *reinterpret_cast<UInt8*>(pDestData) = ConvertFromEnum<TSource, UInt8>(src, destTypeRef);
+                        break;
+                    case 2:
+                        *reinterpret_cast<UInt16*>(pDestData) = ConvertFromEnum<TSource, UInt16>(src, destTypeRef);
+                        break;
+                    case 4:
+                        *reinterpret_cast<UInt32*>(pDestData) = ConvertFromEnum<TSource, UInt32>(src, destTypeRef);
+                        break;
+                    case 8:
+                        *reinterpret_cast<UInt64*>(pDestData) = ConvertFromEnum<TSource, UInt64>(src, destTypeRef);;
+                        break;
+                    default:
+                        VIREO_ASSERT(false);
+                }
+                break;
+            case kEncoding_S2CInt:
+                switch (destTypeRef->TopAQSize()) {
+                    case 1:
+                        *reinterpret_cast<Int8*>(pDestData) = ConvertFloatToInt<TSource, Int8>(src);
+                        break;
+                    case 2:
+                        *reinterpret_cast<Int16*>(pDestData) = ConvertFloatToInt<TSource, Int16>(src);
+                        break;
+                    case 4:
+                        *reinterpret_cast<Int32*>(pDestData) = ConvertFloatToInt<TSource, Int32>(src);
+                        break;
+                    case 8:
+                        *reinterpret_cast<Int64*>(pDestData) = ConvertFloatToInt<TSource, Int64>(src);
+                        break;
+                    default:
+                        VIREO_ASSERT(false);
+                }
+                break;
+            case kEncoding_IEEE754Binary:
+            {
+                if (destTypeRef->TopAQSize() == sizeof(Single)) {
+                    *reinterpret_cast<Single*>(pDestData) = static_cast<Single>(src);
+                } else {
+                    *reinterpret_cast<Double*>(pDestData) = static_cast<Double>(src);
+                }
+            }
+                break;
             default:
                 break;
         }
@@ -181,28 +254,28 @@ namespace Vireo
     bool DualTypeConversion::ApplyUInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         switch (typeRefX->TopAQSize()) {
-            case 0:
-                break;
             case 1: {
                 UInt8 uInt8ValueX = *static_cast<UInt8*>(pDataX);
-                ApplyNumeric<UInt8>(uInt8ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<UInt8>(uInt8ValueX, typeRefY, pDataY);
                 break;
             }
             case 2: {
                 UInt16 uInt16ValueX = *static_cast<UInt16*>(pDataX);
-                ApplyNumeric<UInt16>(uInt16ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<UInt16>(uInt16ValueX, typeRefY, pDataY);
                 break;
             }
             case 4: {
                 UInt32 uInt32ValueX = *static_cast<UInt32*>(pDataX);
-                ApplyNumeric<UInt32>(uInt32ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<UInt32>(uInt32ValueX, typeRefY, pDataY);
                 break;
             }
             case 8: {
                 UInt64 uInt64ValueX = *static_cast<UInt64*>(pDataX);
-                ApplyNumeric<UInt64>(uInt64ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<UInt64>(uInt64ValueX, typeRefY, pDataY);
                 break;
-            }
+             }
+            default:
+                VIREO_ASSERT(false);
         }
         return true;
     }
@@ -211,28 +284,28 @@ namespace Vireo
     bool DualTypeConversion::ApplyS2CInts(TypeRef typeRefX, void* pDataX, TypeRef typeRefY, void* pDataY)
     {
         switch (typeRefX->TopAQSize()) {
-            case 0:
-                break;
             case 1: {
                 Int8 int8ValueX = *static_cast<Int8*>(pDataX);
-                ApplyNumeric<Int8>(int8ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<Int8>(int8ValueX, typeRefY, pDataY);
                 break;
             }
             case 2: {
                 Int16 int16ValueX = *static_cast<Int16*>(pDataX);
-                ApplyNumeric<Int16>(int16ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<Int16>(int16ValueX, typeRefY, pDataY);
                 break;
             }
             case 4: {
                 Int32 int32ValueX = *static_cast<Int32*>(pDataX);
-                ApplyNumeric<Int32>(int32ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<Int32>(int32ValueX, typeRefY, pDataY);
                 break;
             }
             case 8: {
                 Int64 int64ValueX = *static_cast<Int64*>(pDataX);
-                ApplyNumeric<Int64>(int64ValueX, typeRefY, pDataY);
+                ApplyIntegralToNumeric<Int64>(int64ValueX, typeRefY, pDataY);
                 break;
             }
+            default:
+                VIREO_ASSERT(false);
         }
         return true;
     }
@@ -242,10 +315,10 @@ namespace Vireo
     {
         if (typeRefX->TopAQSize() == sizeof(Single)) {
             Single singleValueX = *reinterpret_cast<Single*>(pDataX);
-            ApplyNumeric<Single>(singleValueX, typeRefY, pDataY);
+            ApplyFloatToNumeric<Single>(singleValueX, typeRefY, pDataY);
         } else {
             Double doubleValueX = *reinterpret_cast<Double*>(pDataX);
-            ApplyNumeric<Double>(doubleValueX, typeRefY, pDataY);
+            ApplyFloatToNumeric<Double>(doubleValueX, typeRefY, pDataY);
         }
         return true;
     }

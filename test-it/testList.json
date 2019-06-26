@@ -155,6 +155,7 @@
                 "ConstLocalMutabilityErrors.via",
                 "ControlRefBasic.via",
                 "ConvertStringNumber.via",
+                "ConvertFloatToIntegral.via",
                 "CopyAlignmentError.via",
                 "CopyAndReset.via",
                 "CopyingVIs.via",

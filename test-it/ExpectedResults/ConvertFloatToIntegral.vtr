@@ -1,0 +1,6 @@
+myUInt8=255, error=(false 0)
+myUInt16=65535, error=(false 0)
+myEnum8=7(h), error=(false 0)
+myUInt8=255
+myUInt16=65535
+myEnum8=h

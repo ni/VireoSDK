@@ -1,0 +1,43 @@
+define(videf1 dv(.VirtualInstrument (
+    c(
+        e(dv(.Double 258) myDouble)
+        e(.Variant myVar)
+        e(dv(.UInt8 23) myUInt8)
+        e(dv(.UInt8 0) myUInt8Type)
+
+        e(.Variant myVar2)
+        e(dv(.Double 65538) myDouble2)
+        e(dv(.UInt16 23) myUInt16)
+        e(dv(.UInt16 0) myUInt16Type)
+
+        e(dv(Enum8 (a b c d e f g h) 1) myEnum8)
+        e(.ErrorCluster error)
+    )
+    clump(1
+    DataToVariant(myDouble myVar)
+    VariantToData(myVar error myUInt8Type myUInt8)
+    Printf("myUInt8=%z, error=(%z %z)\n" myUInt8 error.status error.code)
+
+    DataToVariant(myDouble2 myVar2)
+    VariantToData(myVar2 error myUInt16Type myUInt16)
+    Printf("myUInt16=%z, error=(%z %z)\n" myUInt16 error.status error.code)
+
+    VariantToData(myVar error myEnum8 myEnum8)
+    Printf("myEnum8=%d(%z), error=(%z %z)\n" myEnum8 myEnum8 error.status error.code)
+
+    Convert(23 myUInt8)
+    Convert(myDouble myUInt8)
+    Printf("myUInt8=%z\n" myUInt8)
+
+    Convert(23 myUInt16)
+    Convert(myDouble2 myUInt16)
+    Printf("myUInt16=%z\n" myUInt16)
+
+    Convert(1 myEnum8)
+    Convert(myDouble myEnum8)
+    Printf("myEnum8=%z\n" myEnum8)
+
+//--- end of vi
+    )
+)))
+enqueue(videf1)
