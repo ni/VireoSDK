@@ -1496,7 +1496,10 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         }
         in.AliasAssign(in.Begin(), in.Begin() + std::min(in.Length(), formatOptions->MinimumFieldWidth + leadingSpace));
     }
-    truncateInput.Append(&in);
+    if (in.Length() <= truncateInput.Capacity())
+        truncateInput.Append(&in);
+    else
+        truncateInput.Append(&in, truncateInput.Capacity());
     char* inpBegin = truncateInput.BeginCStr();
     char* endPointer = nullptr;
 

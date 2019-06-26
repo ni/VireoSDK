@@ -1,0 +1,3 @@
+Input with 254 characters pass : true
+Input with 255 characters pass : true
+Input with 256 characters pass : true
