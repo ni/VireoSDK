@@ -385,7 +385,7 @@ class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
         return FixedCArray::Append(str->Begin(), (size_t)str->Length());
     }
 
-    //! Append a SubString up to lenght.
+    //! Append a SubString up to length.
     Boolean Append(SubString* str, IntIndex length) {
         return FixedCArray::Append(str->Begin(), (size_t)length);
     }
