@@ -98,11 +98,7 @@ namespace Vireo
     {
         src = src >= 0 ? src : 0;
         auto destEnumCount = static_cast<TDest>(destTypeRef->GetEnumItemCount());
-#pragma warning(push)
-#pragma warning(disable : 4018)  // Warning C4018 '>=': signed / unsigned mismatch
-        // It is safe to disable this warning because 'src' should be >= 0 here.
-        TDest dest = (src >= destEnumCount) ? destEnumCount - 1 : static_cast<TDest>(src);
-#pragma warning(pop)
+        TDest dest = (static_cast<UInt32>(src) >= static_cast<UInt32>(destEnumCount)) ? destEnumCount - 1 : static_cast<TDest>(src);
         return dest;
     }
 
