@@ -31,6 +31,7 @@ SDG
 #include <cstdlib>  // abs()
 #include <cmath>
 #include <new>       // for new placement
+#include <limits>
 
 #ifdef STL_MAP
     #include <map>
@@ -365,6 +366,24 @@ inline EMSCRIPTEN_NOOPT Single RoundToEven(Single value)
 #else
     return rintf(value);
 #endif
+}
+
+template <typename TSource, typename TDest>
+TDest ConvertFloatToInt(TSource src)
+{
+    TDest dest;
+    if (std::isnan(src)) {
+        dest = std::numeric_limits<TDest>::max();
+    } else if (std::isinf(src)) {
+        dest = src < 0 ? std::numeric_limits<TDest>::min() : std::numeric_limits<TDest>::max();
+    } else if (src < std::numeric_limits<TDest>::min()) {
+        dest = std::numeric_limits<TDest>::min();
+    } else if (src > std::numeric_limits<TDest>::max()) {
+        dest = std::numeric_limits<TDest>::max();
+    } else {
+        dest = static_cast<TDest>(RoundToEven(src));
+    }
+    return dest;
 }
 
 //------------------------------------------------------------

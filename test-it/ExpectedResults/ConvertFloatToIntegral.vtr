@@ -1,0 +1,14 @@
+1: myUInt8=255, error=(false 0)
+2: myInt16=32767, error=(false 0)
+3: myEnum8=7(h), error=(false 0)
+4: myUInt8=255
+5: myInt16=32767
+6: myEnum8=7(h)
+7: myEnum16=258(a258)
+8: myUInt8=2
+9: myDouble=258
+10: myUInt8=0
+11: myUInt8=1
+12: myUInt8=2
+13: myUInt8=1
+14: myEnum16=258(a258)

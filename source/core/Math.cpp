@@ -412,18 +412,7 @@ DECLARE_SCALE2X_INTN_HELPER(Single)
 #define DECLARE_VIREO_FLOAT_TO_INT_CONVERSION_PRIMITIVE(DEST, SOURCE) \
     VIREO_FUNCTION_SIGNATURE2(SOURCE##Convert##DEST, SOURCE, DEST) \
     { \
-        SOURCE src = _Param(0); \
-        if (std::isnan(src)) { \
-            _Param(1) = numeric_limits<DEST>::max(); \
-        } else if (std::isinf(src)) { \
-            _Param(1) = src < 0 ? numeric_limits<DEST>::min() : numeric_limits<DEST>::max(); \
-        } else if (src < numeric_limits<DEST>::min()) { \
-            _Param(1) = numeric_limits<DEST>::min(); \
-        } else if (src > numeric_limits<DEST>::max()) { \
-            _Param(1) = numeric_limits<DEST>::max(); \
-        } else { \
-            _Param(1) = (DEST) RoundToEven(src); \
-        } \
+        _Param(1) = ConvertFloatToInt<SOURCE, DEST>(_Param(0)); \
         return _NextInstruction(); \
     }
 
