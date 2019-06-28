@@ -14,6 +14,11 @@ SDG
 
 namespace Vireo
 {
+    // Convention used in naming methods and variables.
+    // Integer = Signed and unsigned integer types
+    // Integral = Integer and enum type
+    // Numeric = Integral and floating point
+
     //------------------------------------------------------------
     DualTypeConversion::DualTypeConversion()
     {
@@ -94,103 +99,31 @@ namespace Vireo
         return true;
     }
 
-    template<typename TSource, typename TDest> TDest ConvertFromEnum(TSource src, TypeRef destTypeRef)
+    template<typename TSource, typename TDest> void ConvertNumericToEnum(TSource srcValue, TypeRef destTypeRef, void *destDataRef)
     {
-        src = src >= 0 ? src : 0;
+        srcValue = srcValue >= 0 ? srcValue : 0;
         auto destEnumCount = static_cast<TDest>(destTypeRef->GetEnumItemCount());
-        TDest dest = (static_cast<UInt32>(src) >= static_cast<UInt32>(destEnumCount)) ? destEnumCount - 1 : static_cast<TDest>(src);
-        return dest;
+        TDest dest = (static_cast<UInt32>(srcValue) >= static_cast<UInt32>(destEnumCount)) ? destEnumCount - 1 : static_cast<TDest>(srcValue);
+        *reinterpret_cast<TDest*>(destDataRef) = dest;
     }
 
-    template<typename T> void ApplyIntegralToNumeric(T valueX, TypeRef typeRefY, void* pDataY)
+    template<typename T> void ApplyIntegralToNumeric(T srcValue, TypeRef destTypeRef, void* destDataRef)
     {
-        EncodingEnum encodingY = typeRefY->BitEncoding();
+        EncodingEnum encodingY = destTypeRef->BitEncoding();
         switch (encodingY) {
             case kEncoding_UInt:
-                switch (typeRefY->TopAQSize()) {
-                case 1:
-                    *reinterpret_cast<UInt8*>(pDataY) = static_cast<UInt8>(valueX);
-                    break;
-                case 2:
-                    *reinterpret_cast<UInt16*>(pDataY) = static_cast<UInt16>(valueX);
-                    break;
-                case 4:
-                    *reinterpret_cast<UInt32*>(pDataY) = static_cast<UInt32>(valueX);
-                    break;
-                case 8:
-                    *reinterpret_cast<UInt64*>(pDataY) = static_cast<UInt64>(valueX);
-                    break;
-                default:
-                    VIREO_ASSERT(false);
-                }
-                break;
-            case kEncoding_Enum:
-                switch (typeRefY->TopAQSize()) {
-                    case 1:
-                        *reinterpret_cast<UInt8*>(pDataY) = ConvertFromEnum<T, UInt8>(valueX, typeRefY);
-                        break;
-                    case 2:
-                        *reinterpret_cast<UInt16*>(pDataY) = ConvertFromEnum<T, UInt16>(valueX, typeRefY);
-                        break;
-                    case 4:
-                        *reinterpret_cast<UInt32*>(pDataY) = ConvertFromEnum<T, UInt32>(valueX, typeRefY);
-                        break;
-                    case 8:
-                        *reinterpret_cast<UInt64*>(pDataY) = ConvertFromEnum<T, UInt64>(valueX, typeRefY);;
-                        break;
-                    default:
-                        VIREO_ASSERT(false);
-                }
-                break;
-            case kEncoding_S2CInt:
-                switch (typeRefY->TopAQSize()) {
-                    case 1:
-                        *reinterpret_cast<Int8*>(pDataY) = static_cast<Int8>(valueX);
-                        break;
-                    case 2:
-                        *reinterpret_cast<Int16*>(pDataY) = static_cast<Int16>(valueX);
-                        break;
-                    case 4:
-                        *reinterpret_cast<Int32*>(pDataY) = static_cast<Int32>(valueX);
-                        break;
-                    case 8:
-                        *reinterpret_cast<Int64*>(pDataY) = static_cast<Int64>(valueX);
-                        break;
-                    default:
-                        VIREO_ASSERT(false);
-                }
-                break;
-            case kEncoding_IEEE754Binary:
-            {
-                if (typeRefY->TopAQSize() == sizeof(Single)) {
-                    *reinterpret_cast<Single*>(pDataY) = static_cast<Single>(valueX);
-                } else {
-                    *reinterpret_cast<Double*>(pDataY) = static_cast<Double>(valueX);
-                }
-            }
-                break;
-            default:
-                break;
-        }
-    }
-
-    template<typename TSource> void ApplyFloatToNumeric(TSource src, TypeRef destTypeRef, void* pDestData)
-    {
-        EncodingEnum destEncoding = destTypeRef->BitEncoding();
-        switch (destEncoding) {
-            case kEncoding_UInt:
                 switch (destTypeRef->TopAQSize()) {
                 case 1:
-                    *reinterpret_cast<UInt8*>(pDestData) = ConvertFloatToInt<TSource, UInt8>(src);
+                    *reinterpret_cast<UInt8*>(destDataRef) = static_cast<UInt8>(srcValue);
                     break;
                 case 2:
-                    *reinterpret_cast<UInt16*>(pDestData) = ConvertFloatToInt<TSource, UInt16>(src);
+                    *reinterpret_cast<UInt16*>(destDataRef) = static_cast<UInt16>(srcValue);
                     break;
                 case 4:
-                    *reinterpret_cast<UInt32*>(pDestData) = ConvertFloatToInt<TSource, UInt32>(src);
+                    *reinterpret_cast<UInt32*>(destDataRef) = static_cast<UInt32>(srcValue);
                     break;
                 case 8:
-                    *reinterpret_cast<UInt64*>(pDestData) = ConvertFloatToInt<TSource, UInt64>(src);
+                    *reinterpret_cast<UInt64*>(destDataRef) = static_cast<UInt64>(srcValue);
                     break;
                 default:
                     VIREO_ASSERT(false);
@@ -199,16 +132,16 @@ namespace Vireo
             case kEncoding_Enum:
                 switch (destTypeRef->TopAQSize()) {
                     case 1:
-                        *reinterpret_cast<UInt8*>(pDestData) = ConvertFromEnum<TSource, UInt8>(src, destTypeRef);
+                        ConvertNumericToEnum<T, UInt8>(srcValue, destTypeRef, destDataRef);
                         break;
                     case 2:
-                        *reinterpret_cast<UInt16*>(pDestData) = ConvertFromEnum<TSource, UInt16>(src, destTypeRef);
+                        ConvertNumericToEnum<T, UInt16>(srcValue, destTypeRef, destDataRef);
                         break;
                     case 4:
-                        *reinterpret_cast<UInt32*>(pDestData) = ConvertFromEnum<TSource, UInt32>(src, destTypeRef);
+                        ConvertNumericToEnum<T, UInt32>(srcValue, destTypeRef, destDataRef);
                         break;
                     case 8:
-                        *reinterpret_cast<UInt64*>(pDestData) = ConvertFromEnum<TSource, UInt64>(src, destTypeRef);;
+                        ConvertNumericToEnum<T, UInt64>(srcValue, destTypeRef, destDataRef);
                         break;
                     default:
                         VIREO_ASSERT(false);
@@ -217,16 +150,16 @@ namespace Vireo
             case kEncoding_S2CInt:
                 switch (destTypeRef->TopAQSize()) {
                     case 1:
-                        *reinterpret_cast<Int8*>(pDestData) = ConvertFloatToInt<TSource, Int8>(src);
+                        *reinterpret_cast<Int8*>(destDataRef) = static_cast<Int8>(srcValue);
                         break;
                     case 2:
-                        *reinterpret_cast<Int16*>(pDestData) = ConvertFloatToInt<TSource, Int16>(src);
+                        *reinterpret_cast<Int16*>(destDataRef) = static_cast<Int16>(srcValue);
                         break;
                     case 4:
-                        *reinterpret_cast<Int32*>(pDestData) = ConvertFloatToInt<TSource, Int32>(src);
+                        *reinterpret_cast<Int32*>(destDataRef) = static_cast<Int32>(srcValue);
                         break;
                     case 8:
-                        *reinterpret_cast<Int64*>(pDestData) = ConvertFloatToInt<TSource, Int64>(src);
+                        *reinterpret_cast<Int64*>(destDataRef) = static_cast<Int64>(srcValue);
                         break;
                     default:
                         VIREO_ASSERT(false);
@@ -235,9 +168,81 @@ namespace Vireo
             case kEncoding_IEEE754Binary:
             {
                 if (destTypeRef->TopAQSize() == sizeof(Single)) {
-                    *reinterpret_cast<Single*>(pDestData) = static_cast<Single>(src);
+                    *reinterpret_cast<Single*>(destDataRef) = static_cast<Single>(srcValue);
                 } else {
-                    *reinterpret_cast<Double*>(pDestData) = static_cast<Double>(src);
+                    *reinterpret_cast<Double*>(destDataRef) = static_cast<Double>(srcValue);
+                }
+            }
+                break;
+            default:
+                break;
+        }
+    }
+
+    template<typename TSource> void ApplyFloatToNumeric(TSource srcValue, TypeRef destTypeRef, void* destDataRef)
+    {
+        EncodingEnum destEncoding = destTypeRef->BitEncoding();
+        switch (destEncoding) {
+            case kEncoding_UInt:
+                switch (destTypeRef->TopAQSize()) {
+                case 1:
+                    *reinterpret_cast<UInt8*>(destDataRef) = ConvertFloatToInt<TSource, UInt8>(srcValue);
+                    break;
+                case 2:
+                    *reinterpret_cast<UInt16*>(destDataRef) = ConvertFloatToInt<TSource, UInt16>(srcValue);
+                    break;
+                case 4:
+                    *reinterpret_cast<UInt32*>(destDataRef) = ConvertFloatToInt<TSource, UInt32>(srcValue);
+                    break;
+                case 8:
+                    *reinterpret_cast<UInt64*>(destDataRef) = ConvertFloatToInt<TSource, UInt64>(srcValue);
+                    break;
+                default:
+                    VIREO_ASSERT(false);
+                }
+                break;
+            case kEncoding_Enum:
+                switch (destTypeRef->TopAQSize()) {
+                    case 1:
+                        ConvertNumericToEnum<TSource, UInt8>(srcValue, destTypeRef, destDataRef);
+                        break;
+                    case 2:
+                        ConvertNumericToEnum<TSource, UInt16>(srcValue, destTypeRef, destDataRef);
+                        break;
+                    case 4:
+                        ConvertNumericToEnum<TSource, UInt32>(srcValue, destTypeRef, destDataRef);
+                        break;
+                    case 8:
+                        ConvertNumericToEnum<TSource, UInt64>(srcValue, destTypeRef, destDataRef);
+                        break;
+                    default:
+                        VIREO_ASSERT(false);
+                }
+                break;
+            case kEncoding_S2CInt:
+                switch (destTypeRef->TopAQSize()) {
+                    case 1:
+                        *reinterpret_cast<Int8*>(destDataRef) = ConvertFloatToInt<TSource, Int8>(srcValue);
+                        break;
+                    case 2:
+                        *reinterpret_cast<Int16*>(destDataRef) = ConvertFloatToInt<TSource, Int16>(srcValue);
+                        break;
+                    case 4:
+                        *reinterpret_cast<Int32*>(destDataRef) = ConvertFloatToInt<TSource, Int32>(srcValue);
+                        break;
+                    case 8:
+                        *reinterpret_cast<Int64*>(destDataRef) = ConvertFloatToInt<TSource, Int64>(srcValue);
+                        break;
+                    default:
+                        VIREO_ASSERT(false);
+                }
+                break;
+            case kEncoding_IEEE754Binary:
+            {
+                if (destTypeRef->TopAQSize() == sizeof(Single)) {
+                    *reinterpret_cast<Single*>(destDataRef) = static_cast<Single>(srcValue);
+                } else {
+                    *reinterpret_cast<Double*>(destDataRef) = static_cast<Double>(srcValue);
                 }
             }
                 break;
