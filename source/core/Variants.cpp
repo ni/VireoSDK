@@ -328,7 +328,10 @@ bool VariantData::CopyToNonVariant(TypeRef destType, void *destData) const
     if (!innerVariant || innerVariant->IsVoidVariant())
         return false;
 
-    if (innerVariant->_innerTypeRef->IsA(destType, true)) {
+    if (innerVariant->_innerTypeRef->IsA(destType, true) &&
+            !innerVariant->_innerTypeRef->IsEnum() && !destType->IsEnum()) {
+        // Enum types have special conversion rules. So, don't call CopyData but go through
+        // the dual type Visitor.
         destType->CopyData(innerVariant->_pInnerData, destData);
         return true;
     }
