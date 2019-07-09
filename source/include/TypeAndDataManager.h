@@ -1309,11 +1309,13 @@ typedef NIPath *NIPathRef;
 
 //------------------------------------------------------------
 //! Stack class to create a CString from Vireo String.
-class TempStackCStringFromString : public TempStackCString
+class TempCStringFromString : public TempCString
 {
+ private:
+    TempCStringFromString() = delete;
+
  public:
-    explicit TempStackCStringFromString(StringRef str)
-    : TempStackCString(str->Begin(), str->Length()) { }
+    explicit TempCStringFromString(StringRef str, IntIndex maxSize) : TempCString(str->Begin(), str->Length(), maxSize) { };
 };
 
 //------------------------------------------------------------

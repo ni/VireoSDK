@@ -368,17 +368,20 @@ class CompareSubString
 //! A class for making temporary nullptr terminated strings for calling OS APIs
 #define kTempCStringLength 255
 
-class TempStackCString : public FixedCArray<Utf8Char, kTempCStringLength>
+class TempCString : public FixedCArray<Utf8Char>
 {
+ private:
+     TempCString() = delete;
+
  public:
     //! Construct a empty string.
-    TempStackCString() { }
+     TempCString(IntIndex maxSize) : FixedCArray(maxSize) { };
 
     //! Construct a nullptr terminated from an existing SubString.
-    explicit TempStackCString(SubString* str) : FixedCArray(str) { }
+    explicit TempCString(SubString* str, IntIndex maxSize) : FixedCArray(str, maxSize) { };
 
-    //! Construct a nullptr terminated from rwa block of UTF-8 characters.
-    TempStackCString(Utf8Char* begin, Int32 length) : FixedCArray((Utf8Char*)begin, length) { }
+    //! Construct a nullptr terminated from raw block of UTF-8 characters.
+    TempCString(Utf8Char* begin, Int32 length, Int32 maxSize) : FixedCArray((Utf8Char*)begin, length, maxSize) { };
 
     //! Append a SubString.
     Boolean Append(SubString* str) {

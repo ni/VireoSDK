@@ -377,7 +377,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
             // Create the accumulator snippet
             if (isAccumulator) {
-                TempStackCString opToken(&operationName);
+                TempCString opToken(&operationName, kTempCStringLength);
                 SubString accToken("Accumulator");
                 opToken.Append(&accToken);
                 SubString accumulatorToken(opToken.BeginCStr());
@@ -450,7 +450,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
 
             if (isAccumulator) {
                 // create the accumulator snippet
-                TempStackCString opToken(&operationName);
+                TempCString opToken(&operationName, kTempCStringLength);
                 SubString accToken("Accumulator");
                 opToken.Append(&accToken);
                 SubString accumulatorToken(opToken.BeginCStr());
@@ -470,7 +470,7 @@ InstructionCore* EmitGenericBinOpInstruction(ClumpParseState* pInstructionBuilde
             if (operationName.ComparePrefixCStr("Is") && (sourceYType->BitEncoding() != kEncoding_Variant || destType->BitEncoding() != kEncoding_Boolean))
                 break;
 
-            TempStackCString opToken(&operationName);
+            TempCString opToken(&operationName, kTempCStringLength);
             SubString typeToken("Variant");
             opToken.Append(&typeToken);
             SubString binaryOpToken(opToken.BeginCStr());

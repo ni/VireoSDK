@@ -206,10 +206,10 @@ void ReadPercentFormatOptions(SubString *format, FormatOptions *pOptions)
     pOptions->FmtSubString.AliasAssign(pBegin, format->Begin());
 }
 //---------------------------------------------------------------------------------------------
-void GenerateFinalNumeric(const FormatOptions*, char*, Int32*, TempStackCString*, Boolean);
+void GenerateFinalNumeric(const FormatOptions*, char*, Int32*, TempCString*, Boolean);
 void RefactorLVNumeric(const FormatOptions*, char* , Int32* , Int32 , Int32, Boolean);
 
-void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCString* buffer)
+void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempCString* buffer)
 {
     Int32 index = 0;
     for (Int32 i = 0; i < count; i++) {
@@ -357,7 +357,7 @@ void CreateMismatchedFormatSpecifierError(SubString* format, Int32 count, Static
 
 // Extract a time format string from a %<>T general format string pre-parsed in fOptions, or provide a default if not supplied.
 // TempStakString defaultTimeFormat is used for storage if needed (dateTimeFormat may alias it).
-static void GetDateTimeFormatString(SubString *datetimeFormat, const FormatOptions &fOptions, TempStackCString *defaultTimeFormat) {
+static void GetDateTimeFormatString(SubString *datetimeFormat, const FormatOptions &fOptions, TempCString *defaultTimeFormat) {
     SubString tempFormat(fOptions.FmtSubString.Begin(), fOptions.FmtSubString.End());
     Utf8Char subCode;
 
@@ -671,7 +671,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         // TODO(PaulAustin): don't assume data type. This just becomes the default format for real numbers, then use formatter
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                        TempStackCString tempFormat(&percentFormat);
+                        TempCString tempFormat(&percentFormat, kTempCStringLength);
                         // Get the numeric string that will replace the format string
                         Double tempDouble = *(Double*) (arguments[argumentIndex]._pData);
                         Int32 sizeOfNumericString2 = snprintf(replacementString, kTempCStringLength, tempFormat.BeginCStr(), tempDouble);
@@ -683,7 +683,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         fOptions.FormatChar = 'B';
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                        TempStackCString formattedNumber;
+                        TempCString formattedNumber (kTempCStringLength);
                         Int32 intSize = 8*argType->TopAQSize();
                         IntMax intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         char BinaryString[2*kTempCStringLength];
@@ -729,7 +729,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         // To cover the max range formats like %d need to be turned into %lld
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                        TempStackCString tempFormat((Utf8Char*)"%", 1);
+                        TempCString tempFormat((Utf8Char*)"%", 1, kTempCStringLength);
                         SubString *fmtSubString = &fOptions.FmtSubString;
                         fmtSubString->AliasAssign(fmtSubString->Begin(), fmtSubString->End()-1);
                         tempFormat.Append(fmtSubString);
@@ -857,7 +857,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         }
 #if defined(VIREO_TIME_FORMATTING)
                         SubString datetimeFormat;
-                        TempStackCString defaultTimeFormat;
+                        TempCString defaultTimeFormat(kTempCStringLength);
                         GetDateTimeFormatString(&datetimeFormat, fOptions, &defaultTimeFormat);
                         Boolean isUTC = (tz == 0);
                         if (argType->IsTimestamp()) {
@@ -901,7 +901,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                         } else {
                             sizeOfNumericString += 2;  // account for 'i'
                         }
-                        TempStackCString numberPart((Utf8Char*)tempNum, sizeOfNumericString);
+                        TempCString numberPart((Utf8Char*)tempNum, sizeOfNumericString, kTempCStringLength);
                         GenerateFinalNumeric(&fOptions, replacementString, &sizeOfNumericString, &numberPart, negative);
                     }
                     if (complexArg != 1)  // arg not complex, or complex but we're done with both parts
@@ -1038,7 +1038,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
 
         buffer[1+numberEnd] = 0;
         if (!skipFinal) {
-            TempStackCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart);
+            TempCString numberPart((Utf8Char*)buffer+ numberStart, numberEnd + 1 - numberStart, kTempCStringLength);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         }
     } else if (formatOptions->FormatChar == 'E' || formatOptions->FormatChar == 'e') {
@@ -1129,7 +1129,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
         }
         tempNumber[baseIndex] = 0;
         if (!skipFinal) {
-            TempStackCString numberPart((Utf8Char*)tempNumber, baseIndex);
+            TempCString numberPart((Utf8Char*)tempNumber, baseIndex, kTempCStringLength);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         } else {
             memcpy(bufferBegin, tempNumber, baseIndex+1);
@@ -1138,7 +1138,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
         Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
         bufferBegin[*pSize] = 0;
         if (!skipFinal) {
-            TempStackCString numberPart(tempNumber, *pSize - numberStart);
+            TempCString numberPart(tempNumber, *pSize - numberStart, kTempCStringLength);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, false);
         }
     } else if (formatOptions->FormatChar == 'd') {
@@ -1179,7 +1179,7 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
         buffer[1+numberEnd] = 0;
         if (!skipFinal) {
             Utf8Char* tempNumber = (Utf8Char*)bufferBegin + numberStart;
-            TempStackCString numberPart(tempNumber, 1 + numberEnd - numberStart);
+            TempCString numberPart(tempNumber, 1 + numberEnd - numberStart, kTempCStringLength);
             GenerateFinalNumeric(formatOptions, bufferBegin, pSize, &numberPart, negative);
         }
     }
@@ -1188,10 +1188,10 @@ void RefactorLVNumeric(const FormatOptions* formatOptions, char* bufferBegin, In
 /* This function will calculate the length and fill the numeric string if necessary.
  *
  * */
-void GenerateFinalNumeric(const FormatOptions* formatOptions, char* bufferBegin, Int32* pSize, TempStackCString* numberPart, Boolean negative)
+void GenerateFinalNumeric(const FormatOptions* formatOptions, char* bufferBegin, Int32* pSize, TempCString* numberPart, Boolean negative)
 {
     // the input buffer is pure numeric. will generate the final format numeric with '+' or padding zero.
-    TempStackCString leadingPart;
+    TempCString leadingPart(kTempCStringLength);
     Int32 width = formatOptions->MinimumFieldWidth;
 
     if (!negative) {
@@ -1361,7 +1361,7 @@ void S2CIntScanString(StaticTypeAndData* argument, TypeRef argumentType, char fo
 }
 
 //----------------------------------------------------------------------------------------------------
-void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
+void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempCString* truncateInput,
                       char formatChar, char decimalSeparator, char* beginPointer, char** endPointer, IntIndex offset = 0)
 {
     Double doubleValue;
@@ -1446,7 +1446,7 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
     return found;
 }
 
-void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
+void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempCString* truncateInput,
     char formatChar, char decimalSeparator, char* beginPointer, char** endPointer) {
     bool clusterFormat = false;
     if (*beginPointer == '(') {
@@ -1484,7 +1484,6 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     TypeRef argumentType = argument->_paramType;
 
     SubString in(inputString);
-    TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
         IntIndex leadingSpace = 0;
         for (IntIndex i = 0; i< in.Length(); i++) {
@@ -1496,11 +1495,9 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         }
         in.AliasAssign(in.Begin(), in.Begin() + std::min(in.Length(), formatOptions->MinimumFieldWidth + leadingSpace));
     }
-    if (in.Length() <= truncateInput.Capacity())
-        truncateInput.Append(&in);
-    else
-        truncateInput.Append(&in, truncateInput.Capacity());
-    char* inpBegin = truncateInput.BeginCStr();
+    TempCString tempCStringInput(in.Length());
+    tempCStringInput.Append(&in);
+    char* inpBegin = tempCStringInput.BeginCStr();
     char* endPointer = nullptr;
 
     switch (argumentType->BitEncoding()) {
@@ -1519,7 +1516,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             S2CIntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
         case kEncoding_IEEE754Binary:
-            DoubleScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
+            DoubleScanString(argument, argumentType, &tempCStringInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
             break;
         case kEncoding_Array: {
             TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(argument->_pData);
@@ -1633,7 +1630,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         case kEncoding_Cluster:
         {
             if (argumentType->IsComplex())
-                ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
+                ComplexScanString(argument, argumentType, &tempCStringInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
         }
             break;
         default:
@@ -1763,7 +1760,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 case 't':
                 {
                     SubString datetimeFormat;
-                    TempStackCString defaultTimeFormat;
+                    TempCString defaultTimeFormat(kTempCStringLength);
                     Double relTimeSeconds = 0.0;
                     SubString timeInput = *input;
                     if (fOptions.FmtSubString.Length() > 1)
@@ -1782,7 +1779,7 @@ Int32 FormatScan(SubString *input, SubString *format, Int32 argCount, StaticType
                 case 'T':
                 {
                     SubString datetimeFormat;
-                    TempStackCString defaultTimeFormat;
+                    TempCString defaultTimeFormat(kTempCStringLength);
                     Timestamp timestamp;
                     SubString timeInput = *input;
                     GetDateTimeFormatString(&datetimeFormat, fOptions, &defaultTimeFormat);
@@ -1882,7 +1879,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
     SubString format = formatString->MakeSubStringAlias();
     Utf8Char c = 0;
     SubString remainingFormat;
-    TempStackCString tempformat;
+    TempCString tempformat(kTempCStringLength);
 
     if (format.Length() == 0) {
         DefaultFormatCode(1, &Value, &tempformat);
@@ -1942,7 +1939,7 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatParamBlock) {
     if (_ParamPointer(StringFormat)) {
         format = _Param(StringFormat)->MakeSubStringAlias();
     }
-    TempStackCString tempformat;
+    TempCString tempformat(kTempCStringLength);
     if (format.Length() == 0) {
         DefaultFormatCode(count, arguments, &tempformat);
         format.AliasAssign(tempformat.Begin(), tempformat.End());
@@ -2254,7 +2251,7 @@ static const char *monthName[] = { "January", "February", "March", "April", "May
     "July", "August", "September", "October", "November", "December", nullptr };
 
 // Expand 'c', 'X', or 'x' time format codes to it's longform equivalent
-static void ExpandDateTimeCode(const TimeFormatOptions &fOption, TempStackCString *localeFormatString, SubString *formatSubString) {
+static void ExpandDateTimeCode(const TimeFormatOptions &fOption, TempCString *localeFormatString, SubString *formatSubString) {
     if (fOption.FormatChar == 'c') {
         localeFormatString->AppendCStr("%");
         localeFormatString->Append(formatSubString);
@@ -2418,7 +2415,7 @@ Boolean RelTimeToString(Double relTimeSeconds, SubString* format, StringRef outp
 //------------------------------------------------------------
 Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, StringRef output)
 {
-    TempStackCString formatString;
+    TempCString formatString(kTempCStringLength);
     SubString tempFormat(format);
     if (format == nullptr || format->Length() == 0) {
         formatString.AppendCStr("%x %X");
@@ -2455,7 +2452,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                     case 'c':
                     {
                         hourFormat = 12;
-                        TempStackCString localeFormatString;
+                        TempCString localeFormatString(kTempCStringLength);
                         SubString formatSubString(fOption.FmtSubString.Begin(), fOption.FmtSubString.End()-1);
                         ExpandDateTimeCode(fOption, &localeFormatString, &formatSubString);
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
@@ -2612,7 +2609,7 @@ Boolean DateTimeToString(const Date& date, Boolean isUTC, SubString* format, Str
                         hourFormat = 12;  // fall through...
                     case 'x':
                     {
-                        TempStackCString localeFormatString;
+                        TempCString localeFormatString(kTempCStringLength);
                         ExpandDateTimeCode(fOption, &localeFormatString, nullptr);
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = DateTimeToString(date, isUTC, &localformat, output);
@@ -2821,7 +2818,7 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
 }
 
 Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Timestamp *tsPtr) {
-    TempStackCString formatString;
+    TempCString formatString (kTempCStringLength);
     SubString tempFormat(format);
     if (format == nullptr || format->Length() == 0) {
         formatString.AppendCStr("%x %X");
@@ -2862,7 +2859,7 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         break;
                     case 'c':
                     {
-                        TempStackCString localeFormatString;
+                        TempCString localeFormatString(kTempCStringLength);
                         SubString formatSubString(fOption.FmtSubString.Begin(), fOption.FmtSubString.End()-1);
                         localeFormatString.AppendCStr("%");
                         localeFormatString.Append(&formatSubString);
@@ -2950,7 +2947,7 @@ Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Tim
                         hourFormat = 12;  // fall through...
                     case 'x':
                     {
-                        TempStackCString localeFormatString;
+                        TempCString localeFormatString(kTempCStringLength);
                         ExpandDateTimeCode(fOption, &localeFormatString, nullptr);
                         SubString localformat(localeFormatString.Begin(), localeFormatString.End());
                         validFormatString = StringToDateTime(input, isUTC, &localformat, tsPtr);

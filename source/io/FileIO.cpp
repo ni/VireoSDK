@@ -135,7 +135,7 @@ VIREO_FUNCTION_SIGNATURET(FileOpen, FileOpenInstruction)
     }
 
     // Get the path in char* form
-    TempStackCStringFromString    cString(_Param(path));
+    TempCStringFromString    cString(_Param(path), _Param(path)->Length());
 
     // TODO(fileio): What permissions should created files have?  Currently, all permissions are given.
 #ifdef kVireoOS_windows
@@ -258,7 +258,7 @@ VIREO_FUNCTION_SIGNATURE4(StreamSetPosition, FileHandle, IntIndex, IntIndex, Int
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(FileDelete, StringRef, Int32)
 {
-    TempStackCStringFromString    cString(_Param(0));
+    TempCStringFromString    cString(_Param(0), _Param(0)->Length());
     // TODO(fileio) error support
     _Param(1) = remove(cString.BeginCStr());
     return _NextInstruction();
@@ -270,7 +270,7 @@ VIREO_FUNCTION_SIGNATURE2(FileDelete, StringRef, Int32)
 // for passing in a VI as a comparison proc
 VIREO_FUNCTION_SIGNATURE2(ListDirectory, StringRef, TypedArray1D<StringRef>*)
 {
-    TempStackCStringFromString    cString(_Param(0));
+    TempCStringFromString    cString(_Param(0), _Param(0)->Length());
     TypedArray1D<StringRef>* fileNames = _Param(1);
 #if kVireoOS_windows
     HANDLE dir_handle = INVALID_HANDLE_VALUE;

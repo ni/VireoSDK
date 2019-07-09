@@ -10,6 +10,7 @@
 /*! \file
  */
 
+#include "DataTypes.h"
 #include "Platform.h"
 
 #include <cstdlib>
@@ -257,7 +258,7 @@ void PlatformIO::ReadFile(SubString *name, StringRef buffer)
 {
     buffer->Resize1DOrEmpty(0);
 #if defined(VIREO_STDIO)
-    TempStackCString    cString(name);
+    TempCString    cString(name, name->Length());
 
     FILE* h = fopen(cString.BeginCStr(), "r");
     if (h != nullptr) {

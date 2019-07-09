@@ -405,7 +405,7 @@ void SubString::ProcessEscapes(Utf8Char* dest, Utf8Char* end)
                 }
                 dest++;
             } else if (escapeTokenLength) {
-                TempStackCString escapeTokenCString;
+                TempCString escapeTokenCString(kTempCStringLength);
                 escapeTokenCString.Append(&escapeToken);
                 char* escapeCharPtr = escapeTokenCString.BeginCStr();
                 char* escapeCharEnd = nullptr;
@@ -862,7 +862,7 @@ Boolean SubString::ReadInt(IntMax *pValue, Boolean *overflow /*=nullptr*/)
 //------------------------------------------------------------
 Boolean SubString::ParseDouble(Double *pValue, Boolean suppressInfNaN /*= false*/, Int32 *errCodePtr /*= nullptr*/)
 {
-    TempStackCString tempCStr(this);
+    TempCString tempCStr(this, this->Length());
     ConstCStr current = tempCStr.BeginCStr();
     char* end = nullptr;
     Int32 errCode = kLVError_NoError;

@@ -281,16 +281,24 @@ typedef Itr<IntIndex>   IntIndexItr;
 
 //------------------------------------------------------------
 //! A Fixed C array that has and API that looks a bit like Vireo arrays
-template <class T, IntIndex COUNT>
+template <class T>
 class FixedCArray : public SubVector<T>
 {
  protected:
     // The buffer has a an extra element for cases where the C array
     // contains a nullptr element at the end.
-    T    _buffer[COUNT+1];
+    T*    _buffer = nullptr;
     // Since this class owns the buffer and it knows what is going on,
-    // in certain cases it is OK to write and the end pointer.
+    // in certain cases it is OK to write the end pointer.
     T*   NonConstEnd() { return const_cast<T*>(this->_end); }
+ private:
+     IntIndex _maxSize;
+
+     void AllocateBuffer(IntIndex maxSize)
+     {
+         _maxSize = maxSize;
+         _buffer = static_cast<T*>(gPlatform.Mem.Malloc(sizeof(T)*(_maxSize + 1)));
+     }
  public:
     //! Construct the array and initialize it as empty.
     void Clear() {
@@ -299,31 +307,40 @@ class FixedCArray : public SubVector<T>
         *NonConstEnd() = (T) 0;
     }
 
-    FixedCArray() {
+    FixedCArray() = delete;
+
+    FixedCArray(IntIndex maxSize) {
+        AllocateBuffer(maxSize);
         Clear();
     }
 
+    ~FixedCArray() {
+        gPlatform.Mem.Free(_buffer);
+    }
+
     //! Construct the array and initialize it from a SubVector.
-    explicit FixedCArray(SubVector<T>* buffer) {
+    explicit FixedCArray(SubVector<T>* buffer, IntIndex maxSize) {
+        AllocateBuffer(maxSize);
         this->_begin = _buffer;
-        size_t length = (buffer->Length() < COUNT) ? buffer->Length() : COUNT;
+        size_t length = (buffer->Length() <= _maxSize) ? buffer->Length() : _maxSize;
         this->_end = _buffer + length;
         memcpy(_buffer, buffer->Begin(), length);
         *NonConstEnd() = (T) 0;
     }
 
     //! Construct the array and initialize it from a block of data.
-    FixedCArray(T* begin, IntIndex length) {
+    FixedCArray(T* begin, IntIndex length, IntIndex maxSize) {
+        AllocateBuffer(maxSize);
         this->_begin = _buffer;
-        if (length >= COUNT)
-            length = COUNT;
+        if (length >= _maxSize)
+            length = _maxSize;
         this->_end = _buffer + length;
         memcpy(_buffer, begin, length);
         *NonConstEnd() = (T) 0;
     }
 
     //! Return the maximum capacity of the array.
-    static IntIndex Capacity() { return COUNT - 1; }
+    IntIndex Capacity() { return _maxSize; }
 
     //! Return a reference to the indexed element in the vector (no range checking).
     const T&  operator[] (const int i)  { return _buffer[i]; }
@@ -331,7 +348,7 @@ class FixedCArray : public SubVector<T>
     //! Append an element to the array if there is room.
     Boolean Append(T element) {
         IntIndex i = this->Length();
-        if (i < COUNT) {
+        if (i <= _maxSize) {
             _buffer[i] = element;
             this->_end++;
             _buffer[this->Length()] = (T) 0;

@@ -219,7 +219,7 @@ namespace Vireo {
         StringRef *timeStr = _ParamPointer(5);
         Int32 tz = useUTC ? 0 :  Date::getLocaletimeZone(timestamp.Integer());
         Date date(timestamp, tz);
-        TempStackCString formatString;
+        TempCString formatString(kTempCStringLength);
         SubString tempFormat;
         if (dateStr) {
             if (format == 0)
