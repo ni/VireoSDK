@@ -375,13 +375,13 @@ class TempCString : public FixedCArray<Utf8Char>
 
  public:
     //! Construct a empty string.
-     TempCString(IntIndex maxSize) : FixedCArray(maxSize) { };
+     explicit TempCString(IntIndex maxSize) : FixedCArray(maxSize) { }
 
     //! Construct a nullptr terminated from an existing SubString.
-    explicit TempCString(SubString* str, IntIndex maxSize) : FixedCArray(str, maxSize) { };
+    TempCString(SubString* str, IntIndex maxSize) : FixedCArray(str, maxSize) { }
 
     //! Construct a nullptr terminated from raw block of UTF-8 characters.
-    TempCString(Utf8Char* begin, Int32 length, Int32 maxSize) : FixedCArray((Utf8Char*)begin, length, maxSize) { };
+    TempCString(Utf8Char* begin, Int32 length, Int32 maxSize) : FixedCArray((Utf8Char*)begin, length, maxSize) { }
 
     //! Append a SubString.
     Boolean Append(SubString* str) {

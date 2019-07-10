@@ -309,7 +309,7 @@ class FixedCArray : public SubVector<T>
 
     FixedCArray() = delete;
 
-    FixedCArray(IntIndex maxSize) {
+    explicit FixedCArray(IntIndex maxSize) {
         AllocateBuffer(maxSize);
         Clear();
     }
@@ -319,7 +319,7 @@ class FixedCArray : public SubVector<T>
     }
 
     //! Construct the array and initialize it from a SubVector.
-    explicit FixedCArray(SubVector<T>* buffer, IntIndex maxSize) {
+    FixedCArray(SubVector<T>* buffer, IntIndex maxSize) {
         AllocateBuffer(maxSize);
         this->_begin = _buffer;
         size_t length = (buffer->Length() <= _maxSize) ? buffer->Length() : _maxSize;

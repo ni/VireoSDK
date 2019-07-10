@@ -1315,7 +1315,7 @@ class TempCStringFromString : public TempCString
     TempCStringFromString() = delete;
 
  public:
-    explicit TempCStringFromString(StringRef str, IntIndex maxSize) : TempCString(str->Begin(), str->Length(), maxSize) { };
+    TempCStringFromString(StringRef str, IntIndex maxSize) : TempCString(str->Begin(), str->Length(), maxSize) { }
 };
 
 //------------------------------------------------------------

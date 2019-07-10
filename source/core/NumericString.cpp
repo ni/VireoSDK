@@ -683,7 +683,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                     {
                         fOptions.FormatChar = 'B';
                         SubString percentFormat(fOptions.FmtSubString.Begin()-1, fOptions.FmtSubString.End());
-                        TempCString formattedNumber (kTempCStringLength);
+                        TempCString formattedNumber(kTempCStringLength);
                         Int32 intSize = 8*argType->TopAQSize();
                         IntMax intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
                         char BinaryString[2*kTempCStringLength];
@@ -2818,7 +2818,7 @@ Boolean StringToRelTime(SubString *input, SubString* format, Double *relTimeSeco
 }
 
 Boolean StringToDateTime(SubString *input, Boolean isUTC, SubString* format, Timestamp *tsPtr) {
-    TempCString formatString (kTempCStringLength);
+    TempCString formatString(kTempCStringLength);
     SubString tempFormat(format);
     if (format == nullptr || format->Length() == 0) {
         formatString.AppendCStr("%x %X");

@@ -349,7 +349,7 @@ TypeRef TDViaParser::ParseType(TypeRef patternType)
         if (_string.EatChar('<')) {
             if (type->IsTemplate()) {
                 // Build a list of parameters.
-                FixedCArray<TypeRef> templateParameters (ClumpParseState::kMaxArguments);
+                FixedCArray<TypeRef> templateParameters(ClumpParseState::kMaxArguments);
                 for (IntIndex i = 0; !_string.EatChar('>'); i++) {
                     templateParameters.Append(ParseType());
                 }
