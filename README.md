@@ -251,6 +251,11 @@ To run the full karma test suite (you will need [Firefox](https://www.mozilla.or
 npm run test
 ```
 
+To debug the karma tests, use the command below which will print a URL to the console. Open the URL on a browser and open the browser's debugging tool:
+```console
+npm run test-manual
+```
+
 ## Running the HTTP test server
 
 Vireo tests rely on a locally running instance of the [httpbin](https://httpbin.org/) server for testing the HTTP Client functionality. If the httpbin server is not running locally, the test suite will **skip** tests which rely on it. If you would like to run the HTTP client tests locally these instructions show you how.
