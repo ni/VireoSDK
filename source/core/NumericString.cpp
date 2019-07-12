@@ -1361,7 +1361,7 @@ void S2CIntScanString(StaticTypeAndData* argument, TypeRef argumentType, char fo
 }
 
 //----------------------------------------------------------------------------------------------------
-void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
+void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, FixedHeapCArray<Utf8Char>* stringInput,
                       char formatChar, char decimalSeparator, char* beginPointer, char** endPointer, IntIndex offset = 0)
 {
     Double doubleValue;
@@ -1392,7 +1392,7 @@ void DoubleScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSta
                     *separator = oldSeparator;
                 }
 
-                if (formatChar == 'p' && *endPointer != nullptr && *endPointer < ConstCStr(truncateInput->End())) {
+                if (formatChar == 'p' && *endPointer != nullptr && *endPointer < ConstCStr(stringInput->End())) {
                     char siPrefixesTable[] = { 'y', 'z', 'a', 'f', 'p', 'n', 'u', 'm', '0', 'k', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' };
                     char prefix = **endPointer;
                     size_t i = 0;
@@ -1446,14 +1446,14 @@ Boolean EnumScanString(SubString* in, StaticTypeAndData* argument, TypeRef argum
     return found;
 }
 
-void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempStackCString* truncateInput,
+void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, FixedHeapCArray<Utf8Char>* stringInput,
     char formatChar, char decimalSeparator, char* beginPointer, char** endPointer) {
     bool clusterFormat = false;
     if (*beginPointer == '(') {
         ++beginPointer;
         clusterFormat = true;
     }
-    DoubleScanString(argument, argumentType->GetSubElement(0), truncateInput, formatChar, decimalSeparator, beginPointer, endPointer);
+    DoubleScanString(argument, argumentType->GetSubElement(0), stringInput, formatChar, decimalSeparator, beginPointer, endPointer);
     beginPointer = *endPointer;
     while (isspace(*beginPointer))
         ++beginPointer;
@@ -1461,7 +1461,7 @@ void ComplexScanString(StaticTypeAndData* argument, TypeRef argumentType, TempSt
         ++beginPointer;
     while (isspace(*beginPointer))
         ++beginPointer;
-    DoubleScanString(argument, argumentType->GetSubElement(1), truncateInput, formatChar, decimalSeparator,
+    DoubleScanString(argument, argumentType->GetSubElement(1), stringInput, formatChar, decimalSeparator,
                      beginPointer, endPointer, argumentType->GetSubElement(1)->ElementOffset());
     beginPointer = *endPointer;
     while (isspace(*beginPointer))
@@ -1484,7 +1484,6 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
     TypeRef argumentType = argument->_paramType;
 
     SubString in(inputString);
-    TempStackCString truncateInput;
     if (formatOptions->MinimumFieldWidth > 0) {
         IntIndex leadingSpace = 0;
         for (IntIndex i = 0; i< in.Length(); i++) {
@@ -1496,8 +1495,9 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         }
         in.AliasAssign(in.Begin(), in.Begin() + std::min(in.Length(), formatOptions->MinimumFieldWidth + leadingSpace));
     }
-    truncateInput.Append(&in);
-    char* inpBegin = truncateInput.BeginCStr();
+    FixedHeapCArray<Utf8Char> tempCStringInput(in.Length());
+    tempCStringInput.Append(in.Begin(), in.Length());
+    char* inpBegin = (char*)tempCStringInput.Begin();
     char* endPointer = nullptr;
 
     switch (argumentType->BitEncoding()) {
@@ -1516,7 +1516,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
             S2CIntScanString(argument, argumentType, formatOptions->FormatChar, inpBegin, &endPointer);
             break;
         case kEncoding_IEEE754Binary:
-            DoubleScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
+            DoubleScanString(argument, argumentType, &tempCStringInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
             break;
         case kEncoding_Array: {
             TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(argument->_pData);
@@ -1630,7 +1630,7 @@ Boolean TypedScanString(SubString* inputString, IntIndex* endToken, const Format
         case kEncoding_Cluster:
         {
             if (argumentType->IsComplex())
-                ComplexScanString(argument, argumentType, &truncateInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
+                ComplexScanString(argument, argumentType, &tempCStringInput, formatOptions->FormatChar, formatOptions->DecimalSeparator, inpBegin, &endPointer);
         }
             break;
         default:

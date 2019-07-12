@@ -294,6 +294,7 @@
                 "ScanFormat.via",
                 "ScanFormatErr.via",
                 "ScanFormat2.via",
+                "ScanFromLongString.via",
                 "Search1DArray.via",
                 "SearchSplitString.via",
                 "SearchSplitStringRegression.via",

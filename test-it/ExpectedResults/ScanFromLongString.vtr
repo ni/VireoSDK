@@ -1,0 +1,3 @@
+Tests with input string longer than 255 characters ... :
+  with remaining string pass : true
+  with not remaining string pass : true
