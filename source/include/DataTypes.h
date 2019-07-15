@@ -280,7 +280,7 @@ class BlockItr : public Itr<AQBlock1>
 typedef Itr<IntIndex>   IntIndexItr;
 
 //------------------------------------------------------------
-//! A Fixed C array that has and API that looks a bit like Vireo arrays
+//! A fixed stack based C array that has and API that looks a bit like Vireo arrays
 template <class T, IntIndex COUNT>
 class FixedCArray : public SubVector<T>
 {
@@ -349,6 +349,97 @@ class FixedCArray : public SubVector<T>
         memcpy(NonConstEnd(), begin, length);
         this->_end += length;
         *NonConstEnd() = (T) 0;
+        return true;
+    }
+};
+
+//------------------------------------------------------------
+//! A fixed heap based C array, that has and API that looks a bit like Vireo arrays
+template <class T>
+class FixedHeapCArray : public SubVector<T>
+{
+ protected:
+    // The buffer has a an extra element for cases where the C array
+    // contains a nullptr element at the end.
+    T*    _buffer = nullptr;
+    // Since this class owns the buffer and it knows what is going on,
+    // in certain cases it is OK to write the end pointer.
+    T*   NonConstEnd() { return const_cast<T*>(this->_end); }
+ private:
+    IntIndex _capacity;
+
+    void AllocateBuffer(IntIndex capacity)
+    {
+        _capacity = capacity;
+        _buffer = static_cast<T*>(gPlatform.Mem.Malloc(sizeof(T)*(Capacity() + 1)));
+    }
+ public:
+    //! Construct the array and initialize it as empty.
+    void Clear() {
+        this->_begin = _buffer;
+        this->_end = _buffer;
+        *NonConstEnd() = (T)0;
+    }
+
+    FixedHeapCArray() = delete;
+
+    explicit FixedHeapCArray(IntIndex capacity) {
+        AllocateBuffer(capacity);
+        Clear();
+    }
+
+    ~FixedHeapCArray() {
+        gPlatform.Mem.Free(_buffer);
+    }
+
+    //! Construct the array and initialize it from a SubVector.
+    FixedHeapCArray(SubVector<T>* buffer, IntIndex capacity) {
+        AllocateBuffer(capacity);
+        this->_begin = _buffer;
+        size_t length = (buffer->Length() <= Capacity()) ? buffer->Length() : Capacity();
+        this->_end = _buffer + length;
+        memcpy(_buffer, buffer->Begin(), length);
+        *NonConstEnd() = (T)0;
+    }
+
+    //! Construct the array and initialize it from a block of data.
+    FixedHeapCArray(T* begin, IntIndex length, IntIndex capacity) {
+        AllocateBuffer(capacity);
+        this->_begin = _buffer;
+        if (length >= Capacity())
+            length = Capacity();
+        this->_end = _buffer + length;
+        memcpy(_buffer, begin, length);
+        *NonConstEnd() = (T)0;
+    }
+
+    //! Return the maximum capacity of the array.
+    IntIndex Capacity() { return _capacity; }
+
+    //! Return a reference to the indexed element in the vector (no range checking).
+    const T&  operator[] (const int i) { return _buffer[i]; }
+
+    //! Append an element to the array if there is room.
+    Boolean Append(T element) {
+        IntIndex length = this->Length();
+        if (length <= Capacity()) {
+            _buffer[length] = element;
+            this->_end++;
+            *NonConstEnd() = (T)0;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //! Append a block of elements to the array if there is room.
+    Boolean Append(const T* begin, size_t length) {
+        if (IntIndex(length + this->Length()) > Capacity()) {
+            return false;
+        }
+        memcpy(NonConstEnd(), begin, length);
+        this->_end += length;
+        *NonConstEnd() = (T)0;
         return true;
     }
 };

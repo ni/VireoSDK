@@ -10,6 +10,7 @@
 /*! \file
  */
 
+#include "DataTypes.h"
 #include "Platform.h"
 
 #include <cstdlib>
