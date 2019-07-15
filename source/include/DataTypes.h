@@ -366,12 +366,12 @@ class FixedHeapCArray : public SubVector<T>
     // in certain cases it is OK to write the end pointer.
     T*   NonConstEnd() { return const_cast<T*>(this->_end); }
  private:
-    IntIndex _maxSize;
+    IntIndex _capacity;
 
-    void AllocateBuffer(IntIndex maxSize)
+    void AllocateBuffer(IntIndex capacity)
     {
-        _maxSize = maxSize;
-        _buffer = static_cast<T*>(gPlatform.Mem.Malloc(sizeof(T)*(_maxSize + 1)));
+        _capacity = capacity;
+        _buffer = static_cast<T*>(gPlatform.Mem.Malloc(sizeof(T)*(Capacity() + 1)));
     }
  public:
     //! Construct the array and initialize it as empty.
@@ -383,8 +383,8 @@ class FixedHeapCArray : public SubVector<T>
 
     FixedHeapCArray() = delete;
 
-    explicit FixedHeapCArray(IntIndex maxSize) {
-        AllocateBuffer(maxSize);
+    explicit FixedHeapCArray(IntIndex capacity) {
+        AllocateBuffer(capacity);
         Clear();
     }
 
@@ -393,39 +393,39 @@ class FixedHeapCArray : public SubVector<T>
     }
 
     //! Construct the array and initialize it from a SubVector.
-    FixedHeapCArray(SubVector<T>* buffer, IntIndex maxSize) {
-        AllocateBuffer(maxSize);
+    FixedHeapCArray(SubVector<T>* buffer, IntIndex capacity) {
+        AllocateBuffer(capacity);
         this->_begin = _buffer;
-        size_t length = (buffer->Length() <= _maxSize) ? buffer->Length() : _maxSize;
+        size_t length = (buffer->Length() <= Capacity()) ? buffer->Length() : Capacity();
         this->_end = _buffer + length;
         memcpy(_buffer, buffer->Begin(), length);
         *NonConstEnd() = (T)0;
     }
 
     //! Construct the array and initialize it from a block of data.
-    FixedHeapCArray(T* begin, IntIndex length, IntIndex maxSize) {
-        AllocateBuffer(maxSize);
+    FixedHeapCArray(T* begin, IntIndex length, IntIndex capacity) {
+        AllocateBuffer(capacity);
         this->_begin = _buffer;
-        if (length >= _maxSize)
-            length = _maxSize;
+        if (length >= Capacity())
+            length = Capacity();
         this->_end = _buffer + length;
         memcpy(_buffer, begin, length);
         *NonConstEnd() = (T)0;
     }
 
     //! Return the maximum capacity of the array.
-    IntIndex Capacity() { return _maxSize; }
+    IntIndex Capacity() { return _capacity; }
 
     //! Return a reference to the indexed element in the vector (no range checking).
     const T&  operator[] (const int i) { return _buffer[i]; }
 
     //! Append an element to the array if there is room.
     Boolean Append(T element) {
-        IntIndex i = this->Length();
-        if (i <= _maxSize) {
-            _buffer[i] = element;
+        IntIndex length = this->Length();
+        if (length <= Capacity()) {
+            _buffer[length] = element;
             this->_end++;
-            _buffer[this->Length()] = (T)0;
+            *NonConstEnd() = (T)0;
             return true;
         } else {
             return false;
