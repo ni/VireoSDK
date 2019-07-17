@@ -84,7 +84,7 @@ enum {
 
     kArrayFirstTemplatedDimLength = kArrayVariableLengthSentinel + kArrayMaxTemplatedDimLengths,
     kArrayIndexMax = INT32_MAX,
-    kArrayMaxRank = 15,
+    kArrayMaxRank = 32,
     };
 
 
