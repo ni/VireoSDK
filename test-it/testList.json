@@ -156,6 +156,7 @@
                 "ControlRefBasic.via",
                 "ConvertStringNumber.via",
                 "ConvertFloatToIntegral.via",
+                "ConvertWaveformOfInt64ToWaveformOfInt32.via",
                 "CopyAlignmentError.via",
                 "CopyAndReset.via",
                 "CopyingVIs.via",
