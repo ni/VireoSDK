@@ -33,6 +33,7 @@ class VariantType : public TypeCommon
     NIError InitData(void* pData, TypeRef pattern = nullptr) override;
     NIError CopyData(const void* pData, void* pDataCopy) override;
     NIError ClearData(void* pData) override;
+    SubString Name() override { return SubString(tsVariantType); }
 
  public:  // static methods
     static VariantTypeRef New(TypeManagerRef typeManager);

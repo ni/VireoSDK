@@ -247,7 +247,7 @@ void TypeDefiner::DefineStandardTypes(TypeManagerRef tm)
     Define(tm, "Object", "DataPointer");
     Define(tm, "Array", "DataPointer");    // Object with Rank > 0
     Define(tm, "Array1D", "DataPointer");
-    Define(tm, "Variant", "DataPointer");  // TODO(PaulAustin): is this any different from the Type type if the type has a default value?
+    Define(tm, tsVariantType, "DataPointer");  // TODO(PaulAustin): is this any different from the Type type if the type has a default value?
 
     Define(tm, "ErrorCluster", ERROR_CLUST_TYPE_STRING);
     Define(tm, "NIPath", "c(e(a(String *) components) e(String type))");
