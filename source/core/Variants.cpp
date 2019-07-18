@@ -640,6 +640,13 @@ VIREO_FUNCTION_SIGNATURET(IsEQVariant, VariantComparisonParamBlock) {
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURET(IsEQSearchVariant, VariantComparisonParamBlock) {
+    VariantDataRef variantX = _Param(VariantX);
+    VariantDataRef variantY = _Param(VariantY);
+    _Param(Result) = VariantsAreEqual(variantX, variantY);
+    return _NextInstruction();
+}
+
 VIREO_FUNCTION_SIGNATURET(IsNEVariant, VariantComparisonParamBlock) {
     VariantDataRef variantX = _Param(VariantX);
     VariantDataRef variantY = _Param(VariantY);
@@ -661,6 +668,7 @@ DEFINE_VIREO_BEGIN(Variant)
 
     DEFINE_VIREO_FUNCTION(CopyVariant, "p(i(Variant inputVariant) o(Variant outputVariant) )");
     DEFINE_VIREO_FUNCTION(IsEQVariant, "p(i(Variant variantX) i(Variant variantY) o(Boolean result))")
+    DEFINE_VIREO_FUNCTION(IsEQSearchVariant, "p(i(Variant variantX) i(Variant variantY) o(Boolean result))")
     DEFINE_VIREO_FUNCTION(IsNEVariant, "p(i(Variant variantX) i(Variant variantY) o(Boolean result))")
 
 DEFINE_VIREO_END()
