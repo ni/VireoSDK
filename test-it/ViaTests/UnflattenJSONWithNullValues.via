@@ -1,0 +1,35 @@
+define (MyVI dv(.VirtualInstrument (
+Locals: c(
+    // scalars
+    e(Double myDouble)
+    e(Int32 myInteger)
+    e(Boolean myBoolean)
+    e(String myString)
+    e(dv(Double 42) myDoubleDefault)
+    e(dv(Boolean true) myBooleanDefault)
+    e(dv(String "Iñtërnâtiônàlizætiøn☃💩") myStringDefault)
+
+    // arrays of scalars
+    e(a(Double *) myDouble1D)
+    e(a(Double * *) myDouble2D)
+
+    // helpers
+    // Seems like UnflattenFromJSON is not handling unwired paths
+    e(a(.String *) path)
+    e(dv(Boolean true) lvExtensions)
+    e(dv(Boolean true) defaultNullElements)
+    e(dv(Boolean false) strictValidation)
+    e(ErrorCluster noError)
+    e(ErrorCluster error)
+    // Copy(noError error)
+)
+
+clump(
+    // scalars should be errors because the editor does not allow them
+    UnflattenFromJSON("77" myDouble path lvExtensions defaultNullElements strictValidation error)
+    Printf("1: %z %z\n" myDouble error)
+    Copy(noError error)
+
+)
+)))
+enqueue(MyVI)
