@@ -1275,6 +1275,10 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                     // JSON generally ignore any white space around or between syntactic elements
                     // JSON does not provide or allow any sort of comment syntax
                     _string.EatWhiteSpaces();
+                    if (_string.CompareCStr("null")) {
+                        _string.EatRawChars(4);
+                        return _options._allowNulls ? Int32(kLVError_NoError) : Int32(kLVError_JSONTypeMismatch);
+                    }
                     if (!_string.EatChar('{')) {
                         return kLVError_ArgError;
                     }
