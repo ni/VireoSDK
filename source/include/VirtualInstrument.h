@@ -21,6 +21,8 @@ SDG
 #include <vector>
 #include <map>
 
+#define VIREO_DEBUG_PARSING_PRINT_OVERLOADS 1  // Turn on to print overloads to console as VIA instructions are parsed
+
 namespace Vireo
 {
 
