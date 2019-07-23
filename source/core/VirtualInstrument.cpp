@@ -15,6 +15,7 @@ SDG
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 #include "Events.h"
+#include "DebuggingToggles.h"
 
 namespace Vireo
 {
@@ -427,7 +428,7 @@ void ClumpParseState::SetClumpFireCount(Int32 fireCount) const
 //------------------------------------------------------------
 TypeRef ClumpParseState::ReresolveInstruction(SubString* opName)
 {
-#ifdef VIREO_DEBUG_PARSING_PRINT_OVERLOADS
+#if VIREO_DEBUG_PARSING_PRINT_OVERLOADS
     if (_cia->IsCalculatePass()) {
         gPlatform.IO.Printf("The instruction has been substituted with '%.*s'\n", FMT_LEN_BEGIN(opName));
     }
@@ -447,7 +448,7 @@ TypeRef ClumpParseState::ReresolveInstruction(SubString* opName)
 
     return _instructionType;
 }
-#ifdef VIREO_DEBUG_PARSING_PRINT_OVERLOADS
+#if VIREO_DEBUG_PARSING_PRINT_OVERLOADS
 //------------------------------------------------------------
 static void PrintOverload(ConstCStr outputPrefix, NamedTypeRef overload, TypeRef baseVIType, Boolean isCalculatePass)
 {
@@ -462,8 +463,7 @@ static void PrintOverload(ConstCStr outputPrefix, NamedTypeRef overload, TypeRef
             TypeRef instructionType = overload->GetSubElement(0);
             parameters = instructionType;
             gPlatform.IO.Printf("%.*s (", FMT_LEN_BEGIN(&instructionType->Name()));
-        }
-        else {
+        } else {
             InstructionFunction  instructionfunction;
             overload->InitData(&instructionfunction);
             SubString cName;
@@ -483,12 +483,9 @@ static void PrintOverload(ConstCStr outputPrefix, NamedTypeRef overload, TypeRef
             }
         }
         gPlatform.IO.Printf(")");
-
-    }
-    else if (overload->IsA(baseVIType)) {
+    } else if (overload->IsA(baseVIType)) {
         gPlatform.IO.Printf("%.*s - SubVI Call", FMT_LEN_BEGIN(&overload->Name()));
-    }
-    else if (overload->IsString()) {
+    } else if (overload->IsString()) {
         StringRef *str = static_cast<StringRef*>(overload->Begin(kPARead));
         if (str) {
             SubString subString = (*str)->MakeSubStringAlias();
@@ -566,7 +563,7 @@ TypeRef ClumpParseState::StartNextOverload()
             t = _clump->TheTypeManager()->FindTypeCore(&ss);
         }
     }
-#ifdef VIREO_DEBUG_PARSING_PRINT_OVERLOADS
+#if VIREO_DEBUG_PARSING_PRINT_OVERLOADS
     PrintOverload("\ttrying... ", t, _baseViType, _cia->IsCalculatePass());
 #endif
     return _instructionType;
@@ -585,7 +582,7 @@ TypeRef ClumpParseState::StartInstruction(SubString* opName)
         }
     }
     _hasMultipleDefinitions = _nextFunctionDefinition ? _nextFunctionDefinition->NextOverload() != nullptr : false;
-#ifdef VIREO_DEBUG_PARSING_PRINT_OVERLOADS
+#if VIREO_DEBUG_PARSING_PRINT_OVERLOADS
     PrintOverloads(opName, _clump->TheTypeManager(), _baseViType, _cia->IsCalculatePass());
 #endif
     return StartNextOverload();

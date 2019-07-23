@@ -200,7 +200,7 @@ To create and release hotfixes, annotated git tags are used; no release branches
 * Fetch new branches and tags from remote.
 ```console
 git remote update -p
-```	
+```
 * Create a local branch (say 'myHotfix') using the same tag as the 'hotfix' ni/VireoSDK branch.
 ```console
 git checkout -b myHotfix v10.1.7
@@ -217,7 +217,7 @@ git cherry-pick ec64f3296e5ee858dbe088768f0ff4fb4afad221
 * Once your PR has been reviewed and approved, the Maintainer will merge your PR into the main hotfix release
 
 #### Maintainer will push a new annotated tag to create the hotfix release
-* If this is the first hotfix for the tag, we need to switch to prerelease first. 
+* If this is the first hotfix for the tag, we need to switch to prerelease first.
   * Manually update the package.json file, append '-hotfix' to the version (10.1.7 becomes 10.1.7-hotfix). Save the file.
   * Run 'npm install' to update the package-lock.json
   * Commit just this change with just package.json and package-lock.json updates.
@@ -336,3 +336,98 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
     ```
 
 3. After the configuration is saved, when you have a C or C++ filetype open you should see an environment configuration in the bottom right of the status bar. Click the environment configuration to choose the newly added `Emscripten` configuration.
+
+# Debugging toggles
+
+Vireo has toggles that can be turned on to aid in debugging a problem. To turn on a toggle, look in the DebuggingToggles.h file for the toggle definition and change its value from 0 to 1 and then rebuild Vireo.
+
+## VIREO_DEBUG_EXEC_PRINT_INSTRS
+
+Turn on this toggle to print the name of the actual Vireo instructions being executed
+
+The following VIA program when run
+```text
+define (CheckEqual dv(.VirtualInstrument (
+   Locals: c(   // Data Space
+       ce(dv(.Int32 -56)c1)
+       ce(dv(.Int32 -56)c3)
+       e(.Boolean local5)
+   )
+   clump(1
+     IsEQ(c1 c3 local5)
+   )
+)))
+enqueue (CheckEqual)
+```
+
+Will produce output similar to this in the console:
+```console
+Exec: IsEQInt32
+Exec: Done
+```
+
+## VIREO_DEBUG_PARSING_PRINT_OVERLOADS
+
+Turn on this toggle to print the overloads available for an instruction and the overload being selected as the instruction is being parsed. This is helpful when debugging why Vireo is not properly parsing a new Vireo instruction.
+
+The following VIA program when run
+```text
+define (CheckEqual dv(.VirtualInstrument (
+   Locals: c(   // Data Space
+       ce(dv(.Int32 -56)c1)
+       ce(dv(.Int32 -56)c3)
+       e(.Boolean local5)
+   )
+   clump(1
+     IsEQ(c1 c3 local5)
+   )
+)))
+enqueue (CheckEqual)
+```
+
+Will produce output similar to this in the console:
+```console
+=========================================================
+Finding an appropriate overload for 'IsEQ'
+It currently has the following overloads:
+        IsEQBoolean (Boolean, Boolean, Boolean)
+        IsEQRefnum (EventRegRefNum, EventRegRefNum, Boolean)
+        IsEQRefnum (UserEventRefNum, UserEventRefNum, Boolean)
+        IsEQRefnum (ControlRefNum, ControlRefNum, Boolean)
+        IsEQRefnum (JavaScriptStaticRefNum, JavaScriptStaticRefNum, Boolean)
+        IsEQRefnum (JavaScriptDynamicRefNum, JavaScriptDynamicRefNum, Boolean)
+        GenericBinOp (*, *, *)
+                Generic loader
+        IsEQRefnum (QueueRefNum, QueueRefNum, Boolean)
+        IsEQUtf8Char (Utf8Char, Utf8Char, Boolean)
+        IsEQDouble (Double, Double, Boolean)
+        IsEQSingle (Single, Single, Boolean)
+        IsEQInt64 (Int64, Int64, Boolean)
+        IsEQInt32 (Int32, Int32, Boolean)
+        IsEQInt16 (Int16, Int16, Boolean)
+        IsEQInt8 (Int8, Int8, Boolean)
+        IsEQUInt64 (UInt64, UInt64, Boolean)
+        IsEQUInt32 (UInt32, UInt32, Boolean)
+        IsEQUInt16 (UInt16, UInt16, Boolean)
+        IsEQUInt8 (UInt8, UInt8, Boolean)
+
+        trying... IsEQBoolean (Boolean, Boolean, Boolean)
+        trying... IsEQRefnum (EventRegRefNum, EventRegRefNum, Boolean)
+        trying... IsEQRefnum (UserEventRefNum, UserEventRefNum, Boolean)
+        trying... IsEQRefnum (ControlRefNum, ControlRefNum, Boolean)
+        trying... IsEQRefnum (JavaScriptStaticRefNum, JavaScriptStaticRefNum, Boolean)
+        trying... IsEQRefnum (JavaScriptDynamicRefNum, JavaScriptDynamicRefNum, Boolean)
+        trying... IsEQRefnum (QueueRefNum, QueueRefNum, Boolean)
+        trying... IsEQUtf8Char (Utf8Char, Utf8Char, Boolean)
+        trying... IsEQDouble (Double, Double, Boolean)
+        trying... IsEQSingle (Single, Single, Boolean)
+        trying... IsEQInt64 (Int64, Int64, Boolean)
+        trying... IsEQInt32 (Int32, Int32, Boolean)
+        An overload was found.
+=========================================================
+Finding an appropriate overload for 'Done'
+It currently has the following overloads:
+        Done ()
+
+        trying... Done ()
+```
