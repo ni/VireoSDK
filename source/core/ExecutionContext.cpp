@@ -14,11 +14,11 @@ SDG
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
+#include "DebuggingToggles.h"
+
 #if kVireoOS_emscripten
 #include <emscripten.h>
 #endif
-
-#define VIREO_DEBUG_EXEC_PRINT_INSTRS 0  // Turn on to print each instruction as it is executed to console
 
 namespace Vireo {
 

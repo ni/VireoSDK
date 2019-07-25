@@ -80,6 +80,7 @@
     <ClInclude Include="..\source\include\DataReflectionVisitor.h" />
     <ClInclude Include="..\source\include\DataTypes.h" />
     <ClInclude Include="..\source\include\Date.h" />
+    <ClInclude Include="..\source\include\DebuggingToggles.h" />
     <ClInclude Include="..\source\include\DualTypeConversion.h" />
     <ClInclude Include="..\source\include\EventLog.h" />
     <ClInclude Include="..\source\include\Events.h" />

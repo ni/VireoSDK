@@ -10,6 +10,7 @@ SDG
 #include "ExecutionContext.h"
 #include "TDCodecVia.h"
 #include "UnitTest.h"
+#include "DebuggingToggles.h"
 
 #if kVireoOS_emscripten
     #include <emscripten.h>

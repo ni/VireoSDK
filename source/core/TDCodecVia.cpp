@@ -28,6 +28,8 @@ SDG
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
 #include "Variants.h"
+#include "StringUtilities.h"
+#include "DebuggingToggles.h"
 
 #if !kVireoOS_windows
     #include <math.h>
@@ -1820,6 +1822,15 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
                 }
             }
             InstructionCore* instruction = state.EmitInstruction();
+#if VIREO_DEBUG_PARSING_PRINT_OVERLOADS
+            if (cia->IsCalculatePass()) {
+                if (instruction) {
+                    gPlatform.IO.Printf("\tAn overload was found.\n");
+                } else {
+                    gPlatform.IO.Printf("\tAn overload wasn't found. Unable to generate instruction.\n");
+                }
+            }
+#endif
             if (!instruction) {
                 LOG_EVENTV(kSoftDataError, "Instruction not generated '%.*s'", FMT_LEN_BEGIN(&instructionNameToken));
             }
