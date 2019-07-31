@@ -36,6 +36,15 @@ Locals: c(
     e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test21)
     e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test22)
 
+    // cluster of various scalars
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test23)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test24)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test25)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test26)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test27)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test28)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test29)
+
     // helpers
     // Seems like UnflattenFromJSON is not handling unwired paths
     e(a(.String *) path)
@@ -148,6 +157,36 @@ clump(
 
     UnflattenFromJSON(@' null ' test22 path lvExtensions defaultNullElements strictValidation error)
     Printf("22: %z %z\n" test22 error)
+    Copy(noError error)
+
+    // cluster of various scalars
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": 1111, "four": false, "five": "world"} ' test23 path lvExtensions defaultNullElements strictValidation error)
+    Printf("23: %z %z\n" test23 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": null, "two": 111, "three": 1111, "four": false, "five": "world"} ' test24 path lvExtensions defaultNullElements strictValidation error)
+    Printf("24: %z %z\n" test24 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": null, "three": 1111, "four": false, "five": "world"} ' test25 path lvExtensions defaultNullElements strictValidation error)
+    Printf("25: %z %z\n" test25 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": null, "four": false, "five": "world"} ' test26 path lvExtensions defaultNullElements strictValidation error)
+    Printf("26: %z %z\n" test26 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": 1111, "four": null, "five": "world"} ' test27 path lvExtensions defaultNullElements strictValidation error)
+    Printf("27: %z %z\n" test27 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": 1111, "four": false, "five": null} ' test28 path lvExtensions defaultNullElements strictValidation error)
+    Printf("28: %z %z\n" test28 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": null, "two": null, "three": null, "four": null, "five": null} ' test29 path lvExtensions defaultNullElements strictValidation error)
+    Printf("29: %z %z\n" test29 error)
     Copy(noError error)
 )
 )))
