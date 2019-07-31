@@ -425,6 +425,7 @@
                 "UnflattenJSONNested.via",
                 "UnflattenJSONPath.via",
                 "UnflattenJSONStrict.via",
+                "UnflattenJSONWithNullValues.via",
                 "UnflattenPathToIndex.via",
                 "UnflattenStrictValidation.via",
                 "UnflattenFromJSONEmptyArray.via",
