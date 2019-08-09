@@ -8,7 +8,7 @@ const encodeIdentifier = function (str) {
         ch = str.charAt(0);
 
     // First character must be encoded if is not a letter [A-Za-z]
-    if (!(codePoint >= 0x41 && codePoint <= 0x5A) && !(codePoint >= 0x61 && codePoint <= 0x7A)) {
+    if (!(codePoint >= 0x41 && codePoint <= 0x5A) && !(codePoint >= 0x61 && codePoint <= 0x7A) && !(codePoint > 0x7F)) {
         encoded += '%' + codePoint.toString(16).toUpperCase();
     } else {
         encoded += ch;
