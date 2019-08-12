@@ -55,6 +55,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _lineNumberBase = lineNumberBase;
     _loadVIsImmediately = false;
     _options._allowNulls = allowJSONNulls;
+    _options._uppercaseForBooleans = false;
     _virtualInstrumentScope = nullptr;
 
     if (!format || format->ComparePrefixCStr(TDViaFormatter::formatVIA._name)) {
@@ -2065,6 +2066,7 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     _options._fieldWidth = fieldWidth;
     _options._precision = -1;
     _options._exponentialNotation = false;
+    _options._uppercaseForBooleans = false;
     _errorCode = kLVError_NoError;
 
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
@@ -2454,7 +2456,10 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatPointerData(type, pData);
             break;
         case kEncoding_Boolean:
-            _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
+            if (_options._uppercaseForBooleans)
+                _string->AppendCStr((*(AQBlock1*)pData) ? "TRUE" : "FALSE");
+            else
+                _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
             break;
         case kEncoding_Generic:
             if (Fmt().UseFieldNames())
@@ -2879,7 +2884,7 @@ void NumberToFloatStringInternal(TypeRef type, void *pData, Int32 minWidth, Int3
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dF", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str)
 {
@@ -2888,7 +2893,7 @@ void NumberToExponentialStringInternal(TypeRef type, void *pData, Int32 minWidth
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%%d.%dE", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32 precision, StringRef str)
 {
@@ -2897,7 +2902,7 @@ void NumberToEngineeringStringInternal(TypeRef type, void *pData, Int32 minWidth
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%^%d.%dE", minWidth, precision);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2909,7 +2914,7 @@ void NumberToDecimalStringInternal(TypeRef type, void *pData, Int32 minWidth, In
     else
         snprintf(formatBuffer, sizeof(formatBuffer), "%%%dd", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2918,7 +2923,7 @@ void NumberToHexStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32,
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%dX", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2927,7 +2932,7 @@ void NumberToOctalStringInternal(TypeRef type, void *pData, Int32 minWidth, Int3
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%do", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int32, StringRef str)
 {
@@ -2936,7 +2941,7 @@ void NumberToBinaryStringInternal(TypeRef type, void *pData, Int32 minWidth, Int
     char formatBuffer[32];
     snprintf(formatBuffer, sizeof(formatBuffer), "%%0%db", minWidth);
     format.AliasAssignCStr(formatBuffer);
-    Format(&format, 1, arguments, str, nullptr);
+    Format(&format, 1, arguments, str, nullptr, false);
 }
 
 Boolean NumberToStringInternal(TypeRef type, AQBlock1 *pData, Int32 minWidth, Int32 precision,

@@ -1,0 +1,3 @@
+TestResult_CorrectOutputString : true
+  Output string : TRUE 2019 FALSE 8.000000
+TestResult_NoError : true
