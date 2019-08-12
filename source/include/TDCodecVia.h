@@ -37,12 +37,14 @@ enum ViaFormat {
     kViaFormat_SuppressInfNaN = 16,    // use neither,
     kViaFormat_JSONStrictValidation = 32,
     kViaFormat_QuoteInfNanNames = 64,
-    kViaFormat_StopArrayParseOnFirstError = 128
+    kViaFormat_StopArrayParseOnFirstError = 128,
+    kViaFormat_UseUppercaseForBooleanValues = 256
 };
 
 #define kJSONEncoding "JSON"
 #define kVIAEncoding "VIA"
 #define kCEncoding "C"
+#define kLabVIEWEncoding "LABVIEW"
 
 struct ViaFormatChars
 {
@@ -66,6 +68,7 @@ struct ViaFormatChars
     Boolean JSONStrictValidation() const { return (_fieldNameFormat & kViaFormat_JSONStrictValidation) ? true : false; }
     Boolean GenerateJSON() const { return strcmp(_name, kJSONEncoding) == 0; }
     Boolean StopArrayParseOnFirstError() const { return (_fieldNameFormat & kViaFormat_StopArrayParseOnFirstError) ? true : false; }
+    Boolean UseUppercaseForBooleanValues() const { return (_fieldNameFormat & kViaFormat_UseUppercaseForBooleanValues) ? true : false; }
 };
 
 struct ViaFormatOptions
@@ -79,7 +82,6 @@ struct ViaFormatOptions
     Int32           _fieldWidth;
     Int32           _precision;
     ViaFormatChars  _fmt;
-    Boolean         _uppercaseForBooleans;
 };
 
 //------------------------------------------------------------
@@ -189,7 +191,6 @@ class TDViaFormatter
     void    SetFieldWidth(Int32 width) { _options._fieldWidth = width; }
     void    SetPrecision(Int32 precision) { _options._precision = precision; }
     void    SetExponentialNotation(Boolean on) { _options._exponentialNotation = on; }
-    void    SetUppercaseForBooleans(Boolean uppercaseForBooleans) { _options._uppercaseForBooleans = uppercaseForBooleans; }
     // Data formatters
     void    FormatData(TypeRef type, void* pData);
     void    FormatArrayData(TypeRef arrayType, TypedArrayCoreRef pArray, Int32 rank);
@@ -211,13 +212,14 @@ class TDViaFormatter
     static ViaFormatChars formatJSONLVExt;
     static ViaFormatChars formatJSONEggShell;
     static ViaFormatChars formatC;
+    static ViaFormatChars formatLabVIEW;
 
     Boolean IsFormatJSONEggShell(ViaFormatChars format) const {
         return format.GenerateJSON() && ((format._fieldNameFormat & formatJSONEggShell._fieldNameFormat) == formatJSONEggShell._fieldNameFormat);
     }
 };
 
-void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr, Boolean uppercaseForBooleans);
+void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr, SubString* formatName);
 #endif
 
 #define tsBoolean         "Boolean"

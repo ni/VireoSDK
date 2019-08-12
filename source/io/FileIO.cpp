@@ -372,7 +372,7 @@ VIREO_FUNCTION_SIGNATUREV(Printf, PrintfParamBlock)
     SubString   format = _Param(format)->MakeSubStringAlias();
     StaticTypeAndData *arguments =  _ParamImmediate(argument1);
 
-    Format(&format, count, arguments, tempString.Value, nullptr, false);
+    Format(&format, count, arguments, tempString.Value, nullptr, nullptr);
     gPlatform.IO.Print(tempString.Value->Length(), (const char*)tempString.Value->Begin());
     return _NextInstruction();
 }
