@@ -1912,7 +1912,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
     }
     SubString labviewFormat(kLabVIEWEncoding);
     format.AliasAssign(tempformat.Begin(), tempformat.End());
-    Format(&format, 1, &Value, output, nullptr, nullptr);
+    Format(&format, 1, &Value, output, nullptr);
     output->AppendSubString(&remainingFormat);
 }
 

@@ -219,7 +219,7 @@ class TDViaFormatter
     }
 };
 
-void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr, SubString* formatName);
+void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr, SubString* formatName = nullptr);
 #endif
 
 #define tsBoolean         "Boolean"

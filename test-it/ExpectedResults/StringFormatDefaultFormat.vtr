@@ -1,3 +1,6 @@
-TestResult_CorrectOutputString : true
+TestResult_CorrectOutputStringForDefault : true
   Output string : TRUE 2019 FALSE 8.000000
-TestResult_NoError : true
+TestResult_NoErrorForDefault : true
+TestResult_CorrectOutputStringWithFormat : true
+  Output string : TRUE 2019 FALSE 8.000000
+TestResult_NoErrorWithFormat : true
