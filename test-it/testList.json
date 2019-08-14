@@ -316,6 +316,7 @@
                 "StringFormatExtra.via",
                 "StringFormatBase-X.via",
                 "StringFormatDecimal.via",
+                "StringFormatDefaultFormat.via",
                 "StringFormatFloat.via",
                 "StringFormatTime.via",
                 "StringFormatTimeMisc.via",

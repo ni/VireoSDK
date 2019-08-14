@@ -223,38 +223,42 @@ void DefaultFormatCode(Int32 count, StaticTypeAndData arguments[], TempStackCStr
             return;
         }
         switch (argType->BitEncoding()) {
-        case kEncoding_UInt: {
-            buffer->AppendCStr("%u");
-        }
-        break;
-            case kEncoding_Enum: {
-                buffer->AppendCStr("%s");
-        }
-        break;
-        case kEncoding_S2CInt:
-        case kEncoding_DimInt: {
-            buffer->AppendCStr("%d");
-        }
-        break;
-        case kEncoding_IEEE754Binary: {
-            buffer->AppendCStr("%f");
-        }
-        break;
-        case kEncoding_Array: {
-            TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(arguments[i]._pData);
-            TypeRef elementType = (*pArray)->ElementType();
-            EncodingEnum elementEncoding = elementType->BitEncoding();
-            if (argType->Rank() == 1 && (elementEncoding == kEncoding_Ascii || elementEncoding == kEncoding_Unicode)) {
-                buffer->AppendCStr("%s");
-            } else {
-                // doesn't support yet
-                buffer->AppendCStr("%Z");
+            case kEncoding_UInt: {
+                buffer->AppendCStr("%u");
             }
-        }
-        break;
-        default:
-            buffer->AppendCStr("%Z");
-        break;
+            break;
+            case kEncoding_Enum: {
+                    buffer->AppendCStr("%s");
+            }
+            break;
+            case kEncoding_S2CInt:
+            case kEncoding_DimInt: {
+                buffer->AppendCStr("%d");
+            }
+            break;
+            case kEncoding_IEEE754Binary: {
+                buffer->AppendCStr("%f");
+            }
+            break;
+            case kEncoding_Array: {
+                TypedArrayCoreRef* pArray = (TypedArrayCoreRef*)(arguments[i]._pData);
+                TypeRef elementType = (*pArray)->ElementType();
+                EncodingEnum elementEncoding = elementType->BitEncoding();
+                if (argType->Rank() == 1 && (elementEncoding == kEncoding_Ascii || elementEncoding == kEncoding_Unicode)) {
+                    buffer->AppendCStr("%s");
+                } else {
+                    // doesn't support yet
+                    buffer->AppendCStr("%Z");
+                }
+            }
+            break;
+            case kEncoding_Boolean: {
+                buffer->AppendCStr("%s");
+            }
+            break;
+            default:
+                buffer->AppendCStr("%Z");
+            break;
         }
     }
 }
@@ -418,7 +422,7 @@ static Int32 GetTimeZoneOffsetFromTimeAndLocale(StaticTypeAndData *arg, const Fo
 /**
  * main format function, all the %format functionality is done through this one
  * */
-void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr)
+void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], StringRef buffer, ErrorCluster *errPtr, SubString* formatName)
 {
     IntIndex argumentIndex = 0;
     Boolean lastArgumentSpecified = false;
@@ -798,7 +802,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             break;
                         }
                         STACK_VAR(String, tempString);
-                        TDViaFormatter formatter(tempString.Value, false);
+                        TDViaFormatter formatter(tempString.Value, false, 0, formatName);
                         formatter.FormatData(arguments[argumentIndex]._paramType, arguments[argumentIndex]._pData);
 
                         Int32 lengthTotal = -1;
@@ -1906,6 +1910,7 @@ void defaultFormatValue(StringRef output,  StringRef formatString, StaticTypeAnd
             }
         }
     }
+    SubString labviewFormat(kLabVIEWEncoding);
     format.AliasAssign(tempformat.Begin(), tempformat.End());
     Format(&format, 1, &Value, output, nullptr);
     output->AppendSubString(&remainingFormat);
@@ -1946,8 +1951,10 @@ VIREO_FUNCTION_SIGNATUREV(StringFormat, StringFormatParamBlock) {
     }
     StringRef buffer = _Param(StringOut);
     ErrorCluster *errPtr = _ParamPointer(ErrClust);
-    if (!errPtr || !errPtr->status)
-        Format(&format, count, arguments, buffer, errPtr);
+    if (!errPtr || !errPtr->status) {
+        SubString labviewFormat(kLabVIEWEncoding);
+        Format(&format, count, arguments, buffer, errPtr, &labviewFormat);
+    }
     return _NextInstruction();
 }
 

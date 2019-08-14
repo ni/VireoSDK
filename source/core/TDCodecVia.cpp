@@ -2057,10 +2057,16 @@ ViaFormatChars TDViaFormatter::formatJSONLVExt = { kJSONEncoding, '[', ']', '{',
 ViaFormatChars TDViaFormatter::formatJSONEggShell = { kJSONEncoding, '[', ']', '{', '}', ',', '\"',
     ViaFormat(kViaFormat_QuotedFieldNames | kViaFormat_StopArrayParseOnFirstError | kViaFormat_UseLongNameInfNaN | kViaFormat_QuoteInfNanNames) };
 ViaFormatChars TDViaFormatter::formatC =         { kCEncoding,    '{', '}', '{', '}', ',', '\"', kViaFormat_NoFieldNames};
+ViaFormatChars TDViaFormatter::formatLabVIEW = { kLabVIEWEncoding, '(', ')', '(', ')', ' ', '\'',
+    ViaFormat(kViaFormat_NoFieldNames | kViaFormat_UseUppercaseForBooleanValues) };
 
 //------------------------------------------------------------
-TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fieldWidth,
-    SubString* format, JSONEncodingEnum encoding)
+TDViaFormatter::TDViaFormatter(
+    StringRef str,
+    Boolean quoteOnTopString,
+    Int32 fieldWidth,
+    SubString* format,
+    JSONEncodingEnum encoding)
 {
     // Might move all options to format string.
     _string = str;
@@ -2074,6 +2080,9 @@ TDViaFormatter::TDViaFormatter(StringRef str, Boolean quoteOnTopString, Int32 fi
     if (!format || format->ComparePrefixCStr(formatVIA._name)) {
         _options._bEscapeStrings = false;
         _options._fmt = formatVIA;
+    } else if (format->ComparePrefixCStr(formatLabVIEW._name)) {
+        _options._bEscapeStrings = false;
+        _options._fmt = formatLabVIEW;
     } else if (format->ComparePrefixCStr(formatJSON._name)) {
         _options._precision = 17;
         _options._bEscapeStrings = true;
@@ -2458,7 +2467,10 @@ void TDViaFormatter::FormatData(TypeRef type, void *pData)
             FormatPointerData(type, pData);
             break;
         case kEncoding_Boolean:
-            _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
+            if (Fmt().UseUppercaseForBooleanValues())
+                _string->AppendCStr((*(AQBlock1*)pData) ? "TRUE" : "FALSE");
+            else
+                _string->AppendCStr((*(AQBlock1*) pData) ? "true" : "false");
             break;
         case kEncoding_Generic:
             if (Fmt().UseFieldNames())
