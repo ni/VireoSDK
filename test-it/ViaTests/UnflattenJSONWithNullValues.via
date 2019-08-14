@@ -1,0 +1,208 @@
+define (MyVI dv(.VirtualInstrument (
+Locals: c(
+    // scalars
+    e(dv(Double 42) test1)
+    e(dv(Boolean true) test2)
+    e(dv(String "Iñtërnâtiônàlizætiøn☃💩") test3)
+
+    // array of scalars
+    e(dv(a(Double *) (42 43 44)) test4)
+    e(dv(a(Double *) (42 43 44)) test5)
+
+    // cluster of scalars
+    e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test6)
+    e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test7)
+    e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test8)
+
+    // cluster of cluster
+    e(dv(c(    e(c(e(Double innerone)) outerone)    e(Double two)    e(Double three)    ) ( (33) 44 55) ) test9)
+    e(dv(c(    e(c(e(Double innerone)) outerone)    e(Double two)    e(Double three)    ) ( (33) 44 55) ) test10)
+    e(dv(c(    e(c(e(Double innerone)) outerone)    e(Double two)    e(Double three)    ) ( (33) 44 55) ) test11)
+
+    // cluster of array of scalars
+    e(dv(c(    e(a(Double *) one)    e(Double two)    e(Double three)    ) ( (33 34 35 36 37 38) 44 55) ) test12)
+    e(dv(c(    e(a(Double *) one)    e(Double two)    e(Double three)    ) ( (33 34 35 36 37 38) 44 55) ) test13)
+    e(dv(c(    e(a(Double *) one)    e(Double two)    e(Double three)    ) ( (33 34 35 36 37 38) 44 55) ) test14)
+
+    // array of cluster of scalars
+    e(dv(a(c(    e(Double one)    e(Double two)    e(Double three)) *) ((33 44 55) (66 77 88)) ) test15)
+    e(dv(a(c(    e(Double one)    e(Double two)    e(Double three)) *) ((33 44 55) (66 77 88)) ) test16)
+    e(dv(a(c(    e(Double one)    e(Double two)    e(Double three)) *) ((33 44 55) (66 77 88)) ) test17)
+
+    // empty values
+    e(dv(a(c(    e(Double one)    e(Double two)    e(Double three)) *) ((33 44 55) (66 77 88)) ) test18)
+    e(dv(a(c(    e(Double one)    e(Double two)    e(Double three)) *) ((33 44 55) (66 77 88)) ) test19)
+    e(dv(a(c(    e(Double one)    e(Double two)    e(Double three)) *) ((33 44 55) (66 77 88)) ) test20)
+    e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test21)
+    e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) test22)
+
+    // cluster of various scalars
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test23)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test24)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test25)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test26)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test27)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test28)
+    e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test29)
+
+    // cluster of cluster with path
+    e(dv(c(    e(Double innerone)    ) (33)) test30)
+    e(dv(c(    e(Double innerone)    ) (33)) test31)
+
+    // helpers
+    // Seems like UnflattenFromJSON is not handling unwired paths
+    e(a(.String *) path)
+    e(dv(a(.String *) ("outerone") ) outeronepath)
+    e(dv(Boolean true) lvExtensions)
+    e(dv(Boolean true) defaultNullElements)
+    e(dv(Boolean false) strictValidation)
+    e(ErrorCluster noError)
+    e(ErrorCluster error)
+    // Copy(noError error)
+)
+
+clump(
+    // scalars should actually be errors because the editor does not allow them
+
+    UnflattenFromJSON(@' null ' test1 path lvExtensions defaultNullElements strictValidation error)
+    Printf("1: %z %z\n" test1 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' null ' test2 path lvExtensions defaultNullElements strictValidation error)
+    Printf("2: %z %z\n" test2 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' null ' test3 path lvExtensions defaultNullElements strictValidation error)
+    Printf("3: %z %z\n" test3 error)
+    Copy(noError error)
+
+    // Array of scalars
+
+    UnflattenFromJSON(@' [7, 8, 9, 10, null] ' test4 path lvExtensions defaultNullElements strictValidation error)
+    Printf("4: %z %z\n" test4 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' [null, null, null, null, null] ' test5 path lvExtensions defaultNullElements strictValidation error)
+    Printf("5: %z %z\n" test5 error)
+    Copy(noError error)
+
+    // cluster of scalars
+
+    UnflattenFromJSON(@' {"one": 11, "two": 12, "three": 13} ' test6 path lvExtensions defaultNullElements strictValidation error)
+    Printf("6: %z %z\n" test6 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": null, "two": 12, "three": 13} ' test7 path lvExtensions defaultNullElements strictValidation error)
+    Printf("7: %z %z\n" test7 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": null, "three": null} ' test8 path lvExtensions defaultNullElements strictValidation error)
+    Printf("8: %z %z\n" test8 error)
+    Copy(noError error)
+
+    // cluster of cluster
+
+    UnflattenFromJSON(@' {"outerone": {"innerone": 11}, "two": 12, "three": 13} ' test9 path lvExtensions defaultNullElements strictValidation error)
+    Printf("9: %z %z\n" test9 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"outerone": null, "two": 12, "three": 13} ' test10 path lvExtensions defaultNullElements strictValidation error)
+    Printf("10: %z %z\n" test10 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"outerone": null, "two": 12, "three": null} ' test11 path lvExtensions defaultNullElements strictValidation error)
+    Printf("11: %z %z\n" test11 error)
+    Copy(noError error)
+
+    // cluster of array of scalars
+
+    UnflattenFromJSON(@' {"one": [11, 111, 1111], "two": 12, "three": 13} ' test12 path lvExtensions defaultNullElements strictValidation error)
+    Printf("12: %z %z\n" test12 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": [11, null, 1111], "two": 12, "three": 13} ' test13 path lvExtensions defaultNullElements strictValidation error)
+    Printf("13: %z %z\n" test13 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": null, "two": 12, "three": 13} ' test14 path lvExtensions defaultNullElements strictValidation error)
+    Printf("14: %z %z\n" test14 error)
+    Copy(noError error)
+
+    // array of cluster of scalars
+
+    UnflattenFromJSON(@' [{"one": 11, "two": 12, "three": 13}] ' test15 path lvExtensions defaultNullElements strictValidation error)
+    Printf("15: %z %z\n" test15 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' [null, {"one": 11, "two": 12, "three": 13}, null] ' test16 path lvExtensions defaultNullElements strictValidation error)
+    Printf("16: %z %z\n" test16 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' [null, {"one": 11, "two": null, "three": 13}, null] ' test17 path lvExtensions defaultNullElements strictValidation error)
+    Printf("17: %z %z\n" test17 error)
+    Copy(noError error)
+
+    // empty values
+
+    UnflattenFromJSON(@' [null] ' test18 path lvExtensions defaultNullElements strictValidation error)
+    Printf("18: %z %z\n" test18 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' [] ' test19 path lvExtensions defaultNullElements strictValidation error)
+    Printf("19: %z %z\n" test19 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' null ' test20 path lvExtensions defaultNullElements strictValidation error)
+    Printf("20: %z %z\n" test20 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {} ' test21 path lvExtensions defaultNullElements strictValidation error)
+    Printf("21: %z %z\n" test21 error) // expected to error and output default
+    Copy(noError error)
+
+    UnflattenFromJSON(@' null ' test22 path lvExtensions defaultNullElements strictValidation error)
+    Printf("22: %z %z\n" test22 error)
+    Copy(noError error)
+
+    // cluster of various scalars
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": 1111, "four": false, "five": "world"} ' test23 path lvExtensions defaultNullElements strictValidation error)
+    Printf("23: %z %z\n" test23 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": null, "two": 111, "three": 1111, "four": false, "five": "world"} ' test24 path lvExtensions defaultNullElements strictValidation error)
+    Printf("24: %z %z\n" test24 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": null, "three": 1111, "four": false, "five": "world"} ' test25 path lvExtensions defaultNullElements strictValidation error)
+    Printf("25: %z %z\n" test25 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": null, "four": false, "five": "world"} ' test26 path lvExtensions defaultNullElements strictValidation error)
+    Printf("26: %z %z\n" test26 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": 1111, "four": null, "five": "world"} ' test27 path lvExtensions defaultNullElements strictValidation error)
+    Printf("27: %z %z\n" test27 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": 11, "two": 111, "three": 1111, "four": false, "five": null} ' test28 path lvExtensions defaultNullElements strictValidation error)
+    Printf("28: %z %z\n" test28 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"one": null, "two": null, "three": null, "four": null, "five": null} ' test29 path lvExtensions defaultNullElements strictValidation error)
+    Printf("29: %z %z\n" test29 error)
+    Copy(noError error)
+
+    // cluster of cluster with path
+
+    UnflattenFromJSON(@' {"outerone": {"innerone": null}, "two": 12, "three": 13} ' test30 outeronepath lvExtensions defaultNullElements strictValidation error)
+    Printf("30: %z %z\n" test30 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"outerone": null, "two": 12, "three": 13} ' test31 outeronepath lvExtensions defaultNullElements strictValidation error)
+    Printf("31: %z %z\n" test31 error)
+    Copy(noError error)
+)
+)))
+enqueue(MyVI)
