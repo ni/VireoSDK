@@ -45,9 +45,14 @@ Locals: c(
     e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test28)
     e(dv(c(    e(Double one)    e(Int32 two)    e(Int64 three)    e(Boolean four)    e(String five)) (33 44 55 true "hello") ) test29)
 
+    // cluster of cluster with path
+    e(dv(c(    e(Double innerone)    ) (33)) test30)
+    e(dv(c(    e(Double innerone)    ) (33)) test31)
+
     // helpers
     // Seems like UnflattenFromJSON is not handling unwired paths
     e(a(.String *) path)
+    e(dv(a(.String *) ("outerone") ) outeronepath)
     e(dv(Boolean true) lvExtensions)
     e(dv(Boolean true) defaultNullElements)
     e(dv(Boolean false) strictValidation)
@@ -187,6 +192,16 @@ clump(
 
     UnflattenFromJSON(@' {"one": null, "two": null, "three": null, "four": null, "five": null} ' test29 path lvExtensions defaultNullElements strictValidation error)
     Printf("29: %z %z\n" test29 error)
+    Copy(noError error)
+
+    // cluster of cluster with path
+
+    UnflattenFromJSON(@' {"outerone": {"innerone": null}, "two": 12, "three": 13} ' test30 outeronepath lvExtensions defaultNullElements strictValidation error)
+    Printf("30: %z %z\n" test30 error)
+    Copy(noError error)
+
+    UnflattenFromJSON(@' {"outerone": null, "two": 12, "three": 13} ' test31 outeronepath lvExtensions defaultNullElements strictValidation error)
+    Printf("31: %z %z\n" test31 error)
     Copy(noError error)
 )
 )))
