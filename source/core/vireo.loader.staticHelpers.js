@@ -11,7 +11,6 @@ const encodeIdentifier = function (str) {
         codePoint = str.charCodeAt(0),
         ch = str.charAt(0);
 
-    // First character must be encoded if is not a letter [A-Za-z] or a non-ascii character
     if (!isCharacterAlphabetOrNonAscii(codePoint)) {
         encoded += '%' + codePoint.toString(16).toUpperCase();
     } else {
