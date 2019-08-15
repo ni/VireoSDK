@@ -1,3 +1,7 @@
+const isCharacterAlphabetOrNonAscii = function (codePoint) {
+    return ((codePoint >= 0x41 && codePoint <= 0x5A) || (codePoint >= 0x61 && codePoint <= 0x7A) || (codePoint > 0x7F));
+};
+
 const encodeIdentifier = function (str) {
     if (typeof str !== 'string' || str === '') {
         throw new Error('Identifier must be a non-empty string. Found: ' + str);
@@ -7,8 +11,7 @@ const encodeIdentifier = function (str) {
         codePoint = str.charCodeAt(0),
         ch = str.charAt(0);
 
-    // First character must be encoded if is not a letter [A-Za-z]
-    if (!(codePoint >= 0x41 && codePoint <= 0x5A) && !(codePoint >= 0x61 && codePoint <= 0x7A)) {
+    if (!isCharacterAlphabetOrNonAscii(codePoint)) {
         encoded += '%' + codePoint.toString(16).toUpperCase();
     } else {
         encoded += ch;

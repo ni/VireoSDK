@@ -45,6 +45,16 @@ describe('Vireo', function () {
             expect(encoded).toBe('Iñtërnâtiônàlizætiøn☃💩');
         });
 
+        it('does not encode CJK first character', function () {
+            var encoded = staticHelpers.encodeIdentifier('アプリケーション');
+            expect(encoded).toBe('アプリケーション');
+        });
+
+        it('does not encode SMP unicode plane first character', function () {
+            var encoded = staticHelpers.encodeIdentifier('💩💩Iñtërnâtiônàlizætiøn☃💩💩');
+            expect(encoded).toBe('💩💩Iñtërnâtiônàlizætiøn☃💩💩');
+        });
+
         it('url-encodes all other characters', function () {
             var encoded = staticHelpers.encodeIdentifier(' !"#%&\'(),./:;<=>?@[\\]^`{|}~');
             expect(encoded).toBe('%20%21%22%23%25%26%27%28%29%2C%2E%2F%3A%3B%3C%3D%3E%3F%40%5B%5C%5D%5E%60%7B%7C%7D%7E');
