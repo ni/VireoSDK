@@ -452,65 +452,56 @@ VIREO_FUNCTION_SIGNATURE1(SetOccurrence, OccurrenceRef)
 enum QueueObserverInfoSentinel { kQueueEnqueueObserverInfo = -1, kQueueDequeueObserverInfo = 1 };
 
 //------------------------------------------------------------
-IntIndex QueueCore::RemoveIndex() const
-{
-    if (_count <= _insert) {
-        return _insert - _count;
-    } else {
-        return _elements->Length() - (_count - _insert);
-    }
-}
 Boolean QueueCore::HasRoom(IntIndex additionalCount) const {
     IntIndex length = _elements->Length();
-    IntIndex space = length - _count;
 
-    if (_maxSize > 0 && length + additionalCount <= _maxSize)
-        return true;
-    return (space >= additionalCount);
+    return (_maxSize > 0 && length + additionalCount <= _maxSize);
 }
-//------------------------------------------------------------
-Boolean QueueCore::TryMakeRoom(IntIndex additionalCount, IntIndex insert)
-{
-    IntIndex length = _elements->Length();
-    IntIndex space = length - _count;
 
-    if (space >= additionalCount) {
-        // There is enough room, wrap the insert location as needed.
-        if (insert == RemoveIndex() && _count > 0) {
-            // Insert at opposite end (front), shift data to make room
-            AQBlock1 *pData = _elements->BeginAt(insert);
-            TypeRef elemType = _elements->ElementType();
-            elemType->CopyData(pData, (AQBlock1*)pData + additionalCount * elemType->TopAQSize(), _count);
-        } else if (_insert >= length) {
-            _insert = 0;
-        }
-        return true;
-    } else {
-        // Not enough room, grow (if possible)
-        if (_maxSize > 0 && length + additionalCount > _maxSize)
-            return false;
-        NIError err = _elements->Insert1D(insert, additionalCount);
-        return (err == kNIError_Success);
-    }
-}
 //------------------------------------------------------------
 Boolean QueueCore::Enqueue(void* pData)
 {
-    /* ???
-     This needs to be refactored.  If the Queue is not fixed/bounded, the array will continue to grow
-     in size to the maximum count of items ever enqueued, even if most or all of the items are dequeued
-     as they are queued so the conceptual size of the queue is always small.
-     (This was probably the idea behind the unimplemented Compress() method in the header.)  -CS */
+    VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
 
-    if (!TryMakeRoom(1, _insert))
-        return false;
+    if (_back == -1) {
+        VIREO_ASSERT(_front == -1 && _count == 0);
+        if (_elements->Length() == 0) {  // _maxSize must be at least 1 or negative, so grow
+            NIError err = _elements->Insert1D(0, 1);
+            if (err != kNIError_Success) {
+                return false;
+            }
+        }
+        _back = _front = 0;
+    } else {
+        IntIndex insert = (_back + 1) % _elements->Length();
+        if (insert != _front) {
+            _back = insert;
+        } else {  // Array full
+            VIREO_ASSERT(_count == _elements->Length());
+            if (_maxSize > 0 && _count == _maxSize)
+                return false;
+            if (insert == 0) {
+                // Just an optimization to grow the underlying array at the end than shifting all the elements by 1
+                insert = _elements->Length();
+            }
+            NIError err = _elements->Insert1D(insert, 1);
+            if (err != kNIError_Success) {
+                return false;
+            }
+            _back = insert;
+            if (_front >= _back) {
+                ++_front;
+            }
+        }
+        VIREO_ASSERT(_back != _front);
+    }
 
     TypeRef eltType = _elements->ElementType();
-    void* pTarget = _elements->BeginAt(_insert);
+    void* pTarget = _elements->BeginAt(_back);
     eltType->CopyData(pData, pTarget);
-
     _count++;
-    _insert++;
+    VIREO_ASSERT(_count <= _elements->Length());
+    VIREO_ASSERT(_maxSize < 0 || _count <= _maxSize);
     ObserveStateChange(kQueueDequeueObserverInfo, false);  // wake waiting dequeues
     return true;
 }
@@ -518,56 +509,107 @@ Boolean QueueCore::Enqueue(void* pData)
 // Insert at front of queue instead of end
 Boolean QueueCore::PushFront(void* pData)
 {
-    IntIndex front = RemoveIndex();
-    if (!TryMakeRoom(1, front))
-        return false;
-    front = RemoveIndex();  // front may have changed after making room
+    VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
+    if (_front == -1) {
+        VIREO_ASSERT(_back == -1 && _count == 0);
+        if (_elements->Length() == 0) {  // _maxSize must be at least 1 or negative, so grow
+            NIError err = _elements->Insert1D(0, 1);
+            if (err != kNIError_Success) {
+                return false;
+            }
+        }
+        _back = _front = 0;
+    } else {
+        IntIndex insert;
+        if (_front == 0)
+            insert = _elements->Length() - 1;
+        else
+            insert = _front - 1;
+        if (insert != _back) {
+            _front = insert;
+        } else {  // Array full
+            VIREO_ASSERT(_count == _elements->Length());
+            if (_maxSize > 0 && _count == _maxSize)
+                return false;
+            IntIndex ActualInsertPos = (insert + 1) % _elements->Length();
+            NIError err = _elements->Insert1D(ActualInsertPos, 1);
+            if (err != kNIError_Success) {
+                return false;
+            }
+
+            if (_front == _back) {
+                _front = insert;
+            } else {
+                _front = ActualInsertPos;
+            }
+            if (_back >= _front) {
+                ++_back;
+            }
+        }
+        VIREO_ASSERT(_back != _front);
+    }
 
     TypeRef eltType = _elements->ElementType();
-    void* pTarget = _elements->BeginAt(front);
+    void* pTarget = _elements->BeginAt(_front);
     eltType->CopyData(pData, pTarget);
     _count++;
-    _insert++;
+    VIREO_ASSERT(_count <= _elements->Length());
+    VIREO_ASSERT(_maxSize < 0 || _count <= _maxSize);
     ObserveStateChange(kQueueDequeueObserverInfo, false);  // wake waiting dequeues
     return true;
 }
 //------------------------------------------------------------
 Boolean QueueCore::Dequeue(void* pData, bool skipObserver)
 {
+    VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
     TypeRef eltType = _elements->ElementType();
-    if (_count < 1) {
+    if (_front == -1) {
+        VIREO_ASSERT(_back == -1 && _count == 0);
         if (pData)
             eltType->InitData(pData);
         return false;
-    } else {
-        void* pSource = _elements->BeginAt(RemoveIndex());
-        if (pData)
-            eltType->CopyData(pSource, pData);
-        _count--;
-        if (!skipObserver)
-            ObserveStateChange(kQueueEnqueueObserverInfo, false);
-        return true;
     }
-}
-//------------------------------------------------------------
-Boolean QueueCore::Peek(void* pData, IntIndex skipCount) const
-{
-    TypeRef eltType = _elements->ElementType();
-    if (_count < skipCount+1) {
-        if (pData)
-            eltType->InitData(pData);
-        return false;
+    void* pSource = _elements->BeginAt(_front);
+    if (pData)
+        eltType->CopyData(pSource, pData);
+    if (_front == _back) {
+        _front = _back = -1;
+        VIREO_ASSERT(_count == 1);
     } else {
-        IntIndex removeIndex = RemoveIndex() + skipCount;
-        if (removeIndex >= _elements->Length())
-            removeIndex -= _elements->Length();
-        void* pSource = _elements->BeginAt(removeIndex);
-        if (pData)
-            eltType->CopyData(pSource, pData);
-        return true;
+        _front = (_front + 1) % _elements->Length();
     }
+    _count--;
+    VIREO_ASSERT(_count <= _elements->Length());
+    VIREO_ASSERT(_maxSize < 0 || _count <= _maxSize);
+    if (!skipObserver)
+        ObserveStateChange(kQueueEnqueueObserverInfo, false);
+    return true;
 }
 
+//------------------------------------------------------------
+Boolean QueueCore::Peek(void* pData, IntIndex index) const
+{
+    VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
+    VIREO_ASSERT(index <= _count);
+    TypeRef eltType = _elements->ElementType();
+    if (_front == -1) {
+        VIREO_ASSERT(_back == -1);
+        VIREO_ASSERT(_count == 0);
+        if (pData)
+            eltType->InitData(pData);
+        return false;
+    }
+    if (index >= _count) {
+        if (pData)
+            eltType->InitData(pData);
+        return false;
+    }
+    IntIndex peekPos = (_front + index) % _elements->Length();
+    void* pSource = _elements->BeginAt(peekPos);
+    if (pData)
+        eltType->CopyData(pSource, pData);
+    return true;
+}
 
 class QueueRefNumManager : public RefNumManager {
  private:
@@ -728,10 +770,10 @@ VIREO_FUNCTION_SIGNATURE7(QueueRef_Obtain, TypeCommon, RefNumVal, Int32, StringR
                 if (!refnumVal) {
                     errCode = kQueueMemFull;
                 } else {
-                    if (_ParamPointer(2)) {  // maxSize wired
-                        QueueCore *pQV = queueRef->ObjBegin();
-                        pQV->SetMaxSize(maxSize);  // maxSize non-zero, checked above
-                    }
+                    QueueCore *pQV = queueRef->ObjBegin();
+                    pQV->SetMaxSize(maxSize);  // maxSize non-zero, checked above
+                    pQV->Initialize();
+
                     if (createdPtr)
                         *createdPtr = true;
                     if (name) {
@@ -1094,41 +1136,6 @@ VIREO_FUNCTION_SIGNATURE2(IsNotAQueueRefnum, RefNumVal, Boolean)
     return _NextInstruction();
 }
 
-//
-// Legacy Vireo static Queue implementation (remove?)
-//
-
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE2(Queue_Obtain, void, StringRef)
-{
-    return _NextInstruction();
-}
-
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(Queue_EnqueueElement, QueueRef, void, Int32, Boolean)
-{
-    QueueCore *pQV = _Param(0)->ObjBegin();
-
-    // First time or retry either way, attempt to enqueue value
-    Boolean done = pQV->Enqueue(_ParamPointer(1));
-    _Param(3) = !done;
-
-    Int32 timeOut = _ParamPointer(2) ? _Param(2) : -1;
-    return HandleQueueReschedule(kQueueEnqueueObserverInfo,  done, pQV, timeOut, _this, _NextInstruction());
-}
-//------------------------------------------------------------
-VIREO_FUNCTION_SIGNATURE4(Queue_DequeueElement, QueueRef, void, Int32, Boolean)
-{
-    QueueCore *pQV = _Param(0)->ObjBegin();
-
-    // First time or retry either way, attempt to dequeue value
-    Boolean done = pQV->Dequeue(_ParamPointer(1));
-    _Param(3) = !done;
-
-    Int32 timeOut = _ParamPointer(2) ? _Param(2) : -1;
-    return HandleQueueReschedule(kQueueDequeueObserverInfo, done, pQV, timeOut, _this, _NextInstruction());
-}
-
 //------------------------------------------------------------
 DEFINE_VIREO_BEGIN(Synchronization)
 
@@ -1168,7 +1175,8 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION(SetOccurrence, "p(i(Occurrence))")
 
     // Queues
-    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)e(Int32 insert)e(Int32 count)e(Int32 maxSize))")  // Queue internval rep.
+    DEFINE_VIREO_TYPE(QueueValue, "c(e(DataPointer firstState)e(a($0 $1)elements)"
+        "e(Int32 front)e(Int32 back)e(Int32 count)e(Int32 maxSize))")  // Queue internal rep QueueCore
     DEFINE_VIREO_TYPE(Queue, "a(QueueValue)")  // ZDA
 
     // Dynamic, refnum-based queues
@@ -1194,15 +1202,6 @@ DEFINE_VIREO_BEGIN(Synchronization)
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAQueueRefnum, "p(i(QueueRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(QueueRefNum) i(QueueRefNum) o(Boolean))")
-
-
-    // Static queues
-    DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue queue)i(* element)i(Int32 timeOut)o(Boolean timedOut))")
-    DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue queue)o(* element)i(Int32 timeOut)o(Boolean timedOut))")
-
-    // DEFINE_VIREO_FUNCTION_CUSTOM(EnqueueElement, Queue_EnqueueElement, "p(io(Queue<.$1> queue)i($1 element)i(Int32 timeOut)o(Boolean timedOut))")
-    // DEFINE_VIREO_FUNCTION_CUSTOM(DequeueElement, Queue_DequeueElement, "p(io(Queue<.$1> queue)o($1 element)i(Int32 timeOut)o(Boolean timedOut))")
-
 DEFINE_VIREO_END()
 
 }  // namespace Vireo
