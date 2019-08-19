@@ -458,20 +458,40 @@ Boolean QueueCore::HasRoom(IntIndex additionalCount) const {
     return (_maxSize > 0 && length + additionalCount <= _maxSize);
 }
 
+void QueueCore::CopyDataToQueueElement(IntIndex position, void *pData)
+{
+    TypeRef eltType = _elements->ElementType();
+    VIREO_ASSERT(position < _elements->Length());
+    void* pTarget = _elements->BeginAt(position);
+    eltType->CopyData(pData, pTarget);
+    _count++;
+    VIREO_ASSERT(_count <= _elements->Length());
+    VIREO_ASSERT(_maxSize < 0 || _count <= _maxSize);
+}
+
+Boolean QueueCore::ResizeInternalBufferIfEmpty() const
+{
+    VIREO_ASSERT(_front == -1 && _back == -1 && _count == 0);
+    if (_elements->Length() == 0) {  // _maxSize must be at least 1 or negative, so grow
+        NIError err = _elements->Insert1D(0, 1);
+        if (err != kNIError_Success) {
+            return false;
+        }
+    }
+    return true;
+}
+
 //------------------------------------------------------------
+// Insert at the back of queue
 Boolean QueueCore::Enqueue(void* pData)
 {
     VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
-
     if (_back == -1) {
-        VIREO_ASSERT(_front == -1 && _count == 0);
-        if (_elements->Length() == 0) {  // _maxSize must be at least 1 or negative, so grow
-            NIError err = _elements->Insert1D(0, 1);
-            if (err != kNIError_Success) {
-                return false;
-            }
+        if (!ResizeInternalBufferIfEmpty()) {
+            return false;
         }
         _back = _front = 0;
+
     } else {
         IntIndex insert = (_back + 1) % _elements->Length();
         if (insert != _front) {
@@ -496,27 +516,19 @@ Boolean QueueCore::Enqueue(void* pData)
         VIREO_ASSERT(_back != _front);
     }
 
-    TypeRef eltType = _elements->ElementType();
-    void* pTarget = _elements->BeginAt(_back);
-    eltType->CopyData(pData, pTarget);
-    _count++;
-    VIREO_ASSERT(_count <= _elements->Length());
-    VIREO_ASSERT(_maxSize < 0 || _count <= _maxSize);
+    CopyDataToQueueElement(_back, pData);
     ObserveStateChange(kQueueDequeueObserverInfo, false);  // wake waiting dequeues
     return true;
 }
+
 //------------------------------------------------------------
 // Insert at front of queue instead of end
 Boolean QueueCore::PushFront(void* pData)
 {
     VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
     if (_front == -1) {
-        VIREO_ASSERT(_back == -1 && _count == 0);
-        if (_elements->Length() == 0) {  // _maxSize must be at least 1 or negative, so grow
-            NIError err = _elements->Insert1D(0, 1);
-            if (err != kNIError_Success) {
-                return false;
-            }
+        if (!ResizeInternalBufferIfEmpty()) {
+            return false;
         }
         _back = _front = 0;
     } else {
@@ -531,8 +543,8 @@ Boolean QueueCore::PushFront(void* pData)
             VIREO_ASSERT(_count == _elements->Length());
             if (_maxSize > 0 && _count == _maxSize)
                 return false;
-            IntIndex ActualInsertPos = (insert + 1) % _elements->Length();
-            NIError err = _elements->Insert1D(ActualInsertPos, 1);
+            IntIndex actualInsertPos = (insert + 1) % _elements->Length();
+            NIError err = _elements->Insert1D(actualInsertPos, 1);
             if (err != kNIError_Success) {
                 return false;
             }
@@ -540,7 +552,7 @@ Boolean QueueCore::PushFront(void* pData)
             if (_front == _back) {
                 _front = insert;
             } else {
-                _front = ActualInsertPos;
+                _front = actualInsertPos;
             }
             if (_back >= _front) {
                 ++_back;
@@ -548,17 +560,13 @@ Boolean QueueCore::PushFront(void* pData)
         }
         VIREO_ASSERT(_back != _front);
     }
-
-    TypeRef eltType = _elements->ElementType();
-    void* pTarget = _elements->BeginAt(_front);
-    eltType->CopyData(pData, pTarget);
-    _count++;
-    VIREO_ASSERT(_count <= _elements->Length());
-    VIREO_ASSERT(_maxSize < 0 || _count <= _maxSize);
+    CopyDataToQueueElement(_front, pData);
     ObserveStateChange(kQueueDequeueObserverInfo, false);  // wake waiting dequeues
     return true;
 }
+
 //------------------------------------------------------------
+// Remove at the front of the queue
 Boolean QueueCore::Dequeue(void* pData, bool skipObserver)
 {
     VIREO_ASSERT(_maxSize > 0 || _maxSize == -1);
@@ -569,6 +577,7 @@ Boolean QueueCore::Dequeue(void* pData, bool skipObserver)
             eltType->InitData(pData);
         return false;
     }
+    VIREO_ASSERT(_front < _elements->Length());
     void* pSource = _elements->BeginAt(_front);
     if (pData)
         eltType->CopyData(pSource, pData);
