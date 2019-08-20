@@ -49,14 +49,14 @@
                 "QueueBugObtainQueue.via",
                 "QueueBugReleaseQueue.via",
                 "QueueErrorCodes.via",
-		"QueueEnqueFrontDequeueEnqueueFront.via",
+                "Queue_EnqueueFront_Dequeue_EnqueueFront.via",
                 "QueueRefNumBasic.via",
                 "QueueRefNumCleanup.via",
                 "QueueRefNumEnqueueFront.via",
                 "QueueRefNumEnqueueFrontBug.via",
                 "QueueRefNumGetStatus.via",
                 "QueueRefNumNamed.via",
-                "QueueRefNumSimpleArrayAndCluster.via",		
+                "QueueRefNumSimpleArrayAndCluster.via",
                 "QueueInvalidRefnum.via"
             ]
         },
