@@ -1,8 +1,0 @@
- qOpen              : (^DataPointer_null () 0 0 0) 
- qDouble            : (^DataPointer_null () 0 0 0) 
- qDoubleFixed4      : (^DataPointer_null (0 0 0 0) 0 0 0) 
- qDoubleBounded4    : (^DataPointer_null () 0 0 0) 
- qDoubleVariable    : (^DataPointer_null () 0 0 0) 
- qDoubleFloatDim    : (^DataPointer_null (0 0 0 0 0 0 0 0 0 0) 0 0 0) 
- qDoubleBoolDim     : (^DataPointer_null (0) 0 0 0) 
- qDoubleStrDim      : (^DataPointer_null () 0 0 0) 

@@ -87,39 +87,46 @@ class Timer : public ObservableCore
 
 //------------------------------------------------------------
 // Based on the underlying array, queues may be growable or bounded.
+// In both cases, the array is treated as circular buffer.
+
+// _front, _back = both point to the element stored in the queue (that can be used to pop directly as-is.
+//                They have a value of -1 if the queue is empty.
+// _count = number of elements in the queue
+// _elements->Length = size of the underlying array used to store queue elements
+// _maxSize > 0 , if user supplied the size for a bounded queue
+//          = -1, growable queue, size not specified by the user.
 //
 class QueueCore : public ObservableCore
 {
  private:
     TypedArrayCoreRef _elements = nullptr;
 
-    //! Index where the next element will be stored (may be one past end if full)
-    IntIndex   _insert = 0;
+    IntIndex   _front = -1;
+    IntIndex   _back = -1;
 
     //! How many elements are in the queue
     IntIndex   _count = 0;
 
     IntIndex   _maxSize = 0;
 
-    IntIndex RemoveIndex() const;
  public:
-    Boolean Compress();
-    Boolean TryMakeRoom(IntIndex additionalCount, IntIndex insert);
     Boolean Enqueue(void* pData);
     Boolean PushFront(void* pData);
     Boolean Dequeue(void* pData, bool skipObserver = false);
-    Boolean Peek(void* pData, IntIndex skipCount = 0) const;
+    Boolean Peek(void* pData, IntIndex index = 0) const;
+    Boolean ResizeInternalBufferIfEmpty() const;
+    void CopyDataToQueueElement(IntIndex position, void *pData);
     Boolean HasRoom(IntIndex additionalCount) const;
     IntIndex Count() const { return _count; }
     TypeRef EltType() const { return _elements->ElementType(); }
     IntDim MaxSize() const {
-        if (_maxSize)  // if dynamic (refnum-based queue), return dynamic maxSize
-            return _maxSize > 0 ? _maxSize : -1;
-        IntDim maxSize = _elements->Type()->DimensionLengths()[0];
-        return maxSize > 0 ? maxSize : -1;
+        return _maxSize;
     }
     void SetMaxSize(IntDim maxSize) {
-        _maxSize = maxSize >= 0 ? maxSize : -1;  // (setting to zero would revert to static size, checked in caller QueueRef_Obtain to prevent)
+        _maxSize = maxSize >= 0 ? maxSize : -1;
+    }
+    void Initialize() {
+        _front = _back = -1;
     }
     TypeRef Type() const { return _elements->Type(); }
 };
