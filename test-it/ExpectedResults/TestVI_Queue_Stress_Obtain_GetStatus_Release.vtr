@@ -1,0 +1,8 @@
+TestResult_AllChecks_Good true
+TestResult_LoopItearion_Count true
+TestResult_Obtain_CreatedNew true
+TestResult_GetStatus_IsRefnum_ true
+TestResult_Obtain_IsRefnum true
+TestResult_GetStatus_Elements true
+TestResult_GetStatus_QueueName true
+TestResult_Error (false 0 '')

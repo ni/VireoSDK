@@ -57,7 +57,8 @@
                 "QueueRefNumGetStatus.via",
                 "QueueRefNumNamed.via",
                 "QueueRefNumSimpleArrayAndCluster.via",
-                "QueueInvalidRefnum.via"
+                "QueueInvalidRefnum.via",
+                "TestVI_Queue_Stress_Obtain_GetStatus_Release.via"
             ]
         },
         "events": {
