@@ -2596,7 +2596,9 @@ NIError TypedArrayCore::Remove1D(IntIndex position, IntIndex count)
 IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
 {
     if (encoding == kEncoding_UInt) {
-        if (value < 0) {
+        if (size == 8)
+            return value;
+        if (size != 4 && value < 0) {
             value = 0;
         } else {
             IntMax mask = ((IntMax)-1) << (size * 8);
@@ -2605,6 +2607,8 @@ IntMax ConvertNumericRange(EncodingEnum encoding, Int32 size, IntMax value)
             }
         }
     } else if (encoding == kEncoding_S2CInt) {
+        if (size == 8)
+            return value;
         IntMax mask = ((IntMax)-1) << ((size * 8) - 1);
         if (value >= 0) {
             if (value & mask) {

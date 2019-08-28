@@ -117,7 +117,7 @@ offset_past:<13>, remaining:()
 :<-2147483648> err:<(false 0 '')>
 ---test scan overflow  neg------ (  -12453)
 offset_past:<8>, remaining:()
-:<0> err:<(false 0 '')>
+:<4294967295> err:<(false 0 '')>
 ---test scan special------ (123.5)
 offset_past:<5>, remaining:()
 :<123.500000> err:<(false 0 '')>

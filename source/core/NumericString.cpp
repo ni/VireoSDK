@@ -1268,7 +1268,10 @@ IntMax ScanIntBaseValues(char formatChar, char* beginPointer, char** endPointer)
                 intValue = strtoull(beginPointer, endPointer, 16);
             }
             break;
-        case 'd':
+        case 'd': {
+                intValue = strtoll(beginPointer, endPointer, 10);
+            }
+            break;
         case 'u': {
                 intValue = strtoull(beginPointer, endPointer, 10);
             }
@@ -2003,6 +2006,8 @@ static void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCou
         } else if (argType->IsNumeric()) {
             if (argType->IsFloat()) {
                 format->AppendCStr("%f ");
+            } else if (argType->BitEncoding() == kEncoding_UInt) {
+                format->AppendCStr("%u ");
             } else {
                 format->AppendCStr("%d ");
             }
