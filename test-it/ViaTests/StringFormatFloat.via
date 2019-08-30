@@ -33,6 +33,7 @@ define(HelloWorld dv(.VirtualInstrument (
         e(dv(.String "%3f\n") format3)
         e(dv(.String "%.1f\n") format4)
         e(dv(.String "%0.0f\n") format5)
+        e(dv(.String "%u\n") format6)
     )
     clump (1
         Println("Testing .Int8")
@@ -216,6 +217,8 @@ define(HelloWorld dv(.VirtualInstrument (
         Printf(output)
         StringFormat(output format5 * vSingleN)
         Printf(output)
+        StringFormat(output format6 * vSingleN)
+        Printf(output)
 
         Println("Testing .Single (Decimal Cutoff)")
 
@@ -254,6 +257,8 @@ define(HelloWorld dv(.VirtualInstrument (
         StringFormat(output format4 * vDoubleN)
         Printf(output)
         StringFormat(output format5 * vDoubleN)
+        Printf(output)
+        StringFormat(output format6 * vDoubleN)
         Printf(output)
 
         Println("Testing .Double (Decimal Cutoff)")
