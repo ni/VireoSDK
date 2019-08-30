@@ -82,6 +82,7 @@ Testing .Single (Negative)
 -123.456787
 -123.5
 -123
+0
 Testing .Single (Decimal Cutoff)
 203.685471
 203.7
@@ -100,6 +101,7 @@ Testing .Double (Negative)
 -12345.678900
 -12345.7
 -12346
+0
 Testing .Double (Decimal Cutoff)
 922337203.685478
 922337203.7

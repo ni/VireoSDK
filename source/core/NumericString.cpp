@@ -761,6 +761,8 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
                             // When reading value from the double and format the value as integer, the max size is 4
                             if (fOptions.FormatChar == 'u') {
                                 intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
+                                if (intValue < 0)
+                                    intValue = 0;
                                 intValue = ConvertNumericRange(kEncoding_UInt, 8, intValue);
                             } else {
                                 intValue = ReadIntFromMemory(argType, arguments[argumentIndex]._pData);
@@ -1268,7 +1270,10 @@ IntMax ScanIntBaseValues(char formatChar, char* beginPointer, char** endPointer)
                 intValue = strtoull(beginPointer, endPointer, 16);
             }
             break;
-        case 'd':
+        case 'd': {
+                intValue = strtoll(beginPointer, endPointer, 10);
+            }
+            break;
         case 'u': {
                 intValue = strtoull(beginPointer, endPointer, 10);
             }
@@ -2003,6 +2008,8 @@ static void MakeFormatString(StringRef format, ErrorCluster *error, Int32 argCou
         } else if (argType->IsNumeric()) {
             if (argType->IsFloat()) {
                 format->AppendCStr("%f ");
+            } else if (argType->BitEncoding() == kEncoding_UInt) {
+                format->AppendCStr("%u ");
             } else {
                 format->AppendCStr("%d ");
             }
