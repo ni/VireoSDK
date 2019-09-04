@@ -634,6 +634,8 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _pointerType    = kPTNotAPointer;
     _elementUsageType = kUsageTypeSimple;
     _opaqueReference = false;
+    _isDataItem     = false;
+    _updateNeeded   = false;
 }
 //------------------------------------------------------------
 void TypeCommon::ZeroOutTop(void* pData) const
@@ -1226,20 +1228,21 @@ TypeRef WrappedType::GetSubElementAddressFromPath(SubString* name, void *start, 
 //------------------------------------------------------------
 // ElementType
 //------------------------------------------------------------
-ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
+ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset, bool isDataItem)
 {
-    ElementType* type = TADM_NEW_PLACEMENT_DYNAMIC(ElementType, name)(typeManager, name, wrappedType, usageType, offset);
-
+    ElementType* type = TADM_NEW_PLACEMENT_DYNAMIC(ElementType, name)(typeManager, name, wrappedType, usageType, offset, isDataItem);
+    if (isDataItem)
+        return type;
     SubString binaryName((AQBlock1*)&type->_topAQSize, type->_elementName.End());
-
     return (ElementType*) typeManager->ResolveToUniqueInstance(type,  &binaryName);
 }
 //------------------------------------------------------------
-ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset)
+ElementType::ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset, bool isDataItem)
 : WrappedType(typeManager, wrappedType), _elementName(name->Length()) {
     _elementName.Assign(name->Begin(), name->Length());
     _elementUsageType = (UInt16)usageType;
     _offset = offset;
+    _isDataItem = isDataItem;
 }
 //------------------------------------------------------------
 // NamedType

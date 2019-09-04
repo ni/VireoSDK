@@ -265,6 +265,14 @@ var assignEggShell;
             return dispatchFunction(typeVisitor, valueRef, data);
         };
 
+        Module.eggShell.testAndResetNeedsUpdateFlag = publicAPI.eggShell.testAndResetNeedsUpdateFlag = function (valueRef) {
+            var needsUpdate = Module._EggShell_TestAndResetNeedsUpdateFlag(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+            return needsUpdate !== 0;
+        };
+        Module.eggShell.testNeedsUpdateFlagWithoutReset = function (valueRef) {
+            var needsUpdate = Module._EggShell_TestNeedsUpdateFlagWithoutReset(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
+            return needsUpdate !== 0;
+        };
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
             var stack = Module.stackSave();
             var resultPointer = Module.stackAlloc(DOUBLE_SIZE);

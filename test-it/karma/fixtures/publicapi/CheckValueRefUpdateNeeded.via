@@ -1,0 +1,33 @@
+
+define (MyVI dv(.VirtualInstrument (
+    Params: c(
+        o(.String output)
+    )
+    Locals: c(
+        de(.Double myDouble)
+        e(.Double myOtherDouble)
+    )
+        clump(1
+	Copy(123.0 myDouble)  // automatically marks value update-needed
+	Copy(456.0 myOtherDouble)  // does NOT automatically marks value update-needed; not a dataItem
+	Copy("abc" output)  // automatically marks value update-needed
+        MySubVI()
+    )
+)))
+
+
+define(MySubVI dv(.VirtualInstrument (
+    Params: c(
+        o(.Double myOutput)
+    )
+    Locals: c(
+       de(dv(.Int32 42) myInteger)
+    )
+    clump(1
+        Copy(321.0 myOutput)
+        Copy(789 myInteger)
+    )
+)))
+
+enqueue (MyVI)
+

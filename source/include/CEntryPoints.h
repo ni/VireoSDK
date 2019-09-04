@@ -46,6 +46,11 @@ VIREO_EXPORT EggShellResult EggShell_ReinitializeToDefault(TypeManagerRef tm, co
 VIREO_EXPORT EggShellResult EggShell_FindValue(TypeManagerRef tm, const char* viName, const char* eltName, TypeRef* typeRefLocation, void** dataRefLocation);
 VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm, const TypeRef typeRef, void * pData, const char* eltName,
                                                 TypeRef* typeRefLocation, void** dataRefLocation);
+VIREO_EXPORT Boolean EggShell_TestAndResetNeedsUpdateFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData);
+
+// EggShell_TestNeedsUpdateFlagWithoutReset should only be used for debugging/tests
+VIREO_EXPORT Boolean EggShell_TestNeedsUpdateFlagWithoutReset(TypeManagerRef tm, const TypeRef typeRef, const void* pData);
+
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value);
 VIREO_EXPORT EggShellResult EggShell_ReadDouble(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Double* result);
 VIREO_EXPORT EggShellResult EggShell_WriteValueString(TypeManagerRef tm, TypeRef typeRef, void* pData, const char* format, const char* value);
@@ -63,6 +68,7 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
 VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[]);
 VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData);
+
 //------------------------------------------------------------
 //! Typeref functions
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString);

@@ -508,21 +508,23 @@ class TypeCommon
     UInt16  _aqAlignment:8;     // (8-15)
 
     UInt16  _encoding:kEncodingBitFieldSize;  // aggregate or single format
-    UInt16  _isFlat:1;          // (0) All data is contained in TopAQ elements ( e.g. no pointers)
-    UInt16  _isValid:1;         // (1) Contains no invalid types
-    UInt16  _isBitLevel:1;      // (2) Is a bitblock or bitcluster
+    UInt16  _isFlat:1;          // (5) All data is contained in TopAQ elements ( e.g. no pointers)
+    UInt16  _isValid:1;         // (6) Contains no invalid types
+    UInt16  _isBitLevel:1;      // (7) Is a bitblock or bitcluster
 
-    UInt16  _hasCustomDefault:1;  // (3) A non 0 non nullptr value
-    UInt16  _isMutableValue:1;    // (4) "default" value can be changed after creation.
-    UInt16  _isTemplate:1;        // (5) The type contains some generic types
-    UInt16  _hasPadding:1;        // (6) To satisfy alignment req. for elements TopAQSize() includes some padding
+    UInt16  _hasCustomDefault:1;  // (8) A non 0 non nullptr value
+    UInt16  _isMutableValue:1;    // (9) "default" value can be changed after creation.
+    UInt16  _isTemplate:1;        // (10) The type contains some generic types
+    UInt16  _hasPadding:1;        // (11) To satisfy alignment req. for elements TopAQSize() includes some padding
 
     //  properties unique to prototype elements. they are never merged up
-    UInt16  _elementUsageType:3;  // (7-9) ElementType::UsageType
+    UInt16  _elementUsageType:3;  // (12-14) ElementType::UsageType
+    UInt16  _isDataItem:1;        // (15) Element keeps track of updatedNeeded state for read/writes
+    UInt16  _updateNeeded:1;      // (0) Value has been written, needs display (tested by JS)
     //  properties unique to DefaultPointerType objects
-    UInt16  _pointerType:3;       // (10-12)
-    UInt16  _ownsDefDefData:1;    // (13) Owns DefaultDefault data (clusters and arrays)
-    UInt16  _opaqueReference:1;   // (14) Data is not an instance of the type it wraps or is templated from (e.g. refnum(Queue))
+    UInt16  _pointerType:3;       // (1-3)
+    UInt16  _ownsDefDefData:1;    // (4) Owns DefaultDefault data (clusters and arrays)
+    UInt16  _opaqueReference:1;   // (5) Data is not an instance of the type it wraps or is templated from (e.g. refnum(Queue))
 
  public:
     /// @name Core Property Methods
@@ -561,7 +563,14 @@ class TypeCommon
     Boolean HasPadding() const { return _hasPadding != 0; }
     //! True if the type contains one or more template parameter types.
     Boolean IsTemplate() const { return _isTemplate != 0; }
+    //! True if type is a wrapped type that doens't expose its contained type
     Boolean IsOpaqueReference() const { return _opaqueReference != 0; }
+    //! True if type is a dataItem (keeps track of updateNeeded state on reads/writes)
+    Boolean IsDataItem() const { return _isDataItem != 0; }
+    //! True (for data items) if value has been written to by Vireo but not read by JS
+    Boolean IsUpdateNeeded() const { return _updateNeeded != 0; }
+    //! Set updateNeeded flag for a data item
+    void SetUpdateNeeded(Boolean b) { if (_isDataItem != 0) _updateNeeded = b?1:0; }
     //! True if aggregate element is used as an input parameter.
     Boolean IsInputParam() const
     {
@@ -737,7 +746,7 @@ class ElementType : public WrappedType
 {
  private:
     ElementType(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType,
-                UsageTypeEnum usageType, Int32 offset);
+                UsageTypeEnum usageType, Int32 offset, bool isDataItem);
 
  public:
     Int32                   _offset;  // Relative to the beginning of the aggregate
@@ -748,7 +757,7 @@ class ElementType : public WrappedType
         return sizeof(ElementType) + InlineArray<Utf8Char>::ExtraStructSize(name->Length());
     }
     static ElementType* New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType,
-                            UsageTypeEnum usageType, Int32 offset);
+                            UsageTypeEnum usageType, Int32 offset, bool isDataItem);
 
     void    Accept(TypeVisitor *tv) override { tv->VisitElement(this); }
     SubString ElementName() override { return {_elementName.Begin(), _elementName.End()}; }
