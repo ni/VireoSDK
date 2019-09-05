@@ -120,8 +120,8 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         if (destType->IsDataItem()) {
             SubString valueNeedsUpdateToken("SetValueNeedsUpdate");
             pInstructionBuilder->StartInstruction(&valueNeedsUpdateToken);
-            pInstructionBuilder->InternalAddArg(nullptr, destType);
-            pInstructionBuilder->InternalAddArg(destType, pDest);
+            pInstructionBuilder->InternalAddArgBack(nullptr, destType);
+            pInstructionBuilder->InternalAddArgBack(destType, pDest);
             pInstruction = pInstructionBuilder->EmitInstruction();
         }
     } else {
