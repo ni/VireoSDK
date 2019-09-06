@@ -22,6 +22,7 @@ var assignEggShell;
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
         var LENGTH_SIZE = 4;
+        var INT32_SIZE = 4;
 
         // Keep in sync with EggShellResult in CEntryPoints.h
         var EGGSHELL_RESULT = {
@@ -266,12 +267,32 @@ var assignEggShell;
         };
 
         Module.eggShell.testAndResetNeedsUpdateFlag = publicAPI.eggShell.testAndResetNeedsUpdateFlag = function (valueRef) {
-            var needsUpdate = Module._EggShell_TestAndResetNeedsUpdateFlag(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
-            return needsUpdate !== 0;
+            var stack = Module.stackSave();
+            var resultPointer = Module.stackAlloc(INT32_SIZE);
+            var eggShellResult = Module._EggShell_TestAndResetNeedsUpdateFlag(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('Could not run testAndResetNeedsUpdateFlag for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            var needsUpdate = Module.getValue(resultPointer, 'i32') !== 0;
+            Module.stackRestore(stack);
+            return needsUpdate;
         };
         Module.eggShell.testNeedsUpdateFlagWithoutReset = function (valueRef) {
-            var needsUpdate = Module._EggShell_TestNeedsUpdateFlagWithoutReset(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef);
-            return needsUpdate !== 0;
+            var stack = Module.stackSave();
+            var resultPointer = Module.stackAlloc(INT32_SIZE);
+            var eggShellResult = Module._EggShell_TestNeedsUpdateFlagWithoutReset(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
+            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
+                throw new Error('Could not run testNeedsUpdateFlagWithoutReset for the following reason: ' + eggShellResultEnum[eggShellResult] +
+                    ' (error code: ' + eggShellResult + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            var needsUpdate = Module.getValue(resultPointer, 'i32') !== 0;
+            Module.stackRestore(stack);
+            return needsUpdate;
         };
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
             var stack = Module.stackSave();

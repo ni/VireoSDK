@@ -1,4 +1,4 @@
-describe('The Vireo needsUpdate flag check api', function () {
+describe('The Vireo testAndResetNeedsUpdateFlag api', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
@@ -19,6 +19,11 @@ describe('The Vireo needsUpdate flag check api', function () {
     beforeEach(async function () {
         vireo = await vireoHelpers.createInstance();
         internalModule = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired;
+    });
+
+    afterEach(function () {
+        vireo = undefined;
+        internalModule = undefined;
     });
 
     it('can perform a simple fpsync', async function () {

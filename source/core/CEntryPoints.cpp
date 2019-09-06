@@ -226,15 +226,31 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm,
 }
 //------------------------------------------------------------
 //! Check if a value has been written by Vireo (and reset the state)
-VIREO_EXPORT Boolean EggShell_TestAndResetNeedsUpdateFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData)
+VIREO_EXPORT EggShellResult EggShell_TestAndResetNeedsUpdateFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Int32* result)
 {
-    return TestValueRefNeedsUpdate(typeRef, pData, true);
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
+
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    *result = TestValueRefNeedsUpdate(typeRef, pData, true);
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Check if a value has been written by Vireo (without resetting the state; only use for debugging)
-VIREO_EXPORT Boolean EggShell_TestNeedsUpdateFlagWithoutReset(TypeManagerRef tm, const TypeRef typeRef, const void* pData)
+VIREO_EXPORT EggShellResult EggShell_TestNeedsUpdateFlagWithoutReset(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Int32* result)
 {
-    return TestValueRefNeedsUpdate(typeRef, pData, false);
+    TypeManagerScope scope(tm);
+    if (typeRef == nullptr || !typeRef->IsValid())
+        return kEggShellResult_InvalidTypeRef;
+
+    if (pData == nullptr)
+        return kEggShellResult_InvalidDataPointer;
+
+    *result = TestValueRefNeedsUpdate(typeRef, pData, false);
+    return kEggShellResult_Success;
 }
 //------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.

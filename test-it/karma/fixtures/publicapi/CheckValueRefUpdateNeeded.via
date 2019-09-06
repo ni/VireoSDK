@@ -7,10 +7,11 @@ define (MyVI dv(.VirtualInstrument (
         de(.Double myDouble)
         e(.Double myOtherDouble)
     )
-        clump(1
-	Copy(123.0 myDouble)  // automatically marks value update-needed
-	Copy(456.0 myOtherDouble)  // does NOT automatically marks value update-needed; not a dataItem
-	Copy("abc" output)  // automatically marks value update-needed
+
+    clump(1
+        Copy(123.0 myDouble)  // automatically marks value update-needed
+        Copy(456.0 myOtherDouble)  // does NOT automatically marks value update-needed; not a dataItem
+        Copy("abc" output)  // automatically marks value update-needed
         MySubVI()
     )
 )))
