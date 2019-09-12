@@ -174,13 +174,8 @@ struct CheckValueNeedsUpdateParamBlock : InstructionCore
 };
 VIREO_FUNCTION_SIGNATURET(CheckValueNeedsUpdate, CheckValueNeedsUpdateParamBlock)
 {
-    VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
-    if (vi->IsTopLevelVI()) {
-        if (_ParamPointer(NeedsUpdate))
-            _Param(NeedsUpdate) = TestNeedsUpdate(_ParamPointer(ValueType), true);
-    } else if (_ParamPointer(NeedsUpdate)) {
-        _Param(NeedsUpdate) = false;
-    }
+    if (_ParamPointer(NeedsUpdate))
+        _Param(NeedsUpdate) = TestNeedsUpdate(_ParamPointer(ValueType), true);
     return _NextInstruction();
 }
 
