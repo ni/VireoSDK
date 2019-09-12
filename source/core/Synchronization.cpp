@@ -930,7 +930,7 @@ VIREO_FUNCTION_SIGNATURE9(QueueRef_GetQueueStatus, RefNumVal, Boolean, Int32, St
     RefNumVal* refnumPtr = _ParamPointer(0);
     ErrorCluster *errPtr = _ParamPointer(8);
     IntIndex count = 0;
-    Int32 maxSize = -1;
+    Int32 maxSize = 0;
     QueueRef queueRef = nullptr;
     QueueCore *pQV = nullptr;
 

@@ -1,0 +1,11 @@
+CorrectElements             : true.
+CorrectNumberOfElements     : true.
+Error1100Returned           : true.
+Error1Returned              : true.
+InvalidQueue                : true.
+InvalidQueueFromObtainQueue : true.
+MaxQueueSizeIsTheSame       : true.
+NoPendingInserts            : true.
+NoPendingRemoves            : true.
+QueueNameIsEmpty            : true.
+QueueWasNotCreated          : true.

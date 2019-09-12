@@ -48,6 +48,7 @@
                 "QueueBugEnqueueElement2.via",
                 "QueueBugObtainQueue.via",
                 "QueueBugReleaseQueue.via",
+                "QueueDoesNotExist_QueueStatus_ErrorGenerated.via",
                 "QueueErrorCodes.via",
                 "Queue_EnqueueFront_Dequeue_EnqueueFront.via",
                 "QueueRefNumBasic.via",
