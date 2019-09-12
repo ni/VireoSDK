@@ -1,17 +1,26 @@
 
 define (MyVI dv(.VirtualInstrument (
     Params: c(
-        o(.String output)
+        o(String outputParameter)
+        i(String inputParameter)
+        io(String inputOutputParameter)
     )
     Locals: c(
-        de(.Double myDouble)
-        e(.Double myOtherDouble)
+        de(.Double localDataItem)
+        e(.Double local)
+        de(a(Double *) localDataItemArray)
+        e(a(Double *) localArray)
+        e(dv(a(Double *) (42 43 44)) arrayNewValue)
     )
 
     clump(1
-        Copy(123.0 myDouble)  // automatically marks value update-needed
-        Copy(456.0 myOtherDouble)  // does NOT automatically marks value update-needed; not a dataItem
-        Copy("abc" output)  // automatically marks value update-needed
+        Copy("abc" outputParameter)  // automatically marks value update-needed
+        // Cannot copy to an inputParameter
+        Copy("def" inputOutputParameter)  // automatically marks value update-needed
+        Copy(123.0 localDataItem)  // automatically marks value update-needed
+        Copy(456.0 local)  // does NOT automatically mark value update-needed; not a dataItem
+        Copy(arrayNewValue localDataItemArray) // automatically marks value update-needed
+        Copy(arrayNewValue localArray)  // does NOT automatically mark value update-needed; not a dataItem
         MySubVI()
     )
 )))
@@ -19,16 +28,15 @@ define (MyVI dv(.VirtualInstrument (
 
 define(MySubVI dv(.VirtualInstrument (
     Params: c(
-        o(.Double myOutput)
+        o(.Double subVIOutputParameter)
     )
     Locals: c(
-       de(dv(.Int32 42) myInteger)
+       de(dv(.Int32 42) subVILocalDataItem)
     )
     clump(1
-        Copy(321.0 myOutput)
-        Copy(789 myInteger)
+        Copy(321.0 subVIOutputParameter) // does NOT automatically mark value update-needed; subVI dataItems ignored
+        Copy(789 subVILocalDataItem) // does NOT automatically mark value update-needed; subVI dataItems ignored
     )
 )))
 
 enqueue (MyVI)
-
