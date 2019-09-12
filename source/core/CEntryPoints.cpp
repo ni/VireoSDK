@@ -225,34 +225,6 @@ VIREO_EXPORT EggShellResult EggShell_FindSubValue(TypeManagerRef tm,
     return kEggShellResult_Success;
 }
 //------------------------------------------------------------
-//! Check if a value has been written by Vireo (and reset the state)
-VIREO_EXPORT EggShellResult EggShell_TestAndResetNeedsUpdateFlag(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Int32* result)
-{
-    TypeManagerScope scope(tm);
-    if (typeRef == nullptr || !typeRef->IsValid())
-        return kEggShellResult_InvalidTypeRef;
-
-    if (pData == nullptr)
-        return kEggShellResult_InvalidDataPointer;
-
-    *result = TestValueRefNeedsUpdate(typeRef, pData, true);
-    return kEggShellResult_Success;
-}
-//------------------------------------------------------------
-//! Check if a value has been written by Vireo (without resetting the state; only use for debugging)
-VIREO_EXPORT EggShellResult EggShell_TestNeedsUpdateFlagWithoutReset(TypeManagerRef tm, const TypeRef typeRef, const void* pData, Int32* result)
-{
-    TypeManagerScope scope(tm);
-    if (typeRef == nullptr || !typeRef->IsValid())
-        return kEggShellResult_InvalidTypeRef;
-
-    if (pData == nullptr)
-        return kEggShellResult_InvalidDataPointer;
-
-    *result = TestValueRefNeedsUpdate(typeRef, pData, false);
-    return kEggShellResult_Success;
-}
-//------------------------------------------------------------
 //! Write a numeric value to a symbol. Value will be coerced as needed.
 VIREO_EXPORT EggShellResult EggShell_WriteDouble(TypeManagerRef tm, const TypeRef typeRef, void* pData, Double value)
 {
@@ -655,6 +627,18 @@ VIREO_EXPORT Boolean TypeRef_IsJavaScriptStaticRefNum(TypeRef typeRef)
 VIREO_EXPORT Boolean TypeRef_IsJavaScriptDynamicRefNum(TypeRef typeRef)
 {
     return typeRef->IsJavaScriptDynamicRefNum();
+}
+//------------------------------------------------------------
+//! Check if a value has been written by Vireo (and reset the state)
+VIREO_EXPORT Boolean TypeRef_TestNeedsUpdateAndReset(const TypeRef typeRef)
+{
+    return TestNeedsUpdate(typeRef, true);
+}
+//------------------------------------------------------------
+//! Check if a value has been written by Vireo (without resetting the state; only use for debugging)
+VIREO_EXPORT Boolean TypeRef_TestNeedsUpdateWithoutReset(const TypeRef typeRef)
+{
+    return TestNeedsUpdate(typeRef, false);
 }
 //------------------------------------------------------------
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object)

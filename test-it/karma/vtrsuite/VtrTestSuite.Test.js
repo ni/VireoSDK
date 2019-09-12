@@ -47,12 +47,12 @@ describe('The Vireo VTR test suite', function () {
         describe('can preload ' + testName, function () {
             var testDescription = 'and run ' + testName;
 
-            // A test that all top-level vi locals in memory can have the needs update flag checked
+            // A test that all top-level vi locals in memory can safely call testNeedsUpdateAndReset
             var testLocalsNeedUpdate = function (viName, allLocals) {
                 Object.keys(allLocals).forEach(function (rawName) {
                     var encodedName = vireoHelpers.staticHelpers.encodeIdentifier(rawName);
                     var valueRef = vireo.eggShell.findValueRef(viName, encodedName);
-                    vireo.eggShell.testAndResetNeedsUpdateFlag(valueRef);
+                    vireo.eggShell.testNeedsUpdateAndReset(valueRef);
                 });
             };
 

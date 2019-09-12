@@ -266,34 +266,22 @@ var assignEggShell;
             return dispatchFunction(typeVisitor, valueRef, data);
         };
 
-        Module.eggShell.testAndResetNeedsUpdateFlag = publicAPI.eggShell.testAndResetNeedsUpdateFlag = function (valueRef) {
-            var stack = Module.stackSave();
-            var resultPointer = Module.stackAlloc(INT32_SIZE);
-            var eggShellResult = Module._EggShell_TestAndResetNeedsUpdateFlag(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
-            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
-                throw new Error('Could not run testAndResetNeedsUpdateFlag for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')' +
-                    ' (typeRef: ' + valueRef.typeRef + ')' +
-                    ' (dataRef: ' + valueRef.dataRef + ')');
+        Module.eggShell.testNeedsUpdateAndReset = publicAPI.eggShell.testNeedsUpdateAndReset = function (valueRef) {
+            if (typeof valueRef !== 'object' || valueRef === null) {
+                throw new Error('valueRef must be an object. Found: ' + valueRef);
             }
-            var needsUpdate = Module.getValue(resultPointer, 'i32') !== 0;
-            Module.stackRestore(stack);
-            return needsUpdate;
+
+            return Module.typeHelpers.testNeedsUpdateAndReset(valueRef.typeRef);
         };
-        Module.eggShell.testNeedsUpdateFlagWithoutReset = function (valueRef) {
-            var stack = Module.stackSave();
-            var resultPointer = Module.stackAlloc(INT32_SIZE);
-            var eggShellResult = Module._EggShell_TestNeedsUpdateFlagWithoutReset(Module.eggShell.v_userShell, valueRef.typeRef, valueRef.dataRef, resultPointer);
-            if (eggShellResult !== EGGSHELL_RESULT.SUCCESS) {
-                throw new Error('Could not run testNeedsUpdateFlagWithoutReset for the following reason: ' + eggShellResultEnum[eggShellResult] +
-                    ' (error code: ' + eggShellResult + ')' +
-                    ' (typeRef: ' + valueRef.typeRef + ')' +
-                    ' (dataRef: ' + valueRef.dataRef + ')');
+
+        Module.eggShell.testNeedsUpdateWithoutReset = function (valueRef) {
+            if (typeof valueRef !== 'object' || valueRef === null) {
+                throw new Error('valueRef must be an object. Found: ' + valueRef);
             }
-            var needsUpdate = Module.getValue(resultPointer, 'i32') !== 0;
-            Module.stackRestore(stack);
-            return needsUpdate;
+
+            return Module.typeHelpers.testNeedsUpdateWithoutReset(valueRef.typeRef);
         };
+
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
             var stack = Module.stackSave();
             var resultPointer = Module.stackAlloc(DOUBLE_SIZE);

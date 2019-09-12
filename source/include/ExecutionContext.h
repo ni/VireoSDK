@@ -148,8 +148,7 @@ class ExecutionContext
 #endif
 
 void AppendCallChainString(StringRef stringRef);
-void SetValueRefNeedsUpdate(TypeRef typeRef, void *dataPtr);
-Boolean TestValueRefNeedsUpdate(TypeRef typeRef, const void *dataPtr, Boolean reset);
+Boolean TestNeedsUpdate(TypeRef typeRef, Boolean reset);
 
 }  // namespace Vireo
 

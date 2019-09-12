@@ -142,9 +142,6 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
 }
 //------------------------------------------------------------
 //
-void SetValueRefNeedsUpdate(TypeRef typeRef, void *dataPtr) {
-    typeRef->SetUpdateNeeded(true);
-}
 
 struct SetValueNeedsUpdateParamBlock : InstructionCore
 {
@@ -157,14 +154,14 @@ VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
 {
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
     if (vi->IsTopLevelVI())
-        SetValueRefNeedsUpdate(_ParamPointer(ValueType), _ParamPointer(ValueData));
+        _ParamPointer(ValueType)->SetNeedsUpdate(true);
     return _NextInstruction();
 }
 
-Boolean TestValueRefNeedsUpdate(TypeRef typeRef, const void *, Boolean reset) {
-    Boolean needsUpdate = typeRef->IsUpdateNeeded();
+Boolean TestNeedsUpdate(TypeRef typeRef, Boolean reset) {
+    Boolean needsUpdate = typeRef->NeedsUpdate();
     if (needsUpdate && reset)
-        typeRef->SetUpdateNeeded(false);
+        typeRef->SetNeedsUpdate(false);
     return needsUpdate;
 }
 
@@ -180,7 +177,7 @@ VIREO_FUNCTION_SIGNATURET(CheckValueNeedsUpdate, CheckValueNeedsUpdateParamBlock
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
     if (vi->IsTopLevelVI()) {
         if (_ParamPointer(NeedsUpdate))
-            _Param(NeedsUpdate) = TestValueRefNeedsUpdate(_ParamPointer(ValueType), _ParamPointer(ValueData), true);
+            _Param(NeedsUpdate) = TestNeedsUpdate(_ParamPointer(ValueType), true);
     } else if (_ParamPointer(NeedsUpdate)) {
         _Param(NeedsUpdate) = false;
     }

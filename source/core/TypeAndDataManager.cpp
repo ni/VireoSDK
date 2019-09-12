@@ -635,7 +635,7 @@ TypeCommon::TypeCommon(TypeManagerRef typeManager)
     _elementUsageType = kUsageTypeSimple;
     _opaqueReference = false;
     _isDataItem     = false;
-    _updateNeeded   = false;
+    _needsUpdate   = false;
 }
 //------------------------------------------------------------
 void TypeCommon::ZeroOutTop(void* pData) const

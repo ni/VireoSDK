@@ -520,7 +520,7 @@ class TypeCommon
     //  properties unique to prototype elements. they are never merged up
     UInt16  _elementUsageType:3;  // (12-14) ElementType::UsageType
     UInt16  _isDataItem:1;        // (15) Element keeps track of updatedNeeded state for read/writes
-    UInt16  _updateNeeded:1;      // (0) Value has been written, needs display (tested by JS)
+    UInt16  _needsUpdate:1;      // (0) Value has been written, needs display (tested by JS)
     //  properties unique to DefaultPointerType objects
     UInt16  _pointerType:3;       // (1-3)
     UInt16  _ownsDefDefData:1;    // (4) Owns DefaultDefault data (clusters and arrays)
@@ -565,12 +565,12 @@ class TypeCommon
     Boolean IsTemplate() const { return _isTemplate != 0; }
     //! True if type is a wrapped type that doens't expose its contained type
     Boolean IsOpaqueReference() const { return _opaqueReference != 0; }
-    //! True if type is a dataItem (keeps track of updateNeeded state on reads/writes)
+    //! True if type is a dataItem (keeps track of needsUpdate state on reads/writes)
     Boolean IsDataItem() const { return _isDataItem != 0; }
     //! True (for data items) if value has been written to by Vireo but not read by JS
-    Boolean IsUpdateNeeded() const { return _updateNeeded != 0; }
-    //! Set updateNeeded flag for a data item
-    void SetUpdateNeeded(Boolean b) { if (_isDataItem != 0) _updateNeeded = b?1:0; }
+    Boolean NeedsUpdate() const { return _needsUpdate != 0; }
+    //! Set needsUpdate flag for a data item
+    void SetNeedsUpdate(Boolean b) { if (_isDataItem != 0) _needsUpdate = b?1:0; }
     //! True if aggregate element is used as an input parameter.
     Boolean IsInputParam() const
     {
