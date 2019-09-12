@@ -257,7 +257,7 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsInputParamToken       "i"   // input parameter
 #define tsOutputParamToken      "o"   // output parameter
 #define tsInputOutputParamToken "io"  // input-output parameter
-                                      // (output and input-output params also act as dataItems, see above)
+                                      // (input, output, and input-output params also act as dataItems, see above)
 #define tsAliasToken            "al"  // alias to another element.
 #define tsStaticParamToken      "s"   // static not explicitly passed, allocated in param block and preserved between
 #define tsTempParamToken        "t"   // temp param, not passed, allocated in param block and can be thrown away
