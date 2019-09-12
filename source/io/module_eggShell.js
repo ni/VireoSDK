@@ -22,7 +22,6 @@ var assignEggShell;
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
         var LENGTH_SIZE = 4;
-        var INT32_SIZE = 4;
 
         // Keep in sync with EggShellResult in CEntryPoints.h
         var EGGSHELL_RESULT = {
