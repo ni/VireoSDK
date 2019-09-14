@@ -252,12 +252,14 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsElementToken          "e"   // used for Cluster, BitCluster, and array aggregate types for simple elements
 #define tsConstElementToken     "ce"  // used for Cluster elements in Locals: section to indicate immutable value
 #define tsDataitemElementToken  "de"  // used for Cluster elements in Locals: section to indicate dataItem value
-                                      // (value will be marked 'needsUpdate' when written from Vireo,
-                                      // clean when read or written from JS, when accessed in a top-level VI)
+                                      // (value will be marked 'needsUpdate' when written to by Vireo in a top-level VI
+                                      // and 'needsUpdate' will be cleared by the host environment when read)
 #define tsInputParamToken       "i"   // input parameter
 #define tsOutputParamToken      "o"   // output parameter
 #define tsInputOutputParamToken "io"  // input-output parameter
                                       // (input, output, and input-output params also act as dataItems, see above)
+                                      // (in practice, Vireo will only write to output and input-output params 
+                                      // but input is also marked as a dataItem for consistency, ie. all params are dataItems)
 #define tsAliasToken            "al"  // alias to another element.
 #define tsStaticParamToken      "s"   // static not explicitly passed, allocated in param block and preserved between
 #define tsTempParamToken        "t"   // temp param, not passed, allocated in param block and can be thrown away

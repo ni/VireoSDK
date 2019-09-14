@@ -1231,6 +1231,7 @@ TypeRef WrappedType::GetSubElementAddressFromPath(SubString* name, void *start, 
 ElementType* ElementType::New(TypeManagerRef typeManager, SubString* name, TypeRef wrappedType, UsageTypeEnum usageType, Int32 offset, bool isDataItem)
 {
     ElementType* type = TADM_NEW_PLACEMENT_DYNAMIC(ElementType, name)(typeManager, name, wrappedType, usageType, offset, isDataItem);
+    // Prevent Types for DataItems from being merged. Allows DataItems to track needsUpdate independently.
     if (isDataItem)
         return type;
     SubString binaryName((AQBlock1*)&type->_topAQSize, type->_elementName.End());

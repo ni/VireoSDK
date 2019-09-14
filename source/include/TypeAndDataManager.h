@@ -504,10 +504,13 @@ class TypeCommon
     /// Members use a common type (UInt16) to maximize packing.
 
     Int32   _topAQSize;
+
+    // UInt16 bitfield
     UInt16  _rank:8;            // (0-7) 0 for scalar, 0 or greater for arrays room for rank up to 16 (for now
     UInt16  _aqAlignment:8;     // (8-15)
 
-    UInt16  _encoding:kEncodingBitFieldSize;  // aggregate or single format
+    // UInt16 bitfield
+    UInt16  _encoding:kEncodingBitFieldSize;  // (0-4) aggregate or single format
     UInt16  _isFlat:1;          // (5) All data is contained in TopAQ elements ( e.g. no pointers)
     UInt16  _isValid:1;         // (6) Contains no invalid types
     UInt16  _isBitLevel:1;      // (7) Is a bitblock or bitcluster
@@ -520,6 +523,8 @@ class TypeCommon
     //  properties unique to prototype elements. they are never merged up
     UInt16  _elementUsageType:3;  // (12-14) ElementType::UsageType
     UInt16  _isDataItem:1;        // (15) Element keeps track of updatedNeeded state for read/writes
+
+    // UInt16 bitfield
     UInt16  _needsUpdate:1;      // (0) Value has been written, needs display (tested by JS)
     //  properties unique to DefaultPointerType objects
     UInt16  _pointerType:3;       // (1-3)
