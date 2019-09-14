@@ -250,10 +250,11 @@ void Format(SubString *format, Int32 count, StaticTypeAndData arguments[], Strin
 #define tsDefineTypeToken       "define"
 #define tsEnqueueTypeToken      "enqueue"
 #define tsElementToken          "e"   // used for Cluster, BitCluster, and array aggregate types for simple elements
-#define tsConstElementToken     "ce"  // used for Cluster elements in Locals: section to indicate immutable value
-#define tsDataitemElementToken  "de"  // used for Cluster elements in Locals: section to indicate dataItem value
-                                      // (value will be marked 'needsUpdate' when written to by Vireo in a top-level VI
-                                      // and 'needsUpdate' will be cleared by the host environment when read)
+#define tsConstElementToken     "ce"  // used for Cluster elements in Locals section to indicate immutable value
+#define tsDataitemElementToken  "de"  // used for Cluster elements in Locals section to indicate dataItem value
+                                      // (value will be marked 'needsUpdate' when written to by Vireo in a top-level VI and
+                                      // 'needsUpdate' will be cleared by the host environment when read)
+                                      // (only top-level Dataspace elements in Locals section are marked as dataItems during DFIR gen)
 #define tsInputParamToken       "i"   // input parameter
 #define tsOutputParamToken      "o"   // output parameter
 #define tsInputOutputParamToken "io"  // input-output parameter

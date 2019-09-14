@@ -1,0 +1,40 @@
+--Needs Update test before Copy--
+outputParameter: false
+inputOutputParameter: false
+localDataItem: false
+local: false
+localDataItemArray: false
+localArray: false
+localDataItemCluster: false
+localCluster: false
+localDataItemError: false
+localError: false
+localDataItemAnalogWaveform: false
+localAnalogWaveform: false
+--Copy new values--
+--First needs update check after Copy--
+outputParameter: true
+inputOutputParameter: true
+localDataItem: true
+local: false
+localDataItemArray: true
+localArray: false
+localDataItemCluster: true
+localCluster: false
+localDataItemError: true
+localError: false
+localDataItemAnalogWaveform: true
+localAnalogWaveform: false
+--Second needs update check after Copy--
+outputParameter: false
+inputOutputParameter: false
+localDataItem: false
+local: false
+localDataItemArray: false
+localArray: false
+localDataItemCluster: false
+localCluster: false
+localDataItemError: false
+localError: false
+localDataItemAnalogWaveform: false
+localAnalogWaveform: false

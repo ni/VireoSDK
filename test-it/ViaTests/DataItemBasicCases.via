@@ -1,0 +1,142 @@
+
+define (MyVI dv(.VirtualInstrument (
+    Params: c(
+        o(String outputParameter)
+        i(String inputParameter)
+        io(String inputOutputParameter)
+    )
+    Locals: c(
+        de(Double localDataItem)
+        e(Double local)
+        de(a(Double *) localDataItemArray)
+        e(a(Double *) localArray)
+        de(c(    e(Double one)    e(Double two)    e(Double three)     ) localDataItemCluster)
+        e(c(    e(Double one)    e(Double two)    e(Double three)     ) localCluster)
+        de(ErrorCluster localDataItemError)
+        e(ErrorCluster localError)
+        de(AnalogWaveform<Double> localDataItemAnalogWaveform)
+        e(AnalogWaveform localAnalogWaveform)
+
+        e(dv(a(Double *) (42 43 44)) arrayNewValue)
+        e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) clusterNewValue)
+        e(dv(ErrorCluster (true 77 'hi')) errorNewValue)
+        e(dv(AnalogWaveform<Double> ((0 0) 25.8 (10.2 20.2 30.2))) analogWaveformNewValue)
+        e(Boolean needsUpdate)
+    )
+
+    clump(1
+
+        Printf("--Needs Update test before Copy--\n")
+
+        CheckValueNeedsUpdate(outputParameter needsUpdate)
+        Printf("outputParameter: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(inputOutputParameter needsUpdate)
+        Printf("inputOutputParameter: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItem needsUpdate)
+        Printf("localDataItem: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(local needsUpdate)
+        Printf("local: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemArray needsUpdate)
+        Printf("localDataItemArray: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localArray needsUpdate)
+        Printf("localArray: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemCluster needsUpdate)
+        Printf("localDataItemCluster: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localCluster needsUpdate)
+        Printf("localCluster: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemError needsUpdate)
+        Printf("localDataItemError: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localError needsUpdate)
+        Printf("localError: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemAnalogWaveform needsUpdate)
+        Printf("localDataItemAnalogWaveform: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localAnalogWaveform needsUpdate)
+        Printf("localAnalogWaveform: %z\n" needsUpdate)
+        
+        Printf("--Copy new values--\n")
+
+        Copy('nice' outputParameter)
+        Copy('nice' inputOutputParameter)
+        Copy(123.0 localDataItem)
+        Copy(123.0 local)
+        Copy(arrayNewValue localDataItemArray)
+        Copy(arrayNewValue localArray)
+        Copy(clusterNewValue localDataItemCluster)
+        Copy(clusterNewValue localCluster)
+        Copy(errorNewValue localDataItemError)
+        Copy(errorNewValue localError)
+        Copy(analogWaveformNewValue localDataItemAnalogWaveform)
+        Copy(analogWaveformNewValue localAnalogWaveform)
+
+        Printf("--First needs update check after Copy--\n")
+
+        CheckValueNeedsUpdate(outputParameter needsUpdate)
+        Printf("outputParameter: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(inputOutputParameter needsUpdate)
+        Printf("inputOutputParameter: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItem needsUpdate)
+        Printf("localDataItem: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(local needsUpdate)
+        Printf("local: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemArray needsUpdate)
+        Printf("localDataItemArray: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localArray needsUpdate)
+        Printf("localArray: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemCluster needsUpdate)
+        Printf("localDataItemCluster: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localCluster needsUpdate)
+        Printf("localCluster: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemError needsUpdate)
+        Printf("localDataItemError: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localError needsUpdate)
+        Printf("localError: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemAnalogWaveform needsUpdate)
+        Printf("localDataItemAnalogWaveform: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localAnalogWaveform needsUpdate)
+        Printf("localAnalogWaveform: %z\n" needsUpdate)
+
+        Printf("--Second needs update check after Copy--\n")
+
+        CheckValueNeedsUpdate(outputParameter needsUpdate)
+        Printf("outputParameter: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(inputOutputParameter needsUpdate)
+        Printf("inputOutputParameter: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItem needsUpdate)
+        Printf("localDataItem: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(local needsUpdate)
+        Printf("local: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemArray needsUpdate)
+        Printf("localDataItemArray: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localArray needsUpdate)
+        Printf("localArray: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemCluster needsUpdate)
+        Printf("localDataItemCluster: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localCluster needsUpdate)
+        Printf("localCluster: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemError needsUpdate)
+        Printf("localDataItemError: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localError needsUpdate)
+        Printf("localError: %z\n" needsUpdate)
+
+        CheckValueNeedsUpdate(localDataItemAnalogWaveform needsUpdate)
+        Printf("localDataItemAnalogWaveform: %z\n" needsUpdate)
+        CheckValueNeedsUpdate(localAnalogWaveform needsUpdate)
+        Printf("localAnalogWaveform: %z\n" needsUpdate)
+    )
+)))
+
+enqueue (MyVI)
