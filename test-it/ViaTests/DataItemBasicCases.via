@@ -15,7 +15,7 @@ define (MyVI dv(.VirtualInstrument (
         de(ErrorCluster localDataItemError)
         e(ErrorCluster localError)
         de(AnalogWaveform<Double> localDataItemAnalogWaveform)
-        e(AnalogWaveform localAnalogWaveform)
+        e(AnalogWaveform<Double> localAnalogWaveform)
 
         e(dv(a(Double *) (42 43 44)) arrayNewValue)
         e(dv(c(    e(Double one)    e(Double two)    e(Double three)    ) (33 44 55) ) clusterNewValue)
