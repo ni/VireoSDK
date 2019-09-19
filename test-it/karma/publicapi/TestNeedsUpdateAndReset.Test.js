@@ -36,6 +36,7 @@ describe('The Vireo testNeedsUpdateAndReset api', function () {
         var local = vireo.eggShell.findValueRef('MyVI', 'local');
         var localDataItemArray = vireo.eggShell.findValueRef('MyVI', 'localDataItemArray');
         var localArray = vireo.eggShell.findValueRef('MyVI', 'localArray');
+        var latchedBoolean = vireo.eggShell.findValueRef('MyVI', 'latchedBoolean');
         var subVIOutputParameter = vireo.eggShell.findValueRef('MySubVI', 'subVIOutputParameter');
         var subVILocalDataItem = vireo.eggShell.findValueRef('MySubVI', 'subVILocalDataItem');
 
@@ -47,6 +48,7 @@ describe('The Vireo testNeedsUpdateAndReset api', function () {
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(local)).toBeFalse();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(localDataItemArray)).toBeFalse();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(localArray)).toBeFalse();
+        expect(internalModule.eggShell.testNeedsUpdateWithoutReset(latchedBoolean)).toBeFalse();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(subVIOutputParameter)).toBeFalse();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(subVILocalDataItem)).toBeFalse();
 
@@ -63,6 +65,7 @@ describe('The Vireo testNeedsUpdateAndReset api', function () {
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(local)).toBeFalse();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(localDataItemArray)).toBeTrue();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(localArray)).toBeFalse();
+        expect(internalModule.eggShell.testNeedsUpdateWithoutReset(latchedBoolean)).toBeTrue();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(subVIOutputParameter)).toBeFalse();
         expect(internalModule.eggShell.testNeedsUpdateWithoutReset(subVILocalDataItem)).toBeFalse();
 
@@ -74,6 +77,7 @@ describe('The Vireo testNeedsUpdateAndReset api', function () {
         expect(vireo.eggShell.testNeedsUpdateAndReset(local)).toBeFalse();
         expect(vireo.eggShell.testNeedsUpdateAndReset(localDataItemArray)).toBeTrue();
         expect(vireo.eggShell.testNeedsUpdateAndReset(localArray)).toBeFalse();
+        expect(vireo.eggShell.testNeedsUpdateAndReset(latchedBoolean)).toBeTrue();
         expect(vireo.eggShell.testNeedsUpdateAndReset(subVIOutputParameter)).toBeFalse();
         expect(vireo.eggShell.testNeedsUpdateAndReset(subVILocalDataItem)).toBeFalse();
 
@@ -85,6 +89,7 @@ describe('The Vireo testNeedsUpdateAndReset api', function () {
         expect(vireo.eggShell.testNeedsUpdateAndReset(local)).toBeFalse();
         expect(vireo.eggShell.testNeedsUpdateAndReset(localDataItemArray)).toBeFalse();
         expect(vireo.eggShell.testNeedsUpdateAndReset(localArray)).toBeFalse();
+        expect(vireo.eggShell.testNeedsUpdateAndReset(latchedBoolean)).toBeFalse();
         expect(vireo.eggShell.testNeedsUpdateAndReset(subVIOutputParameter)).toBeFalse();
         expect(vireo.eggShell.testNeedsUpdateAndReset(subVILocalDataItem)).toBeFalse();
     });

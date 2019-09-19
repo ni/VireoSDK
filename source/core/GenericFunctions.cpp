@@ -2734,13 +2734,25 @@ VIREO_FUNCTION_SIGNATUREV(MergeErrors, MergeErrorsParamBlock)
     return _NextInstruction();
 }
 
+struct CopyAndResetParamBlock : public InstructionCore
+{
+    _ParamImmediateDef(StaticTypeAndData, source);
+    _ParamDef(Boolean, destination);
+    _ParamDef(Boolean, sourceNewValue);
+    NEXT_INSTRUCTION_METHOD()
+};
+
 //------------------------------------------------------------
 // We need this operation on a single vireo instruction so boolean latched buttons work correctly
-// source(0), destination(1), sourceNewValue(2)
-VIREO_FUNCTION_SIGNATURE3(CopyAndReset, Boolean, Boolean, Boolean)
+VIREO_FUNCTION_SIGNATURET(CopyAndReset, CopyAndResetParamBlock)
 {
-    _Param(1) = _Param(0);
-    _Param(0) = _Param(2);
+    Boolean* sourceData = static_cast<Boolean*>(_ParamImmediate(source)._pData);
+    _Param(destination) = *sourceData;
+    *sourceData = _Param(sourceNewValue);
+
+    VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
+    if (vi->IsTopLevelVI())
+        _ParamImmediate(source)._paramType->SetNeedsUpdate(true);
     return _NextInstruction();
 }
 
@@ -2782,7 +2794,7 @@ DEFINE_VIREO_BEGIN(Generics)
     DEFINE_VIREO_FUNCTION(CopyRefnum, "p(i(DataPointer)  o(DataPointer))");
 
     // Instruction to copy boolean value and reset it to another value
-    DEFINE_VIREO_FUNCTION(CopyAndReset, "p(io(Boolean source)  o(Boolean destination) i(Boolean sourceNewValue))");
+    DEFINE_VIREO_FUNCTION(CopyAndReset, "p(io(StaticTypeAndData source) o(Boolean destination) i(Boolean sourceNewValue))");
 
     DEFINE_VIREO_FUNCTION_CUSTOM(Convert, ConvertEnum, "p(i(StaticTypeAndData) o(EnumTypeAndData))")
 

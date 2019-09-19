@@ -11,6 +11,8 @@ define (MyVI dv(.VirtualInstrument (
         de(a(Double *) localDataItemArray)
         e(a(Double *) localArray)
         e(dv(a(Double *) (42 43 44)) arrayNewValue)
+        de(dv(Boolean true) latchedBoolean)
+        e(Boolean latchedBooleanDestination)
     )
 
     clump(1
@@ -21,6 +23,7 @@ define (MyVI dv(.VirtualInstrument (
         Copy(456.0 local)  // does NOT automatically mark value update-needed; not a dataItem
         Copy(arrayNewValue localDataItemArray) // automatically marks value update-needed
         Copy(arrayNewValue localArray)  // does NOT automatically mark value update-needed; not a dataItem
+        CopyAndReset(latchedBoolean latchedBooleanDestination false)  // automatically marks value update-needed
         MySubVI()
     )
 )))
