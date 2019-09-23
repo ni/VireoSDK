@@ -265,6 +265,22 @@ var assignEggShell;
             return dispatchFunction(typeVisitor, valueRef, data);
         };
 
+        Module.eggShell.testNeedsUpdateAndReset = publicAPI.eggShell.testNeedsUpdateAndReset = function (valueRef) {
+            if (typeof valueRef !== 'object' || valueRef === null) {
+                throw new Error('valueRef must be an object. Found: ' + valueRef);
+            }
+
+            return Module.typeHelpers.testNeedsUpdateAndReset(valueRef.typeRef);
+        };
+
+        Module.eggShell.testNeedsUpdateWithoutReset = function (valueRef) {
+            if (typeof valueRef !== 'object' || valueRef === null) {
+                throw new Error('valueRef must be an object. Found: ' + valueRef);
+            }
+
+            return Module.typeHelpers.testNeedsUpdateWithoutReset(valueRef.typeRef);
+        };
+
         Module.eggShell.readDouble = publicAPI.eggShell.readDouble = function (valueRef) {
             var stack = Module.stackSave();
             var resultPointer = Module.stackAlloc(DOUBLE_SIZE);

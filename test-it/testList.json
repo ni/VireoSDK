@@ -160,6 +160,8 @@
                 "CopyOp.via",
                 "CoreArray.via",
                 "CoreTypes.via",
+                "DataItemAvoidsAliasing.via",
+                "DataItemBasicCases.via",
                 "DateFormatString.via",
                 "DateTime.via",
                 "DateTimeRecordToTimestamp.via",

@@ -354,6 +354,14 @@ var assignTypeHelpers;
             }
             return undefined;
         };
+
+        Module.typeHelpers.testNeedsUpdateAndReset = function (typeRef) {
+            return Module._TypeRef_TestNeedsUpdateAndReset(typeRef) !== 0;
+        };
+
+        Module.typeHelpers.testNeedsUpdateWithoutReset = function (typeRef) {
+            return Module._TypeRef_TestNeedsUpdateWithoutReset(typeRef) !== 0;
+        };
     };
 }());
 export default assignTypeHelpers;

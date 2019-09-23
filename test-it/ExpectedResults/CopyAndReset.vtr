@@ -1,8 +1,32 @@
+CopyAndReset on a dataitem local (expected use case)
 Before
+    needsUpdate = <false>
     source = <true>
     destination = <false>
     sourceNewValue = <false>
 After
+    needsUpdate = <true>
+    source = <false>
+    destination = <true>
+    sourceNewValue = <false>
+After Second Needs Update
+    needsUpdate = <false>
+    source = <false>
+    destination = <true>
+    sourceNewValue = <false>
+CopyAndReset on a non-dataitem local (unexpected case)
+Before
+    needsUpdate = <false>
+    source = <true>
+    destination = <false>
+    sourceNewValue = <false>
+After
+    needsUpdate = <false>
+    source = <false>
+    destination = <true>
+    sourceNewValue = <false>
+After Second Needs Update
+    needsUpdate = <false>
     source = <false>
     destination = <true>
     sourceNewValue = <false>

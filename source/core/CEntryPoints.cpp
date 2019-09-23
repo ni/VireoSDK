@@ -629,6 +629,18 @@ VIREO_EXPORT Boolean TypeRef_IsJavaScriptDynamicRefNum(TypeRef typeRef)
     return typeRef->IsJavaScriptDynamicRefNum();
 }
 //------------------------------------------------------------
+//! Check if a value has been written by Vireo (and reset the state)
+VIREO_EXPORT Boolean TypeRef_TestNeedsUpdateAndReset(const TypeRef typeRef)
+{
+    return TestNeedsUpdate(typeRef, true);
+}
+//------------------------------------------------------------
+//! Check if a value has been written by Vireo (without resetting the state; only use for debugging)
+VIREO_EXPORT Boolean TypeRef_TestNeedsUpdateWithoutReset(const TypeRef typeRef)
+{
+    return TestNeedsUpdate(typeRef, false);
+}
+//------------------------------------------------------------
 VIREO_EXPORT Int32 Data_RawBlockSize(TypedBlock* object)
 {
     VIREO_ASSERT(TypedBlock::ValidateHandle(object));

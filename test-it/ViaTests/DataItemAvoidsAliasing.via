@@ -1,0 +1,60 @@
+
+define (MyVI1 dv(.VirtualInstrument (
+    Locals: c(
+        de(.Double myDouble)
+        e(.Boolean bool)
+    )
+        clump(1
+        Printf("MyVI1:\n")
+        CheckValueNeedsUpdate(myDouble bool)
+        Printf(" myDouble needsUpdate %z\n" bool)
+        Copy(123.0 myDouble)
+        //SetValueNeedsUpdate(myDouble)  // automatically done by preceding Copy
+        CheckValueNeedsUpdate(myDouble bool)  // should be true
+        Printf(" myDouble needsUpdate %z\n" bool)
+        CheckValueNeedsUpdate(myDouble bool)  // should be false (reset when read above)
+        Printf(" myDouble needsUpdate %z\n" bool)
+        MySubVI()
+    )
+)))
+
+// Two copies of identical subVI with same var names to make sure no aliasing happens for dataitem elements
+define (MyVI2 dv(.VirtualInstrument (
+    Locals: c(
+        de(.Double myDouble)
+        e(.Boolean bool)
+    )
+        clump(1
+        Printf("MyVI2:\n")
+        CheckValueNeedsUpdate(myDouble bool)
+        Printf(" myDouble needsUpdate %z\n" bool)
+        Copy(456.0 myDouble)
+        //SetValueNeedsUpdate(myDouble)  // automatically done by preceding Copy
+        CheckValueNeedsUpdate(myDouble bool)  // should be true
+        Printf(" myDouble needsUpdate %z\n" bool)
+        CheckValueNeedsUpdate(myDouble bool)  // should be false (reset when read above)
+        Printf(" myDouble needsUpdate %z\n" bool)
+        MySubVI()
+    )
+)))
+
+
+define(MySubVI dv(.VirtualInstrument (
+c(
+        de(dv(.Int32 42) myInteger)
+        e(.Boolean bool)
+)
+clump(1
+    Printf(" MySubVI:\n")
+    CheckValueNeedsUpdate(myInteger bool)
+    Copy(-42 myInteger)
+    SetValueNeedsUpdate(myInteger)  // should do nothing; daaitem element but not a top-level VI 
+    CheckValueNeedsUpdate(myInteger bool)
+    Printf("  myInteger needsUpdate %z\n" bool)
+    Printf(" End MySubVI\n")
+)
+)))
+
+enqueue (MyVI1)
+enqueue (MyVI2)
+

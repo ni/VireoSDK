@@ -234,9 +234,10 @@ void TypeTemplateVisitor::VisitElement(ElementType* type)
     TypeRef   baseType = Accept(type->BaseType());
     SubString fieldName = type->ElementName();
     UsageTypeEnum usageType = type->ElementUsageType();
+    bool isDataItem = type->IsDataItem();
     offset = _alignmentCalculator->AlignNextElement(baseType);
 
-    _newType = ElementType::New(_typeManager, &fieldName, baseType, usageType, offset);
+    _newType = ElementType::New(_typeManager, &fieldName, baseType, usageType, offset, isDataItem);
     VIREO_ASSERT(_newType != type);
 }
 //------------------------------------------------------------

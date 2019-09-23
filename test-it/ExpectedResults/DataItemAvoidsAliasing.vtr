@@ -1,0 +1,14 @@
+MyVI1:
+ myDouble needsUpdate false
+ myDouble needsUpdate true
+ myDouble needsUpdate false
+MyVI2:
+ myDouble needsUpdate false
+ myDouble needsUpdate true
+ myDouble needsUpdate false
+ MySubVI:
+  myInteger needsUpdate false
+ End MySubVI
+ MySubVI:
+  myInteger needsUpdate false
+ End MySubVI

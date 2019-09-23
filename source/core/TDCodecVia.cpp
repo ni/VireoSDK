@@ -506,6 +506,7 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
     SubString  token;
     SubString  fieldName;
     UsageTypeEnum  usageType;
+    bool isDataItem;
 
     _string.ReadToken(&token);
     if (!token.CompareCStr("("))
@@ -513,16 +514,23 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
 
     _string.ReadToken(&token);
     while (!token.CompareCStr(")")) {
+        isDataItem = false;
         if (token.CompareCStr(tsElementToken)) {
             usageType = kUsageTypeSimple;
+        } else if (token.CompareCStr(tsDataitemElementToken)) {
+            usageType = kUsageTypeSimple;
+            isDataItem = true;
         } else if (token.CompareCStr(tsConstElementToken)) {
             usageType = kUsageTypeConst;
         } else if (token.CompareCStr(tsInputParamToken)) {
             usageType = kUsageTypeInput;
+            isDataItem = true;
         } else if (token.CompareCStr(tsOutputParamToken)) {
             usageType = kUsageTypeOutput;
+            isDataItem = true;
         } else if (token.CompareCStr(tsInputOutputParamToken)) {
             usageType = kUsageTypeInputOutput;
+            isDataItem = true;
         } else if (token.CompareCStr(tsStaticParamToken)) {
             usageType = kUsageTypeStatic;
         } else if (token.CompareCStr(tsTempParamToken)) {
@@ -558,7 +566,7 @@ void TDViaParser::ParseAggregateElementList(std::vector<TypeRef> *elementTypesVe
         }
 
         Int32 offset = calculator->AlignNextElement(subType);
-        ElementTypeRef element = ElementType::New(_typeManager, &fieldName, subType, usageType, offset);
+        ElementTypeRef element = ElementType::New(_typeManager, &fieldName, subType, usageType, offset, isDataItem);
         elementTypesVector->push_back(element);
 
         _string.ReadToken(&token);
@@ -1975,7 +1983,10 @@ class TDViaFormatterTypeVisitor : public TypeVisitor
     //------------------------------------------------------------
     void VisitElement(ElementTypeRef type) override
     {
-        _pFormatter->FormatElementUsageType(type->ElementUsageType());
+        if (type->ElementUsageType() == kUsageTypeSimple && type->IsDataItem())
+            _pFormatter->_string->AppendCStr(tsDataitemElementToken);
+        else
+            _pFormatter->FormatElementUsageType(type->ElementUsageType());
         _pFormatter->_string->Append('(');
         type->BaseType()->Accept(this);
         SubString elementName = type->ElementName();

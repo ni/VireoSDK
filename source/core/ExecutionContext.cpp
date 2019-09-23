@@ -141,6 +141,45 @@ VIREO_FUNCTION_SIGNATURE1(FPSync, StringRef)
     return _NextInstruction();
 }
 //------------------------------------------------------------
+//
+
+struct SetValueNeedsUpdateParamBlock : InstructionCore
+{
+    _ParamDef(StaticType, ValueType);
+    _ParamDef(void, ValueData);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
+{
+    VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
+    if (vi->IsTopLevelVI())
+        _ParamPointer(ValueType)->SetNeedsUpdate(true);
+    return _NextInstruction();
+}
+
+Boolean TestNeedsUpdate(TypeRef typeRef, Boolean reset) {
+    Boolean needsUpdate = typeRef->NeedsUpdate();
+    if (needsUpdate && reset)
+        typeRef->SetNeedsUpdate(false);
+    return needsUpdate;
+}
+
+struct CheckValueNeedsUpdateParamBlock : InstructionCore
+{
+    _ParamDef(StaticType, ValueType);
+    _ParamDef(void, ValueData);
+    _ParamDef(Boolean, NeedsUpdate);
+    NEXT_INSTRUCTION_METHOD()
+};
+VIREO_FUNCTION_SIGNATURET(CheckValueNeedsUpdate, CheckValueNeedsUpdateParamBlock)
+{
+    if (_ParamPointer(NeedsUpdate))
+        _Param(NeedsUpdate) = TestNeedsUpdate(_ParamPointer(ValueType), true);
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
 // Wait - it target clump is active then it waits for it to complete.
 // if target clump is complete then there is nothing to wait on.
 VIREO_FUNCTION_SIGNATURE1(Wait, VIClump)
@@ -445,6 +484,8 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
+    DEFINE_VIREO_FUNCTION(SetValueNeedsUpdate, "p(i(StaticTypeAndData value))")
+    DEFINE_VIREO_FUNCTION(CheckValueNeedsUpdate, "p(i(StaticTypeAndData value) o(Boolean))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Wait, "p(i(Clump))")
     DEFINE_VIREO_FUNCTION(Branch, "p(i(BranchTarget))")

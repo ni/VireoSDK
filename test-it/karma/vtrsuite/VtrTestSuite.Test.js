@@ -46,6 +46,17 @@ describe('The Vireo VTR test suite', function () {
 
         describe('can preload ' + testName, function () {
             var testDescription = 'and run ' + testName;
+
+            // A test that all top-level vi locals in memory can safely call testNeedsUpdateAndReset
+            var testLocalsNeedUpdate = function (viName, allLocals) {
+                Object.keys(allLocals).forEach(function (rawName) {
+                    var encodedName = vireoHelpers.staticHelpers.encodeIdentifier(rawName);
+                    var valueRef = vireo.eggShell.findValueRef(viName, encodedName);
+                    vireo.eggShell.testNeedsUpdateAndReset(valueRef);
+                });
+            };
+
+            // A test that all top-level vi locals can be serialized to valid JSON
             var readLocalsAsJSON = function () {
                 var viaText = window.testHelpers.fixtures.loadAbsoluteUrl(viaFile);
                 var enqueueRegex = /^enqueue\s*\((\S*)\)$/m;
@@ -54,10 +65,11 @@ describe('The Vireo VTR test suite', function () {
                 var viValueRef = viName === undefined ? undefined : vireo.eggShell.findValueRef(viName, '');
                 // viName can be undefined if the test VI never runs enqueue() in the via
                 // viValueRef can be undefined if the vi reference has no associated data (data pointer null because no locals for VI)
-                var jsonResult;
+                var jsonResult, allLocals;
                 if (viName !== undefined && viValueRef !== undefined) {
                     jsonResult = vireo.eggShell.readJSON(viValueRef);
-                    JSON.parse(jsonResult);
+                    allLocals = JSON.parse(jsonResult);
+                    testLocalsNeedUpdate(viName, allLocals);
                 }
             };
 
