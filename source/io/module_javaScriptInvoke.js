@@ -40,6 +40,11 @@ var assignJavaScriptInvoke;
         kNIUnableToAcceptReturnValueDuringAsync: {
             CODE: 44308,
             MESSAGE: 'Unable to set return value after call to getCompletionCallback API function. Verify return value is provided to the completion callback and not returned.'
+        },
+
+        kNIInvalidReference: {
+            CODE: 1556,
+            MESSAGE: 'The reference is invalid. This error might occur because the reference has been deleted.'
         }
     };
 
@@ -73,6 +78,7 @@ var assignJavaScriptInvoke;
         var cookieToJsValueMap = new Map();
         var jsValueToCookieCache = new Map();
         var jsRefNumCookieCounter = 0;
+        const jsRefNumInvalidCookieValue = 0;
 
         var cacheRefNum = function (cookie, jsValue) {
             cookieToJsValueMap.set(cookie, jsValue);
@@ -124,8 +130,17 @@ var assignJavaScriptInvoke;
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
-            var visitNumeric = function (valueRef) {
+            var visitNumeric = function (valueRef, data) {
                 return Module.eggShell.readDouble(valueRef);
+            };
+
+            var reportInvalidReference = function (data) {
+                var newError = {
+                    status: true,
+                    code: ERRORS.kNIInvalidReference.CODE,
+                    source: ERRORS.kNIInvalidReference.MESSAGE
+                };
+                Module.coreHelpers.mergeErrors(data.errorValueRef, newError);
             };
 
             return {
@@ -137,19 +152,25 @@ var assignJavaScriptInvoke;
                 visitUInt32: visitNumeric,
                 visitSingle: visitNumeric,
                 visitDouble: visitNumeric,
-                visitBoolean: function (valueRef) {
+                visitBoolean: function (valueRef, data) {
                     return Module.eggShell.readDouble(valueRef) !== 0;
                 },
 
-                visitString: function (valueRef) {
+                visitString: function (valueRef, data) {
                     return Module.eggShell.readString(valueRef);
                 },
 
-                visitArray: function (valueRef) {
+                visitArray: function (valueRef, data) {
                     return Module.eggShell.readTypedArray(valueRef);
                 },
 
-                visitJSObjectRefnum: function (valueRef) {
+                visitJSObjectRefnum: function (valueRef, data) {
+                    var cookie = Module.eggShell.readDouble(valueRef);
+                    var refNumExists = cookieToJsValueMap.has(cookie);
+                    if (!refNumExists) {
+                        reportInvalidReference (data);
+                        return;
+                    }
                     return Module.eggShell.readJavaScriptRefNum(valueRef);
                 }
             };
@@ -255,18 +276,24 @@ var assignJavaScriptInvoke;
             };
         };
 
-        var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount) {
+        var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef) {
             var parametersArraySize = parameters.length;
             for (var index = 0; index < parametersCount; index += 1) {
                 var parameterValueRef = createValueRefFromPointerArray(parametersPointer, index);
                 if (isInternalFunction) {
                     parameters[parametersArraySize + index] = parameterValueRef;
                 } else {
+                    data = {
+                        errorValueRef: errorValueRef
+                    };
                     // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
-                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef);
+                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef, data);
+                    if (errorPresent(errorValueRef))
+                        break;
                 }
             }
-            return parameters;
+            var success = !errorPresent(errorValueRef);
+            return success;
         };
 
         var completionCallbackRetrievalEnum = {
@@ -278,6 +305,12 @@ var assignJavaScriptInvoke;
             PENDING: 'PENDING',
             FULFILLED: 'FULFILLED',
             REJECTED: 'REJECTED'
+        };
+
+        var errorPresent = function (errorValueRef) {
+            var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
+            var errorPresent = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
+            return errorPresent;
         };
 
         var coerceToError = function (returnValue) {
@@ -415,7 +448,14 @@ var assignJavaScriptInvoke;
                 parameters.push(returnValueRef);
             }
 
-            addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
+            var success = addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef);
+            if (!success)
+            {
+                // There was a problem with obtaining a value for a parameter
+                // This can happen with JavaScript RefNums that have been closed
+                Module.eggShell.setOccurrence(occurrencePointer);
+                return;
+            }
 
             var functionAndContext = findJavaScriptFunctionToCall(functionName, isInternalFunction);
             var functionToCall = functionAndContext.functionToCall;
@@ -504,6 +544,28 @@ var assignJavaScriptInvoke;
             var cookie = Module.eggShell.readDouble(javaScriptRefNumValueRef);
             var isNotAJavaScriptRefnum = !hasCachedRefNum(cookie);
             Module.eggShell.writeDouble(returnValueRef, isNotAJavaScriptRefnum ? 1 : 0);
+        };
+
+        /**
+         * Static references (ie, control reference) aren't closed and not removed from the map
+         */
+        Module.javaScriptInvoke.closeJavaScriptRefNum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, errorTypeRef, errorDataRef) {
+            var javaScriptValueRef = Module.eggShell.createValueRef(javaScriptRefnumTypeRef, javaScriptRefnumDataRef);
+            var isDynamicReference = Module.typeHelpers.isJSObjectDynamicRefnum(javaScriptValueRef.typeRef);
+            if (isDynamicReference) {
+                var cookie = Module.eggShell.readDouble(javaScriptValueRef);
+                var refNumExists = cookieToJsValueMap.delete(cookie);
+                if (!refNumExists)
+                {
+                    var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+                    var newError = {
+                        status: true,
+                        code: ERRORS.kNIInvalidReference.CODE,
+                        source: ERRORS.kNIInvalidReference.MESSAGE
+                    };
+                    Module.coreHelpers.mergeErrors(errorValueRef, newError);
+                }
+            }
         };
     };
 }());

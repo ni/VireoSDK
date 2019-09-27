@@ -17,63 +17,77 @@ SDG
 
 namespace Vireo {
 
-    enum { kCloseReferenceArgErr = 1, kCloseReferenceInvalidReference = 1556 };
+#if kVireoOS_emscripten
+extern "C" {
+    extern void closeJavaScriptRefNum(TypeRef, JavaScriptStaticRefNum*, TypeRef errorClusterType, ErrorCluster* errorClusterData);
+}
+#endif
 
-    //------------------------------------------------------------
-    struct CloseReferenceParamBlock : public InstructionCore
+extern void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr methodName);
+
+enum { kCloseReferenceArgErr = 1, kCloseReferenceInvalidReference = 1556 };
+
+//------------------------------------------------------------
+struct CloseReferenceParamBlock : public InstructionCore
+{
+    _ParamImmediateDef(StaticTypeAndData, Reference);
+    _ParamDef(ErrorCluster, ErrorClust);
+    NEXT_INSTRUCTION_METHOD()
+};
+
+VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
+{
+    ErrorCluster *errorClusterPtr = _ParamPointer(ErrorClust);
+    TypeRef type = _ParamImmediate(Reference._paramType);
+    void* pData = _ParamImmediate(Reference)._pData;
+
+    // Check for supported types
+    TypeRef elementType = type;
+    Boolean isSupportedType = true;
+    TypedArrayCoreRef pArray = nullptr;
+    if (type->IsArray())
     {
-        _ParamImmediateDef(StaticTypeAndData, Reference);
-        _ParamDef(ErrorCluster, ErrorClust);
-        NEXT_INSTRUCTION_METHOD()
-    };
+        elementType = type->GetSubElement(0);
+        pArray = *(TypedArrayCoreRef*)pData;
+        Int32 rank = pArray->Rank();
+        isSupportedType = isSupportedType && rank == 1;
+    }
+    isSupportedType = isSupportedType && elementType->IsJavaScriptDynamicRefNum();
 
-    VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
+    // Return error for unsupported types
+    if (!isSupportedType)
     {
-        ErrorCluster *errPtr = _ParamPointer(ErrorClust);
-        TypeRef type = _ParamImmediate(Reference._paramType);
-        void* pData = _ParamImmediate(Reference)._pData;
-
-        // Check for supported types
-        TypeRef elementType = type;
-        Boolean isSupportedType = true;
-        TypedArrayCoreRef pArray = nullptr;
-        if (type->IsArray())
-        { 
-            elementType = type->GetSubElement(0);
-            pArray = *(TypedArrayCoreRef*)pData;
-            Int32 rank = pArray->Rank();
-            isSupportedType = isSupportedType && rank == 1;
-        }
-        isSupportedType = isSupportedType && elementType->IsJavaScriptDynamicRefNum();
-
-        // Return error for unsupported types
-        if (!isSupportedType)
-        {
-            if (errPtr && !errPtr->status)
-                errPtr->SetErrorAndAppendCallChain(true, kCloseReferenceArgErr, "CloseReference");
-            return _NextInstruction();
-        }
-
-        // Run close reference code regardless of current error on wire
-        Boolean closeReferenceError = false;
-        if (type->IsArray())
-        {
-        }
-        else if (elementType->IsJavaScriptDynamicRefNum())
-        {
-        }
-
-        // Report close reference error if there is not an error already present
-        if (errPtr && !errPtr->status && closeReferenceError)
-            errPtr->SetErrorAndAppendCallChain(true, kCloseReferenceInvalidReference, "CloseReference");
-
+        if (errorClusterPtr && !errorClusterPtr->status)
+            errorClusterPtr->SetErrorAndAppendCallChain(true, kCloseReferenceArgErr, "CloseReference");
         return _NextInstruction();
     }
 
-    //------------------------------------------------------------
-    DEFINE_VIREO_BEGIN(CloseReference)
-        DEFINE_VIREO_REQUIRE(JavaScriptDynamicRefNum)
+    // Run close reference code regardless of current error on wire
+    Boolean errorAlreadyPresent = (errorClusterPtr && errorClusterPtr->status);
+    TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
+    if (type->IsArray())
+    {
+        for (IntIndex i = 0; i < pArray->Length(); i++) {
+#if kVireoOS_emscripten
+            closeJavaScriptRefNum(elementType, pArray->BeginAt(i), typeRefErrorCluster, errorClusterPtr);
+#endif
+        }
+    } else if (elementType->IsJavaScriptDynamicRefNum()) {
+#if kVireoOS_emscripten
+        closeJavaScriptRefNum(elementType, pData, typeRefErrorCluster, errorClusterPtr);
+#endif
+    }
+    // Report close reference error if there is not an error already present
+    if (errorClusterPtr && !errorClusterPtr->status && !errorAlreadyPresent)
+        AddCallChainToSourceIfErrorPresent(errorClusterPtr, "CloseReference");
 
-        DEFINE_VIREO_FUNCTION(CloseReference, "p(i(StaticTypeAndData reference) io(ErrorCluster error))");
-    DEFINE_VIREO_END()
+    return _NextInstruction();
+}
+
+//------------------------------------------------------------
+DEFINE_VIREO_BEGIN(CloseReference)
+    DEFINE_VIREO_REQUIRE(JavaScriptDynamicRefNum)
+
+    DEFINE_VIREO_FUNCTION(CloseReference, "p(i(StaticTypeAndData reference) io(ErrorCluster error))");
+DEFINE_VIREO_END()
 }  // namespace Vireo
