@@ -549,7 +549,7 @@ var assignJavaScriptInvoke;
         /**
          * Static references (ie, control reference) aren't closed and not removed from the map
          */
-        Module.javaScriptInvoke.closeJavaScriptRefNum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, errorTypeRef, errorDataRef) {
+        Module.javaScriptInvoke.jsCloseJavaScriptRefNum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, errorTypeRef, errorDataRef) {
             var javaScriptValueRef = Module.eggShell.createValueRef(javaScriptRefnumTypeRef, javaScriptRefnumDataRef);
             var isDynamicReference = Module.typeHelpers.isJSObjectDynamicRefnum(javaScriptValueRef.typeRef);
             if (isDynamicReference) {

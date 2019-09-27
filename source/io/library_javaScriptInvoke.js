@@ -13,8 +13,8 @@
     };
 
     var closeJavaScriptRefNumCAPI = {
-        jsCloseJavaScriptRefNumCAPI: function () {
-            Module.javaScriptInvoke.closeJavaScriptRefNum.apply(undefined, arguments);
+        jsCloseJavaScriptRefNum: function () {
+            Module.javaScriptInvoke.jsCloseJavaScriptRefNum.apply(undefined, arguments);
         }
     }
 

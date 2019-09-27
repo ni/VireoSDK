@@ -19,7 +19,7 @@ namespace Vireo {
 
 #if kVireoOS_emscripten
 extern "C" {
-    extern void closeJavaScriptRefNum(TypeRef, JavaScriptStaticRefNum*, TypeRef errorClusterType, ErrorCluster* errorClusterData);
+    extern void jsCloseJavaScriptRefNum(TypeRef, void*, TypeRef errorClusterType, ErrorCluster* errorClusterData);
 }
 #endif
 
@@ -69,12 +69,12 @@ VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
     {
         for (IntIndex i = 0; i < pArray->Length(); i++) {
 #if kVireoOS_emscripten
-            closeJavaScriptRefNum(elementType, pArray->BeginAt(i), typeRefErrorCluster, errorClusterPtr);
+            jsCloseJavaScriptRefNum(elementType, pArray->BeginAt(i), typeRefErrorCluster, errorClusterPtr);
 #endif
         }
     } else if (elementType->IsJavaScriptDynamicRefNum()) {
 #if kVireoOS_emscripten
-        closeJavaScriptRefNum(elementType, pData, typeRefErrorCluster, errorClusterPtr);
+        jsCloseJavaScriptRefNum(elementType, pData, typeRefErrorCluster, errorClusterPtr);
 #endif
     }
     // Report close reference error if there is not an error already present
