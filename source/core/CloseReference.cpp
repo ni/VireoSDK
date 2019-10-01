@@ -85,8 +85,8 @@ VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
 }
 
 //------------------------------------------------------------
-DEFINE_VIREO_BEGIN(CloseReference)
-    DEFINE_VIREO_REQUIRE(JavaScriptDynamicRefNum)
+DEFINE_VIREO_BEGIN(CloseReferenceModule)
+    DEFINE_VIREO_REQUIRE(JavaScriptRefs)
 
     DEFINE_VIREO_FUNCTION(CloseReference, "p(i(StaticTypeAndData reference) io(ErrorCluster error))");
 DEFINE_VIREO_END()
