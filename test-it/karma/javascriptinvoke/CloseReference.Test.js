@@ -1,4 +1,4 @@
-describe('A CloseReference instruction', function () {
+fdescribe('A CloseReference instruction', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
@@ -20,12 +20,12 @@ describe('A CloseReference instruction', function () {
         vireo = await vireoHelpers.createInstance();
 
         window.NI_GetObjectFunction = function () {
-            const person = { firstName: 'Peter', lastName: 'Jones', age: 35 };
+            var person = { firstName: 'Peter', lastName: 'Jones', age: 35 };
             return person;
         };
 
         window.NI_UseObjectFunction = function (value) {
-            const success =
+            var success =
                 typeof value === 'object' &&
                 value.firstName === 'Peter' &&
                 value.lastName === 'Jones' &&
@@ -58,17 +58,17 @@ describe('A CloseReference instruction', function () {
             expect(viPathParser('noErrorInAndValidReferenceError.code')).toBe(0);
             expect(viPathParser('noErrorInAndValidReferenceError.source')).toBeEmptyString();
             expect(viPathParser('isNotAValidRefnum1')).toBeTrue();
-            expect(viPathParser('noErrorInAndValidReferenceError.status')).toBeTrue();
-            expect(viPathParser('noErrorInAndValidReferenceError.code')).toBe(100);
-            expect(viPathParser('noErrorInAndValidReferenceError.source')).toBe('error');
+            expect(viPathParser('errorInAndValidReferenceError.status')).toBeTrue();
+            expect(viPathParser('errorInAndValidReferenceError.code')).toBe(100);
+            expect(viPathParser('errorInAndValidReferenceError.source')).toBe('error');
             expect(viPathParser('isNotAValidRefnum2')).toBeTrue();
             expect(viPathParser('noErrorInAndInvalidReferenceError.status')).toBeTrue();
             expect(viPathParser('noErrorInAndInvalidReferenceError.code')).toBe(1556);
-            expect(viPathParser('noErrorInAndInvalidReferenceError.source')).toBeNotEmpty();
+            expect(viPathParser('noErrorInAndInvalidReferenceError.source')).not.toBeNull();
             expect(viPathParser('isNotAValidRefnum3')).toBeTrue();
-            expect(viPathParser('noErrorInAndInvalidReferenceError.status')).toBeTrue();
-            expect(viPathParser('noErrorInAndInvalidReferenceError.code')).toBe(100);
-            expect(viPathParser('noErrorInAndInvalidReferenceError.source')).toBe('error');
+            expect(viPathParser('errorInAndInvalidReferenceError.status')).toBeTrue();
+            expect(viPathParser('errorInAndInvalidReferenceError.code')).toBe(100);
+            expect(viPathParser('errorInAndInvalidReferenceError.source')).toBe('error');
             expect(viPathParser('isNotAValidRefnum4')).toBeTrue();
             done();
         });

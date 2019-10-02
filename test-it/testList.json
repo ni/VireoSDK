@@ -135,7 +135,7 @@
                 "CaseComparison.via",
                 "CheckCopyDataMemoryLeak.via",
                 "CheckCoreTypes.via",
-                "CloseReferenceUnsuportedType.via",
+                "CloseReferenceUnsupportedType.via",
                 "ClumpTriggerBug.via",
                 "ClumpTriggerWait.via",
                 "ClusterBinaryOpBug.via",

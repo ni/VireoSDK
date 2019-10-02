@@ -87,9 +87,6 @@ var assignJavaScriptInvoke;
 
         var hasCachedRefNum = function (cookie) {
             var refNumExists = cookieToJsValueMap.has(cookie);
-            if (!refNumExists && cookie !== 0) {
-                throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
-            }
             return refNumExists;
         };
 
@@ -276,6 +273,15 @@ var assignJavaScriptInvoke;
             };
         };
 
+        var errorPresent = function (errorValueRef) {
+            var errorPresent = false;
+            if (typeof errorValueRef !== "undefined") {
+                var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
+                errorPresent = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
+            }
+            return errorPresent;
+        };
+
         var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef) {
             var parametersArraySize = parameters.length;
             for (var index = 0; index < parametersCount; index += 1) {
@@ -283,7 +289,7 @@ var assignJavaScriptInvoke;
                 if (isInternalFunction) {
                     parameters[parametersArraySize + index] = parameterValueRef;
                 } else {
-                    data = {
+                    var data = {
                         errorValueRef: errorValueRef
                     };
                     // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
@@ -305,12 +311,6 @@ var assignJavaScriptInvoke;
             PENDING: 'PENDING',
             FULFILLED: 'FULFILLED',
             REJECTED: 'REJECTED'
-        };
-
-        var errorPresent = function (errorValueRef) {
-            var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
-            var errorPresent = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
-            return errorPresent;
         };
 
         var coerceToError = function (returnValue) {
