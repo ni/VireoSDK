@@ -69,18 +69,17 @@ VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
     // Run close reference code regardless of current error on wire
     Boolean errorAlreadyPresent = (errorClusterPtr && errorClusterPtr->status);
     TypeRef typeRefErrorCluster = TypeManagerScope::Current()->FindType("ErrorCluster");
-    if (type->IsArray())
-    {
-        for (IntIndex i = 0; i < pArray->Length(); i++) {
 #if kVireoOS_emscripten
-            jsCloseJavaScriptRefNum(elementType, pArray->BeginAt(i), typeRefErrorCluster, errorClusterPtr);
-#endif
+    if (elementType->IsJavaScriptDynamicRefNum()) {
+        if (type->IsArray()) {
+            for (IntIndex i = 0; i < pArray->Length(); i++) {
+                jsCloseJavaScriptRefNum(elementType, pArray->BeginAt(i), typeRefErrorCluster, errorClusterPtr);
+            }
+        } else {
+            jsCloseJavaScriptRefNum(elementType, pData, typeRefErrorCluster, errorClusterPtr);
         }
-    } else if (elementType->IsJavaScriptDynamicRefNum()) {
-#if kVireoOS_emscripten
-        jsCloseJavaScriptRefNum(elementType, pData, typeRefErrorCluster, errorClusterPtr);
-#endif
     }
+#endif
     // Report close reference error if there is not an error already present
     if (errorClusterPtr && !errorClusterPtr->status && !errorAlreadyPresent)
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, "CloseReference");
