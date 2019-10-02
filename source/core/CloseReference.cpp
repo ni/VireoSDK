@@ -25,7 +25,7 @@ extern "C" {
 
 extern void AddCallChainToSourceIfErrorPresent(ErrorCluster *errorCluster, ConstCStr methodName);
 
-enum { kCloseReferenceArgErr = 1, kCloseReferenceInvalidReference = 1556 };
+enum { kCloseReferenceArgErr = 1 };
 
 //------------------------------------------------------------
 struct CloseReferenceParamBlock : public InstructionCore
@@ -35,6 +35,7 @@ struct CloseReferenceParamBlock : public InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
+// JavaScriptStaticRefNum are not closed
 VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(ErrorClust);
@@ -52,9 +53,12 @@ VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
         Int32 rank = pArray->Rank();
         isSupportedType = isSupportedType && rank == 1;
     }
-    isSupportedType = isSupportedType && elementType->IsJavaScriptDynamicRefNum();
+    isSupportedType =
+        isSupportedType &&
+        (elementType->IsJavaScriptDynamicRefNum() ||
+            elementType->IsJavaScriptStaticRefNum());
 
-    // Return error for unsupported types
+    // Return argument error for unsupported types
     if (!isSupportedType)
     {
         if (errorClusterPtr && !errorClusterPtr->status)
