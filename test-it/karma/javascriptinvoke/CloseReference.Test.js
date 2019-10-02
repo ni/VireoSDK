@@ -1,4 +1,4 @@
-fdescribe('A CloseReference instruction', function () {
+describe('A CloseReference instruction', function () {
     'use strict';
     // Reference aliases
     var vireoHelpers = window.vireoHelpers;
