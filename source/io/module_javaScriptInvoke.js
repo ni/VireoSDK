@@ -78,7 +78,6 @@ var assignJavaScriptInvoke;
         var cookieToJsValueMap = new Map();
         var jsValueToCookieCache = new Map();
         var jsRefNumCookieCounter = 0;
-        const jsRefNumInvalidCookieValue = 0;
 
         var cacheRefNum = function (cookie, jsValue) {
             cookieToJsValueMap.set(cookie, jsValue);
@@ -451,7 +450,7 @@ var assignJavaScriptInvoke;
             var success = addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef);
             if (!success)
             {
-                // There was a problem with obtaining a value for a parameter
+                // There was a problem obtaining a value for a parameter
                 // This can happen with JavaScript RefNums that have been closed
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
@@ -554,8 +553,8 @@ var assignJavaScriptInvoke;
             var isDynamicReference = Module.typeHelpers.isJSObjectDynamicRefnum(javaScriptValueRef.typeRef);
             if (isDynamicReference) {
                 var cookie = Module.eggShell.readDouble(javaScriptValueRef);
-                var refNumExists = cookieToJsValueMap.delete(cookie);
-                if (!refNumExists)
+                var keyWasPresent = cookieToJsValueMap.delete(cookie);
+                if (!keyWasPresent)
                 {
                     var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
                     var newError = {
