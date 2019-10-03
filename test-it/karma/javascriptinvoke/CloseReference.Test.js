@@ -41,9 +41,11 @@ describe('A CloseReference instruction', function () {
         window.NI_UseObjectFunction = undefined;
     });
 
-    it('successfully closes a JavaScript Opaque Reference', function (done) {
+    it('successfully closes a JavaScript Dynamic Reference', function (done) {
+        var viName = 'DynamicReferencesVI';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsCloseReferenceViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(rawPrint).toBeEmptyString();
@@ -64,12 +66,80 @@ describe('A CloseReference instruction', function () {
             expect(viPathParser('isNotAValidRefnum2')).toBeTrue();
             expect(viPathParser('noErrorInAndInvalidReferenceError.status')).toBeTrue();
             expect(viPathParser('noErrorInAndInvalidReferenceError.code')).toBe(1556);
-            expect(viPathParser('noErrorInAndInvalidReferenceError.source')).not.toBeNull();
+            expect(viPathParser('noErrorInAndInvalidReferenceError.source')).not.toBeEmptyString();
             expect(viPathParser('isNotAValidRefnum3')).toBeTrue();
             expect(viPathParser('errorInAndInvalidReferenceError.status')).toBeTrue();
             expect(viPathParser('errorInAndInvalidReferenceError.code')).toBe(100);
             expect(viPathParser('errorInAndInvalidReferenceError.source')).toBe('error');
             expect(viPathParser('isNotAValidRefnum4')).toBeTrue();
+            done();
+        });
+    });
+
+    it('does not close a JavaScript Static Reference', function (done) {
+        var viName = 'StaticReferencesVI';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsCloseReferenceViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('getObjectReferenceError.status')).toBeFalse();
+            expect(viPathParser('getObjectReferenceError.code')).toBe(0);
+            expect(viPathParser('getObjectReferenceError.source')).toBeEmptyString();
+            expect(viPathParser('noErrorInAndValidReferenceError.status')).toBeFalse();
+            expect(viPathParser('noErrorInAndValidReferenceError.code')).toBe(0);
+            expect(viPathParser('noErrorInAndValidReferenceError.source')).toBeEmptyString();
+            expect(viPathParser('isNotAValidRefnum1')).toBeFalse();
+            expect(viPathParser('errorInAndValidReferenceError.status')).toBeTrue();
+            expect(viPathParser('errorInAndValidReferenceError.code')).toBe(100);
+            expect(viPathParser('errorInAndValidReferenceError.source')).toBe('error');
+            expect(viPathParser('isNotAValidRefnum2')).toBeFalse();
+            done();
+        });
+    });
+
+    it('makes a JavaScript Dynamic Reference invalid for further use', function (done) {
+        var viName = 'InvalidReferenceParameterVI';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsCloseReferenceViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('getObjectReferenceError.status')).toBeFalse();
+            expect(viPathParser('getObjectReferenceError.code')).toBe(0);
+            expect(viPathParser('getObjectReferenceError.source')).toBeEmptyString();
+            expect(viPathParser('closeReferenceError.status')).toBeFalse();
+            expect(viPathParser('closeReferenceError.code')).toBe(0);
+            expect(viPathParser('closeReferenceError.source')).toBeEmptyString();
+            expect(viPathParser('isNotAValidRefnum1')).toBeTrue();
+            expect(viPathParser('invalidReferenceError.status')).toBeTrue();
+            expect(viPathParser('invalidReferenceError.code')).toBe(1556);
+            expect(viPathParser('invalidReferenceError.source')).not.toBeEmptyString();
+            done();
+        });
+    });
+
+    it('can close an array of references of one dimension', function (done) {
+        var viName = 'ArrayOfReferencesVI';
+        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsCloseReferenceViaUrl);
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+        vireoRunner.enqueueVI(vireo, viName);
+
+        runSlicesAsync(function (rawPrint, rawPrintError) {
+            expect(rawPrint).toBeEmptyString();
+            expect(rawPrintError).toBeEmptyString();
+            expect(viPathParser('getObjectReferenceError.status')).toBeFalse();
+            expect(viPathParser('getObjectReferenceError.code')).toBe(0);
+            expect(viPathParser('getObjectReferenceError.source')).toBeEmptyString();
+            expect(viPathParser('closeReferenceError.status')).toBeFalse();
+            expect(viPathParser('closeReferenceError.code')).toBe(0);
+            expect(viPathParser('closeReferenceError.source')).toBeEmptyString();
+            expect(viPathParser('isNotAValidRefnum1')).toBeTrue();
+            expect(viPathParser('isNotAValidRefnum2')).toBeTrue();
             done();
         });
     });

@@ -35,7 +35,7 @@ struct CloseReferenceParamBlock : public InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
-// JavaScriptStaticRefNum are not closed
+// NOTE: JavaScriptStaticRefNum (Control references) aren't closed and don't return close reference errors
 VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
 {
     ErrorCluster *errorClusterPtr = _ParamPointer(ErrorClust);
@@ -80,6 +80,7 @@ VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
         }
     }
 #endif
+
     // Report close reference error if there is not an error already present
     if (errorClusterPtr && !errorClusterPtr->status && !errorAlreadyPresent)
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, "CloseReference");

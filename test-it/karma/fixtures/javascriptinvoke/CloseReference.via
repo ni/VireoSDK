@@ -1,4 +1,4 @@
-define(MyVI dv(VirtualInstrument (
+define(DynamicReferencesVI dv(VirtualInstrument (
     Locals: c(
         ce(dv(.ErrorCluster (true 100 'error' )) errorIn)
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) err)
@@ -40,4 +40,72 @@ define(MyVI dv(VirtualInstrument (
     )
 ) ) )
 
-enqueue(MyVI)
+define(StaticReferencesVI dv(VirtualInstrument (
+    Locals: c(
+        ce(dv(.ErrorCluster (true 100 'error' )) errorIn)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) err)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) noErrorInAndValidReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) errorInAndValidReferenceError)
+
+        e(.JavaScriptStaticRefNum staticReference)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        // no error in, valid reference, close reference => no error out, reference not closed
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'NI_GetObjectFunction' staticReference)
+        CloseReference(staticReference noErrorInAndValidReferenceError)
+        IsNotANumPathRefnum(staticReference isNotAValidRefnum1)
+
+        // error in, valid reference, close reference => error out same as error in, reference not closed
+        Copy(errorIn errorInAndValidReferenceError)
+        CloseReference(staticReference errorInAndValidReferenceError)
+        IsNotANumPathRefnum(staticReference isNotAValidRefnum2)
+    )
+) ) )
+
+define(InvalidReferenceParameterVI dv(VirtualInstrument (
+    Locals: c(
+        e(dv(.Boolean f) returnBoolean)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) closeReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) invalidReferenceError)
+
+        e(.JavaScriptDynamicRefNum objectReference)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'NI_GetObjectFunction' objectReference)
+        CloseReference(objectReference closeReferenceError)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum1)
+        JavaScriptInvoke(occurrence false invalidReferenceError 'NI_UseObjectFunction' returnBoolean objectReference)
+    )
+) ) )
+
+define(ArrayOfReferencesVI dv(VirtualInstrument (
+    Locals: c(
+        e(a(.JavaScriptDynamicRefNum *) arrayOfReferences)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) closeReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) invalidReferenceError)
+
+        e(.JavaScriptDynamicRefNum objectReference1)
+        e(.JavaScriptDynamicRefNum objectReference2)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'NI_GetObjectFunction' objectReference1)
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'NI_GetObjectFunction' objectReference2)
+        ArrayConcatenate(arrayOfReferences objectReference1 objectReference2)
+        CloseReference(arrayOfReferences closeReferenceError)
+        IsNotANumPathRefnum(objectReference1 isNotAValidRefnum1)
+        IsNotANumPathRefnum(objectReference1 isNotAValidRefnum2)
+    )
+) ) )
