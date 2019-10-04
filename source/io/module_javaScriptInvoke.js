@@ -126,7 +126,7 @@ var assignJavaScriptInvoke;
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
-            var visitNumeric = function (valueRef, data) {
+            var visitNumeric = function (valueRef) {
                 return Module.eggShell.readDouble(valueRef);
             };
 
@@ -148,15 +148,15 @@ var assignJavaScriptInvoke;
                 visitUInt32: visitNumeric,
                 visitSingle: visitNumeric,
                 visitDouble: visitNumeric,
-                visitBoolean: function (valueRef, data) {
+                visitBoolean: function (valueRef) {
                     return Module.eggShell.readDouble(valueRef) !== 0;
                 },
 
-                visitString: function (valueRef, data) {
+                visitString: function (valueRef) {
                     return Module.eggShell.readString(valueRef);
                 },
 
-                visitArray: function (valueRef, data) {
+                visitArray: function (valueRef) {
                     return Module.eggShell.readTypedArray(valueRef);
                 },
 
@@ -164,8 +164,8 @@ var assignJavaScriptInvoke;
                     var cookie = Module.eggShell.readDouble(valueRef);
                     var refNumExists = cookieToJsValueMap.has(cookie);
                     if (!refNumExists) {
-                        reportInvalidReference (data);
-                        return;
+                        reportInvalidReference(data);
+                        return undefined;
                     }
                     return Module.eggShell.readJavaScriptRefNum(valueRef);
                 }
@@ -274,7 +274,7 @@ var assignJavaScriptInvoke;
 
         var errorPresent = function (errorValueRef) {
             var errorPresent = false;
-            if (typeof errorValueRef !== "undefined") {
+            if (typeof errorValueRef !== 'undefined') {
                 var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
                 errorPresent = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
             }
@@ -293,8 +293,9 @@ var assignJavaScriptInvoke;
                     };
                     // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
                     parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef, data);
-                    if (errorPresent(errorValueRef))
+                    if (errorPresent(errorValueRef)) {
                         break;
+                    }
                 }
             }
             var success = !errorPresent(errorValueRef);
@@ -448,8 +449,7 @@ var assignJavaScriptInvoke;
             }
 
             var success = addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef);
-            if (!success)
-            {
+            if (!success) {
                 // There was a problem obtaining a value for a parameter
                 // This can happen with JavaScript RefNums that have been closed
                 Module.eggShell.setOccurrence(occurrencePointer);
@@ -554,8 +554,7 @@ var assignJavaScriptInvoke;
             if (isDynamicReference) {
                 var cookie = Module.eggShell.readDouble(javaScriptValueRef);
                 var keyWasPresent = cookieToJsValueMap.delete(cookie);
-                if (!keyWasPresent)
-                {
+                if (!keyWasPresent) {
                     var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
                     var newError = {
                         status: true,

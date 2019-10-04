@@ -20,7 +20,7 @@ describe('A CloseReference instruction', function () {
         vireo = await vireoHelpers.createInstance();
 
         window.NI_GetObjectFunction = function () {
-            var person = { firstName: 'Peter', lastName: 'Jones', age: 35 };
+            var person = {firstName: 'Peter', lastName: 'Jones', age: 35};
             return person;
         };
 
