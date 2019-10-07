@@ -85,5 +85,4 @@ deploy:
 after_script:
 - jobs -l
 - kill $!
-- wait
 - cat ./nohup.out
