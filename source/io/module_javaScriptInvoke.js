@@ -56,6 +56,7 @@ var assignJavaScriptInvoke;
         // Private Instance Variables (per vireo instance)
         var internalFunctionsMap = new Map();
 
+        // Every call to mergeNewError should be preceeded by the behavior for internalFunctions
         var mergeNewError = function (errorValueRef, functionName, errorToSet, exception) {
             var newError = {
                 status: true,
@@ -126,19 +127,15 @@ var assignJavaScriptInvoke;
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
+            var reportInvalidReference = function (data) {
+                data.errorOccurred = true;
+                // Internal check not needed because peeker is not used for internal calls
+                mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIInvalidReference);
+            };
+
             var visitNumeric = function (valueRef) {
                 return Module.eggShell.readDouble(valueRef);
             };
-
-            var reportInvalidReference = function (data) {
-                var newError = {
-                    status: true,
-                    code: ERRORS.kNIInvalidReference.CODE,
-                    source: ERRORS.kNIInvalidReference.MESSAGE
-                };
-                Module.coreHelpers.mergeErrors(data.errorValueRef, newError);
-            };
-
             return {
                 visitInt8: visitNumeric,
                 visitInt16: visitNumeric,
@@ -162,8 +159,7 @@ var assignJavaScriptInvoke;
 
                 visitJSObjectRefnum: function (valueRef, data) {
                     var cookie = Module.eggShell.readDouble(valueRef);
-                    var refNumExists = cookieToJsValueMap.has(cookie);
-                    if (!refNumExists) {
+                    if (!hasCachedRefNum(cookie)) {
                         reportInvalidReference(data);
                         return undefined;
                     }
@@ -248,10 +244,14 @@ var assignJavaScriptInvoke;
                     context: undefined
                 };
             }
-            var names = functionName.split('.');
+
+            // Normally we do not use typeof checks to see if a value is undefined
+            // however in this case it is used to prevent ReferenceErrors when probing global objects
             var jsSelfScope = typeof self !== 'undefined' ? self : {};
             var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
             var context = typeof window !== 'undefined' ? window : jsGlobalScope;
+
+            var names = functionName.split('.');
             var functionToCall = context[names[0]];
             var namesIndex;
             for (namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
@@ -272,34 +272,26 @@ var assignJavaScriptInvoke;
             };
         };
 
-        var errorPresent = function (errorValueRef) {
-            var errorPresent = false;
-            if (typeof errorValueRef !== 'undefined') {
-                var errorStatusValueRef = Module.eggShell.findSubValueRef(errorValueRef, 'status');
-                errorPresent = Module.eggShell.readDouble(errorStatusValueRef) !== 0;
-            }
-            return errorPresent;
-        };
-
-        var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef) {
+        var addToJavaScriptParametersArray = function (functionName, parameters, parametersPointer, parametersCount, errorValueRef, isInternalFunction) {
+            var data = {
+                errorOccurred: false,
+                errorValueRef: errorValueRef,
+                functionName: functionName
+            };
             var parametersArraySize = parameters.length;
             for (var index = 0; index < parametersCount; index += 1) {
                 var parameterValueRef = createValueRefFromPointerArray(parametersPointer, index);
                 if (isInternalFunction) {
                     parameters[parametersArraySize + index] = parameterValueRef;
                 } else {
-                    var data = {
-                        errorValueRef: errorValueRef
-                    };
                     // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
                     parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef, data);
-                    if (errorPresent(errorValueRef)) {
+                    if (data.errorOccurred) {
                         break;
                     }
                 }
             }
-            var success = !errorPresent(errorValueRef);
-            return success;
+            return !data.errorOccurred;
         };
 
         var completionCallbackRetrievalEnum = {
@@ -441,20 +433,6 @@ var assignJavaScriptInvoke;
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var functionNameValueRef = Module.eggShell.createValueRef(functionNameTypeRef, functionNameDataRef);
             var functionName = Module.eggShell.readString(functionNameValueRef);
-            var parameters = [];
-
-            var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
-            if (isInternalFunction) {
-                parameters.push(returnValueRef);
-            }
-
-            var success = addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount, errorValueRef);
-            if (!success) {
-                // There was a problem obtaining a value for a parameter
-                // This can happen with JavaScript RefNums that have been closed
-                Module.eggShell.setOccurrence(occurrencePointer);
-                return;
-            }
 
             var functionAndContext = findJavaScriptFunctionToCall(functionName, isInternalFunction);
             var functionToCall = functionAndContext.functionToCall;
@@ -464,6 +442,17 @@ var assignJavaScriptInvoke;
                     throw new Error(`Unable to find internal JS function: ${functionName}`);
                 }
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke);
+                Module.eggShell.setOccurrence(occurrencePointer);
+                return;
+            }
+
+            var parameters = [];
+            var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
+            if (isInternalFunction) {
+                parameters.push(returnValueRef);
+            }
+            var success = addToJavaScriptParametersArray(functionName, parameters, parametersPointer, parametersCount, errorValueRef, isInternalFunction);
+            if (!success) {
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
