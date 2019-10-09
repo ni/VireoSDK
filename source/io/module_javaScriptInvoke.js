@@ -545,12 +545,7 @@ var assignJavaScriptInvoke;
                 var keyWasPresent = cookieToJsValueMap.delete(cookie);
                 if (!keyWasPresent) {
                     var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
-                    var newError = {
-                        status: true,
-                        code: ERRORS.kNIInvalidReference.CODE,
-                        source: ERRORS.kNIInvalidReference.MESSAGE
-                    };
-                    Module.coreHelpers.mergeErrors(errorValueRef, newError);
+                    mergeNewError(errorValueRef, 'CloseReference', ERRORS.kNIInvalidReference);
                 }
             }
         };

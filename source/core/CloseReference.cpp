@@ -82,7 +82,7 @@ VIREO_FUNCTION_SIGNATURET(CloseReference, CloseReferenceParamBlock)
 #endif
 
     // Report close reference error if there is not an error already present
-    if (errorClusterPtr && !errorClusterPtr->status && !errorAlreadyPresent)
+    if (!errorAlreadyPresent)
         AddCallChainToSourceIfErrorPresent(errorClusterPtr, "CloseReference");
 
     return _NextInstruction();

@@ -1,0 +1,27 @@
+define(InvalidReferenceParameterVI dv(VirtualInstrument (
+    Locals: c(
+        e(dv(.Boolean f) returnBoolean)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) closeReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) invalidReferenceError)
+
+        e(.JavaScriptDynamicRefNum objectReference)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'Date.now' objectReference)
+        CloseReference(objectReference closeReferenceError)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum1)
+        // Date.now, won't be invoked in the next line. We are expecting an error
+        JavaScriptInvoke(occurrence false invalidReferenceError 'Date.now' returnBoolean objectReference)
+
+        Printf ("getObjectReferenceError: %z\n" getObjectReferenceError)
+        Printf ("closeReferenceError: %z\n" closeReferenceError)
+        Printf ("isNotAValidRefnum1: %z\n" isNotAValidRefnum1)
+        Printf ("invalidReferenceError.status: %z\n" invalidReferenceError.status)
+        Printf ("invalidReferenceError.code: %z\n" invalidReferenceError.code)
+    )
+) ) )
+enqueue(InvalidReferenceParameterVI)

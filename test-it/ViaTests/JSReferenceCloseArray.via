@@ -1,0 +1,28 @@
+define(ArrayOfReferencesVI dv(VirtualInstrument (
+    Locals: c(
+        e(a(.JavaScriptDynamicRefNum *) arrayOfReferences)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) closeReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) invalidReferenceError)
+
+        e(.JavaScriptDynamicRefNum objectReference1)
+        e(.JavaScriptDynamicRefNum objectReference2)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'Date.now' objectReference1)
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'Date.now' objectReference2)
+        ArrayConcatenate(arrayOfReferences objectReference1 objectReference2)
+        CloseReference(arrayOfReferences closeReferenceError)
+        IsNotANumPathRefnum(objectReference1 isNotAValidRefnum1)
+        IsNotANumPathRefnum(objectReference1 isNotAValidRefnum2)
+
+        Printf ("getObjectReferenceError1: %z\n" getObjectReferenceError)
+        Printf ("closeReferenceError: %z\n" closeReferenceError)
+        Printf ("isNotAValidRefnum1: %z\n" isNotAValidRefnum1)
+        Printf ("isNotAValidRefnum2: %z\n" isNotAValidRefnum2)
+    )
+) ) )
+enqueue(ArrayOfReferencesVI)

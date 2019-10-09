@@ -1,0 +1,4 @@
+noErrorInAndValidReferenceError: (false 0 '')
+isNotAValidRefnum1: false
+errorInAndValidReferenceError: (true 100 'error')
+isNotAValidRefnum2: false

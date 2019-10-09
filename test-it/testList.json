@@ -1,7 +1,7 @@
 {
     "tests": {
         "native": {
-            "include": [ "common" ],
+            "include": ["common"],
             "tests": [
                 "HelloRequire.via",
                 "DateFormatStringLocaleSpecific.via",
@@ -15,8 +15,17 @@
                 "StringFormatComplex.via"
             ]
         },
+        "jsReference": {
+            "include": [],
+            "tests": [
+                "JSReferenceInvalidParameter.via",
+                "JSReferenceCloseDynamic.via",
+                "JSReferenceCloseStatic.via",
+                "JSReferenceCloseArray.via"
+            ]
+        },
         "js": {
-            "include": [ "common" ],
+            "include": ["common", "jsReference"],
             "tests": [
                 "DateFormatStringLocaleSpecific.via",
                 "HttpHeadersTest.via",
@@ -28,7 +37,7 @@
             ]
         },
         "browser": {
-            "include": ["common"],
+            "include": ["common", "jsReference"],
             "tests": [
                 "HttpHeadersTest.via",
                 "HttpHandles.via"

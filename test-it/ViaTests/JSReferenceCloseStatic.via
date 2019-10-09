@@ -1,0 +1,32 @@
+define(StaticReferencesVI dv(VirtualInstrument (
+    Locals: c(
+        ce(dv(.ErrorCluster (true 100 'error' )) errorIn)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) err)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) noErrorInAndValidReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) errorInAndValidReferenceError)
+
+        e(.JavaScriptStaticRefNum staticReference)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        // no error in, valid reference, close reference => no error out, reference not closed
+        JavaScriptInvoke(occurrence false getObjectReferenceError 'Date.now' staticReference)
+        CloseReference(staticReference noErrorInAndValidReferenceError)
+        IsNotANumPathRefnum(staticReference isNotAValidRefnum1)
+
+        // error in, valid reference, close reference => error out same as error in, reference not closed
+        Copy(errorIn errorInAndValidReferenceError)
+        CloseReference(staticReference errorInAndValidReferenceError)
+        IsNotANumPathRefnum(staticReference isNotAValidRefnum2)
+
+        Printf ("noErrorInAndValidReferenceError: %z\n" noErrorInAndValidReferenceError)
+        Printf ("isNotAValidRefnum1: %z\n" isNotAValidRefnum1)
+        Printf ("errorInAndValidReferenceError: %z\n" errorInAndValidReferenceError)
+        Printf ("isNotAValidRefnum2: %z\n" isNotAValidRefnum2)
+    )
+) ) )
+enqueue(StaticReferencesVI)

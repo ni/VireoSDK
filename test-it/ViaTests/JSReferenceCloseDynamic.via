@@ -1,0 +1,63 @@
+define(DynamicReferencesVI dv(VirtualInstrument (
+    Locals: c(
+        ce(dv(.ErrorCluster (true 100 'error' )) errorIn)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) err)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError1)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError2)
+
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) noErrorInAndValidReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) errorInAndValidReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) noErrorInAndInvalidReferenceError)
+        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) errorInAndInvalidReferenceError)
+
+        e(.JavaScriptDynamicRefNum objectReference)
+        e(dv(.Boolean false) isNotAValidRefnum0)
+        e(dv(.Boolean false) isNotAValidRefnum1)
+        e(dv(.Boolean false) isNotAValidRefnum2)
+        e(dv(.Boolean false) isNotAValidRefnum3)
+        e(dv(.Boolean false) isNotAValidRefnum4)
+        e(dv(.Boolean false) isNotAValidRefnum5)
+        e(.Occurrence occurrence)
+    )
+    clump (
+        // no error in, valid reference, close reference => no error out, reference closed
+        JavaScriptInvoke(occurrence false getObjectReferenceError1 'Date.now' objectReference)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum0)
+        CloseReference(objectReference noErrorInAndValidReferenceError)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum1)
+
+        // error in, valid reference, close reference => error out same as error in, reference closed
+        JavaScriptInvoke(occurrence false getObjectReferenceError2 'Date.now' objectReference)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum2)
+        Copy(errorIn errorInAndValidReferenceError)
+        CloseReference(objectReference errorInAndValidReferenceError)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum3)
+
+        // no error in, invalid reference, close reference => invalid reference error
+        CloseReference(objectReference noErrorInAndInvalidReferenceError)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum4)
+
+        // error in, invalid reference, close reference => error out same as error in
+        Copy(errorIn errorInAndInvalidReferenceError)
+        CloseReference(objectReference errorInAndInvalidReferenceError)
+        IsNotANumPathRefnum(objectReference isNotAValidRefnum5)
+
+        Printf ("getObjectReferenceError1: %z\n" getObjectReferenceError1)
+        Printf ("isNotAValidRefnum0: %z\n" isNotAValidRefnum0)
+        Printf ("noErrorInAndValidReferenceError: %z\n" noErrorInAndValidReferenceError)
+        Printf ("isNotAValidRefnum1: %z\n" isNotAValidRefnum1)
+        Printf ("\n")
+        Printf ("getObjectReferenceError2: %z\n" getObjectReferenceError2)
+        Printf ("isNotAValidRefnum2: %z\n" isNotAValidRefnum2)
+        Printf ("errorInAndValidReferenceError: %z\n" errorInAndValidReferenceError)
+        Printf ("isNotAValidRefnum3: %z\n" isNotAValidRefnum3)
+        Printf ("\n")
+        Printf ("noErrorInAndInvalidReferenceError.status: %z\n" noErrorInAndInvalidReferenceError.status)
+        Printf ("noErrorInAndInvalidReferenceError.code: %z\n" noErrorInAndInvalidReferenceError.code)
+        Printf ("isNotAValidRefnum4: %z\n" isNotAValidRefnum4)
+        Printf ("\n")
+        Printf ("errorInAndInvalidReferenceError: %z\n" errorInAndInvalidReferenceError)
+        Printf ("isNotAValidRefnum5: %z\n" isNotAValidRefnum5)
+    )
+) ) )
+enqueue(DynamicReferencesVI)
