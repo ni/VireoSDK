@@ -1,0 +1,13 @@
+define(CloseReferenceUnsupportedType dv(VirtualInstrument (
+    Locals: c(
+        e(.QueueRefNum<.String> queueReference)
+        e(.ErrorCluster argumentError)
+    )
+    clump (
+        CloseReference(queueReference argumentError)
+        Printf ("Error status: %s\n" argumentError.status)
+        Printf ("Error code: %d\n" argumentError.code)
+    )
+) ) )
+
+enqueue(CloseReferenceUnsupportedType)

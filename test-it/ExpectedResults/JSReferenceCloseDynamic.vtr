@@ -1,0 +1,16 @@
+getObjectReferenceError1: (false 0 '')
+validRefnum1: true
+noErrorInAndValidReferenceError: (false 0 '')
+isNotAValidRefnum1: true
+
+getObjectReferenceError2: (false 0 '')
+validRefnum2: true
+errorInAndValidReferenceError: (true 100 'problem')
+isNotAValidRefnum2: true
+
+noErrorInAndInvalidReferenceError.status: true
+noErrorInAndInvalidReferenceError.code: 1556
+isNotAValidRefnum3: true
+
+errorInAndInvalidReferenceError: (true 100 'problem')
+isNotAValidRefnum4: true

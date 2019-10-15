@@ -12,6 +12,13 @@
         }
     };
 
+    var closeJavaScriptRefNumCAPI = {
+        jsCloseJavaScriptRefNum: function () {
+            Module.javaScriptInvoke.jsCloseJavaScriptRefNum.apply(undefined, arguments);
+        }
+    };
+
     mergeInto(LibraryManager.library, javaScriptInvokeCAPI);
     mergeInto(LibraryManager.library, isNotAJavaScriptRefnumCAPI);
+    mergeInto(LibraryManager.library, closeJavaScriptRefNumCAPI);
 }());

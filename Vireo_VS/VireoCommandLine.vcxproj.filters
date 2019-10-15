@@ -148,6 +148,9 @@
     <ClCompile Include="..\source\core\DualTypeConversion.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\CloseReference.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\include\ConversionTable.def">

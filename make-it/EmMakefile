@@ -160,7 +160,8 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/DualTypeOperation.bc\
 	$(OBJS)/DualTypeConversion.bc\
 	$(OBJS)/DualTypeVisitor.bc\
-	$(OBJS)/DualTypeEqual.bc
+	$(OBJS)/DualTypeEqual.bc\
+	$(OBJS)/CloseReference.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1

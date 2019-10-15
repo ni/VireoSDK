@@ -40,6 +40,11 @@ var assignJavaScriptInvoke;
         kNIUnableToAcceptReturnValueDuringAsync: {
             CODE: 44308,
             MESSAGE: 'Unable to set return value after call to getCompletionCallback API function. Verify return value is provided to the completion callback and not returned.'
+        },
+
+        kNIInvalidReference: {
+            CODE: 1556,
+            MESSAGE: 'The reference is invalid. This error might occur because the reference has been deleted.'
         }
     };
 
@@ -51,6 +56,7 @@ var assignJavaScriptInvoke;
         // Private Instance Variables (per vireo instance)
         var internalFunctionsMap = new Map();
 
+        // Every call to mergeNewError should be preceeded by the behavior for internalFunctions
         var mergeNewError = function (errorValueRef, functionName, errorToSet, exception) {
             var newError = {
                 status: true,
@@ -81,9 +87,6 @@ var assignJavaScriptInvoke;
 
         var hasCachedRefNum = function (cookie) {
             var refNumExists = cookieToJsValueMap.has(cookie);
-            if (!refNumExists && cookie !== 0) {
-                throw new Error('RefNum cookie should be 0 if refnum has not been set yet.');
-            }
             return refNumExists;
         };
 
@@ -124,10 +127,15 @@ var assignJavaScriptInvoke;
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
+            var reportInvalidReference = function (data) {
+                data.errorOccurred = true;
+                // Internal check not needed because peeker is not used for internal calls
+                mergeNewError(data.errorValueRef, data.functionName, ERRORS.kNIInvalidReference);
+            };
+
             var visitNumeric = function (valueRef) {
                 return Module.eggShell.readDouble(valueRef);
             };
-
             return {
                 visitInt8: visitNumeric,
                 visitInt16: visitNumeric,
@@ -149,7 +157,12 @@ var assignJavaScriptInvoke;
                     return Module.eggShell.readTypedArray(valueRef);
                 },
 
-                visitJSObjectRefnum: function (valueRef) {
+                visitJSObjectRefnum: function (valueRef, data) {
+                    var cookie = Module.eggShell.readDouble(valueRef);
+                    if (!hasCachedRefNum(cookie)) {
+                        reportInvalidReference(data);
+                        return undefined;
+                    }
                     return Module.eggShell.readJavaScriptRefNum(valueRef);
                 }
             };
@@ -231,10 +244,14 @@ var assignJavaScriptInvoke;
                     context: undefined
                 };
             }
-            var names = functionName.split('.');
+
+            // Normally we do not use typeof checks to see if a value is undefined
+            // however in this case it is used to prevent ReferenceErrors when probing global objects
             var jsSelfScope = typeof self !== 'undefined' ? self : {};
             var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
             var context = typeof window !== 'undefined' ? window : jsGlobalScope;
+
+            var names = functionName.split('.');
             var functionToCall = context[names[0]];
             var namesIndex;
             for (namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
@@ -255,7 +272,12 @@ var assignJavaScriptInvoke;
             };
         };
 
-        var addToJavaScriptParametersArray = function (parameters, isInternalFunction, parametersPointer, parametersCount) {
+        var addToJavaScriptParametersArray = function (functionName, parameters, parametersPointer, parametersCount, errorValueRef, isInternalFunction) {
+            var data = {
+                errorOccurred: false,
+                errorValueRef: errorValueRef,
+                functionName: functionName
+            };
             var parametersArraySize = parameters.length;
             for (var index = 0; index < parametersCount; index += 1) {
                 var parameterValueRef = createValueRefFromPointerArray(parametersPointer, index);
@@ -263,10 +285,13 @@ var assignJavaScriptInvoke;
                     parameters[parametersArraySize + index] = parameterValueRef;
                 } else {
                     // Inputs are always wired for user calls so if this errors because parameterValueRef is undefined then we have DFIR issues
-                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef);
+                    parameters[parametersArraySize + index] = Module.eggShell.reflectOnValueRef(parameterValueVisitor, parameterValueRef, data);
+                    if (data.errorOccurred) {
+                        break;
+                    }
                 }
             }
-            return parameters;
+            return !data.errorOccurred;
         };
 
         var completionCallbackRetrievalEnum = {
@@ -408,14 +433,6 @@ var assignJavaScriptInvoke;
             var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
             var functionNameValueRef = Module.eggShell.createValueRef(functionNameTypeRef, functionNameDataRef);
             var functionName = Module.eggShell.readString(functionNameValueRef);
-            var parameters = [];
-
-            var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
-            if (isInternalFunction) {
-                parameters.push(returnValueRef);
-            }
-
-            addToJavaScriptParametersArray(parameters, isInternalFunction, parametersPointer, parametersCount);
 
             var functionAndContext = findJavaScriptFunctionToCall(functionName, isInternalFunction);
             var functionToCall = functionAndContext.functionToCall;
@@ -425,6 +442,17 @@ var assignJavaScriptInvoke;
                     throw new Error(`Unable to find internal JS function: ${functionName}`);
                 }
                 mergeNewError(errorValueRef, functionName, ERRORS.kNIUnableToFindFunctionForJavaScriptInvoke);
+                Module.eggShell.setOccurrence(occurrencePointer);
+                return;
+            }
+
+            var parameters = [];
+            var returnValueRef = createValueRefFromPointerArray(returnPointer, 0);
+            if (isInternalFunction) {
+                parameters.push(returnValueRef);
+            }
+            var success = addToJavaScriptParametersArray(functionName, parameters, parametersPointer, parametersCount, errorValueRef, isInternalFunction);
+            if (!success) {
                 Module.eggShell.setOccurrence(occurrencePointer);
                 return;
             }
@@ -504,6 +532,27 @@ var assignJavaScriptInvoke;
             var cookie = Module.eggShell.readDouble(javaScriptRefNumValueRef);
             var isNotAJavaScriptRefnum = !hasCachedRefNum(cookie);
             Module.eggShell.writeDouble(returnValueRef, isNotAJavaScriptRefnum ? 1 : 0);
+        };
+
+        /**
+         * Static references (ie, control reference) aren't closed and not removed from the map
+         */
+        Module.javaScriptInvoke.jsCloseJavaScriptRefNum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, errorTypeRef, errorDataRef) {
+            var javaScriptValueRef = Module.eggShell.createValueRef(javaScriptRefnumTypeRef, javaScriptRefnumDataRef);
+            var isDynamicReference = Module.typeHelpers.isJSObjectDynamicRefnum(javaScriptValueRef.typeRef);
+            if (isDynamicReference) {
+                var cookie = Module.eggShell.readDouble(javaScriptValueRef);
+                var keyWasPresent = cookieToJsValueMap.delete(cookie);
+                if (!keyWasPresent) {
+                    var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+                    var newError = {
+                        status: true,
+                        code: ERRORS.kNIInvalidReference.CODE,
+                        source: ERRORS.kNIInvalidReference.MESSAGE
+                    };
+                    Module.coreHelpers.mergeErrors(errorValueRef, newError);
+                }
+            }
         };
     };
 }());

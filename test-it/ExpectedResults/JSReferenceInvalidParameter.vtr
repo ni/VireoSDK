@@ -1,0 +1,6 @@
+getObjectReferenceError: (false 0 '')
+validRefnum1: true
+closeReferenceError: (false 0 '')
+isNotAValidRefnum1: true
+invalidReferenceError.status: true
+invalidReferenceError.code: 1556
