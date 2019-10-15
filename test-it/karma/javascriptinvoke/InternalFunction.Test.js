@@ -177,10 +177,11 @@ describe('A JavaScriptInvoke for an internal function', function () {
         vireoRunner.enqueueVI(vireo, viName);
 
         var called = false;
+        var getCompletionCallback = 'some value';
 
         vireo.javaScriptInvoke.registerInternalFunctions({
             NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
-                jsAPI.getCompletionCallback();
+                getCompletionCallback = jsAPI.getCompletionCallback;
                 called = true;
                 jsAPI.setLabVIEWError(false, 0, '');
                 var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
@@ -197,6 +198,7 @@ describe('A JavaScriptInvoke for an internal function', function () {
             exception = ex;
         }
         expect(called).toBeTrue();
+        expect(getCompletionCallback).toBeUndefined();
         expect(exception instanceof Error).toBeTrue();
         expect(exception.rawPrint).toBeEmptyString();
         expect(exception.rawPrintError).toBeEmptyString();
@@ -207,115 +209,50 @@ describe('A JavaScriptInvoke for an internal function', function () {
         expect(viPathParser('returnValue')).toBe(2);
     });
 
-    it('errors if starting an async call and returning a value sync', async function () {
-        var viName = 'NI_InternalFunction';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-
-        var called = false;
-
-        vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
-                jsAPI.getCompletionCallback();
-                called = true;
-                jsAPI.setLabVIEWError(false, 0, '');
-                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
-                var returnValue = inputInteger + 1;
-                vireo.eggShell.writeDouble(returnValueRef, returnValue);
-                return 'some unexpected value';
-            }
+    describe('handles unhandled promises when', function () {
+        var unhandledRejectionHandler;
+        var waitForError;
+        beforeEach(function () {
+            waitForError = new Promise(function (resolve) {
+                unhandledRejectionHandler = function (event) {
+                    event.preventDefault();
+                    resolve(event.reason);
+                };
+            });
+            window.addEventListener('unhandledrejection', unhandledRejectionHandler);
         });
-
-        var exception;
-        try {
-            await runSlicesAsync();
-        } catch (ex) {
-            exception = ex;
-        }
-        expect(called).toBeTrue();
-        expect(exception instanceof Error).toBeTrue();
-        expect(exception.rawPrint).toBeEmptyString();
-        expect(exception.rawPrintError).toBeEmptyString();
-        expect(exception.message).toMatch(/Unexpected return value/);
-        expect(viPathParser('error.status')).toBeFalse();
-        expect(viPathParser('error.code')).toBe(0);
-        expect(viPathParser('error.source')).toBeEmptyString();
-        expect(viPathParser('returnValue')).toBe(2);
-    });
-
-    it('errors if starting an async call and returning a value async', async function () {
-        var viName = 'NI_InternalFunction';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-
-        var called = false;
-        var complete;
-        var waitForError = new Promise(function (resolve) {
-            complete = resolve;
+        afterEach(function () {
+            window.removeEventListener('unhandledrejection', unhandledRejectionHandler);
+            waitForError = undefined;
         });
-        vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunction: function (returnValueRef, inputIntegerValueRef, jsAPI) {
-                var cb = jsAPI.getCompletionCallback();
-                called = true;
-                jsAPI.setLabVIEWError(false, 0, '');
-                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
-                var returnValue = inputInteger + 1;
-                vireo.eggShell.writeDouble(returnValueRef, returnValue);
-                setTimeout(function () {
-                    // workaround for vireo completion callback unable to abort runtime https://github.com/ni/VireoSDK/issues/521
-                    try {
-                        cb('some unexpected value');
-                    } catch (ex) {
-                        complete(ex);
-                    }
-                }, 0);
-            }
+        it('errors if returning a value async', async function () {
+            var viName = 'NI_InternalFunction';
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+            vireoRunner.enqueueVI(vireo, viName);
+
+            var called = false;
+            vireo.javaScriptInvoke.registerInternalFunctions({
+                NI_InternalFunction: async function (returnValueRef, inputIntegerValueRef, jsAPI) {
+                    called = true;
+                    jsAPI.setLabVIEWError(false, 0, '');
+                    var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
+                    var returnValue = inputInteger + 1;
+                    vireo.eggShell.writeDouble(returnValueRef, returnValue);
+                    return 'some unexpected value';
+                }
+            });
+            // TODO this creates a never aborting instance of the runtime. See comment in module_javaScriptInvoke
+            runSlicesAsync();
+            var exception = await waitForError;
+            expect(called).toBeTrue();
+            expect(exception instanceof Error).toBeTrue();
+            expect(exception.message).toMatch(/Unexpected return value/);
+            expect(viPathParser('error.status')).toBeFalse();
+            expect(viPathParser('error.code')).toBe(0);
+            expect(viPathParser('error.source')).toBeEmptyString();
+            expect(viPathParser('returnValue')).toBe(2);
         });
-        runSlicesAsync();
-        var exception = await waitForError;
-        expect(called).toBeTrue();
-        expect(exception instanceof Error).toBeTrue();
-        expect(exception.message).toMatch(/Unexpected return value/);
-        expect(viPathParser('error.status')).toBeFalse();
-        expect(viPathParser('error.code')).toBe(0);
-        expect(viPathParser('error.source')).toBeEmptyString();
-        expect(viPathParser('returnValue')).toBe(2);
-    });
-
-    it('errors if starting an async call with promises and calls getCompletionCallback', async function () {
-        var viName = 'NI_InternalFunction';
-        var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
-        vireoRunner.enqueueVI(vireo, viName);
-
-        var called = false;
-        vireo.javaScriptInvoke.registerInternalFunctions({
-            NI_InternalFunction: async function (returnValueRef, inputIntegerValueRef, jsAPI) {
-                jsAPI.getCompletionCallback();
-                called = true;
-                jsAPI.setLabVIEWError(false, 0, '');
-                var inputInteger = vireo.eggShell.readDouble(inputIntegerValueRef);
-                var returnValue = inputInteger + 1;
-                vireo.eggShell.writeDouble(returnValueRef, returnValue);
-                return 'Unexpected return value';
-            }
-        });
-        var exception;
-        try {
-            await runSlicesAsync();
-        } catch (ex) {
-            exception = ex;
-        }
-
-        expect(called).toBeTrue();
-        expect(exception instanceof Error).toBeTrue();
-        expect(exception.message).toMatch(/Promise returned but completionCallback unavailable/);
-        expect(viPathParser('error.status')).toBeFalse();
-        expect(viPathParser('error.code')).toBe(0);
-        expect(viPathParser('error.source')).toBeEmptyString();
-        expect(viPathParser('returnValue')).toBe(2);
     });
 
     it('includes the jsAPI if explicit in signature for internal functions', function (done) {
@@ -340,7 +277,8 @@ describe('A JavaScriptInvoke for an internal function', function () {
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(argumentsCount).toBe(3);
-            expect(jsAPIReference).toHaveMember('getCompletionCallback');
+            expect(jsAPIReference).not.toHaveMember('getCompletionCallback');
+            expect(jsAPIReference).toHaveMember('setLabVIEWError');
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();
@@ -376,7 +314,8 @@ describe('A JavaScriptInvoke for an internal function', function () {
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(argumentsCount).toBe(3);
-            expect(jsAPIReference).toHaveMember('getCompletionCallback');
+            expect(jsAPIReference).not.toHaveMember('getCompletionCallback');
+            expect(jsAPIReference).toHaveMember('setLabVIEWError');
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();
