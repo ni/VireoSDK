@@ -3,7 +3,6 @@ import assignTypeHelpers from '../core/module_typeHelpers.js';
 import assignEggShell from '../io/module_eggShell.js';
 import assignHttpClient from '../io/module_httpClient.js';
 import assignJavaScriptInvoke from '../io/module_javaScriptInvoke.js';
-import assignPropertyNode from '../io/module_propertyNode.js';
 import assignEventHelpers from '../core/module_eventHelpers.js';
 
 const moduleBuilders = [
@@ -12,7 +11,6 @@ const moduleBuilders = [
     assignEggShell,
     assignHttpClient,
     assignJavaScriptInvoke,
-    assignPropertyNode,
     assignEventHelpers
 ];
 

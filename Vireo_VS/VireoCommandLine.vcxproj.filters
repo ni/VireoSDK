@@ -124,9 +124,6 @@
     <ClCompile Include="..\source\io\JavaScriptInvoke.cpp">
       <Filter>VireoSource\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\io\PropertyNode.cpp">
-      <Filter>VireoSource\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\core\JavaScriptStaticRef.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -163,12 +160,6 @@
       <Filter>VireoSource\IO</Filter>
     </None>
     <None Include="..\source\io\module_javaScriptInvoke.js">
-      <Filter>VireoSource\IO</Filter>
-    </None>
-    <None Include="..\source\io\module_propertyNode.js">
-      <Filter>VireoSource\IO</Filter>
-    </None>
-    <None Include="..\source\io\library_propertyNode.js">
       <Filter>VireoSource\IO</Filter>
     </None>
     <None Include="..\source\core\library_coreHelpers.js">
