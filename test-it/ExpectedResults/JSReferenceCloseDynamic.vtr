@@ -1,16 +1,16 @@
 getObjectReferenceError1: (false 0 '')
-isNotAValidRefnum0: false
+validRefnum1: true
 noErrorInAndValidReferenceError: (false 0 '')
 isNotAValidRefnum1: true
 
 getObjectReferenceError2: (false 0 '')
-isNotAValidRefnum2: false
-errorInAndValidReferenceError: (true 100 'error')
-isNotAValidRefnum3: true
+validRefnum2: true
+errorInAndValidReferenceError: (true 100 'problem')
+isNotAValidRefnum2: true
 
 noErrorInAndInvalidReferenceError.status: true
 noErrorInAndInvalidReferenceError.code: 1556
-isNotAValidRefnum4: true
+isNotAValidRefnum3: true
 
-errorInAndInvalidReferenceError: (true 100 'error')
-isNotAValidRefnum5: true
+errorInAndInvalidReferenceError: (true 100 'problem')
+isNotAValidRefnum4: true

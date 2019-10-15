@@ -1,9 +1,9 @@
 define(InvalidReferenceParameterVI dv(VirtualInstrument (
     Locals: c(
         e(dv(.Boolean f) returnBoolean)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) closeReferenceError)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) invalidReferenceError)
+        e(.ErrorCluster closeReferenceError)
+        e(.ErrorCluster getObjectReferenceError)
+        e(.ErrorCluster invalidReferenceError)
 
         e(.JavaScriptDynamicRefNum objectReference)
         e(dv(.Boolean false) validRefnum1)

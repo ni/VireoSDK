@@ -1,7 +1,7 @@
 define(CloseReferenceUnsupportedType dv(VirtualInstrument (
     Locals: c(
         e(.QueueRefNum<.String> queueReference)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) argumentError)
+        e(.ErrorCluster argumentError)
     )
     clump (
         CloseReference(queueReference argumentError)

@@ -1,11 +1,11 @@
 define(StaticReferencesVI dv(VirtualInstrument (
     Locals: c(
-        ce(dv(.ErrorCluster (true 100 'error' )) errorIn)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) err)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
+        ce(dv(.ErrorCluster (true 100 'problem' )) errorIn)
+        e(.ErrorCluster err)
+        e(.ErrorCluster getObjectReferenceError)
 
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) noErrorInAndValidReferenceError)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) errorInAndValidReferenceError)
+        e(.ErrorCluster noErrorInAndValidReferenceError)
+        e(.ErrorCluster errorInAndValidReferenceError)
 
         e(.JavaScriptStaticRefNum staticReference)
         e(dv(.Boolean false) validRefnum1)

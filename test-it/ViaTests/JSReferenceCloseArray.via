@@ -1,9 +1,9 @@
 define(ArrayOfReferencesVI dv(VirtualInstrument (
     Locals: c(
         e(a(.JavaScriptDynamicRefNum *) arrayOfReferences)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) closeReferenceError)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) getObjectReferenceError)
-        e(c(e(.Boolean status) e(.Int32 code) e(.String source)) invalidReferenceError)
+        e(.ErrorCluster closeReferenceError)
+        e(.ErrorCluster getObjectReferenceError)
+        e(.ErrorCluster invalidReferenceError)
 
         e(.JavaScriptDynamicRefNum objectReference1)
         e(.JavaScriptDynamicRefNum objectReference2)
