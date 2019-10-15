@@ -159,9 +159,6 @@
     <None Include="..\source\io\module_javaScriptInvoke.js">
       <Filter>VireoSource\IO</Filter>
     </None>
-    <None Include="..\source\io\module_propertyNode.js">
-      <Filter>VireoSource\IO</Filter>
-    </None>
     <None Include="..\source\core\library_coreHelpers.js">
       <Filter>VireoSource\Core</Filter>
     </None>

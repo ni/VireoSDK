@@ -68,7 +68,6 @@
     <None Include="..\source\io\module_eggShell.js" />
     <None Include="..\source\io\module_javaScriptInvoke.js" />
     <None Include="..\source\io\module_other.js" />
-    <None Include="..\source\io\module_propertyNode.js" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\include\Array.h" />
