@@ -8,6 +8,7 @@ define(StaticReferencesVI dv(VirtualInstrument (
         e(c(e(.Boolean status) e(.Int32 code) e(.String source)) errorInAndValidReferenceError)
 
         e(.JavaScriptStaticRefNum staticReference)
+        e(dv(.Boolean false) validRefnum1)
         e(dv(.Boolean false) isNotAValidRefnum1)
         e(dv(.Boolean false) isNotAValidRefnum2)
         e(.Occurrence occurrence)
@@ -15,6 +16,8 @@ define(StaticReferencesVI dv(VirtualInstrument (
     clump (
         // no error in, valid reference, close reference => no error out, reference not closed
         JavaScriptInvoke(occurrence false getObjectReferenceError 'Date.now' staticReference)
+        IsNotANumPathRefnum(staticReference validRefnum1)
+        Not(validRefnum1 validRefnum1)
         CloseReference(staticReference noErrorInAndValidReferenceError)
         IsNotANumPathRefnum(staticReference isNotAValidRefnum1)
 
@@ -23,6 +26,8 @@ define(StaticReferencesVI dv(VirtualInstrument (
         CloseReference(staticReference errorInAndValidReferenceError)
         IsNotANumPathRefnum(staticReference isNotAValidRefnum2)
 
+        Printf ("getObjectReferenceError: %z\n" getObjectReferenceError)
+        Printf ("validRefnum1: %z\n" validRefnum1)
         Printf ("noErrorInAndValidReferenceError: %z\n" noErrorInAndValidReferenceError)
         Printf ("isNotAValidRefnum1: %z\n" isNotAValidRefnum1)
         Printf ("errorInAndValidReferenceError: %z\n" errorInAndValidReferenceError)
