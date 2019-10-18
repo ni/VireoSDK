@@ -381,8 +381,8 @@ var assignJavaScriptInvoke;
         };
 
         var generateAPI = function (occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction) {
-            var api = {};
-            api.getCompletionCallback = function () {
+            var jsapi = {};
+            var getCompletionCallback = function () {
                 // The following checks are not LabVIEW errors because they may happen after JavaScriptInvoke completion finishes if user holds reference
                 if (completionCallbackStatus.retrievalState === completionCallbackRetrievalEnum.RETRIEVED) {
                     throw new Error(`The completion callback was retrieved more than once for ${functionName}.`);
@@ -395,7 +395,7 @@ var assignJavaScriptInvoke;
             };
 
             if (isInternalFunction) {
-                api.setLabVIEWError = function (status, code, source) {
+                jsapi.setLabVIEWError = function (status, code, source) {
                     var newError = {
                         status: status,
                         code: code,
@@ -404,7 +404,7 @@ var assignJavaScriptInvoke;
                     Module.coreHelpers.mergeErrors(errorValueRef, newError);
                 };
             }
-            return api;
+            return {jsapi, getCompletionCallback};
         };
 
         publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
@@ -462,10 +462,10 @@ var assignJavaScriptInvoke;
                 invocationState: completionCallbackInvocationEnum.PENDING
             };
 
-            var jsapi;
-            if (isInternalFunction || functionToCall.length === parameters.length + 1) {
-                jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
-                parameters.push(jsapi);
+            var generateAPIResults;
+            if (isInternalFunction) {
+                generateAPIResults = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
+                parameters.push(generateAPIResults.jsapi);
             }
 
             var returnValue;
@@ -494,11 +494,11 @@ var assignJavaScriptInvoke;
                     return;
                 }
 
-                if (jsapi === undefined) {
-                    jsapi = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
+                if (generateAPIResults === undefined) {
+                    generateAPIResults = generateAPI(occurrencePointer, functionName, returnValueRef, errorValueRef, completionCallbackStatus, isInternalFunction);
                 }
 
-                completionCallback = jsapi.getCompletionCallback();
+                completionCallback = generateAPIResults.getCompletionCallback();
                 returnValue.then(completionCallback).catch((returnValue) => completionCallback(coerceToError(returnValue)));
                 // Do not setOccurrence when returning here since waiting asynchronously for user Promise to resolve
                 return;
