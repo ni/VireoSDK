@@ -18,6 +18,7 @@
         "jsReference": {
             "include": [],
             "tests": [
+                "JSReferenceArraySearch.via",
                 "JSReferenceInvalidParameter.via",
                 "JSReferenceCloseDynamic.via",
                 "JSReferenceCloseStatic.via",

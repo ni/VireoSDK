@@ -45,6 +45,7 @@ DEFINE_VIREO_BEGIN(JavaScriptRefs)
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNotANumPathRefnum, IsNotAJavaScriptDynamicRefnum, "p(i(JavaScriptDynamicRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsEQ, IsEQRefnum, "p(i(JavaScriptDynamicRefNum) i(JavaScriptDynamicRefNum) o(Boolean))")
     DEFINE_VIREO_FUNCTION_CUSTOM(IsNE, IsNERefnum, "p(i(JavaScriptDynamicRefNum) i(JavaScriptDynamicRefNum) o(Boolean))")
+    DEFINE_VIREO_FUNCTION_CUSTOM(IsEQSearch, IsEQRefnum, "p(i(JavaScriptDynamicRefNum) i(JavaScriptDynamicRefNum) o(Boolean))")
 
 DEFINE_VIREO_END()
 }  // namespace Vireo
