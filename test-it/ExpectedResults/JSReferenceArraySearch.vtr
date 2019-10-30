@@ -1,5 +1,5 @@
 dataItem_TestResult_NoError: true
 dataItem_TestResult_InvalidReferenceFound: true
 dataItem_TestResult_InvalidReferenceNotFound: true
-dataItem_TestResult_ElementNotIsArrayNotFound: true
+dataItem_TestResult_ElementNotInArrayNotFound: true
 dataItem_TestResult_ElementInArrayIsFound: true
