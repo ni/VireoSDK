@@ -1,0 +1,8 @@
+dataItem_TestResult_Correct1DArrayNumber: true
+dataItem_TestResult_CorrectOffsetPast1DNumber: true
+dataItem_TestResult_Correct2DArrayNumber: true
+dataItem_TestResult_CorrectOffsetPast2DNumber: true
+dataItem_TestResult_Correct1DArrayInt: true
+dataItem_TestResult_CorrectOffsetPast1DOctal: true
+dataItem_TestResult_Correct2DArrayInt: true
+dataItem_TestResult_CorrectOffsetPast2DOctal: true
