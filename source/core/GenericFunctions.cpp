@@ -1260,6 +1260,16 @@ struct AggregateStrToNumInstruction : public InstructionCore
 };
 typedef Instruction6<AQBlock1, Int32, AQBlock1, Int32, AQBlock1, AQBlock1> StrToNumInstructionArgs;
 
+void ResizeOutputToSizeOfInput(TypedArrayCoreRef arrayInput, TypedArrayCoreRef arrayOutput)
+{
+    ArrayDimensionVector newDimensionLengths;
+    IntIndex rank = 0;
+    std::vector<TypedArrayCoreRef> srcArrays;
+    srcArrays.push_back(arrayInput);
+    bool isInputArraysDimensionsSame = GetMinimumArrayDimensions(srcArrays, &newDimensionLengths, &rank);
+    arrayOutput->ResizeDimensions(rank, newDimensionLengths, true);
+}
+
 VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstruction)
 {
     TypeRef type = _ParamImmediate(VOutput)->_paramType;
@@ -1279,13 +1289,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
         elementSizeStr = VStr->ElementType()->TopAQSize();
         elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize();
         count = VStr->Length();
-        // Resize output to size of input array
-        ArrayDimensionVector newDimensionLengths;
-        IntIndex rank = 0;
-        std::vector<TypedArrayCoreRef> srcArrays;
-        srcArrays.push_back(VStr);
-        bool isInputArraysDimensionsSame = GetMinimumArrayDimensions(srcArrays, &newDimensionLengths, &rank);
-        VOutput->ResizeDimensions(rank, newDimensionLengths, true);
+        ResizeOutputToSizeOfInput(VStr, VOutput);
         beginStr = VStr->RawBegin();
         beginDest = VOutput->RawBegin();
     }
