@@ -1279,7 +1279,7 @@ VIREO_FUNCTION_SIGNATURET(VectorOrClusterStrToNumOp, AggregateStrToNumInstructio
         elementSizeStr = VStr->ElementType()->TopAQSize();
         elementSizeDest = _ParamImmediate(VOutput)->_paramType->GetSubElement(0)->TopAQSize();
         count = VStr->Length();
-        VOutput->Resize1D(count);
+        VOutput->ResizeDimensions(VStr->Rank(), VStr->DimensionLengths(), true);
         beginStr = VStr->RawBegin();
         beginDest = VOutput->RawBegin();
     }

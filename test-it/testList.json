@@ -180,6 +180,7 @@
                 "DeeplyNestedInitializer.via",
                 "DefaultOutputs.via",
                 "DefaultTM.via",
+                "DHOArrayStringToNumber.via",
                 "DHOStringToNumber.via",
                 "DuplicateSymbol.via",
                 "EggShellError1.via",
