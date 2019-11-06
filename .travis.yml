@@ -25,7 +25,7 @@ install:
 - nohup npm run httpbin &
 - gcc -v
 - git clone https://github.com/juj/emsdk.git
-- (cd emsdk && git checkout 9538381d56272818cba77a808ba46fdac6c961c8)
+- (cd emsdk && git checkout 1b1f08f356d3f10d91e50c09dda6d44372ca908c)
 - emsdk/emsdk install sdk-1.38.30-64bit
 - emsdk/emsdk activate sdk-1.38.30-64bit
 - cat ~/.emscripten
