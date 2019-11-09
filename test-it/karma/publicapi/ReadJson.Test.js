@@ -620,4 +620,10 @@ describe('The Vireo EggShell readJSON api can read', function () {
             readTest('dataItem_Empty3DArray', [[[]]]);
         });
     });
+
+    describe('variants of type', function () {
+        it('string', function () {
+            readTest('variantOfString', {_data: 'hello world!', _attributes: null});
+        });
+    });
 });

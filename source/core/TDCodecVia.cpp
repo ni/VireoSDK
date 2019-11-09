@@ -2400,7 +2400,7 @@ void TDViaFormatter::FormatVariant(TypeRef type, void *pData)
 
     TypeRef innerType = variantData->GetInnerType();
     if (innerType) {
-        FormatData(innerType, innerType->Begin(kPARead));
+        FormatData(innerType, variantData->GetInnerData());
     } else {
         _string->AppendCStr("null");
     }

@@ -189,8 +189,12 @@ define (MyVI dv(.VirtualInstrument (
         e(dv(.String 'hi') utf8string)
         e(dv(.String 'key1') key1)
         e(dv(.String 'key2') key2)
+
+        e(dv(.String 'hello world!') variantOfStringData)
+        e(.Variant variantOfString)
     )
     clump(
+        Convert(variantOfStringData variantOfString)
         SetVariantAttribute(wave_Double.attributes key1 attributeValueSimple * *)
         SetVariantAttribute(wave_Double.attributes key2 utf8string * *)
     )
