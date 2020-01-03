@@ -28,6 +28,7 @@ before_build:
 # TODO capture standard out and error to log at the end?
 # TODO script needed to wait for server startup?
   - make lint
+  - dir
   - npm run lint
 build:
   project: Vireo_VS/VireoCommandLine.sln
