@@ -171,7 +171,7 @@ describe('The Vireo EggShell Reflection API', function () {
                 };
 
                 for (var visitkey in typeDescriptor) {
-                    if (typeDescriptor.hasOwnProperty(visitkey)) {
+                    if (Object.prototype.hasOwnProperty.call(typeDescriptor, visitkey)) {
                         visitor[visitkey] = validateVisitArgs;
                     }
                 }
