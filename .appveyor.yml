@@ -11,6 +11,7 @@ init:
 - ps: $PSVersionTable
 install:
   - ps: Install-Product node 8
+  - npm run lint
   - appveyor-retry chocolatey install make
   - appveyor-retry chocolatey install gnuwin32-coreutils.portable
   - appveyor-retry npm install
@@ -28,7 +29,6 @@ before_build:
 # TODO capture standard out and error to log at the end?
 # TODO script needed to wait for server startup?
   - make lint
-  - npm run lint
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
