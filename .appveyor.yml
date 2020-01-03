@@ -11,10 +11,9 @@ init:
 - ps: $PSVersionTable
 install:
   - ps: Install-Product node 8
-  - appveyor-retry npm install
-  - npm run lint
   - appveyor-retry chocolatey install make
   - appveyor-retry chocolatey install gnuwin32-coreutils.portable
+  - appveyor-retry npm install
   - pip install tox
   - ps: Start-Process npm "run httpbin" -PassThru
   - git clone https://github.com/juj/emsdk.git
@@ -29,6 +28,7 @@ before_build:
 # TODO capture standard out and error to log at the end?
 # TODO script needed to wait for server startup?
   - make lint
+  - npm run lint
 build:
   project: Vireo_VS/VireoCommandLine.sln
 after_build:
