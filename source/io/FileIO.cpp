@@ -254,7 +254,6 @@ VIREO_FUNCTION_SIGNATURE4(StreamSetPosition, FileHandle, IntIndex, IntIndex, Int
     _Param(3) = (Int32)POSIX_NAME(lseek)(fd, offset, startPosition);
     return _NextInstruction();
 }
-
 #ifdef VIREO_FILESYSTEM
 //------------------------------------------------------------
 VIREO_FUNCTION_SIGNATURE2(FileDelete, StringRef, Int32)
