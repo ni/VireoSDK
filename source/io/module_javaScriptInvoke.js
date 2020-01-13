@@ -54,8 +54,6 @@ var assignJavaScriptInvoke;
         publicAPI.javaScriptInvoke = {};
 
         // Private Instance Variables (per vireo instance)
-        var internalFunctionsMap = new Map();
-
         // Every call to mergeNewError should be preceeded by the behavior for internalFunctions
         var mergeNewError = function (errorValueRef, functionName, errorToSet, exception) {
             var newError = {
@@ -237,21 +235,44 @@ var assignJavaScriptInvoke;
 
         var returnValueVisitor = createJavaScriptInvokeReturnValueVisitor();
 
-        var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
-            if (isInternalFunction) {
-                return {
-                    functionToCall: internalFunctionsMap.get(functionName),
-                    context: undefined
-                };
-            }
-
+        var getGlobal = function () {
             // Normally we do not use typeof checks to see if a value is undefined
             // however in this case it is used to prevent ReferenceErrors when probing global objects
-            var jsSelfScope = typeof self !== 'undefined' ? self : {};
-            var jsGlobalScope = typeof global !== 'undefined' ? global : jsSelfScope;
-            var context = typeof window !== 'undefined' ? window : jsGlobalScope;
+            if (typeof window !== 'undefined') {
+                return window;
+            } else if (typeof self !== 'undefined') {
+                return self;
+            } else if (typeof global !== 'undefined') {
+                return global;
+            }
+            return {};
+        };
+        var internalFunctionsMap = new Map();
+        var jsInvokeGlobal = getGlobal();
 
+        publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
+            Object.keys(functionsToAdd).forEach(function (name) {
+                if (internalFunctionsMap.has(name)) {
+                    throw new Error(`Internal function already registered for name:${name}`);
+                }
+                if (typeof functionsToAdd[name] !== 'function') {
+                    throw new Error(`Cannot add non-function ${name} as a function.`);
+                }
+                internalFunctionsMap.set(name, functionsToAdd[name]);
+            });
+        };
+
+        publicAPI.javaScriptInvoke.registerCustomGlobal = function (customGlobal) {
+            if (typeof customGlobal !== 'object' || customGlobal === null) {
+                throw new Error('Registered custom global must be an object.');
+            }
+
+            jsInvokeGlobal = customGlobal;
+        };
+
+        var lookupFunctionAndContext = function (functionName, initialContext) {
             var names = functionName.split('.');
+            var context = initialContext;
             var functionToCall = context[names[0]];
             var namesIndex;
             for (namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
@@ -270,6 +291,19 @@ var assignJavaScriptInvoke;
                 functionToCall: functionToCall,
                 context: context
             };
+        };
+
+        var findJavaScriptFunctionToCall = function (functionName, isInternalFunction) {
+            if (isInternalFunction) {
+                return {
+                    functionToCall: internalFunctionsMap.get(functionName),
+                    context: undefined
+                };
+            }
+
+            var functionAndContext = lookupFunctionAndContext(functionName, jsInvokeGlobal);
+
+            return functionAndContext;
         };
 
         var addToJavaScriptParametersArray = function (functionName, parameters, parametersPointer, parametersCount, errorValueRef, isInternalFunction) {
@@ -405,18 +439,6 @@ var assignJavaScriptInvoke;
                 };
             }
             return {jsapi, getCompletionCallback};
-        };
-
-        publicAPI.javaScriptInvoke.registerInternalFunctions = function (functionsToAdd) {
-            Object.keys(functionsToAdd).forEach(function (name) {
-                if (internalFunctionsMap.has(name)) {
-                    throw new Error(`Internal function already registered for name:${name}`);
-                }
-                if (typeof functionsToAdd[name] !== 'function') {
-                    throw new Error(`Cannot add non-function ${name} as a function.`);
-                }
-                internalFunctionsMap.set(name, functionsToAdd[name]);
-            });
         };
 
         Module.javaScriptInvoke.jsJavaScriptInvoke = function (
