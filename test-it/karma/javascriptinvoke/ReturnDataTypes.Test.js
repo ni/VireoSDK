@@ -133,6 +133,49 @@ describe('A JavaScript function invoke', function () {
             return Float64Array.from([-1.0, 0.0, 1.0]);
         };
 
+        window.NI_JSRefNullValueFunction = function () {
+            return null;
+        };
+
+        window.NI_JSRefUndefinedValueFunction = function () {
+            return this.undefined;
+        };
+
+        window.NI_JSRefPrimitiveValueFunction = function () {
+            return 'hello world';
+        };
+
+        var testObj = {some: 'object'};
+        window.NI_JSRefObjectValue = testObj;
+        window.NI_JSRefObjectValueFunction = function () {
+            return testObj;
+        };
+
+        window.NI_JSRefArrayEmptyValueFunction = function () {
+            return [];
+        };
+
+        window.NI_JSRefArrayWithOneValueFunction = function () {
+            return ['hello world'];
+        };
+
+        window.NI_JSRefArrayWithMultiplePrimitiveValuesFunction = function () {
+            return [null, undefined, 'hello', true, 7];
+        };
+
+        var testArrayObj = Object.freeze([
+            {},
+            function () {
+                // intentionally empty
+
+            },
+            document.createElement('div')
+        ]);
+        window.NI_JSRefArrayWithMultipleObjectValues = testArrayObj;
+        window.NI_JSRefArrayWithMultipleObjectValuesFunction = function () {
+            return testArrayObj;
+        };
+
         window.NI_ReturnFunction = function () {
             var myFunction = function () {
                 return;
@@ -248,8 +291,6 @@ describe('A JavaScript function invoke', function () {
         window.NI_SingleFunction = undefined;
         window.NI_DoubleFunction = undefined;
         window.NI_StringFunction = undefined;
-        window.NI_ReturnFunction = undefined;
-        window.NI_ReturnString = undefined;
         window.NI_Int8ArrayFunction = undefined;
         window.NI_Int16ArrayFunction = undefined;
         window.NI_Int32ArrayFunction = undefined;
@@ -258,6 +299,18 @@ describe('A JavaScript function invoke', function () {
         window.NI_UInt32ArrayFunction = undefined;
         window.NI_SingleArrayFunction = undefined;
         window.NI_DoubleArrayFunction = undefined;
+        window.NI_JSRefNullValueFunction = undefined;
+        window.NI_JSRefUndefinedValueFunction = undefined;
+        window.NI_JSRefPrimitiveValueFunction = undefined;
+        window.NI_JSRefObjectValue = undefined;
+        window.NI_JSRefObjectValueFunction = undefined;
+        window.NI_JSRefArrayEmptyValueFunction = undefined;
+        window.NI_JSRefArrayWithOneValueFunction = undefined;
+        window.NI_JSRefArrayWithMultiplePrimitiveValuesFunction = undefined;
+        window.NI_JSRefArrayWithMultipleObjectValues = undefined;
+        window.NI_JSRefArrayWithMultipleObjectValuesFunction = undefined;
+        window.NI_ReturnFunction = undefined;
+        window.NI_ReturnString = undefined;
         window.NI_MismatchBoolean = undefined;
         window.NI_MismatchInt8 = undefined;
         window.NI_MismatchInt16 = undefined;
@@ -280,8 +333,26 @@ describe('A JavaScript function invoke', function () {
     });
 
     it('succesfully returns different data types', function (done) {
+        var viName = 'MyVI';
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsReturnDataTypesViaUrl);
-        var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+        var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
+
+        var jsReferenceReader = function (path) {
+            var valueRef = vireo.eggShell.findValueRef(viName, path);
+            return vireo.eggShell.readJavaScriptRefNum(valueRef);
+        };
+
+        var jsArrayReferenceReader = function (path) {
+            var valueRef = vireo.eggShell.findValueRef(viName, path);
+            var length = vireo.eggShell.getArrayDimensions(valueRef)[0];
+            var subValueRef, i;
+            var result = [];
+            for (i = 0; i < length; i += 1) {
+                subValueRef = vireo.eggShell.findSubValueRef(valueRef, String(i));
+                result[i] = vireo.eggShell.readJavaScriptRefNum(subValueRef);
+            }
+            return result;
+        };
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(viPathParser('returnTrueBoolean')).toBeTrue();
@@ -309,6 +380,18 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('returnUInt32Array')).toEqual([0, 1, 4294967295]);
             expect(viPathParser('returnSingleArray')).toEqual([-1.0, 0.0, 1.0]);
             expect(viPathParser('returnDoubleArray')).toEqual([-1.0, 0.0, 1.0]);
+            expect(jsReferenceReader('jsRefNullValue')).toBe(null);
+            expect(jsReferenceReader('jsRefUndefinedValue')).toBe(undefined);
+            expect(jsReferenceReader('jsRefPrimitiveValue')).toBe('hello world');
+            expect(jsReferenceReader('jsRefObjectValue')).toBe(window.NI_JSRefObjectValue);
+            expect(jsArrayReferenceReader('jsRefArrayEmptyValue')).toEqual([]);
+            expect(jsArrayReferenceReader('jsRefArrayWithOneValue')).toEqual(['hello world']);
+            expect(jsArrayReferenceReader('jsRefArrayWithMultiplePrimitiveValues')).toEqual([null, undefined, 'hello', true, 7]);
+            var testArrayObj = jsArrayReferenceReader('jsRefArrayWithMultipleObjectValues');
+            expect(testArrayObj.length).toBe(3);
+            expect(testArrayObj[0]).toBe(window.NI_JSRefArrayWithMultipleObjectValues[0]);
+            expect(testArrayObj[1]).toBe(window.NI_JSRefArrayWithMultipleObjectValues[1]);
+            expect(testArrayObj[2]).toBe(window.NI_JSRefArrayWithMultipleObjectValues[2]);
             expect(rawPrint).toBeEmptyString();
             expect(rawPrintError).toBeEmptyString();
             expect(viPathParser('error.status')).toBeFalse();

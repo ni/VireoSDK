@@ -10,14 +10,6 @@ var assignEggShell;
         Module.eggShell = {};
         publicAPI.eggShell = {};
 
-        Module.eggShell.readJavaScriptRefNum = publicAPI.eggShell.readJavaScriptRefNum = function (valueRef) {
-            return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
-        };
-
-        Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
-            return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
-        };
-
         // Private Instance Variables (per vireo instance)
         var POINTER_SIZE = 4;
         var DOUBLE_SIZE = 8;
@@ -405,6 +397,8 @@ var assignEggShell;
                 subTypeRef = Module.typeHelpers.subElementByIndex(typeRef, 0);
                 if (Module.typeHelpers.isBoolean(subTypeRef)) {
                     return Uint8Array;
+                } else if (Module.typeHelpers.isJSObjectRefnum(subTypeRef)) {
+                    return Uint32Array;
                 } else if (Module.typeHelpers.isInteger(subTypeRef)) { // Used for Enums and Integers
                     isSigned = Module.typeHelpers.isSigned(subTypeRef);
                     size = Module.typeHelpers.topAQSize(subTypeRef);
@@ -603,6 +597,50 @@ var assignEggShell;
 
             Module.stackRestore(stack);
             return found;
+        };
+
+        Module.eggShell.readJavaScriptRefNum = publicAPI.eggShell.readJavaScriptRefNum = function (valueRef) {
+            var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
+            if (!isJSObjectRefnum) {
+                throw new Error('Performing readJavaScriptRefNum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
+        };
+
+        Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
+            var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
+            if (!isJSObjectRefnum) {
+                throw new Error('Performing writeJavaScriptRefNum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
+        };
+
+        Module.eggShell.isJavaScriptRefNumValid = publicAPI.eggShell.isJavaScriptRefNumValid = function (valueRef) {
+            var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
+            if (!isJSObjectRefnum) {
+                throw new Error('Performing isJavaScriptRefNumValid failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            return Module.javaScriptInvoke.isJavaScriptRefNumValid(valueRef);
+        };
+
+        Module.eggShell.clearJavaScriptRefNum = publicAPI.eggShell.clearJavaScriptRefNum = function (valueRef) {
+            var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
+            if (!isJSObjectRefnum) {
+                throw new Error('Performing clearJavaScriptRefnum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
+                    ' (error code: ' + EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
+            return Module.javaScriptInvoke.clearJavaScriptRefnum(valueRef);
         };
 
         // **DEPRECATED**
