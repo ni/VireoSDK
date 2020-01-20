@@ -645,7 +645,7 @@ var assignEggShell;
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
 
-            var operationSuccessful = Module.javaScriptInvoke.clearJavaScriptRefnum(valueRef);
+            var operationSuccessful = Module.javaScriptInvoke.clearJavaScriptRefNum(valueRef);
             if (!operationSuccessful) {
                 throw new Error('Performing clearJavaScriptRefnum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.INVALID_DATA_POINTER] +
                     ' (error code: ' + EGGSHELL_RESULT.INVALID_DATA_POINTER + ')' +

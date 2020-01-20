@@ -192,6 +192,9 @@ define (MyVI dv(.VirtualInstrument (
 
         e(dv(.String 'hello world!') variantOfStringData)
         e(.Variant variantOfString)
+
+        e(JavaScriptDynamicRefNum jsDynamic)
+        e(JavaScriptStaticRefNum jsStatic)
     )
     clump(
         Convert(variantOfStringData variantOfString)

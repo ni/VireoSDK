@@ -115,8 +115,8 @@ var assignJavaScriptInvoke;
                 return this._cookieToJsValueMap.has(cookie);
             }
 
-            size () {
-                return this._cookieToJsValueMap.size();
+            get size () {
+                return this._cookieToJsValueMap.size;
             }
         }
 
@@ -170,8 +170,8 @@ var assignJavaScriptInvoke;
                 return this._cookieToJsValueMap.delete(cookie);
             }
 
-            size () {
-                return this._cookieToJsValueMap.size();
+            get size () {
+                return this._cookieToJsValueMap.size;
             }
         }
 
