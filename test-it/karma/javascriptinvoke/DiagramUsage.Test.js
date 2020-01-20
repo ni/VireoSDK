@@ -50,12 +50,12 @@ describe('JavaScriptInvoke calls', function () {
 
         vireo.javaScriptInvoke.registerInternalFunctions({
             NI_UseObjectFunction: function (returnValueRef, myObjectValueRef) {
-                var myObject = vireo.eggShell.readJavaScriptRefNum(myObjectValueRef);
-                var length;
-                if (myObject === undefined) {
-                    length = -1;
-                } else {
+                var myObject, length;
+                if (vireo.eggShell.isJavaScriptRefNumValid(myObjectValueRef)) {
+                    myObject = vireo.eggShell.readJavaScriptRefNum(myObjectValueRef);
                     length = myObject.getLengthOfName();
+                } else {
+                    length = -1;
                 }
                 vireo.eggShell.writeDouble(returnValueRef, length);
             }

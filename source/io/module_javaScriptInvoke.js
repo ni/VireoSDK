@@ -105,10 +105,9 @@ var assignJavaScriptInvoke;
 
             get (cookie) {
                 var jsValue = this._cookieToJsValueMap.get(cookie);
-                // TODO this should not be allowed but some tests seem to do it
-                // if (jsValue === undefined) {
-                //     throw new Error('Attempted to get a static JavaScript Refnum with a cookie that has not been set.');
-                // }
+                if (jsValue === undefined) {
+                    throw new Error('Attempted to get a Static JavaScript Refnum with a cookie that has not been set.');
+                }
                 return jsValue;
             }
 
@@ -144,10 +143,9 @@ var assignJavaScriptInvoke;
 
             get (cookie) {
                 // Have to check the map because undefined and null are possible values for dynamic references
-                // TODO this should not be allowed but some tests seem to do it
-                // if (!this._cookieToJsValueMap.has(cookie)) {
-                //     throw new Error('Attempted to get a static JavaScript Refnum with a cookie that has not been set.');
-                // }
+                if (!this._cookieToJsValueMap.has(cookie)) {
+                    throw new Error('Attempted to get a Dynamic JavaScript Refnum with a cookie that has not been set.');
+                }
                 var jsValue = this._cookieToJsValueMap.get(cookie);
                 return jsValue;
             }
