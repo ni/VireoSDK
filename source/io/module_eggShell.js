@@ -618,7 +618,7 @@ var assignEggShell;
                     ' (typeRef: ' + valueRef.typeRef + ')' +
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
-            return Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
+            Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
         };
 
         Module.eggShell.isJavaScriptRefNumValid = publicAPI.eggShell.isJavaScriptRefNumValid = function (valueRef) {
@@ -640,7 +640,14 @@ var assignEggShell;
                     ' (typeRef: ' + valueRef.typeRef + ')' +
                     ' (dataRef: ' + valueRef.dataRef + ')');
             }
-            return Module.javaScriptInvoke.clearJavaScriptRefnum(valueRef);
+
+            var operationSuccessful = Module.javaScriptInvoke.clearJavaScriptRefnum(valueRef);
+            if (!operationSuccessful) {
+                throw new Error('Performing clearJavaScriptRefnum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.INVALID_DATA_POINTER] +
+                    ' (error code: ' + EGGSHELL_RESULT.INVALID_DATA_POINTER + ')' +
+                    ' (typeRef: ' + valueRef.typeRef + ')' +
+                    ' (dataRef: ' + valueRef.dataRef + ')');
+            }
         };
 
         // **DEPRECATED**
