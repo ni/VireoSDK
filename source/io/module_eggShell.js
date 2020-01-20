@@ -599,7 +599,8 @@ var assignEggShell;
             return found;
         };
 
-        Module.eggShell.readJavaScriptRefNum = publicAPI.eggShell.readJavaScriptRefNum = function (valueRef) {
+        // Internal api accessed from Module.javaScriptInvoke
+        publicAPI.eggShell.readJavaScriptRefNum = function (valueRef) {
             var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
             if (!isJSObjectRefnum) {
                 throw new Error('Performing readJavaScriptRefNum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
@@ -610,7 +611,8 @@ var assignEggShell;
             return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
         };
 
-        Module.eggShell.writeJavaScriptRefNum = publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
+        // Internal api accessed from Module.javaScriptInvoke
+        publicAPI.eggShell.writeJavaScriptRefNum = function (valueRef, data) {
             var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
             if (!isJSObjectRefnum) {
                 throw new Error('Performing writeJavaScriptRefNum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
@@ -621,7 +623,8 @@ var assignEggShell;
             Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data);
         };
 
-        Module.eggShell.isJavaScriptRefNumValid = publicAPI.eggShell.isJavaScriptRefNumValid = function (valueRef) {
+        // Internal api accessed from Module.javaScriptInvoke
+        publicAPI.eggShell.isJavaScriptRefNumValid = function (valueRef) {
             var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
             if (!isJSObjectRefnum) {
                 throw new Error('Performing isJavaScriptRefNumValid failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
@@ -632,7 +635,8 @@ var assignEggShell;
             return Module.javaScriptInvoke.isJavaScriptRefNumValid(valueRef);
         };
 
-        Module.eggShell.clearJavaScriptRefNum = publicAPI.eggShell.clearJavaScriptRefNum = function (valueRef) {
+        // Internal api accessed from Module.javaScriptInvoke
+        publicAPI.eggShell.clearJavaScriptRefNum = function (valueRef) {
             var isJSObjectRefnum = Module.typeHelpers.isJSObjectRefnum(valueRef.typeRef);
             if (!isJSObjectRefnum) {
                 throw new Error('Performing clearJavaScriptRefnum failed for the following reason: ' + eggShellResultEnum[EGGSHELL_RESULT.UNEXPECTED_OBJECT_TYPE] +
