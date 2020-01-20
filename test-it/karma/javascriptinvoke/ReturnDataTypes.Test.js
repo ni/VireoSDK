@@ -259,6 +259,10 @@ describe('A JavaScript function invoke', function () {
             return 'myString';
         };
 
+        window.NI_MismatchJavaScriptReferenceArrayFunction = function () {
+            return 'myString';
+        };
+
         window.NI_ExceptionInUpdateReturnValue = function () {
             var notReallyAnArrayPrototype = Object.create(Int16Array.prototype);
             Object.defineProperty(notReallyAnArrayPrototype, 'length', {
@@ -329,6 +333,7 @@ describe('A JavaScript function invoke', function () {
         window.NI_MismatchUInt32ArrayFunction = undefined;
         window.NI_MismatchSingleArrayFunction = undefined;
         window.NI_MismatchDoubleArrayFunction = undefined;
+        window.NI_MismatchJavaScriptReferenceArrayFunction = undefined;
         window.NI_ExceptionInUpdateReturnValue = undefined;
     });
 
@@ -491,6 +496,9 @@ describe('A JavaScript function invoke', function () {
             expect(viPathParser('errorDoubleArray.status')).toBeTrue();
             expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorDoubleArray.code'));
             expect(viPathParser('errorDoubleArray.source')).toMatch(/JavaScriptInvoke in MyVI/);
+            expect(viPathParser('errorJavaScriptReferenceArray.status')).toBeTrue();
+            expect([kNITypeMismatchForReturnTypeInJavaScriptInvoke]).toContain(viPathParser('errorJavaScriptReferenceArray.code'));
+            expect(viPathParser('errorJavaScriptReferenceArray.source')).toMatch(/JavaScriptInvoke in MyVI/);
             done();
         });
     });
