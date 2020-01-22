@@ -74,32 +74,121 @@ var assignJavaScriptInvoke;
             return returnValueRef;
         };
 
-        var cookieToJsValueMap = new Map();
-        var jsValueToCookieCache = new Map();
-        var jsRefNumCookieCounter = 0;
+        var generateUniqueRefNumCookie = (function () {
+            var jsRefNumCookieCounter = 0;
+            return function () {
+                jsRefNumCookieCounter += 1;
+                return jsRefNumCookieCounter;
+            };
+        }());
 
-        var cacheRefNum = function (cookie, jsValue) {
-            cookieToJsValueMap.set(cookie, jsValue);
-            jsValueToCookieCache.set(jsValue, cookie);
-        };
+        class StaticRefnumManager {
+            constructor () {
+                this._cookieToJsValueMap = new Map();
+                this._jsValueToCookieCache = new Map();
+            }
 
-        var hasCachedRefNum = function (cookie) {
-            var refNumExists = cookieToJsValueMap.has(cookie);
-            return refNumExists;
-        };
+            createCookie (jsValue) {
+                // assume static references are never undefined or null
+                if (jsValue === undefined || jsValue === null) {
+                    throw new Error('Attempted to set a static JavaScript Refnum to undefined or null. This is not a valid operation.');
+                }
+                var existingCookie = this._jsValueToCookieCache.get(jsValue);
+                if (existingCookie !== undefined) {
+                    return existingCookie;
+                }
+                var cookie = generateUniqueRefNumCookie();
+                this._cookieToJsValueMap.set(cookie, jsValue);
+                this._jsValueToCookieCache.set(jsValue, cookie);
+                return cookie;
+            }
 
-        var getCachedRefNumCookie = function (jsValue) {
-            return jsValueToCookieCache.get(jsValue);
-        };
+            lookupValue (cookie) {
+                var jsValue = this._cookieToJsValueMap.get(cookie);
+                if (jsValue === undefined) {
+                    throw new Error('Attempted to get a Static JavaScript Refnum with a cookie that has not been set.');
+                }
+                return jsValue;
+            }
 
-        var generateUniqueRefNumCookie = function () {
-            jsRefNumCookieCounter += 1;
-            return jsRefNumCookieCounter;
-        };
+            isCookieValid (cookie) {
+                return this._cookieToJsValueMap.has(cookie);
+            }
+
+            get size () {
+                return this._cookieToJsValueMap.size;
+            }
+        }
+
+        class DynamicRefnumManager {
+            constructor () {
+                this._cookieToJsValueMap = new Map();
+            }
+
+            createCookie (jsValue) {
+                // Any value allowed and always creates a new cookie
+                var cookie = generateUniqueRefNumCookie();
+                this._cookieToJsValueMap.set(cookie, jsValue);
+                return cookie;
+            }
+
+            createCookies (values, cookies) {
+                var i, cookie;
+                for (i = 0; i < values.length; i += 1) {
+                    cookie = generateUniqueRefNumCookie();
+                    this._cookieToJsValueMap.set(cookie, values[i]);
+                    cookies[i] = cookie;
+                }
+            }
+
+            lookupValue (cookie) {
+                // Have to check the map because undefined and null are possible values for dynamic references
+                if (!this._cookieToJsValueMap.has(cookie)) {
+                    throw new Error('Attempted to get a Dynamic JavaScript Refnum with a cookie that has not been set.');
+                }
+                var jsValue = this._cookieToJsValueMap.get(cookie);
+                return jsValue;
+            }
+
+            lookupValues (cookies, values) {
+                var i;
+                for (i = 0; i < cookies.length; i += 1) {
+                    if (this._cookieToJsValueMap.has(cookies[i])) {
+                        values[i] = this._cookieToJsValueMap.get(cookies[i]);
+                    } else {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            isCookieValid (cookie) {
+                return this._cookieToJsValueMap.has(cookie);
+            }
+
+            deleteCookie (cookie) {
+                return this._cookieToJsValueMap.delete(cookie);
+            }
+
+            get size () {
+                return this._cookieToJsValueMap.size;
+            }
+        }
+
+        var staticRefnumManager = new StaticRefnumManager();
+        var dynamicRefnumManager = new DynamicRefnumManager();
+
+        Module.javaScriptInvoke.do_not_use_debug_only_static_refnum_manager = staticRefnumManager;
+        Module.javaScriptInvoke.do_not_use_debug_only_dynamic_refnum_manager = dynamicRefnumManager;
 
         Module.javaScriptInvoke.readJavaScriptRefNum = function (javaScriptValueRef) {
             var cookie = Module.eggShell.readDouble(javaScriptValueRef);
-            return cookieToJsValueMap.get(cookie);
+            var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
+            if (isStaticReference) {
+                return staticRefnumManager.lookupValue(cookie);
+            }
+
+            return dynamicRefnumManager.lookupValue(cookie);
         };
 
         /**
@@ -111,17 +200,36 @@ var assignJavaScriptInvoke;
          */
         Module.javaScriptInvoke.writeJavaScriptRefNum = function (javaScriptValueRef, jsValue) {
             var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
-            if (isStaticReference) { // static reference (ie, control reference) shares cookie for the same jsValue
-                var cachedCookie = getCachedRefNumCookie(jsValue);
-                if (cachedCookie !== undefined) {
-                    Module.eggShell.writeDouble(javaScriptValueRef, cachedCookie); // set the VIA local to be this cookie value
-                    return;
-                }
+            var cookie;
+            if (isStaticReference) {
+                cookie = staticRefnumManager.createCookie(jsValue);
+                Module.eggShell.writeDouble(javaScriptValueRef, cookie);
+                return;
             }
 
-            var newCookie = generateUniqueRefNumCookie();
-            Module.eggShell.writeDouble(javaScriptValueRef, newCookie);
-            cacheRefNum(newCookie, jsValue);
+            cookie = dynamicRefnumManager.createCookie(jsValue);
+            Module.eggShell.writeDouble(javaScriptValueRef, cookie);
+        };
+
+        Module.javaScriptInvoke.isJavaScriptRefNumValid = function (javaScriptValueRef) {
+            var cookie = Module.eggShell.readDouble(javaScriptValueRef);
+            var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
+            if (isStaticReference) {
+                return staticRefnumManager.isCookieValid(cookie);
+            }
+            return dynamicRefnumManager.isCookieValid(cookie);
+        };
+
+        // static reference (static control reference) always returns true (the operation was successful, which for static references is a no-op)
+        // dynamic reference (JS opaque reference from JSLI) returns true if the reference was found + cleared and false if the reference was invalid
+        Module.javaScriptInvoke.clearJavaScriptRefNum = function (javaScriptValueRef) {
+            var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
+            if (isStaticReference) {
+                // Static references are never closed so do not remove from map
+                return true;
+            }
+            var cookie = Module.eggShell.readDouble(javaScriptValueRef);
+            return dynamicRefnumManager.deleteCookie(cookie);
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
@@ -151,17 +259,29 @@ var assignJavaScriptInvoke;
                     return Module.eggShell.readString(valueRef);
                 },
 
-                visitArray: function (valueRef) {
+                visitArray: function (valueRef, data) {
+                    var foundAllCookies, returnValue, cookies;
+                    var subTypeRef = Module.typeHelpers.subElementByIndex(valueRef.typeRef, 0);
+                    if (Module.typeHelpers.isJSObjectDynamicRefnum(subTypeRef)) {
+                        cookies = Module.eggShell.readTypedArray(valueRef);
+                        returnValue = [];
+                        foundAllCookies = dynamicRefnumManager.lookupValues(cookies, returnValue);
+                        if (!foundAllCookies) {
+                            reportInvalidReference(data);
+                            return undefined;
+                        }
+                        return returnValue;
+                    }
                     return Module.eggShell.readTypedArray(valueRef);
                 },
 
                 visitJSObjectRefnum: function (valueRef, data) {
-                    var cookie = Module.eggShell.readDouble(valueRef);
-                    if (!hasCachedRefNum(cookie)) {
+                    var isJavaScriptRefNumValid = Module.javaScriptInvoke.isJavaScriptRefNumValid(valueRef);
+                    if (!isJavaScriptRefNumValid) {
                         reportInvalidReference(data);
                         return undefined;
                     }
-                    return Module.eggShell.readJavaScriptRefNum(valueRef);
+                    return Module.javaScriptInvoke.readJavaScriptRefNum(valueRef);
                 }
             };
         };
@@ -219,16 +339,28 @@ var assignJavaScriptInvoke;
                 }),
 
                 visitArray: reportReturnSetException(function (valueRef, data) {
-                    if (!Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.returnValue)) {
-                        reportTypeMismatch(data);
+                    var cookies;
+                    var subTypeRef = Module.typeHelpers.subElementByIndex(valueRef.typeRef, 0);
+                    if (Module.typeHelpers.isJSObjectDynamicRefnum(subTypeRef)) {
+                        if (Array.isArray(data.returnValue)) {
+                            cookies = new Uint32Array(data.returnValue.length);
+                            dynamicRefnumManager.createCookies(data.returnValue, cookies);
+                            Module.eggShell.resizeArray(valueRef, [cookies.length]);
+                            Module.eggShell.writeTypedArray(valueRef, cookies);
+                            return;
+                        }
+                        // If not array falls through to report type mismatch
+                    } else if (Module.eggShell.isSupportedAndCompatibleArrayType(valueRef, data.returnValue)) {
+                        Module.eggShell.resizeArray(valueRef, [data.returnValue.length]);
+                        Module.eggShell.writeTypedArray(valueRef, data.returnValue);
                         return;
                     }
-                    Module.eggShell.resizeArray(valueRef, [data.returnValue.length]);
-                    Module.eggShell.writeTypedArray(valueRef, data.returnValue);
+                    reportTypeMismatch(data);
+                    return;
                 }),
 
                 visitJSObjectRefnum: reportReturnSetException(function (valueRef, data) {
-                    Module.eggShell.writeJavaScriptRefNum(valueRef, data.returnValue);
+                    Module.javaScriptInvoke.writeJavaScriptRefNum(valueRef, data.returnValue);
                 })
             };
         };
@@ -551,8 +683,8 @@ var assignJavaScriptInvoke;
         Module.javaScriptInvoke.jsIsNotAJavaScriptRefnum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, returnTypeRef, returnDataRef) {
             var javaScriptRefNumValueRef = Module.eggShell.createValueRef(javaScriptRefnumTypeRef, javaScriptRefnumDataRef);
             var returnValueRef = Module.eggShell.createValueRef(returnTypeRef, returnDataRef);
-            var cookie = Module.eggShell.readDouble(javaScriptRefNumValueRef);
-            var isNotAJavaScriptRefnum = !hasCachedRefNum(cookie);
+            var isJavaScriptRefNumValid = Module.javaScriptInvoke.isJavaScriptRefNumValid(javaScriptRefNumValueRef);
+            var isNotAJavaScriptRefnum = !isJavaScriptRefNumValid;
             Module.eggShell.writeDouble(returnValueRef, isNotAJavaScriptRefnum ? 1 : 0);
         };
 
@@ -561,19 +693,15 @@ var assignJavaScriptInvoke;
          */
         Module.javaScriptInvoke.jsCloseJavaScriptRefNum = function (javaScriptRefnumTypeRef, javaScriptRefnumDataRef, errorTypeRef, errorDataRef) {
             var javaScriptValueRef = Module.eggShell.createValueRef(javaScriptRefnumTypeRef, javaScriptRefnumDataRef);
-            var isDynamicReference = Module.typeHelpers.isJSObjectDynamicRefnum(javaScriptValueRef.typeRef);
-            if (isDynamicReference) {
-                var cookie = Module.eggShell.readDouble(javaScriptValueRef);
-                var keyWasPresent = cookieToJsValueMap.delete(cookie);
-                if (!keyWasPresent) {
-                    var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
-                    var newError = {
-                        status: true,
-                        code: ERRORS.kNIInvalidReference.CODE,
-                        source: ERRORS.kNIInvalidReference.MESSAGE
-                    };
-                    Module.coreHelpers.mergeErrors(errorValueRef, newError);
-                }
+            var operationSuccessful = Module.javaScriptInvoke.clearJavaScriptRefNum(javaScriptValueRef);
+            if (!operationSuccessful) {
+                var errorValueRef = Module.eggShell.createValueRef(errorTypeRef, errorDataRef);
+                var newError = {
+                    status: true,
+                    code: ERRORS.kNIInvalidReference.CODE,
+                    source: ERRORS.kNIInvalidReference.MESSAGE
+                };
+                Module.coreHelpers.mergeErrors(errorValueRef, newError);
             }
         };
     };

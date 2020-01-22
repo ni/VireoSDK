@@ -90,6 +90,11 @@ define(MyVI dv(VirtualInstrument (
             e(.Int32 code)
             e(.String source)
         ) errorDoubleArray)
+        e(c(
+            e(.Boolean status)
+            e(.Int32 code)
+            e(.String source)
+        ) errorJavaScriptReferenceArray)
         e(dv(.Boolean f) returnBoolean)
         e(dv(.Int8 0) returnInt8)
         e(dv(.Int16 0) returnInt16)
@@ -108,6 +113,7 @@ define(MyVI dv(VirtualInstrument (
         e(a(.UInt32 *) returnUInt32Array)
         e(a(.Single *) returnSingleArray)
         e(a(.Double *) returnDoubleArray)
+        e(a(.JavaScriptDynamicRefNum) returnJavaScriptReferenceArray)
         e(.Occurrence occurrence)
     )
     clump (
@@ -129,6 +135,7 @@ define(MyVI dv(VirtualInstrument (
         JavaScriptInvoke(occurrence false errorUInt32Array 'NI_MismatchUInt32ArrayFunction' returnUInt32Array)
         JavaScriptInvoke(occurrence false errorSingleArray 'NI_MismatchSingleArrayFunction' returnSingleArray)
         JavaScriptInvoke(occurrence false errorDoubleArray 'NI_MismatchDoubleArrayFunction' returnDoubleArray)
+        JavaScriptInvoke(occurrence false errorJavaScriptReferenceArray 'NI_MismatchJavaScriptReferenceArrayFunction' returnJavaScriptReferenceArray)
     )
 ) ) )
 
