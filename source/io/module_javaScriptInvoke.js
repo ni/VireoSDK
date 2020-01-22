@@ -88,7 +88,7 @@ var assignJavaScriptInvoke;
                 this._jsValueToCookieCache = new Map();
             }
 
-            set (jsValue) {
+            createCookie (jsValue) {
                 // assume static references are never undefined or null
                 if (jsValue === undefined || jsValue === null) {
                     throw new Error('Attempted to set a static JavaScript Refnum to undefined or null. This is not a valid operation.');
@@ -103,7 +103,7 @@ var assignJavaScriptInvoke;
                 return cookie;
             }
 
-            get (cookie) {
+            lookupValue (cookie) {
                 var jsValue = this._cookieToJsValueMap.get(cookie);
                 if (jsValue === undefined) {
                     throw new Error('Attempted to get a Static JavaScript Refnum with a cookie that has not been set.');
@@ -111,7 +111,7 @@ var assignJavaScriptInvoke;
                 return jsValue;
             }
 
-            has (cookie) {
+            isCookieValid (cookie) {
                 return this._cookieToJsValueMap.has(cookie);
             }
 
@@ -125,14 +125,14 @@ var assignJavaScriptInvoke;
                 this._cookieToJsValueMap = new Map();
             }
 
-            set (jsValue) {
+            createCookie (jsValue) {
                 // Any value allowed and always creates a new cookie
                 var cookie = generateUniqueRefNumCookie();
                 this._cookieToJsValueMap.set(cookie, jsValue);
                 return cookie;
             }
 
-            setMultiple (values, cookies) {
+            createCookies (values, cookies) {
                 var i, cookie;
                 for (i = 0; i < values.length; i += 1) {
                     cookie = generateUniqueRefNumCookie();
@@ -141,7 +141,7 @@ var assignJavaScriptInvoke;
                 }
             }
 
-            get (cookie) {
+            lookupValue (cookie) {
                 // Have to check the map because undefined and null are possible values for dynamic references
                 if (!this._cookieToJsValueMap.has(cookie)) {
                     throw new Error('Attempted to get a Dynamic JavaScript Refnum with a cookie that has not been set.');
@@ -150,7 +150,7 @@ var assignJavaScriptInvoke;
                 return jsValue;
             }
 
-            getMultiple (cookies, values) {
+            lookupValues (cookies, values) {
                 var i;
                 for (i = 0; i < cookies.length; i += 1) {
                     if (this._cookieToJsValueMap.has(cookies[i])) {
@@ -162,11 +162,11 @@ var assignJavaScriptInvoke;
                 return true;
             }
 
-            has (cookie) {
+            isCookieValid (cookie) {
                 return this._cookieToJsValueMap.has(cookie);
             }
 
-            delete (cookie) {
+            deleteCookie (cookie) {
                 return this._cookieToJsValueMap.delete(cookie);
             }
 
@@ -185,10 +185,10 @@ var assignJavaScriptInvoke;
             var cookie = Module.eggShell.readDouble(javaScriptValueRef);
             var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
             if (isStaticReference) {
-                return staticRefnumManager.get(cookie);
+                return staticRefnumManager.lookupValue(cookie);
             }
 
-            return dynamicRefnumManager.get(cookie);
+            return dynamicRefnumManager.lookupValue(cookie);
         };
 
         /**
@@ -202,12 +202,12 @@ var assignJavaScriptInvoke;
             var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
             var cookie;
             if (isStaticReference) {
-                cookie = staticRefnumManager.set(jsValue);
+                cookie = staticRefnumManager.createCookie(jsValue);
                 Module.eggShell.writeDouble(javaScriptValueRef, cookie);
                 return;
             }
 
-            cookie = dynamicRefnumManager.set(jsValue);
+            cookie = dynamicRefnumManager.createCookie(jsValue);
             Module.eggShell.writeDouble(javaScriptValueRef, cookie);
         };
 
@@ -215,9 +215,9 @@ var assignJavaScriptInvoke;
             var cookie = Module.eggShell.readDouble(javaScriptValueRef);
             var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
             if (isStaticReference) {
-                return staticRefnumManager.has(cookie);
+                return staticRefnumManager.isCookieValid(cookie);
             }
-            return dynamicRefnumManager.has(cookie);
+            return dynamicRefnumManager.isCookieValid(cookie);
         };
 
         // static reference (static control reference) always returns true (the operation was successful, which for static references is a no-op)
@@ -225,10 +225,11 @@ var assignJavaScriptInvoke;
         Module.javaScriptInvoke.clearJavaScriptRefNum = function (javaScriptValueRef) {
             var isStaticReference = Module.typeHelpers.isJSObjectStaticRefnum(javaScriptValueRef.typeRef);
             if (isStaticReference) {
+                // Static references are never closed so do not remove from map
                 return true;
             }
             var cookie = Module.eggShell.readDouble(javaScriptValueRef);
-            return dynamicRefnumManager.delete(cookie);
+            return dynamicRefnumManager.deleteCookie(cookie);
         };
 
         var createJavaScriptInvokeParameterValueVisitor = function () {
@@ -264,7 +265,7 @@ var assignJavaScriptInvoke;
                     if (Module.typeHelpers.isJSObjectDynamicRefnum(subTypeRef)) {
                         cookies = Module.eggShell.readTypedArray(valueRef);
                         returnValue = [];
-                        foundAllCookies = dynamicRefnumManager.getMultiple(cookies, returnValue);
+                        foundAllCookies = dynamicRefnumManager.lookupValues(cookies, returnValue);
                         if (!foundAllCookies) {
                             reportInvalidReference(data);
                             return undefined;
@@ -343,7 +344,7 @@ var assignJavaScriptInvoke;
                     if (Module.typeHelpers.isJSObjectDynamicRefnum(subTypeRef)) {
                         if (Array.isArray(data.returnValue)) {
                             cookies = new Uint32Array(data.returnValue.length);
-                            dynamicRefnumManager.setMultiple(data.returnValue, cookies);
+                            dynamicRefnumManager.createCookies(data.returnValue, cookies);
                             Module.eggShell.resizeArray(valueRef, [cookies.length]);
                             Module.eggShell.writeTypedArray(valueRef, cookies);
                             return;
