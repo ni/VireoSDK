@@ -101,6 +101,7 @@
                 "ArrayConcatBug.via",
                 "ArrayConcatBug2D.via",
                 "ArrayConcatenateND.via",
+                "ArrayConcatenateUninitialized.via",
                 "ArrayDecimate.via",
                 "ArrayDelete.via",
                 "ArrayDeleteFail.via",

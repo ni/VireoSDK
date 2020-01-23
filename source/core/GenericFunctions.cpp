@@ -1744,6 +1744,10 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
                 minInputRank = inputRank;
             if (inputRank == outputRank) {
                 inputOuterDimSize =  arrayInput->DimensionLengths()[inputRank-1];
+                if (inputOuterDimSize == 0 && !isDestSameAsFirstInput) // Uninitialized dimension should count as 1, otherwise memory corruption will occur
+                {
+                    inputOuterDimSize = 1;
+                }
             } else {
                 inputOuterDimSize = 1;
             }
