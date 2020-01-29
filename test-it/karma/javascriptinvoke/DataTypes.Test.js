@@ -6,6 +6,7 @@ describe('A JavaScript function invoke', function () {
     var fixtures = window.testHelpers.fixtures;
 
     var vireo;
+    var vireoBuffer;
 
     var jsDataTypesViaUrl = fixtures.convertToAbsoluteFromFixturesDir('javascriptinvoke/DataTypes.via');
 
@@ -18,6 +19,7 @@ describe('A JavaScript function invoke', function () {
     beforeEach(async function () {
         // TODO mraj create shared vireo instances to improve test perf https://github.com/ni/VireoSDK/issues/163
         vireo = await vireoHelpers.createInstance();
+        vireoBuffer = vireo.eggShell.internal_module_do_not_use_or_you_will_be_fired.HEAP8.buffer;
 
         // Add functions to exercise JavaScriptInvoke behavior with parameters of different types
         window.NI_BooleanFunction = function (trueValue, falseValue) {
@@ -69,41 +71,49 @@ describe('A JavaScript function invoke', function () {
 
         window.NI_Int8ArrayFunction = function (value) {
             expect(value instanceof Int8Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_Int16ArrayFunction = function (value) {
             expect(value instanceof Int16Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_Int32ArrayFunction = function (value) {
             expect(value instanceof Int32Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_UInt8ArrayFunction = function (value) {
             expect(value instanceof Uint8Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_UInt16ArrayFunction = function (value) {
             expect(value instanceof Uint16Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_UInt32ArrayFunction = function (value) {
             expect(value instanceof Uint32Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_SingleArrayFunction = function (value) {
             expect(value instanceof Float32Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
         window.NI_DoubleArrayFunction = function (value) {
             expect(value instanceof Float64Array).toBeTrue();
+            expect(value.buffer).not.toBe(vireoBuffer);
             return value;
         };
 
@@ -163,6 +173,7 @@ describe('A JavaScript function invoke', function () {
 
     afterEach(function () {
         vireo = undefined;
+        vireoBuffer = undefined;
         // Cleanup functions
         window.NI_BooleanFunction = undefined;
         window.NI_Int8Function = undefined;
@@ -222,32 +233,32 @@ describe('A JavaScript function invoke', function () {
         jsArrayReferenceWriter('jsRefArrayWithMultiplePrimitiveValues', [null, undefined, 'hello', true, 7]);
         jsArrayReferenceWriter('jsRefArrayWithMultipleObjectValues', window.NI_JSRefArrayWithMultipleObjectValues);
 
-        spyOn(window, 'NI_BooleanFunction');
-        spyOn(window, 'NI_Int8Function');
-        spyOn(window, 'NI_Int16Function');
-        spyOn(window, 'NI_Int32Function');
-        spyOn(window, 'NI_UInt8Function');
-        spyOn(window, 'NI_UInt16Function');
-        spyOn(window, 'NI_UInt32Function');
-        spyOn(window, 'NI_SingleFunction');
-        spyOn(window, 'NI_DoubleFunction');
-        spyOn(window, 'NI_StringFunction');
-        spyOn(window, 'NI_Int8ArrayFunction');
-        spyOn(window, 'NI_Int16ArrayFunction');
-        spyOn(window, 'NI_Int32ArrayFunction');
-        spyOn(window, 'NI_UInt8ArrayFunction');
-        spyOn(window, 'NI_UInt16ArrayFunction');
-        spyOn(window, 'NI_UInt32ArrayFunction');
-        spyOn(window, 'NI_SingleArrayFunction');
-        spyOn(window, 'NI_DoubleArrayFunction');
-        spyOn(window, 'NI_JSRefNullValueFunction');
-        spyOn(window, 'NI_JSRefUndefinedValueFunction');
-        spyOn(window, 'NI_JSRefPrimitiveValueFunction');
-        spyOn(window, 'NI_JSRefObjectValueFunction');
-        spyOn(window, 'NI_JSRefArrayEmptyValueFunction');
-        spyOn(window, 'NI_JSRefArrayWithOneValueFunction');
-        spyOn(window, 'NI_JSRefArrayWithMultiplePrimitiveValuesFunction');
-        spyOn(window, 'NI_JSRefArrayWithMultipleObjectValuesFunction');
+        spyOn(window, 'NI_BooleanFunction').and.callThrough();
+        spyOn(window, 'NI_Int8Function').and.callThrough();
+        spyOn(window, 'NI_Int16Function').and.callThrough();
+        spyOn(window, 'NI_Int32Function').and.callThrough();
+        spyOn(window, 'NI_UInt8Function').and.callThrough();
+        spyOn(window, 'NI_UInt16Function').and.callThrough();
+        spyOn(window, 'NI_UInt32Function').and.callThrough();
+        spyOn(window, 'NI_SingleFunction').and.callThrough();
+        spyOn(window, 'NI_DoubleFunction').and.callThrough();
+        spyOn(window, 'NI_StringFunction').and.callThrough();
+        spyOn(window, 'NI_Int8ArrayFunction').and.callThrough();
+        spyOn(window, 'NI_Int16ArrayFunction').and.callThrough();
+        spyOn(window, 'NI_Int32ArrayFunction').and.callThrough();
+        spyOn(window, 'NI_UInt8ArrayFunction').and.callThrough();
+        spyOn(window, 'NI_UInt16ArrayFunction').and.callThrough();
+        spyOn(window, 'NI_UInt32ArrayFunction').and.callThrough();
+        spyOn(window, 'NI_SingleArrayFunction').and.callThrough();
+        spyOn(window, 'NI_DoubleArrayFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefNullValueFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefUndefinedValueFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefPrimitiveValueFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefObjectValueFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefArrayEmptyValueFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefArrayWithOneValueFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefArrayWithMultiplePrimitiveValuesFunction').and.callThrough();
+        spyOn(window, 'NI_JSRefArrayWithMultipleObjectValuesFunction').and.callThrough();
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(window.NI_BooleanFunction).toHaveBeenCalledWith(true, false);

@@ -80,7 +80,7 @@ describe('A JavaScript function invoke', function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsSimpleFunctionViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
-        spyOn(window, 'NI_SimpleFunction');
+        spyOn(window, 'NI_SimpleFunction').and.callThrough();
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(window.NI_SimpleFunction).toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe('A JavaScript function invoke', function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsSimpleScopedFunctionViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
 
-        spyOn(window.NI_Scoped, 'NI_SimpleFunction');
+        spyOn(window.NI_Scoped, 'NI_SimpleFunction').and.callThrough();
 
         runSlicesAsync(function (rawPrint, rawPrintError) {
             expect(window.NI_Scoped.NI_SimpleFunction).toHaveBeenCalled();
@@ -247,6 +247,30 @@ describe('A JavaScript function invoke', function () {
                 expect(viPathParser('error.status')).toBeFalse();
                 expect(viPathParser('error.code')).toBe(0);
                 expect(viPathParser('error.source')).toBeEmptyString();
+                done();
+            });
+        });
+    });
+
+    describe('with a null scope value', function () {
+        beforeEach(function () {
+            window.NI_Scoped = null;
+        });
+
+        afterEach(function () {
+            window.NI_Scoped = undefined;
+        });
+
+        it('with no parameters and within a scope succesfully works', function (done) {
+            var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsSimpleScopedFunctionViaUrl);
+            var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
+
+            runSlicesAsync(function (rawPrint, rawPrintError) {
+                expect(rawPrint).toBeEmptyString();
+                expect(rawPrintError).toBeEmptyString();
+                expect(viPathParser('error.status')).toBeTrue();
+                expect([kNIUnableToFindFunctionForJavaScriptInvoke]).toContain(viPathParser('error.code'));
+                expect(viPathParser('error.source')).toMatch(/JavaScriptInvoke in MyVI/);
                 done();
             });
         });

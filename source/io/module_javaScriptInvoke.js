@@ -272,7 +272,12 @@ var assignJavaScriptInvoke;
                         }
                         return returnValue;
                     }
-                    return Module.eggShell.readTypedArray(valueRef);
+
+                    // duplicate typedArray so user cannot accidentally manipulate vireo memory space directly
+                    var typedArray = Module.eggShell.readTypedArray(valueRef);
+                    var TypedArrayConstructor = typedArray.constructor;
+                    var clonedArray = new TypedArrayConstructor(typedArray);
+                    return clonedArray;
                 },
 
                 visitJSObjectRefnum: function (valueRef, data) {
@@ -408,7 +413,7 @@ var assignJavaScriptInvoke;
             var functionToCall = context[names[0]];
             var namesIndex;
             for (namesIndex = 1; namesIndex < names.length; namesIndex += 1) {
-                if (functionToCall === undefined) {
+                if (functionToCall === undefined || functionToCall === null) {
                     break;
                 }
 
