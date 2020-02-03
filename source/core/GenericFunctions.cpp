@@ -1766,9 +1766,9 @@ VIREO_FUNCTION_SIGNATUREV(ArrayConcatenateInternal, ArrayConcatenateInternalPara
             IntIndex* slabLengths = pDest->SlabLengths();
             for (i = 0; i < numInputs; i++) {
                 TypedArrayCoreRef pSource = *((TypedArrayCoreRef*) inputs[i]);
-				IntIndex inputRank = pSource->Rank();
-				if (inputRank == outputRank && pSource->DimensionLengths()[inputRank-1] == 0)
-					continue;
+                IntIndex inputRank = pSource->Rank();
+                if (inputRank == outputRank && pSource->DimensionLengths()[inputRank-1] == 0)
+                    continue;
                 if (pSource != pDest) {
                     AQBlock1* pNewInsert = ArrayToArrayCopyHelper(elementType, pInsert, slabLengths, pSource->BeginAt(0),
                         pSource->DimensionLengths(), pSource->SlabLengths(), outputRank, inputRank);
