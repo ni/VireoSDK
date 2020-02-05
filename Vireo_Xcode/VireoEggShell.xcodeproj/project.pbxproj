@@ -7,19 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		443C635520E7516C009B1C69 /* JavaScriptRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 443C635420E7516C009B1C69 /* JavaScriptRef.cpp */; };
 		444C46841E1C5A540037FA98 /* Date.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46821E1C5A540037FA98 /* Date.cpp */; };
 		444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46831E1C5A540037FA98 /* TimeFunctions.cpp */; };
 		444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468B1E26D73C0037FA98 /* RefNum.cpp */; };
 		444C46901E299A390037FA98 /* RefNumTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C468F1E299A390037FA98 /* RefNumTest.cpp */; };
 		444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 444C46921E2D70AB0037FA98 /* UnitTest.cpp */; };
 		446506D8206AC83700B0CD8E /* JavaScriptInvoke.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */; };
-		446506D9206AC83700B0CD8E /* PropertyNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506D7206AC83700B0CD8E /* PropertyNode.cpp */; };
 		446506DC206ACCCA00B0CD8E /* ControlRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 446506DB206ACCCA00B0CD8E /* ControlRef.cpp */; };
 		4466C7991E4F08EE004B5E31 /* MatchPat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7971E4F08EE004B5E31 /* MatchPat.cpp */; };
 		4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4466C7981E4F08EE004B5E31 /* Waveform.cpp */; };
 		44B625DD2244212B0063A478 /* Variants.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44B625DC2244212B0063A478 /* Variants.cpp */; };
 		44C2350E20428CD50064583B /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44C2350D20428CD50064583B /* Events.cpp */; };
+		44EC2CA523E8BAA500C8957C /* CloseReference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2C2B23E8BAA400C8957C /* CloseReference.cpp */; };
+		44EC2CA623E8BAA500C8957C /* DualTypeVisitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2C4F23E8BAA400C8957C /* DualTypeVisitor.cpp */; };
+		44EC2CA723E8BAA500C8957C /* DualTypeEqual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2C5023E8BAA400C8957C /* DualTypeEqual.cpp */; };
+		44EC2CA823E8BAA500C8957C /* JavaScriptDynamicRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2C5123E8BAA400C8957C /* JavaScriptDynamicRef.cpp */; };
+		44EC2CD023E8BAA500C8957C /* JavaScriptStaticRef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2CA223E8BAA500C8957C /* JavaScriptStaticRef.cpp */; };
+		44EC2CD123E8BAA500C8957C /* DualTypeConversion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2CA323E8BAA500C8957C /* DualTypeConversion.cpp */; };
+		44EC2CD223E8BAA500C8957C /* DualTypeOperation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44EC2CA423E8BAA500C8957C /* DualTypeOperation.cpp */; };
 		4700BD741948FBF400794482 /* ExecutionContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDB17C2A271009053DB /* ExecutionContext.cpp */; };
 		4700BD751948FC0400794482 /* Math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DDF17C2A271009053DB /* Math.cpp */; };
 		4700BD7A194A08E500794482 /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 47D84DE117C2A271009053DB /* Queue.cpp */; };
@@ -125,7 +130,6 @@
 		441F02CB20D9959B008910D2 /* library_eventHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_eventHelpers.js; path = ../source/core/library_eventHelpers.js; sourceTree = "<group>"; };
 		441F02CC20D9959B008910D2 /* module_eventHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_eventHelpers.js; path = ../source/core/module_eventHelpers.js; sourceTree = "<group>"; };
 		443C635320E75158009B1C69 /* JavaScriptRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JavaScriptRef.h; path = include/JavaScriptRef.h; sourceTree = "<group>"; };
-		443C635420E7516C009B1C69 /* JavaScriptRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScriptRef.cpp; path = core/JavaScriptRef.cpp; sourceTree = "<group>"; };
 		444C46821E1C5A540037FA98 /* Date.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Date.cpp; path = ../source/core/Date.cpp; sourceTree = "<group>"; };
 		444C46831E1C5A540037FA98 /* TimeFunctions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimeFunctions.cpp; path = ../source/core/TimeFunctions.cpp; sourceTree = "<group>"; };
 		444C46871E1C5ABC0037FA98 /* Date.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Date.h; path = ../source/include/Date.h; sourceTree = "<group>"; };
@@ -139,10 +143,7 @@
 		444F03A221F78D510020C091 /* ExpectedResults */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ExpectedResults; path = "../test-it/ExpectedResults"; sourceTree = "<group>"; };
 		446506D2206AC83600B0CD8E /* library_javaScriptInvoke.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_javaScriptInvoke.js; path = ../source/io/library_javaScriptInvoke.js; sourceTree = "<group>"; };
 		446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScriptInvoke.cpp; path = ../source/io/JavaScriptInvoke.cpp; sourceTree = "<group>"; };
-		446506D4206AC83600B0CD8E /* module_propertyNode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_propertyNode.js; path = ../source/io/module_propertyNode.js; sourceTree = "<group>"; };
 		446506D5206AC83600B0CD8E /* module_javaScriptInvoke.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_javaScriptInvoke.js; path = ../source/io/module_javaScriptInvoke.js; sourceTree = "<group>"; };
-		446506D6206AC83600B0CD8E /* library_propertyNode.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_propertyNode.js; path = ../source/io/library_propertyNode.js; sourceTree = "<group>"; };
-		446506D7206AC83700B0CD8E /* PropertyNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PropertyNode.cpp; path = ../source/io/PropertyNode.cpp; sourceTree = "<group>"; };
 		446506DA206ACB3400B0CD8E /* ControlRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ControlRef.h; path = include/ControlRef.h; sourceTree = "<group>"; };
 		446506DB206ACCCA00B0CD8E /* ControlRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ControlRef.cpp; path = core/ControlRef.cpp; sourceTree = "<group>"; };
 		4466C7971E4F08EE004B5E31 /* MatchPat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MatchPat.cpp; path = core/MatchPat.cpp; sourceTree = "<group>"; };
@@ -168,6 +169,18 @@
 		44C295DA1F8C03B7001877B4 /* library_coreHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = library_coreHelpers.js; path = core/library_coreHelpers.js; sourceTree = "<group>"; };
 		44C295DC1F8C03B7001877B4 /* module_coreHelpers.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = module_coreHelpers.js; path = core/module_coreHelpers.js; sourceTree = "<group>"; };
 		44C295DD1F8C03B7001877B4 /* vireo.wrapper.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = vireo.wrapper.js; path = core/vireo.wrapper.js; sourceTree = "<group>"; };
+		44EC2C2623E8BA7A00C8957C /* DebuggingToggles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DebuggingToggles.h; path = include/DebuggingToggles.h; sourceTree = "<group>"; };
+		44EC2C2723E8BA7A00C8957C /* DualTypeVisitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DualTypeVisitor.h; path = include/DualTypeVisitor.h; sourceTree = "<group>"; };
+		44EC2C2823E8BA7A00C8957C /* DualTypeOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DualTypeOperation.h; path = include/DualTypeOperation.h; sourceTree = "<group>"; };
+		44EC2C2923E8BA7A00C8957C /* DualTypeEqual.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DualTypeEqual.h; path = include/DualTypeEqual.h; sourceTree = "<group>"; };
+		44EC2C2A23E8BA7B00C8957C /* DualTypeConversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DualTypeConversion.h; path = include/DualTypeConversion.h; sourceTree = "<group>"; };
+		44EC2C2B23E8BAA400C8957C /* CloseReference.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloseReference.cpp; path = core/CloseReference.cpp; sourceTree = "<group>"; };
+		44EC2C4F23E8BAA400C8957C /* DualTypeVisitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DualTypeVisitor.cpp; path = core/DualTypeVisitor.cpp; sourceTree = "<group>"; };
+		44EC2C5023E8BAA400C8957C /* DualTypeEqual.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DualTypeEqual.cpp; path = core/DualTypeEqual.cpp; sourceTree = "<group>"; };
+		44EC2C5123E8BAA400C8957C /* JavaScriptDynamicRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScriptDynamicRef.cpp; path = core/JavaScriptDynamicRef.cpp; sourceTree = "<group>"; };
+		44EC2CA223E8BAA500C8957C /* JavaScriptStaticRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JavaScriptStaticRef.cpp; path = core/JavaScriptStaticRef.cpp; sourceTree = "<group>"; };
+		44EC2CA323E8BAA500C8957C /* DualTypeConversion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DualTypeConversion.cpp; path = core/DualTypeConversion.cpp; sourceTree = "<group>"; };
+		44EC2CA423E8BAA500C8957C /* DualTypeOperation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DualTypeOperation.cpp; path = core/DualTypeOperation.cpp; sourceTree = "<group>"; };
 		4700BD6B1948FBAD00794482 /* MicroEggShell */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MicroEggShell; sourceTree = BUILT_PRODUCTS_DIR; };
 		470C345118F883BE00E1E148 /* ViaEBNF.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ViaEBNF.md; path = ../source/dox/ViaEBNF.md; sourceTree = "<group>"; };
 		470C345218FC485400E1E148 /* Intro.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = Intro.md; path = ../source/dox/Intro.md; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = "<none>"; };
@@ -243,7 +256,7 @@
 		47D84DE217C2A271009053DB /* String.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = String.cpp; path = ../source/core/String.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DE317C2A271009053DB /* StringUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = StringUtilities.cpp; path = ../source/core/StringUtilities.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47D84DE417C2A271009053DB /* Timestamp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Timestamp.cpp; path = ../source/core/Timestamp.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TypeAndDataManager.cpp; path = ../source/core/TypeAndDataManager.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		47D84DE517C2A271009053DB /* TypeAndDataManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TypeAndDataManager.cpp; path = ../source/core/TypeAndDataManager.cpp; sourceTree = "<group>"; };
 		47D84DE617C2A271009053DB /* VirtualInstrument.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = VirtualInstrument.cpp; path = ../source/core/VirtualInstrument.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47E180571A083769007A8DB4 /* Synchronization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Synchronization.cpp; path = ../source/core/Synchronization.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		47E220B01950C1F700988185 /* Assert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Assert.cpp; path = ../source/core/Assert.cpp; sourceTree = "<group>"; };
@@ -379,17 +392,14 @@
 				472B7BE717D0E1FC00201196 /* FileIO.cpp */,
 				47A877741AE6925800EC5D77 /* HttpClient.cpp */,
 				446506D3206AC83600B0CD8E /* JavaScriptInvoke.cpp */,
-				446506D7206AC83700B0CD8E /* PropertyNode.cpp */,
 				441F02CB20D9959B008910D2 /* library_eventHelpers.js */,
 				47A877751AE6925800EC5D77 /* library_httpClient.js */,
 				446506D2206AC83600B0CD8E /* library_javaScriptInvoke.js */,
-				446506D6206AC83600B0CD8E /* library_propertyNode.js */,
 				44C295D91F8C037A001877B4 /* module_eggShell.js */,
 				441F02CC20D9959B008910D2 /* module_eventHelpers.js */,
 				44C295D61F8C037A001877B4 /* module_httpClient.js */,
 				446506D5206AC83600B0CD8E /* module_javaScriptInvoke.js */,
 				44C295D71F8C037A001877B4 /* module_other.js */,
-				446506D4206AC83600B0CD8E /* module_propertyNode.js */,
 				44B625E022496B030063A478 /* module_typeHelpers.js */,
 				44B625E322496B040063A478 /* vireo.loader.asmjs-unknown-emscripten.debug.js */,
 				44B625DF22496B030063A478 /* vireo.loader.asmjs-unknown-emscripten.profile.js */,
@@ -454,6 +464,13 @@
 		479AFE8C170DCFB2002C0FF0 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				44EC2C2B23E8BAA400C8957C /* CloseReference.cpp */,
+				44EC2CA323E8BAA500C8957C /* DualTypeConversion.cpp */,
+				44EC2C5023E8BAA400C8957C /* DualTypeEqual.cpp */,
+				44EC2CA423E8BAA500C8957C /* DualTypeOperation.cpp */,
+				44EC2C4F23E8BAA400C8957C /* DualTypeVisitor.cpp */,
+				44EC2C5123E8BAA400C8957C /* JavaScriptDynamicRef.cpp */,
+				44EC2CA223E8BAA500C8957C /* JavaScriptStaticRef.cpp */,
 				47D84DD317C2A271009053DB /* Array.cpp */,
 				47E220B01950C1F700988185 /* Assert.cpp */,
 				47D84DD417C2A271009053DB /* CEntryPoints.cpp */,
@@ -463,7 +480,6 @@
 				470F626B1886F53F003146BF /* EventLog.cpp */,
 				44C2350D20428CD50064583B /* Events.cpp */,
 				47D84DDB17C2A271009053DB /* ExecutionContext.cpp */,
-				443C635420E7516C009B1C69 /* JavaScriptRef.cpp */,
 				4466C7971E4F08EE004B5E31 /* MatchPat.cpp */,
 				47D84DDF17C2A271009053DB /* Math.cpp */,
 				472A07891AA6204A008109FA /* NumericString.cpp */,
@@ -496,6 +512,11 @@
 		479AFEBE170DDA76002C0FF0 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				44EC2C2623E8BA7A00C8957C /* DebuggingToggles.h */,
+				44EC2C2A23E8BA7B00C8957C /* DualTypeConversion.h */,
+				44EC2C2923E8BA7A00C8957C /* DualTypeEqual.h */,
+				44EC2C2823E8BA7A00C8957C /* DualTypeOperation.h */,
+				44EC2C2723E8BA7A00C8957C /* DualTypeVisitor.h */,
 				44026BAA1EFAEFC600DB51B4 /* Array.h */,
 				444C46871E1C5ABC0037FA98 /* Date.h */,
 				44C2350F2045FAD70064583B /* Events.h */,
@@ -749,28 +770,33 @@
 				47D84DEF17C2A271009053DB /* ExecutionContext.cpp in Sources */,
 				47D84DF317C2A271009053DB /* Math.cpp in Sources */,
 				47EEBCC21A5EFF0E00B033DC /* TypeAndDataReflection.cpp in Sources */,
+				44EC2CD223E8BAA500C8957C /* DualTypeOperation.cpp in Sources */,
 				47CAD26617FB3D7A00DDDB46 /* TypeAndDataManager.cpp in Sources */,
 				47D84DF417C2A271009053DB /* Thread.cpp in Sources */,
 				47D84DF517C2A271009053DB /* Queue.cpp in Sources */,
 				47D84DF617C2A271009053DB /* String.cpp in Sources */,
-				446506D9206AC83700B0CD8E /* PropertyNode.cpp in Sources */,
-				443C635520E7516C009B1C69 /* JavaScriptRef.cpp in Sources */,
 				444C46901E299A390037FA98 /* RefNumTest.cpp in Sources */,
 				47D84DF717C2A271009053DB /* StringUtilities.cpp in Sources */,
+				44EC2CA523E8BAA500C8957C /* CloseReference.cpp in Sources */,
 				444C468C1E26D73C0037FA98 /* RefNum.cpp in Sources */,
 				4727170F1828B8F300238283 /* main.cpp in Sources */,
+				44EC2CD123E8BAA500C8957C /* DualTypeConversion.cpp in Sources */,
 				47D84DF817C2A271009053DB /* Timestamp.cpp in Sources */,
+				44EC2CA723E8BAA500C8957C /* DualTypeEqual.cpp in Sources */,
 				47D84DFA17C2A271009053DB /* VirtualInstrument.cpp in Sources */,
 				44B625DD2244212B0063A478 /* Variants.cpp in Sources */,
 				472B24D0180F0FEB00C08186 /* GenericFunctions.cpp in Sources */,
 				444C46931E2D70AB0037FA98 /* UnitTest.cpp in Sources */,
 				470E20781A36A5DC006FEACC /* TypeTemplates.cpp in Sources */,
+				44EC2CD023E8BAA500C8957C /* JavaScriptStaticRef.cpp in Sources */,
+				44EC2CA823E8BAA500C8957C /* JavaScriptDynamicRef.cpp in Sources */,
 				44C2350E20428CD50064583B /* Events.cpp in Sources */,
 				444C46851E1C5A540037FA98 /* TimeFunctions.cpp in Sources */,
 				472B7BE517D0E1E800201196 /* TDCodecVia.cpp in Sources */,
 				472B7BE817D0E1FC00201196 /* FileIO.cpp in Sources */,
 				444C46841E1C5A540037FA98 /* Date.cpp in Sources */,
 				472A078A1AA6204A008109FA /* NumericString.cpp in Sources */,
+				44EC2CA623E8BAA500C8957C /* DualTypeVisitor.cpp in Sources */,
 				4466C79A1E4F08EE004B5E31 /* Waveform.cpp in Sources */,
 				47B76CD91B28DB090083AEEB /* Platform.cpp in Sources */,
 				472A07901AA67EF8008109FA /* DebugGPIO.cpp in Sources */,
