@@ -49,7 +49,7 @@
     "vireo"
   ],
   "author": "See 'AUTHORS' file",
-  "license": "SEE LICENSE IN 'LICENSE.txt'",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/NI/VireoSDK/issues"
   },

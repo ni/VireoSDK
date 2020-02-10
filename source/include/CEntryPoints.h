@@ -1,11 +1,5 @@
-/**
-
-Copyright (c) 2014-2015 National Instruments Corp.
-
-This software is subject to the terms described in the LICENSE.TXT file
-
-SDG
-*/
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
 /*! \file
     \brief  C entry points for core Vireo functions. Used when the runtime is built and loaded as a library

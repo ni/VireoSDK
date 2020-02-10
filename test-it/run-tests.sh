@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (c) 2020 National Instruments
+# SPDX-License-Identifier: MIT
 
 #  Script.sh
 #  CommandLine

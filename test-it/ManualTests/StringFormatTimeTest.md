@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 # String Format Time Manual Test
 
 1. Run the test `StringFormatTime.via` with `./test.js StringFormatTime.via`

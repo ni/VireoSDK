@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 \defgroup VIA_Function_Reference VI Assembly and Function Reference
 
 \defgroup VIA_Mathematics_VIs Mathematics
@@ -87,8 +92,3 @@ ReOrImToPolar (real[in] imaginary[in] r[out] theta[out])
 | **r** | It is the radial coordinate (r). It has the same data type structure as the inputs. |
 | **theta** | It is the angular coordinate (theta). It has the same data type structure as the inputs. |
 \ingroup VIA_Complex_Functions
-
-
-
-
-

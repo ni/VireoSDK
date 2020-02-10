@@ -1,3 +1,6 @@
+# Copyright (c) 2020 National Instruments
+# SPDX-License-Identifier: MIT
+
 # The emscripten C++ to JavaScript tool chain is portable
 # It does not need an installer and can be placed any where
 # If you are not using it for multiple projects it may make sene

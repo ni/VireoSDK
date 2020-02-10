@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 # Viewing the Test Coverage for Vireo
 
 ## Running the Coverage

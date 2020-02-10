@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 describe('Performing a DELETE request', function () {
     'use strict';
     // Reference aliases

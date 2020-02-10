@@ -1,9 +1,9 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 //
 //  SampleStaticLinkProgram.cpp
 //  VireoEggShell
-//
-//  Created by Paul Austin on 12/11/14.
-//  Copyright (c) 2014-2015 Paul Austin. All rights reserved.
 //
 
 #include "DataTypes.h"

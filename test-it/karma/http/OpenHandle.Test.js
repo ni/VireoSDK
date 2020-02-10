@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 describe('Running an Open Handle call', function () {
     'use strict';
     // Reference aliases

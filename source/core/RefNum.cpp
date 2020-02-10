@@ -1,11 +1,5 @@
-/**
-
-Copyright (c) 2017 National Instruments Corp.
-
-This software is subject to the terms described in the LICENSE.TXT file
-
-Craig S.
-*/
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
 /*! \file
  \brief Classes for RefNum API, used to manage references to queues and other reference-based objects.

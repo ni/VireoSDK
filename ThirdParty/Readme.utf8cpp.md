@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 Version of utf8cpp that is used:
 https://github.com/nemtrif/utfcpp/releases/tag/v2.3.5
 

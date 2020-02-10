@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 describe('Vireo public API allows', function () {
     'use strict';
     // Reference aliases

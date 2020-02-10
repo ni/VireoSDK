@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 describe('Arrays in Vireo', function () {
     'use strict';
     // Reference aliases

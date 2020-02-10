@@ -1,3 +1,5 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
 import createVireoCore from '../../dist/asmjs-unknown-emscripten/profile/vireo.core.js';
 import createInstanceUnbound from './vireo.loader.shared.js';

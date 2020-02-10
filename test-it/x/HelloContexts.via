@@ -1,8 +1,7 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
 /*
-
-
-
 // ctx become a first class object in the type class list
 // it is some what akin to a name space. at lwast thats the case when
 // it has a name. ther could be anonymous contexts as well.

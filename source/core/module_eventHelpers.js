@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 var assignEventHelpers;
 (function () {
     // Static Private Variables (all vireo instances)

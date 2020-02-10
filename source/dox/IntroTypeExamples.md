@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 ## Introduction to types and functions
 
 ###Example 2: Basic types and functions

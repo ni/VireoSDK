@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 // Type defaults are constant it should not be possible to set
 // the default value of a dv type once it has been created. 
 

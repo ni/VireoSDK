@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 # Coding Guidelines
 
 The Vireo reference implementation is in C++. These are some of the coding guidelines
