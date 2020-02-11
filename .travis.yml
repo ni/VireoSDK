@@ -1,4 +1,6 @@
 dist: xenial
+python:
+ - "3.4"
 branches:
   except:
     - gh-pages
