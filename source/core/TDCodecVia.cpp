@@ -17,6 +17,8 @@ SDG
 #include <ctype.h>
 #include <memory>
 #include <algorithm>
+#include <vector>
+
 #include "TypeDefiner.h"
 #include "ExecutionContext.h"
 #include "TypeAndDataManager.h"
@@ -24,7 +26,6 @@ SDG
 #include "TDCodecVia.h"
 #include "ControlRef.h"
 #include "Events.h"
-#include <vector>
 
 #include "VirtualInstrument.h"  // TODO(PaulAustin): remove once it is all driven by the type system.
 #include "Variants.h"
