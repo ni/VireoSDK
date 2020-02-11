@@ -1,6 +1,6 @@
 # cpplint
 
-[cpplint.py](https://github.com/google/styleguide/blob/gh-pages/cpplint/cpplint.py) is a Google tool for checking common style rules common to the
+[cpplint.py](https://github.com/cpplint/cpplint/blob/851ceb00cba6301b00167cf5c313532bc05cf1eb/cpplint.py) is a Google tool for checking common style rules common to the
 VireoSDK projects as well. It has its own copyright that is included at the
 top of cpplint.py.
 
