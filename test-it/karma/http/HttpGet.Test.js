@@ -370,7 +370,7 @@ describe('Performing a GET request', function () {
         });
     });
 
-    it('validating a response with binary data seeded bytes #FailsHttpBinLatest', function (done) {
+    it('validating a response with binary data seeded bytes', function (done) {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
