@@ -1,7 +1,7 @@
 dist: xenial
 language: python
 python:
- - "3.4"
+ - "3.5"
 branches:
   except:
     - gh-pages
