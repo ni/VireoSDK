@@ -24,7 +24,8 @@ before_install:
 - doxygen --version
 install:
 - npm install
-- pip install --user tox
+- pip install -r requirements.txt
+- python -m httpbin.core --port 64526 --host 0.0.0.0 &
 - nohup npm run httpbin &
 - gcc -v
 - git clone https://github.com/juj/emsdk.git
