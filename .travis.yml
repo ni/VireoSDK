@@ -1,4 +1,7 @@
 dist: xenial
+language: python
+python:
+ - "3.5"
 branches:
   except:
     - gh-pages
@@ -7,9 +10,6 @@ addons:
   apt:
     packages:
     - doxygen
-cache:
-  directories:
-    - node_modules
 before_install:
 - export TZ=CST6CDT
 - npm install npm@latest -g
@@ -21,8 +21,11 @@ before_install:
 - doxygen --version
 install:
 - npm install
-- pip install --user tox
-- nohup npm run httpbin &
+# Other environments use tox for managing the virtualenv for httpbin
+# Travis already runs in a virtualenv so we run the commands directly
+# See: https://docs.travis-ci.com/user/languages/python/#using-tox-as-the-build-script
+- pip install -r requirements.txt
+- nohup python -m httpbin.core --port 64526 --host 0.0.0.0 &
 - gcc -v
 - git clone https://github.com/juj/emsdk.git
 - (cd emsdk && git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e)

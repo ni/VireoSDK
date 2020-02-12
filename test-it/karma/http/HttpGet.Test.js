@@ -371,9 +371,6 @@ describe('Performing a GET request', function () {
     });
 
     it('validating a response with binary data seeded bytes', function (done) {
-        // Body bytes: '\xCB\xD2\x7C\x42\x00\xA9\x78\xC2';
-        var bodyReadAsString = '\uFFFD\uFFFD\x7C\x42\x00\uFFFD\x78\uFFFD';
-
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, httpGetMethodViaUrl);
         var viPathParser = vireoRunner.createVIPathParser(vireo, 'MyVI');
         var viPathWriter = vireoRunner.createVIPathWriter(vireo, 'MyVI');
@@ -396,8 +393,13 @@ describe('Performing a GET request', function () {
             expect(responseHeader.headers).toBeNonEmptyObject();
 
             // body
-            var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
-            expect(responseBody).toBe(bodyReadAsString);
+            // Body bytes: '\xCB\xD2\x7C\x42\x00\xA9\x78\xC2';
+            // var bodyReadAsString = '\uFFFD\uFFFD\x7C\x42\x00\uFFFD\x78\uFFFD';
+            // var responseBody = textFormat.normalizeLineEndings(viPathParser('body'));
+
+            // Httpbin seed not stable between Python versions. See https://github.com/postmanlabs/httpbin/issues/598
+            // Need an alternate endpoint to test null values in responses. See https://github.com/postmanlabs/httpbin/issues/599
+            // expect(responseBody).toBe(bodyReadAsString);
 
             // status code
             expect(viPathParser('statusCode')).toBe(200);
