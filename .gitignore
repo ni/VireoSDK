@@ -120,3 +120,4 @@ emscripten-sdk/
 emsdk/
 nohup.out
 emsdk-tools/
+*.nupkg

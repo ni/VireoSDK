@@ -18,3 +18,5 @@
 
 !/source/io/*.js
 /source/io/library_*.js
+
+!/THIRDPARTY.txt
