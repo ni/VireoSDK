@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 describe('Vireo loaded as a global in the browser', function () {
     'use strict';
 

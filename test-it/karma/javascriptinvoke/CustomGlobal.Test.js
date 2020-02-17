@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 describe('A JavaScriptInvoke with a custom global registered', function () {
     'use strict';
     // Reference aliases

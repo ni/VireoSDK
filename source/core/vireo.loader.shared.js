@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 import assignCoreHelpers from '../core/module_coreHelpers.js';
 import assignTypeHelpers from '../core/module_typeHelpers.js';
 import assignEggShell from '../io/module_eggShell.js';

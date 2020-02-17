@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 # cpplint
 
 [cpplint.py](https://github.com/cpplint/cpplint/blob/851ceb00cba6301b00167cf5c313532bc05cf1eb/cpplint.py) is a Google tool for checking common style rules common to the

@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 import staticHelpers from '../core/vireo.loader.staticHelpers.js';
 
 var assignEggShell;

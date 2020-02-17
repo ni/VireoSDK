@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 ## EBNF grammar for VIA assembly
 
 The VIA grammar is based on simple parentesized lists and are closely related to

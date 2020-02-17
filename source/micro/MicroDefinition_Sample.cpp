@@ -1,5 +1,7 @@
-/**
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
+/**
 Sample of a machine generated function table for micro Vireo
 
 SDG

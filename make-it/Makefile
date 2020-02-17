@@ -1,3 +1,6 @@
+# Copyright (c) 2020 National Instruments
+# SPDX-License-Identifier: MIT
+
 # Vireo make file for linux/unix
 
 # The mkdir command has to be quoted so that it is not intercepted in the windows shell

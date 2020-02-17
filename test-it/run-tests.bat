@@ -1,4 +1,6 @@
 @echo off
+rem Copyright (c) 2020 National Instruments
+rem SPDX-License-Identifier: MIT
 
 for /f %%f in ('dir /b *.via') do (
   echo Testing  %%f

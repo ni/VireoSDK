@@ -1,15 +1,8 @@
-/**
-
- Copyright (c) 2014-2015 National Instruments Corp.
-
- This software is subject to the terms described in the LICENSE.TXT file
-
- SDG
- */
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
 /*! \file
  */
-
 
 #ifndef Platform_h
 #define Platform_h

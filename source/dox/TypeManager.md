@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 ## The Type Manager
 
 In the introduction, the VIs seen in the examples were running in a _ExecutionContext_, an object that manages scheduling the execution of clumps of code. A core element of each  ExecutionContext is a TypeManager object that manages all types and data allocations needed during VI execution. TypeManagers can be nested allowing a parent TypeManager to provide types that are used by inherited by child TypeManagers. 

@@ -7,12 +7,16 @@
     <authors>https://github.com/ni/VireoSDK/blob/master/AUTHORS</authors>
     <owners>https://github.com/ni/VireoSDK/blob/master/AUTHORS</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <licenseUrl>https://github.com/ni/VireoSDK/blob/master/LICENSE.txt</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/ni/VireoSDK/</projectUrl>
     <description>VireoSDK provides a subset of LabVIEW runtime functionality for smaller targets.</description>
   </metadata>
   <files>
     <file src="dist/Debug/esh.exe" target="content/TestFiles" />
     <file src="vireoSDK.props" target="build" />
+    <!-- targetting root as described by https://docs.microsoft.com/en-us/nuget/create-packages/creating-a-package#add-a-readme-and-other-files -->
+    <file src="LICENSE.txt" target="" />
+    <file src="README.md" target="" />
+    <file src="THIRDPARTY.txt" target="" />
   </files>
 </package>

@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 \defgroup VIAIntro VI Assembly Introduction
 
 \defgroup VIAIntro_Arrays Arrays
@@ -29,6 +34,3 @@
 
 \defgroup Internals_SubString SubString
 \ingroup Internals
-
-
-

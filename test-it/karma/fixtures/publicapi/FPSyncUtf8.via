@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 define (c0 dv(.Double 7))
 define (c1 dv(.String 'Iñtërnâtiônàlizætiøn\x00☃💩'))
 define (c2 dv(.Double 8))

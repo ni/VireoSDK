@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 # Contributing to Vireo
 
 This guide will walk through the different workflows recommended for developing Vireo.

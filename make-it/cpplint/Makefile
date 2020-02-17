@@ -1,3 +1,6 @@
+# Copyright (c) 2020 National Instruments
+# SPDX-License-Identifier: MIT
+
 LINTARGS = --quiet --linelength=160 --filter=-build/header_guard,-readability/casting,-whitespace/braces
 
 # Ignored warnings:
@@ -18,4 +21,3 @@ COMMANDLINESRCS = $(COMMANDLINE:%.cpp=../../source/CommandLine/%.cpp)
 CORESRCS = $(CORE:%.cpp=../../source/core/%.cpp)
 IOSRCS = $(IO:%.cpp=../../source/io/%.cpp)
 INCSRCS = $(wildcard ../../source/include/*.h)
-

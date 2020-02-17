@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 ## The Big Picture
 Vireo is a runtime engine. That means it works behind the scenes when a  program it enables is run. It is not an ADE, there may be no window, no panel, no diagram. When a program is run, the inputs and outputs may be simple stdin/stdout streams, network I/O or raw digital I/O. Much like the standard C library, Vireo can be statically linked in a stand alone executable or built and used as a shared library.  The programs that Vireo runs are loaded from a low level textual data flow language called VI-Assembly ( *.via).  Parsing the VIA files is treated as the decoder portion of a codec so other formats can be supported. The development roadmap includes support for a more compact bytecode format (*.vib).  While it is easy to write simple tests by hand, the preferred approach is to generate them directly from LabVIEW diagrams. The LabVIEW for LEGO Mindstorms module is the first module to include this support.
 

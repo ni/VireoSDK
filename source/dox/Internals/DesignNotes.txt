@@ -1,3 +1,6 @@
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+
 A log of design decisions and other notes that do nto have a home of their own.
 
 9/15/2014 Hex constants (and possibly binary constants)
@@ -35,21 +38,5 @@ Basic inline constants have been added. This primarily helps in writing unit tes
 8/25/2014 Token grammar and special characters
 Upstream tools like LV place few restrictions on symbol names. VI can have spaces commas and many other special characters. For this reason generated via files had dummy names 'videf1' 'videf2'. The VIACodec now supports URL encoding of names so the name "Hello World" can be encoded "Hello%20World". In general, special characters like '+' '-' '%' are not special tokens. Unless they stand alone they are simply part of the token they are embedded in, all tokens in the VIA codec are separated only by space, tab or parens. As further restriction, tokens that are dictionary symbols can only contain {[A-Z] | [a-z] | [0-9] | '_' | '%'} and must not start with a number, other patterns are reserved for future use. As a result of this change, upstream tools can sanitize user symbol names by prepending their symbols with a character such as '_' and using %XX URL encoding for non alpha-num characters.
 
-
 2012 : Use of lvalue declarator in C++ (e.g. Int32& param)
 Vireo avoids using the lvalue declarator in order to make interop with simple C easier and to make pointer opertions clearer. In general there is no goal to hide pointer operations that will happen any way. This goes for the new rvalue declarator "&&" as well.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

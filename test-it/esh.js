@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 // Simple command line Vireo shell
 (async function () {
     'use strict';

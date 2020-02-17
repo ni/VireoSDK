@@ -1,3 +1,6 @@
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 const isCharacterAlphabetOrNonAscii = function (codePoint) {
     return ((codePoint >= 0x41 && codePoint <= 0x5A) || (codePoint >= 0x61 && codePoint <= 0x7A) || (codePoint > 0x7F));
 };

@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2020 National Instruments
+SPDX-License-Identifier: MIT
+-->
+
 # Vireo
 
 [![NPM Version](https://img.shields.io/npm/v/vireo.svg)](https://www.npmjs.com/package/vireo)
@@ -344,6 +349,8 @@ It will find and use the Doxyfile file in the source directory to generate docum
 
 The main html file in the `gh-pages` directory is called index.html.
 
-# Legal
+# License and copyright
 
-Features beyond the core set that can be accessed directly from VIA source written by hand should be considered experimental, and subject to change at any time. A complete list of disclaimers and terms is described in LICENSE.txt.
+Copyright (c) 2020 National Instruments
+
+Licensed under the [MIT License](LICENSE.txt).

@@ -1,11 +1,5 @@
-/**
-
-Copyright (c) 2017 National Instruments Corp.
-
-This software is subject to the terms described in the LICENSE.TXT file
-
-Craig S.
-*/
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
 
 /*! \file
  \brief Base class for Unit Test classes.

@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Copyright (c) 2020 National Instruments
+// SPDX-License-Identifier: MIT
+
 (async function () {
     'use strict';
     // Node Test runner for *.via files against Vireo Targets
