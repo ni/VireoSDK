@@ -46,7 +46,7 @@
 
         // Check all testsuites for correct properties ('include' and 'tests')
         for (var prop in testMap) {
-            if (testMap.hasOwnProperty(prop)) {
+            if (Object.prototype.hasOwnProperty.call(testMap, prop)) {
                 // Make sure 'include' and 'tests' are arrays
                 var includeCount = 0;
                 if (testMap[prop].include !== undefined) {
@@ -88,7 +88,7 @@
             // Parse through the 'include' dependencies as a DFS
             testsuite.include.forEach(function (include) {
                 // Verify that the testsuite exists in the testMap
-                if (testMap.hasOwnProperty(include)) {
+                if (Object.prototype.hasOwnProperty.call(testMap, include)) {
                     // Make sure not to recurse on a previously processed dependency
                     if (circMap[include] === undefined) {
                         testlist = testlist.concat(getTests(testMap[include], include, testMap, circMap));
@@ -176,7 +176,7 @@
             });
 
             var key = testName.toString();
-            if (!app.testFailures.hasOwnProperty(key)) {
+            if (!Object.prototype.hasOwnProperty.call(app.testFailures, key)) {
                 app.testFailures[key] = new TestFailure(testName, results);
             }
         }
@@ -311,7 +311,7 @@
             console.log('The following tests failed: ' + Object.keys(app.testFailures).length);
             console.log('=============================================\n');
             for (var test in app.testFailures) {
-                if (app.testFailures.hasOwnProperty(test)) {
+                if (Object.prototype.hasOwnProperty.call(app.testFailures, test)) {
                     console.log('===========================');
                     console.log(app.testFailures[test].name);
                     console.log('===========================');
@@ -430,7 +430,7 @@
             if (testCategory === undefined) {
                 var usageMessage = 'Usage: test.js [-l|-t] [';
                 for (var key in testMap) {
-                    if (testMap.hasOwnProperty(key)) {
+                    if (Object.prototype.hasOwnProperty.call(testMap, key)) {
                         usageMessage += key + '|';
                     }
                 }
