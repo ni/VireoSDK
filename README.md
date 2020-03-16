@@ -28,7 +28,7 @@ Before starting Vireo development it is recommended that you create a GitHub For
 ### Software requirements
 
 - [git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en/) (>8, latest LTS release recommended)
+- [Node.js](https://nodejs.org/en/) (>=12, latest LTS release recommended)
 - GNU Make and GNU core utilities (see following)
 
 ### Installing GNU Make and GNU core utilities

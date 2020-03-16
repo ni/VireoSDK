@@ -23,7 +23,7 @@
     };
 
     var fileNotLoaded = function (absoluteUrl) {
-        return cache.hasOwnProperty(absoluteUrl) === false;
+        return Object.prototype.hasOwnProperty.call(cache, absoluteUrl) === false;
     };
 
     var preloadAbsoluteUrls = function (absoluteUrls, done) {
