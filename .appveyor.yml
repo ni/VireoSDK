@@ -13,7 +13,7 @@ init:
 - cmd: pip -V
 - ps: $PSVersionTable
 install:
-  - ps: Install-Product node 8
+  - ps: Install-Product node 12
   - appveyor-retry chocolatey install make
   - appveyor-retry chocolatey install gnuwin32-coreutils.portable
   - appveyor-retry npm install

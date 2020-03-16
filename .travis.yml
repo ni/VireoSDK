@@ -15,8 +15,8 @@ addons:
     - doxygen
 before_install:
 - nvm ls
-- nvm install 10
-- nvm use 10
+- nvm install 12
+- nvm use 12
 - export TZ=CST6CDT
 - npm install npm@latest -g
 - node -v
