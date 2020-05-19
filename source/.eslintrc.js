@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 module.exports = {
-    'parserOptions': {
-        'sourceType': 'module'
+    parserOptions: {
+        sourceType: 'module'
     },
-    'overrides': [{
-        'files': ['library_*.js'],
-        'parserOptions': {
-            'sourceType': 'script'
+    overrides: [{
+        files: ['library_*.js'],
+        parserOptions: {
+            sourceType: 'script'
         },
-        'globals': {
-            'Module': true,
-            'mergeInto': true,
-            'LibraryManager': true
+        globals: {
+            Module: true,
+            mergeInto: true,
+            LibraryManager: true
         }
     }]
 };

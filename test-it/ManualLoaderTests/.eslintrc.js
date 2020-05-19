@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 module.exports = {
-    'overrides': [{
-        'files': ['loadermodule.js'],
-        'parserOptions': {
-            'sourceType': 'module'
+    overrides: [{
+        files: ['loadermodule.js'],
+        parserOptions: {
+            sourceType: 'module'
         }
     }]
 };
