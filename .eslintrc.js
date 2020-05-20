@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 module.exports = {
-    'extends': 'eslint:recommended',
-    'env': {
-        'amd': true,
-        'node': true,
-        'browser': true,
-        'jasmine': true,
-        'es6': true
+    extends: 'eslint:recommended',
+    env: {
+        amd: true,
+        node: true,
+        browser: true,
+        jasmine: true,
+        es6: true
     },
-    'parserOptions': {
-        'ecmaVersion': 2017
+    parserOptions: {
+        ecmaVersion: 2017
     },
-    'rules': {
+    rules: {
         'no-console': 'off',
 
         // Possible Errors
@@ -99,14 +99,14 @@ module.exports = {
         'func-names': ['error', 'never'],
         'func-style': 'error',
         'id-blacklist': 'error',
-        'id-length': ['error',  { 'exceptions': ['e', 'i', 'j', 'Y'] }],
+        'id-length': ['error', {exceptions: ['e', 'i', 'j', 'Y']}],
         'id-match': 'error',
         'indent': 'error',
         'jsx-quotes': 'error',
         'key-spacing': 'error',
         'keyword-spacing': 'error',
         'linebreak-style': 'off',
-        'lines-around-comment': ['error', { 'allowBlockStart': true }],
+        'lines-around-comment': ['error', {allowBlockStart: true}],
         'max-depth': 'off',
         'max-len': 'off',
         'max-lines': 'off',
@@ -121,7 +121,7 @@ module.exports = {
         'newline-before-return': 'off',
         'newline-per-chained-call': 'off',
         'no-array-constructor': 'error',
-        'no-constant-condition': ['error', { 'checkLoops': false }],
+        'no-constant-condition': ['error', {checkLoops: false}],
         'no-bitwise': 'error',
         'no-continue': 'error',
         'no-lonely-if': 'error',
@@ -140,7 +140,7 @@ module.exports = {
         'no-whitespace-before-property': 'error',
         'object-curly-newline': 'error',
         'object-curly-spacing': 'error',
-        'object-property-newline': ['error', {'allowAllPropertiesOnSameLine': true}],
+        'object-property-newline': ['error', {allowAllPropertiesOnSameLine: true}],
         'one-var-declaration-per-line': 'error',
         'one-var': 'off',
         'operator-assignment': 'error',

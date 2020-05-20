@@ -228,8 +228,7 @@ describe('A JavaScriptInvoke for an internal function', function () {
             window.removeEventListener('unhandledrejection', unhandledRejectionHandler);
             waitForError = undefined;
         });
-        // This test requires firefox 69 for unhandledrejection but our appveyor image is on firefox 68
-        it('errors if returning a value async #FailsFirefox', async function () {
+        it('errors if returning a value async', async function () {
             var viName = 'NI_InternalFunction';
             var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, jsInternalFunctionsUrl);
             var viPathParser = vireoRunner.createVIPathParser(vireo, viName);
