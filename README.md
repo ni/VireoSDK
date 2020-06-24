@@ -3,7 +3,7 @@ Copyright (c) 2020 National Instruments
 SPDX-License-Identifier: MIT
 -->
 
-# Vireo
+# Vireo is awesome
 
 [![NPM Version](https://img.shields.io/npm/v/vireo.svg)](https://www.npmjs.com/package/vireo)
 [![Nuget Version](https://img.shields.io/nuget/v/vireo.svg)](https://www.nuget.org/packages/vireo)
