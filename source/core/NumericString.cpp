@@ -2090,7 +2090,7 @@ struct ByteArrayToStringParamBlock : InstructionCore
 static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 stringEncoding, TypedArrayCoreRef outputArray) {
     if (stringEncoding != 0) {
         if (errorCluster != nullptr) {
-            errorCluster->SetErrorAndAppendCallChain(true, 1, "Encoding type not supported");
+            errorCluster->SetErrorAndAppendCallChain(true, 1396, "Encoding type not supported");
         }
         if (outputArray != nullptr)
             outputArray->Resize1D(0);
