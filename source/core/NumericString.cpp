@@ -22,6 +22,9 @@
 
 namespace Vireo {
 
+// Encoding error codes
+enum { kInvalidUTF8CharErr = 1, kByteArrayTypeErr = 1, kCannotConvertErr = 1396 };
+
 //------------------------------------------------------------
 struct FormatOptions {
     Int32 ArgumentOrder;       // 3$, 2$ negative number means default order
@@ -2090,7 +2093,10 @@ struct ByteArrayToStringParamBlock : InstructionCore
 static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 stringEncoding, TypedArrayCoreRef outputArray) {
     if (stringEncoding != 0) {
         if (errorCluster != nullptr) {
-            errorCluster->SetErrorAndAppendCallChain(true, 1396, "Encoding type not supported");
+            errorCluster->SetErrorAndAppendCallChain(true, kCannotConvertErr, "String To Byte Array");
+            errorCluster->AddAppendixPreamble();
+            errorCluster->source->AppendCStr("Encoding type not supported");
+            errorCluster->AddAppendixPostamble();
         }
         if (outputArray != nullptr)
             outputArray->Resize1D(0);
@@ -2099,11 +2105,14 @@ static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 str
     return true;
 }
 
-static bool CheckValidUTF8Error(UInt8* begin, UInt8* end, ErrorCluster* errorCluster)
+static bool CheckValidUTF8Error(UInt8* begin, UInt8* end, ErrorCluster* errorCluster, ConstCStr source)
 {
     if (!utf8::is_valid(begin, end)) {
         if (errorCluster != nullptr) {
-            errorCluster->SetErrorAndAppendCallChain(true, 1, "Invalid UTF-8 characters found");
+            errorCluster->SetErrorAndAppendCallChain(true, kInvalidUTF8CharErr, source);
+            errorCluster->AddAppendixPreamble();
+            errorCluster->source->AppendCStr("Invalid UTF-8 characters found");
+            errorCluster->AddAppendixPostamble();
         }
         return false;
     }
@@ -2118,9 +2127,13 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
         return _NextInstruction();
     TypedArrayCoreRef byteArray = _Param(ByteArrayIn);
     TypeRef eltType = byteArray->ElementType();
+    ConstCStr functionName = "Byte Array To String";
     if (!eltType->IsA(&TypeCommon::TypeInt8) && !eltType->IsA(&TypeCommon::TypeUInt8)) {
         if (errorCluster != nullptr) {
-            errorCluster->SetErrorAndAppendCallChain(true, 1, "Byte Array must be of type Int8 or UInt8");
+            errorCluster->SetErrorAndAppendCallChain(true, kByteArrayTypeErr, functionName);
+            errorCluster->AddAppendixPreamble();
+            errorCluster->source->AppendCStr("Byte Array must be of type Int8 or UInt8");
+            errorCluster->AddAppendixPostamble();
         }
         return _NextInstruction();
     }
@@ -2131,7 +2144,7 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
     if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, stringOut)) {
         return _NextInstruction();
     }
-    if (!CheckValidUTF8Error(byteArray->RawBegin(), byteArray->RawBegin() + arrayLength, errorCluster)) {
+    if (!CheckValidUTF8Error(byteArray->RawBegin(), byteArray->RawBegin() + arrayLength, errorCluster, functionName)) {
         if (stringOut != nullptr)
             stringOut->Resize1D(0);
         return _NextInstruction();
@@ -2165,10 +2178,11 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
         return _NextInstruction();
     }
     const Int32 stringLength = stringIn->Length();
+    ConstCStr functionName = "String To Byte Array";
     if (errorCluster != nullptr) {
         // If the user did not pass errorCluster, no need to validate the string, as we are copying
         // to byteArrayOut unconditionally
-        CheckValidUTF8Error(stringIn->RawBegin(), stringIn->RawBegin() + stringLength, errorCluster);
+        CheckValidUTF8Error(stringIn->RawBegin(), stringIn->RawBegin() + stringLength, errorCluster, functionName);
     }
     if (byteArrayOut != nullptr) {
         IntIndex rank = byteArrayOut->Rank();
@@ -2176,7 +2190,10 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
         TypeRef eltType = byteArrayOut->ElementType();
         if (!eltType->IsA(&TypeCommon::TypeUInt8)) {
             if (errorCluster != nullptr) {
-                errorCluster->SetErrorAndAppendCallChain(true, 1, "Byte Array must be of type UInt8");
+                errorCluster->SetErrorAndAppendCallChain(true, kByteArrayTypeErr, functionName);
+                errorCluster->AddAppendixPreamble();
+                errorCluster->source->AppendCStr("Byte Array must be of type UInt8");
+                errorCluster->AddAppendixPostamble();
             }
         } else {
             // Even if invalid UTF-8 characters are found, we want to copy to byteArrayOut to allow users to examine
