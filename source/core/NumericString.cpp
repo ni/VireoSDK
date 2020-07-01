@@ -23,7 +23,7 @@
 namespace Vireo {
 
 // Encoding error codes
-enum { kInvalidUTF8CharErr = 1, kByteArrayTypeErr = 1, kCannotConvertErr = 1396 };
+enum { kInvalidUTF8CharErr = 1, kCannotConvertErr = 1396 };
 
 //------------------------------------------------------------
 struct FormatOptions {
