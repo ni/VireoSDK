@@ -2090,10 +2090,10 @@ struct ByteArrayToStringParamBlock : InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
-static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 stringEncoding, TypedArrayCoreRef outputArray) {
+static bool CheckUnsupportedEncodingError(ErrorCluster* errorCluster, UInt16 stringEncoding, TypedArrayCoreRef outputArray, ConstCStr source) {
     if (stringEncoding != 0) {
         if (errorCluster != nullptr) {
-            errorCluster->SetErrorAndAppendCallChain(true, kCannotConvertErr, "String To Byte Array");
+            errorCluster->SetErrorAndAppendCallChain(true, kCannotConvertErr, source);
             errorCluster->AddAppendixPreamble();
             errorCluster->source->AppendCStr("Encoding type not supported");
             errorCluster->AddAppendixPostamble();
@@ -2130,10 +2130,8 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
     ConstCStr functionName = "Byte Array To String";
     if (!eltType->IsA(&TypeCommon::TypeInt8) && !eltType->IsA(&TypeCommon::TypeUInt8)) {
         if (errorCluster != nullptr) {
-            errorCluster->SetErrorAndAppendCallChain(true, kByteArrayTypeErr, functionName);
-            errorCluster->AddAppendixPreamble();
-            errorCluster->source->AppendCStr("Byte Array must be of type Int8 or UInt8");
-            errorCluster->AddAppendixPostamble();
+            THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Byte Array must be of type Int8 or UInt8");
+            return THREAD_EXEC()->Stop();
         }
         return _NextInstruction();
     }
@@ -2141,7 +2139,7 @@ VIREO_FUNCTION_SIGNATURET(ByteArrayToString, ByteArrayToStringParamBlock)
     VIREO_ASSERT(rank == 1);
     UInt16 stringEncoding = _ParamPointer(StringEncodingIn) ? _Param(StringEncodingIn) : 0;
     Int32 arrayLength = byteArray->DimensionLengths()[0];
-    if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, stringOut)) {
+    if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, stringOut, functionName)) {
         return _NextInstruction();
     }
     if (!CheckValidUTF8Error(byteArray->RawBegin(), byteArray->RawBegin() + arrayLength, errorCluster, functionName)) {
@@ -2170,7 +2168,8 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
     if ((byteArrayOut == nullptr && errorCluster == nullptr) || (errorCluster != nullptr && errorCluster->hasError()))
         return _NextInstruction();
     UInt16 stringEncoding = _ParamPointer(StringEncodingIn) ? _Param(StringEncodingIn) : 0;
-    if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, byteArrayOut)) {
+    ConstCStr functionName = "String To Byte Array";
+    if (!CheckUnsupportedEncodingError(errorCluster, stringEncoding, byteArrayOut, functionName)) {
         // If LV got string from an external source, it is possible the string may have
         // invalid characters for the chosen encoding. Unless and until we are sure that the LV string
         // is guaranteed to have only valid characters of chosen encoding, this is a useful debugging tool
@@ -2178,7 +2177,6 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
         return _NextInstruction();
     }
     const Int32 stringLength = stringIn->Length();
-    ConstCStr functionName = "String To Byte Array";
     if (errorCluster != nullptr) {
         // If the user did not pass errorCluster, no need to validate the string, as we are copying
         // to byteArrayOut unconditionally
@@ -2190,10 +2188,8 @@ VIREO_FUNCTION_SIGNATURET(StringToByteArray, StringToByteArrayParamBlock)
         TypeRef eltType = byteArrayOut->ElementType();
         if (!eltType->IsA(&TypeCommon::TypeUInt8)) {
             if (errorCluster != nullptr) {
-                errorCluster->SetErrorAndAppendCallChain(true, kByteArrayTypeErr, functionName);
-                errorCluster->AddAppendixPreamble();
-                errorCluster->source->AppendCStr("Byte Array must be of type UInt8");
-                errorCluster->AddAppendixPostamble();
+                THREAD_EXEC()->LogEvent(EventLog::kHardDataError, "Byte Array must be of type UInt8");
+                return THREAD_EXEC()->Stop();
             }
         } else {
             // Even if invalid UTF-8 characters are found, we want to copy to byteArrayOut to allow users to examine
