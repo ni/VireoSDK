@@ -58,7 +58,7 @@ define (WebApp%3A%3ATestVI_RegisterForEventsInLoop%2Egviweb dv(.VirtualInstrumen
         Branch(0)
     Perch(0)
         Copy(local16 dataItem_TestResult_ErrorOuts)
-		Printf("TestResult_ErrorOuts = %z\n" dataItem_TestResult_ErrorOuts)
+        Printf("TestResult_ErrorOuts = %z\n" dataItem_TestResult_ErrorOuts)
 /* Clump Ended. */    )
 )))
 enqueue (WebApp%3A%3ATestVI_RegisterForEventsInLoop%2Egviweb)

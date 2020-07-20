@@ -47,7 +47,7 @@ define (WebApp%3A%3ATestVI_RegisterForEventsInSequence%2Egviweb dv(.VirtualInstr
         UnregisterForEvents(local15 local3)
         DestroyUserEvent(local11 local3)
         Copy(local3 dataItem_TestResult_ErrorOut)
-		Printf("TestResult_ErrorOut = %z\n" dataItem_TestResult_ErrorOut)
+        Printf("TestResult_ErrorOut = %z\n" dataItem_TestResult_ErrorOut)
 /* Clump Ended. */    )
 )))
 enqueue (WebApp%3A%3ATestVI_RegisterForEventsInSequence%2Egviweb)
