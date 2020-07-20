@@ -870,10 +870,11 @@ VIREO_FUNCTION_SIGNATUREV(RegisterForEvents, RegisterForEventsParamBlock)
                                 " per item in the event reg refnum output type", 0);
     }
     RefNum erRefNum = eventRegRefnumPtr->GetRefNum();
-    if (erRefNum && EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(erRefNum, &regInfo) != kNIError_Success) {
-        // event reg. ref passed, but invalid
-        if (errPtr && !errPtr->status)
-            errPtr->SetErrorAndAppendCallChain(true, kEventArgErr, "RegisterForEvents");
+    if (erRefNum) {
+        EventRegistrationRefNumManager::RefNumStorage().GetRefNumData(erRefNum, &regInfo);
+        // event reg. ref passed, but invalid. However, this is not user error.
+        // UnRegisterForEvents had been already called. Just let it fall through to create
+        // a NewRefNum below.
     }
 
     // Allocate a new Event Queue and associate it with the event reg. refnum
