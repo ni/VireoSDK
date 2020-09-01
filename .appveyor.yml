@@ -59,14 +59,14 @@ deploy:
     auth_token:
       secure: Asuu2xJwFoy8ML6DIsZf2mqlgdO2b1dQRCJALbYpUFNP/3DjuhBPDcWiSxTK6iw/
     artifact: '%ESH_i686_DEBUG%'
-    force_update: true	
-    tag: $(APPVEYOR_REPO_TAG_NAME)	
-    on:	
+    force_update: true
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    on:
       appveyor_repo_tag: true
 
   - provider: NuGet
     artifact: '/.*\.nupkg/'
     api_key:
-      secure: MHTM6BhQ7PXYB4XOSpcx57N9Uk3PWwief7mGUoDbKgv3kKfXdPEDHAYNJrBU+hGU
-    on:	
+      secure: sT1ap18feMvSi5obbxMZgZnl5HPO/m93S1RWmNDWZ5T+1dHW2ZhGBmn/eBtPHq8O
+    on:
       appveyor_repo_tag: true
