@@ -23,7 +23,11 @@ jobs:
         cd emsdk
         ./emsdk install 1.39.5-fastcomp
         ./emsdk activate 1.39.5-fastcomp
-        ./emcc -v
+    - run: |
+        emsdk/emsdk_env.sh
+        emcc -v
+    - run: |
+        emcc -v
 
   windows:
     runs-on: windows-2019
