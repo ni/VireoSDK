@@ -1,12 +1,13 @@
 on:
+  pull_request_target:
   push:
-    branches:
-    - '*'
+    branches-ignore:
+    - 'gh-pages'
     tags:
     - 'v*'
 
 jobs:
-  wasm:
+  web:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -54,6 +55,11 @@ jobs:
       env:
         TZ: CST6CDT
 
+    - if: startsWith(github.ref, 'refs/tags/v')
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
   windows:
     runs-on: windows-2019
     steps:
@@ -67,13 +73,3 @@ jobs:
     - name: linux hello
       run: |
         echo linuxhello
-
-  deploy:
-    needs: [wasm, windows, linux]
-    # Only deploy on tag pushes
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-16.04
-    steps:
-    - name: deploy hello
-      run: |
-        echo deploy
