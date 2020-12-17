@@ -22,16 +22,15 @@ jobs:
     - run: |
         emsdk/emsdk install 1.39.5-fastcomp
         emsdk/emsdk activate 1.39.5-fastcomp
-    - run: |
-        . emsdk/emsdk_env.sh
-        emcc -v
-    - run: |
-        . emsdk/emsdk_env.sh
-        make vjs
-        make vjs BUILD=debug
-        make vjs BUILD=profile
-        make vjs BUILD=release TARGET=asmjs-unknown-emscripten
-        npm pack
+    - run: . emsdk/emsdk_env.sh && emcc -v
+    - run: . emsdk/emsdk_env.sh && make vjs
+    - run: . emsdk/emsdk_env.sh && make vjs BUILD=debug
+    - run: . emsdk/emsdk_env.sh && make vjs BUILD=profile
+    - run: . emsdk/emsdk_env.sh && make vjs BUILD=release TARGET=asmjs-unknown-emscripten
+    - run: npm pack
+    - run: make testjs
+    - run: npm run test-min
+    - run: npm run test-asmjs
 
   windows:
     runs-on: windows-2019
