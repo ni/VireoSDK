@@ -7,7 +7,7 @@ on:
     - 'v*'
 
 jobs:
-  lint:
+  lint_and_docs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -78,6 +78,9 @@ jobs:
     # - run: make testjs
     #   env:
     #     TZ: CST6CDT
+    # - run: make testhttpbin
+    #   env:
+    #     TZ: CST6CDT
     # - run: npm run test-min
     #   env:
     #     TZ: CST6CDT
@@ -100,6 +103,7 @@ jobs:
   linux:
     runs-on: ubuntu-16.04
     steps:
-    - name: linux hello
-      run: |
-        echo linuxhello
+    - run: make native
+    - run: make unittest
+    - run: make testnative
+    # TODO github release
