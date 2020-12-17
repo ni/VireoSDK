@@ -45,8 +45,14 @@ jobs:
         path: ./vireo-*.tgz
 
     - run: make testjs
+      env:
+        TZ: CST6CDT
     - run: npm run test-min
+      env:
+        TZ: CST6CDT
     - run: npm run test-asmjs
+      env:
+        TZ: CST6CDT
 
   windows:
     runs-on: windows-2019
