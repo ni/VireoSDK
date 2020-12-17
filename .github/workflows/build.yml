@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+    - '*'
+    tags:
+    - 'v*'
+
+jobs:
+  wasm:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: wasm hello
+      run: |
+        echo wasmhello
+
+  windows:
+    runs-on: windows-2019
+    steps:
+    - name: windows hello
+      run: |
+        echo windowshello
+
+  linux:
+    runs-on: ubuntu-16.04
+    steps:
+    - name: linux hello
+      run: |
+        echo linuxhello
+
+  deploy:
+    needs: [wasm, windows, linux]
+    # Only deploy on tag pushes
+    # if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-16.04
+    steps:
+    - name: deploy hello
+      run: |
+        echo deploy
