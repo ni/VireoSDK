@@ -19,9 +19,11 @@ jobs:
         git clone https://github.com/juj/emsdk.git
         cd emsdk
         git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
-        emsdk install 1.39.5-fastcomp
-        emsdk activate 1.39.5-fastcomp
-        emcc -v
+    - run: |
+        cd emsdk
+        ./emsdk install 1.39.5-fastcomp
+        ./emsdk activate 1.39.5-fastcomp
+        ./emcc -v
 
   windows:
     runs-on: windows-2019
