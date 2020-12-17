@@ -30,7 +30,7 @@ jobs:
   deploy:
     needs: [wasm, windows, linux]
     # Only deploy on tag pushes
-    # if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-16.04
     steps:
     - name: deploy hello
