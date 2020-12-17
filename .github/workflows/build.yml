@@ -28,10 +28,13 @@ jobs:
     - run: . emsdk/emsdk_env.sh && make vjs BUILD=profile
     - run: . emsdk/emsdk_env.sh && make vjs BUILD=release TARGET=asmjs-unknown-emscripten
     - run: npm pack
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm package
+        path: ./vireo-*.tgz
     - run: make testjs
     - run: npm run test-min
     - run: npm run test-asmjs
-
   windows:
     runs-on: windows-2019
     steps:
