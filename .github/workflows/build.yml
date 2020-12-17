@@ -26,7 +26,12 @@ jobs:
         . emsdk/emsdk_env.sh
         emcc -v
     - run: |
-        emcc -v
+        . emsdk/emsdk_env.sh
+        make vjs
+        make vjs BUILD=debug
+        make vjs BUILD=profile
+        make vjs BUILD=release TARGET=asmjs-unknown-emscripten
+        npm pack
 
   windows:
     runs-on: windows-2019
