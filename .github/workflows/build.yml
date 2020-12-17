@@ -21,6 +21,8 @@ jobs:
     - run: npm ci
     - run: make lint
     - run: npm run lint
+
+    - run: sudo apt-get install doxygen
     - run: npm run doxygen
 
   web:
