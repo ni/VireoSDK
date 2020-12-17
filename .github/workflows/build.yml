@@ -20,11 +20,10 @@ jobs:
         cd emsdk
         git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
     - run: |
-        cd emsdk
-        ./emsdk install 1.39.5-fastcomp
-        ./emsdk activate 1.39.5-fastcomp
+        emsdk/emsdk install 1.39.5-fastcomp
+        emsdk/emsdk activate 1.39.5-fastcomp
     - run: |
-        emsdk/emsdk_env.sh
+        . emsdk/emsdk_env.sh
         emcc -v
     - run: |
         emcc -v
