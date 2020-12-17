@@ -45,15 +45,15 @@ jobs:
         name: npm package
         path: ./vireo-*.tgz
 
-    - run: make testjs
-      env:
-        TZ: CST6CDT
-    - run: npm run test-min
-      env:
-        TZ: CST6CDT
-    - run: npm run test-asmjs
-      env:
-        TZ: CST6CDT
+    # - run: make testjs
+    #   env:
+    #     TZ: CST6CDT
+    # - run: npm run test-min
+    #   env:
+    #     TZ: CST6CDT
+    # - run: npm run test-asmjs
+    #   env:
+    #     TZ: CST6CDT
 
     - if: startsWith(github.ref, 'refs/tags/v')
       run: npm publish
