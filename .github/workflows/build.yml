@@ -131,7 +131,7 @@ jobs:
     - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
 
   linux:
-  if: false
+    if: false
     needs: setup
     runs-on: ubuntu-16.04
     steps:
