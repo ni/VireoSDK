@@ -123,21 +123,31 @@ jobs:
     - uses: microsoft/setup-msbuild@v1
     # Currently the VireoCommandLine.sln needs Windows SDK 8.1 which is not included on GitHub Actions by default
     # see https://github.com/actions/virtual-environments/issues/842#issuecomment-643382166
-    - name: Install Windows 8.1 SDK
+    # - name: Install Windows 8.1 SDK
+    #   run: |
+    #     Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
+    #     Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
+    #   shell: powershell
+    # - uses: actions/setup-node@v1
+    #   with:
+    #     node-version: '12'
+    #     registry-url: 'https://registry.npmjs.org'
+    # - run: npm ci
+    # - run: chocolatey install make -y
+    # - run: chocolatey install gnuwin32-coreutils.portable -y
+    # - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
+
+    - name: calculate release name
       run: |
-        Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
-        Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
+        $Env:ESH_VERSION=(Get-Content -Raw -Path package.json | ConvertFrom-Json).version
+        echo "ESH_VERSION=$Env:ESH_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+        $Env:ESH_32_DEBUG="esh_$Env:VERSION_i686-pc-windows-msvc_debug.zip"
+        echo "ESH_32_DEBUG=$Env:ESH_32_DEBUG" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       shell: powershell
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12'
-        registry-url: 'https://registry.npmjs.org'
-    - run: npm ci
-    - run: chocolatey install make -y
-    - run: chocolatey install gnuwin32-coreutils.portable -y
-    - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
-    - run: tzutil /s "Central Standard Time"
-    - run: make testnative
+    -run: echo %ESH_VERSION% && echo %ESH_32_DEBUG%
+
+    # - run: tzutil /s "Central Standard Time"
+    # - run: make testnative
 
   linux:
     if: false
@@ -155,7 +165,8 @@ jobs:
 
     - name: calculate release name
       run: |
-        export ESH_64_RELEASE="esh_"$(node -p "require('./package.json').version")"_x86_64-unknown-linux-gnu_release.zip"
+        export ESH_VERSION=node -p "require('./package.json').version"
+        export ESH_64_RELEASE="esh_$ESH_VERSION_x86_64-unknown-linux-gnu_release.zip"
         echo "ESH_64_RELEASE=$ESH_64_RELEASE" >> $GITHUB_ENV
     - run: zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
     - uses: actions/upload-artifact@v2
