@@ -8,6 +8,7 @@ on:
 
 jobs:
   lint_and_docs:
+    if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -37,7 +38,7 @@ jobs:
     - if: startsWith(github.ref, 'refs/tags/v')
       run: gem install dpl
     - if: startsWith(github.ref, 'refs/tags/v')
-      run: dpl --provider=pages --repo=rajsite/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GITHUBPAGESDEPLOYTOKEN }}
+      run: dpl --provider=pages --repo=rajsite/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GITHUB_PAGES_TOKEN }}
 
   setup:
     runs-on: ubuntu-16.04
@@ -115,19 +116,20 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   windows:
-    if: 'false'
     needs: setup
-    runs-on: windows-2019
+    runs-on: windows-2016
     steps:
     - uses: actions/checkout@v2
     - uses: microsoft/setup-msbuild@v1
+      with:
+        vs-version: '[15.9]'
     # Currently the VireoCommandLine.sln needs Windows SDK 8.1 which is not included on GitHub Actions by default
     # see https://github.com/actions/virtual-environments/issues/842#issuecomment-643382166
-    - name: Install Windows 8.1 SDK
-      run: |
-        Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
-        Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
-      shell: powershell
+    # - name: Install Windows 8.1 SDK
+    #   run: |
+    #     Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
+    #     Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
+    #   shell: powershell
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
@@ -155,6 +157,11 @@ jobs:
 
     - run: tzutil /s "Central Standard Time"
     - run: make testnative
+
+    - uses: nuget/setup-nuget@v1
+    - run: nuget pack VireoSDK.nuspec -properties version="$Env:ESH_VERSION"
+    - if: startsWith(github.ref, 'refs/tags/v')
+      run: nuget push $(echo (get-item ./*.nupkg).FullName) --api-key {{ secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
 
   linux:
     if: 'false'
