@@ -118,4 +118,6 @@ jobs:
     - run: make testnative
       env:
           TZ: CST6CDT
-    # TODO github release
+    - run: echo $ESH_64_RELEASE
+      env:
+        ESH_64_RELEASE: $(node -p "require('./package.json').version")
