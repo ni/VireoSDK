@@ -24,10 +24,11 @@ jobs:
 
     - run: sudo apt-get install doxygen
     - run: npm run doxygen
+    - run: zip -rq gh-pages.zip gh-pages
     - uses: actions/upload-artifact@v2
       with:
         name: gh-pages build
-        path: ./gh-pages/
+        path: gh-pages.zip
         if-no-files-found: error
 
     - if: startsWith(github.ref, 'refs/tags/v')
