@@ -141,7 +141,7 @@ jobs:
       run: |
         $Env:ESH_VERSION=(Get-Content -Raw -Path package.json | ConvertFrom-Json).version
         echo "ESH_VERSION=$Env:ESH_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        $Env:ESH_32_DEBUG="esh_$Env:VERSION_i686-pc-windows-msvc_debug.zip"
+        $Env:ESH_32_DEBUG="esh_$($Env:ESH_VERSION)_i686-pc-windows-msvc_debug.zip"
         echo "ESH_32_DEBUG=$Env:ESH_32_DEBUG" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
       shell: powershell
     - run: echo $Env:ESH_VERSION && echo $Env:ESH_32_DEBUG
