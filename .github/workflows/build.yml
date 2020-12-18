@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint_and_docs:
-    if: false
+    if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -57,7 +57,7 @@ jobs:
           prerelease: false
 
   web:
-    if: false
+    if: 'false'
     needs: setup
     runs-on: ubuntu-16.04
     steps:
@@ -144,13 +144,13 @@ jobs:
         $Env:ESH_32_DEBUG="esh_$Env:VERSION_i686-pc-windows-msvc_debug.zip"
         echo "ESH_32_DEBUG=$Env:ESH_32_DEBUG" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
       shell: powershell
-    - run: echo %ESH_VERSION% && echo %ESH_32_DEBUG%
+    - run: echo $Env:ESH_VERSION && echo $Env:ESH_32_DEBUG
 
     # - run: tzutil /s "Central Standard Time"
     # - run: make testnative
 
   linux:
-    if: false
+    if: 'false'
     needs: setup
     runs-on: ubuntu-16.04
     steps:
