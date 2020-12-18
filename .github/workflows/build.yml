@@ -176,8 +176,8 @@ jobs:
 
     - name: calculate release name
       run: |
-        export ESH_VERSION=node -p "require('./package.json').version"
-        export ESH_64_RELEASE="esh_$ESH_VERSION_x86_64-unknown-linux-gnu_release.zip"
+        export ESH_VERSION=$(node -p "require('./package.json').version")
+        export ESH_64_RELEASE="esh_"$ESH_VERSION"_x86_64-unknown-linux-gnu_release.zip"
         echo "ESH_64_RELEASE=$ESH_64_RELEASE" >> $GITHUB_ENV
     - run: zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
     - uses: actions/upload-artifact@v2
