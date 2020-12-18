@@ -8,8 +8,8 @@ on:
 
 jobs:
   lint_and_docs:
-    runs-on: ubuntu-16.04
     if: false
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -40,9 +40,26 @@ jobs:
         gem install dpl
         dpl --provider=pages --repo=ni/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{secrets.GITHUBPAGESDEPLOYTOKEN}}
 
-  web:
+  setup:
     runs-on: ubuntu-16.04
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - if: startsWith(github.ref, 'refs/tags/v')
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  web:
     if: false
+    needs: setup
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
 
@@ -99,16 +116,17 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   windows:
-    runs-on: windows-2019
     if: false
+    needs: setup
+    runs-on: windows-2019
     steps:
     - name: windows hello
       run: |
         echo windowshello
 
   linux:
+    needs: setup
     runs-on: ubuntu-16.04
-    if: false
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -116,20 +134,33 @@ jobs:
         node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
+
     - run: make native
+
+    - name: calculate release name
+      run: |
+        export ESH_64_RELEASE="esh_"$(node -p "require('./package.json').version")"_x86_64-unknown-linux-gnu_release.zip"
+        echo "ESH_64_RELEASE=$ESH_64_RELEASE" >> $GITHUB_ENV
+    - run: zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
+    - uses: actions/upload-artifact@v2
+      with:
+        name: esh release
+        path: ./esh_*.zip
+        if-no-files-found: error
+
     - run: make unittest
       env:
           TZ: CST6CDT
     - run: make testnative
       env:
           TZ: CST6CDT
-    - name: build archive
-      run: |
-        export ESH_64_RELEASE="esh_"$(node -p "require('./package.json').version")"_x86_64-unknown-linux-gnu_release.zip"
-        zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
-    - run: ls -al
-    - uses: actions/upload-artifact@v2
+
+    - if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: esh release
-        path: ./esh_*.zip
-        if-no-files-found: error
+        upload_url: ${{ needs.setup.outputs.upload_url }}
+        asset_name: ${{ env.ESH_64_RELEASE }}
+        asset_path: ${{ env.ESH_64_RELEASE }}
+        asset_content_type: application/zip
