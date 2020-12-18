@@ -116,15 +116,22 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   windows:
-    if: false
     needs: setup
     runs-on: windows-2019
     steps:
-    - name: windows hello
-      run: |
-        echo windowshello
+    - uses: actions/checkout@v2
+    - uses: microsoft/setup-msbuild@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: chocolatey install make -y
+    - run: chocolatey install gnuwin32-coreutils.portable -y
+    - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
 
   linux:
+  if: false
     needs: setup
     runs-on: ubuntu-16.04
     steps:
