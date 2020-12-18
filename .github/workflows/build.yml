@@ -37,7 +37,7 @@ jobs:
     - if: startsWith(github.ref, 'refs/tags/v')
       run: gem install dpl
     - if: startsWith(github.ref, 'refs/tags/v')
-      run: dpl --provider=pages --repo=${{ GITHUB_REPOSITORY }} --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GITHUB_TOKEN }}
+      run: dpl --provider=pages --repo=${{ env.GITHUB_REPOSITORY }} --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GITHUB_TOKEN }}
 
   setup:
     runs-on: ubuntu-16.04
