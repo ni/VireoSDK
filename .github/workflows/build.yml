@@ -113,12 +113,12 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: make native
-    - run: make unittest
-      env:
-          TZ: CST6CDT
-    - run: make testnative
-      env:
-          TZ: CST6CDT
+    # - run: make unittest
+    #   env:
+    #       TZ: CST6CDT
+    # - run: make testnative
+    #   env:
+    #       TZ: CST6CDT
     - run: echo $ESH_64_RELEASE
       env:
-        ESH_64_RELEASE: $(node -p "require('./package.json').version")
+        ESH_64_RELEASE: ${{node -p "require('./package.json').version"}}
