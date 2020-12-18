@@ -144,7 +144,7 @@ jobs:
     - run: zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
     - uses: actions/upload-artifact@v2
       with:
-        name: esh release
+        name: ${{ env.ESH_64_RELEASE }}
         path: ./esh_*.zip
         if-no-files-found: error
 
