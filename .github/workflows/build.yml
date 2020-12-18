@@ -121,21 +121,23 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: microsoft/setup-msbuild@v1
-    # Currently the VireoSDK.sln needs Windows SDK 8.1 which is not included on GitHub Actions by default
+    # Currently the VireoCommandLine.sln needs Windows SDK 8.1 which is not included on GitHub Actions by default
     # see https://github.com/actions/virtual-environments/issues/842#issuecomment-643382166
     - name: Install Windows 8.1 SDK
       run: |
         Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
         Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
       shell: powershell
-    # - uses: actions/setup-node@v1
-    #   with:
-    #     node-version: '12'
-    #     registry-url: 'https://registry.npmjs.org'
-    # - run: npm ci
-    # - run: chocolatey install make -y
-    # - run: chocolatey install gnuwin32-coreutils.portable -y
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: chocolatey install make -y
+    - run: chocolatey install gnuwin32-coreutils.portable -y
     - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
+    - run: tzutil /s "Central Standard Time"
+    - run: make testnative
 
   linux:
     if: false
