@@ -31,7 +31,8 @@ jobs:
         path: ./gh-pages/
         if-no-files-found: error
 
-    - uses: actions/setup-ruby@v1
+    - if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/setup-ruby@v1
       with:
         ruby-version: '2.6'
     - if: startsWith(github.ref, 'refs/tags/v')
