@@ -123,19 +123,19 @@ jobs:
     - uses: microsoft/setup-msbuild@v1
     # Currently the VireoCommandLine.sln needs Windows SDK 8.1 which is not included on GitHub Actions by default
     # see https://github.com/actions/virtual-environments/issues/842#issuecomment-643382166
-    # - name: Install Windows 8.1 SDK
-    #   run: |
-    #     Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
-    #     Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
-    #   shell: powershell
-    # - uses: actions/setup-node@v1
-    #   with:
-    #     node-version: '12'
-    #     registry-url: 'https://registry.npmjs.org'
-    # - run: npm ci
-    # - run: chocolatey install make -y
-    # - run: chocolatey install gnuwin32-coreutils.portable -y
-    # - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
+    - name: Install Windows 8.1 SDK
+      run: |
+        Invoke-WebRequest -Method Get -Uri https://go.microsoft.com/fwlink/p/?LinkId=323507 -OutFile sdksetup.exe -UseBasicParsing
+        Start-Process -Wait sdksetup.exe -ArgumentList "/q", "/norestart", "/features", "OptionId.WindowsDesktopSoftwareDevelopmentKit", "OptionId.NetFxSoftwareDevelopmentKit"
+      shell: powershell
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: chocolatey install make -y
+    - run: chocolatey install gnuwin32-coreutils.portable -y
+    - run: msbuild /m /p:Configuration=Debug Vireo_VS\VireoCommandLine.sln
 
     - name: calculate release name
       run: |
@@ -144,10 +144,16 @@ jobs:
         $Env:ESH_32_DEBUG="esh_$($Env:ESH_VERSION)_i686-pc-windows-msvc_debug.zip"
         echo "ESH_32_DEBUG=$Env:ESH_32_DEBUG" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
       shell: powershell
-    - run: echo $Env:ESH_VERSION && echo $Env:ESH_32_DEBUG
+    - run: 7z a %ESH_32_DEBUG% %GITHUB_WORKSPACE%\dist\Debug\esh.exe %GITHUB_WORKSPACE%\dist\Debug\esh.pdb %GITHUB_WORKSPACE%\README.md %GITHUB_WORKSPACE%\LICENSE.txt
+      shell: cmd
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ESH_32_DEBUG }}
+        path: ${{ env.ESH_32_DEBUG }}
+        if-no-files-found: error
 
-    # - run: tzutil /s "Central Standard Time"
-    # - run: make testnative
+    - run: tzutil /s "Central Standard Time"
+    - run: make testnative
 
   linux:
     if: 'false'
@@ -172,7 +178,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: ${{ env.ESH_64_RELEASE }}
-        path: ./esh_*.zip
+        path: ${{ env.ESH_64_RELEASE }}
         if-no-files-found: error
 
     - run: make unittest
