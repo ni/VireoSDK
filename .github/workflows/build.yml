@@ -123,6 +123,7 @@ jobs:
       run: |
         export ESH_64_RELEASE="esh_"$(node -p "require('./package.json').version")"_x86_64-unknown-linux-gnu_release.zip"
         echo $ESH_64_RELEASE
+    - run: ls -al
     - uses: actions/upload-artifact@v2
       with:
         name: esh release
