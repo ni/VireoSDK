@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint_and_docs:
-    if: 'false'
+    # if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -42,7 +42,7 @@ jobs:
       run: dpl --provider=pages --repo=rajsite/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GITHUB_PAGES_TOKEN }}
 
   web:
-    if: 'false'
+    # if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -122,13 +122,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: microsoft/setup-msbuild@v1
-    # - uses: actions/setup-node@v1
-    #   with:
-    #     node-version: '12'
-    #     registry-url: 'https://registry.npmjs.org'
-    # - run: npm ci
-    # - run: chocolatey install make -y
-    # - run: chocolatey install gnuwin32-coreutils.portable -y
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: chocolatey install make -y
+    - run: chocolatey install gnuwin32-coreutils.portable -y
     - run: msbuild /m /p:Configuration=Debug /p:PlatformTarget=Win32 Vireo_VS\VireoCommandLine.sln
 
     - name: calculate release name
@@ -141,14 +141,14 @@ jobs:
     - run: 7z a %ESH_32_DEBUG% .\dist\Debug\esh.exe .\dist\Debug\esh.pdb .\README.md .\LICENSE.txt
       shell: cmd
       working-directory: ${{env.GITHUB_WORKSPACE}}
-    # - uses: actions/upload-artifact@v2
-    #   with:
-    #     name: ${{ env.ESH_32_DEBUG }}
-    #     path: ${{ env.ESH_32_DEBUG }}
-    #     if-no-files-found: error
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ESH_32_DEBUG }}
+        path: ${{ env.ESH_32_DEBUG }}
+        if-no-files-found: error
 
-    # - run: tzutil /s "Central Standard Time"
-    # - run: make testnative
+    - run: tzutil /s "Central Standard Time"
+    - run: make testnative
 
     - uses: nuget/setup-nuget@v1
     - run: nuget pack VireoSDK.nuspec -properties version="$Env:ESH_VERSION"
@@ -167,13 +167,13 @@ jobs:
         asset_name: ${{ env.ESH_32_DEBUG }}
         asset_path: ${{ env.ESH_32_DEBUG }}
         asset_content_type: application/zip
-    - # if: startsWith(github.ref, 'refs/tags/v')
+    - if: startsWith(github.ref, 'refs/tags/v')
       run: |
         $PACKAGE_PATH = (get-item ./*.nupkg).FullName
         nuget push $PACKAGE_PATH -ApiKey ${{secrets.NUGET_TOKEN}} -Source "https://api.nuget.org/v3/index.json"
 
   linux:
-    if: 'false'
+    # if: 'false'
     needs: setup
     runs-on: ubuntu-16.04
     steps:
