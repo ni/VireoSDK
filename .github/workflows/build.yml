@@ -170,7 +170,6 @@ jobs:
     - # if: startsWith(github.ref, 'refs/tags/v')
       run: |
         $PACKAGE_PATH = (get-item ./*.nupkg).FullName
-        echo $PACKAGE_PATH
         nuget push $PACKAGE_PATH -ApiKey {{secrets.NUGET_TOKEN}} -Source "https://api.nuget.org/v3/index.json"
 
   linux:
