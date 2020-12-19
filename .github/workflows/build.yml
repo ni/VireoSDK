@@ -165,7 +165,7 @@ jobs:
         asset_path: ${{ env.ESH_32_DEBUG }}
         asset_content_type: application/zip
     - if: startsWith(github.ref, 'refs/tags/v')
-      run: nuget push $(echo (get-item ./*.nupkg).FullName) --api-key {{ secrets.NUGET_TOKEN}} --source https://api.nuget.org/v3/index.json
+      run: nuget push $(echo (get-item ./*.nupkg).FullName) -ApiKey {{ secrets.NUGET_TOKEN}} -Source https://api.nuget.org/v3/index.json
 
   linux:
     needs: setup
