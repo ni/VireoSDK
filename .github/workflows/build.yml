@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint_and_docs:
-    # if: 'false'
+    if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -42,7 +42,7 @@ jobs:
       run: dpl --provider=pages --repo=rajsite/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GITHUB_PAGES_TOKEN }}
 
   web:
-    # if: 'false'
+    if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -171,7 +171,7 @@ jobs:
       run: nuget push $(echo (get-item ./*.nupkg).FullName) -ApiKey {{ secrets.NUGET_TOKEN}} -Source https://api.nuget.org/v3/index.json
 
   linux:
-    # if: 'false'
+    if: 'false'
     needs: setup
     runs-on: ubuntu-16.04
     steps:
