@@ -122,10 +122,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: microsoft/setup-msbuild@v1
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12'
-        registry-url: 'https://registry.npmjs.org'
+    # - uses: actions/setup-node@v1
+    #   with:
+    #     node-version: '12'
+    #     registry-url: 'https://registry.npmjs.org'
     # - run: npm ci
     # - run: chocolatey install make -y
     # - run: chocolatey install gnuwin32-coreutils.portable -y
@@ -171,7 +171,7 @@ jobs:
       run: |
         $PACKAGE_PATH = (get-item ./*.nupkg).FullName
         echo $PACKAGE_PATH
-        nuget push $PACKAGE_PATH -ApiKey test -Source "https://api.nuget.org/v3/index.json"
+        nuget push $PACKAGE_PATH -ApiKey {{secrets.NUGET_TOKEN}} -Source "https://api.nuget.org/v3/index.json"
 
   linux:
     if: 'false'
