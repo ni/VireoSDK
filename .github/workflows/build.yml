@@ -1,3 +1,6 @@
+# Copyright (c) 2020 National Instruments
+# SPDX-License-Identifier: MIT
+
 on:
   pull_request_target:
   push:
@@ -12,6 +15,8 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
+
+    # Install lint dependencies
     - uses: actions/setup-python@v2
       with:
         python-version: '3.5'
@@ -20,10 +25,15 @@ jobs:
         node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
+
+    # Run lint
     - run: make lint
     - run: npm run lint
 
+    # Install docs dependencies
     - run: sudo apt-get install doxygen
+
+    # Build docs
     - run: npm run doxygen
     - run: zip -rq gh-pages.zip gh-pages
     - uses: actions/upload-artifact@v2
@@ -32,6 +42,7 @@ jobs:
         path: gh-pages.zip
         if-no-files-found: error
 
+    # Publish docs to GitHub Pages
     - if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/setup-ruby@v1
       with:
@@ -47,6 +58,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # Install web dependencies
     - uses: actions/setup-python@v2
       with:
         python-version: '3.5'
@@ -54,13 +66,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - run: nohup python -m httpbin.core --port 64526 --host 0.0.0.0 &
-
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
-
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
@@ -68,8 +78,9 @@ jobs:
     - run: |
         emsdk/emsdk install 1.39.5-fastcomp
         emsdk/emsdk activate 1.39.5-fastcomp
-
     - run: . emsdk/emsdk_env.sh && emcc -v
+
+    # Build web
     - run: . emsdk/emsdk_env.sh && make vjs
     - run: . emsdk/emsdk_env.sh && make vjs BUILD=debug
     - run: . emsdk/emsdk_env.sh && make vjs BUILD=profile
@@ -81,6 +92,7 @@ jobs:
         path: ./vireo-*.tgz
         if-no-files-found: error
 
+    # Test web
     - run: make testjs
       env:
         TZ: CST6CDT
@@ -94,6 +106,7 @@ jobs:
       env:
         TZ: CST6CDT
 
+    # Publish web npm package
     - if: startsWith(github.ref, 'refs/tags/v')
       run: npm publish
       env:
@@ -121,6 +134,8 @@ jobs:
     runs-on: windows-2016
     steps:
     - uses: actions/checkout@v2
+
+    # Install windows dependencies
     - uses: microsoft/setup-msbuild@v1
     - uses: actions/setup-node@v1
       with:
@@ -129,8 +144,9 @@ jobs:
     - run: npm ci
     - run: chocolatey install make -y
     - run: chocolatey install gnuwin32-coreutils.portable -y
-    - run: msbuild /m /p:Configuration=Debug /p:PlatformTarget=Win32 Vireo_VS\VireoCommandLine.sln
 
+    # Build windows
+    - run: msbuild /m /p:Configuration=Debug /p:PlatformTarget=Win32 Vireo_VS\VireoCommandLine.sln
     - name: calculate release name
       run: |
         $Env:ESH_VERSION=(Get-Content -Raw -Path package.json | ConvertFrom-Json).version
@@ -146,10 +162,6 @@ jobs:
         name: ${{ env.ESH_32_DEBUG }}
         path: ${{ env.ESH_32_DEBUG }}
         if-no-files-found: error
-
-    - run: tzutil /s "Central Standard Time"
-    - run: make testnative
-
     - uses: nuget/setup-nuget@v1
     - run: nuget pack VireoSDK.nuspec -properties version="$Env:ESH_VERSION"
     - uses: actions/upload-artifact@v2
@@ -158,6 +170,11 @@ jobs:
         path: ./*.nupkg
         if-no-files-found: error
 
+    # Test windows
+    - run: tzutil /s "Central Standard Time"
+    - run: make testnative
+
+    # Publish windows release and nuget package
     - if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-release-asset@v1
       env:
@@ -178,14 +195,17 @@ jobs:
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
+
+    # Install linux dependencies
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
+    - run: echo gcc -v
 
+    # Build linux
     - run: make native
-
     - name: calculate release name
       run: |
         export ESH_VERSION=$(node -p "require('./package.json').version")
@@ -198,6 +218,7 @@ jobs:
         path: ${{ env.ESH_64_RELEASE }}
         if-no-files-found: error
 
+    # Test linux
     - run: make unittest
       env:
           TZ: CST6CDT
@@ -205,6 +226,7 @@ jobs:
       env:
           TZ: CST6CDT
 
+    # Publish linux release
     - if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/upload-release-asset@v1
       env:
