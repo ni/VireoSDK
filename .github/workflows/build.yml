@@ -10,7 +10,7 @@ on:
     - 'v*'
 
 jobs:
-  lint_and_docs:
+  lint-and-docs:
     # if: 'false'
     runs-on: ubuntu-16.04
     steps:
@@ -112,13 +112,13 @@ jobs:
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-  web-win:
+  web-windows:
     # if: 'false'
     runs-on: windows-2016
     steps:
     - uses: actions/checkout@v2
 
-    # Install web-win dependencies
+    # Install web-windows dependencies
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
@@ -142,7 +142,7 @@ jobs:
         emsdk\emsdk activate 1.39.5-fastcomp
     - run: emsdk\emsdk_env.ps1 && emcc -v
 
-    # Build web-win
+    # Build web-windows
     - run: emsdk\emsdk_env.ps1 && make vjs
     - run: npm pack
     - uses: actions/upload-artifact@v2
@@ -151,7 +151,7 @@ jobs:
         path: ./vireo-*.tgz
         if-no-files-found: error
 
-    # Test web-win
+    # Test web-windows
     - run: tzutil /s "Central Standard Time"
     - run: make testjs
     - run: npm run test-min
