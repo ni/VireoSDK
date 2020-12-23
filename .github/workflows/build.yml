@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 on:
-  pull_request_target:
+  pull_request:
   push:
     branches-ignore:
     - 'gh-pages'
