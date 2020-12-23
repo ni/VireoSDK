@@ -1,0 +1,280 @@
+# Copyright (c) 2020 National Instruments
+# SPDX-License-Identifier: MIT
+
+on:
+  pull_request_target:
+  push:
+    branches-ignore:
+    - 'gh-pages'
+    tags:
+    - 'v*'
+
+jobs:
+  lint-and-docs:
+    # if: 'false'
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install lint dependencies
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.5'
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+
+    # Run lint
+    - run: make lint
+    - run: npm run lint
+
+    # Install docs dependencies
+    - run: sudo apt-get install doxygen
+
+    # Build docs
+    - run: npm run doxygen
+    - run: zip -rq gh-pages.zip gh-pages
+    - uses: actions/upload-artifact@v2
+      with:
+        name: gh-pages build
+        path: gh-pages.zip
+        if-no-files-found: error
+
+    # Publish docs to GitHub Pages
+    - if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+    - if: startsWith(github.ref, 'refs/tags/v')
+      run: gem install dpl
+    - if: startsWith(github.ref, 'refs/tags/v')
+      run: dpl --provider=pages --repo=ni/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GHPAGES_TOKEN }}
+
+  web:
+    # if: 'false'
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install web dependencies
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.5'
+    - run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - run: nohup python -m httpbin.core --port 64526 --host 0.0.0.0 &
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: |
+        git clone https://github.com/juj/emsdk.git
+        cd emsdk
+        git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
+    - run: |
+        emsdk/emsdk install 1.39.5-fastcomp
+        emsdk/emsdk activate 1.39.5-fastcomp
+    - run: . emsdk/emsdk_env.sh && emcc -v
+
+    # Build web
+    - run: . emsdk/emsdk_env.sh && make vjs
+    - run: . emsdk/emsdk_env.sh && make vjs BUILD=debug
+    - run: . emsdk/emsdk_env.sh && make vjs BUILD=profile
+    - run: . emsdk/emsdk_env.sh && make vjs BUILD=release TARGET=asmjs-unknown-emscripten
+    - run: npm pack
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm package
+        path: ./vireo-*.tgz
+        if-no-files-found: error
+
+    # Test web
+    - run: make testjs
+      env:
+        TZ: CST6CDT
+    - run: make testhttpbin
+      env:
+        TZ: CST6CDT
+    - run: npm run test-min
+      env:
+        TZ: CST6CDT
+    - run: npm run test-asmjs
+      env:
+        TZ: CST6CDT
+
+    # Publish web npm package
+    - if: startsWith(github.ref, 'refs/tags/v')
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  web-windows:
+    # if: 'false'
+    runs-on: windows-2016
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install web-windows dependencies
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: chocolatey install make -y
+    - run: chocolatey install gnuwin32-coreutils.portable -y
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.5'
+    - run: |
+        python -m pip install --upgrade pip
+        pip install tox
+    - run: Start-Process npm "run httpbin" -PassThru
+    - run: |
+        git clone https://github.com/juj/emsdk.git
+        cd emsdk
+        git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
+    - run: |
+        emsdk\emsdk install 1.39.5-fastcomp
+        emsdk\emsdk activate 1.39.5-fastcomp
+    - run: emsdk\emsdk_env.ps1 && emcc -v
+
+    # Build web-windows
+    - run: emsdk\emsdk_env.ps1 && make vjs
+    - run: npm pack
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm package win build
+        path: ./vireo-*.tgz
+        if-no-files-found: error
+
+    # Test web-windows
+    - run: tzutil /s "Central Standard Time"
+    - run: make testjs
+    - run: npm run test-min
+
+  setup:
+    runs-on: ubuntu-16.04
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - if: startsWith(github.ref, 'refs/tags/v')
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  windows:
+    # if: 'false'
+    needs: setup
+    runs-on: windows-2016
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install windows dependencies
+    - uses: microsoft/setup-msbuild@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+
+    # Build windows
+    - run: msbuild /m /p:Configuration=Debug /p:PlatformTarget=Win32 Vireo_VS\VireoCommandLine.sln
+    - name: calculate release name
+      run: |
+        $Env:ESH_VERSION=(Get-Content -Raw -Path package.json | ConvertFrom-Json).version
+        echo "ESH_VERSION=$Env:ESH_VERSION" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        $Env:ESH_32_DEBUG="esh_$($Env:ESH_VERSION)_i686-pc-windows-msvc_debug.zip"
+        echo "ESH_32_DEBUG=$Env:ESH_32_DEBUG" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      shell: powershell
+    - run: 7z a %ESH_32_DEBUG% .\dist\Debug\esh.exe .\dist\Debug\esh.pdb .\README.md .\LICENSE.txt
+      shell: cmd
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ESH_32_DEBUG }}
+        path: ${{ env.ESH_32_DEBUG }}
+        if-no-files-found: error
+    - uses: nuget/setup-nuget@v1
+    - run: nuget pack VireoSDK.nuspec -properties version="$Env:ESH_VERSION"
+    - uses: actions/upload-artifact@v2
+      with:
+        name: nuget package
+        path: ./*.nupkg
+        if-no-files-found: error
+
+    # Test windows
+    - run: tzutil /s "Central Standard Time"
+    - run: cd test-it && node test.js -n --dots
+
+    # Publish windows release and nuget package
+    - if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.setup.outputs.upload_url }}
+        asset_name: ${{ env.ESH_32_DEBUG }}
+        asset_path: ${{ env.ESH_32_DEBUG }}
+        asset_content_type: application/zip
+    - if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        $PACKAGE_PATH = (get-item ./*.nupkg).FullName
+        nuget push $PACKAGE_PATH -ApiKey ${{secrets.NUGET_TOKEN}} -Source "https://api.nuget.org/v3/index.json"
+
+  linux:
+    # if: 'false'
+    needs: setup
+    runs-on: ubuntu-16.04
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install linux dependencies
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+        registry-url: 'https://registry.npmjs.org'
+    - run: npm ci
+    - run: echo gcc -v
+
+    # Build linux
+    - run: make native
+    - name: calculate release name
+      run: |
+        export ESH_VERSION=$(node -p "require('./package.json').version")
+        export ESH_64_RELEASE="esh_"$ESH_VERSION"_x86_64-unknown-linux-gnu_release.zip"
+        echo "ESH_64_RELEASE=$ESH_64_RELEASE" >> $GITHUB_ENV
+    - run: zip -j $ESH_64_RELEASE dist/esh README.md LICENSE.txt
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.ESH_64_RELEASE }}
+        path: ${{ env.ESH_64_RELEASE }}
+        if-no-files-found: error
+
+    # Test linux
+    - run: make unittest
+      env:
+          TZ: CST6CDT
+    - run: make testnative
+      env:
+          TZ: CST6CDT
+
+    # Publish linux release
+    - if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.setup.outputs.upload_url }}
+        asset_name: ${{ env.ESH_64_RELEASE }}
+        asset_path: ${{ env.ESH_64_RELEASE }}
+        asset_content_type: application/zip

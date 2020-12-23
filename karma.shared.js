@@ -82,7 +82,7 @@
             hostname: '127.0.0.1',
 
             // Aliases for launchers that provide custom settings
-            // No Sandbox mode needed to run in Travis container https://docs.travis-ci.com/user/chrome#Sandboxing
+            // No Sandbox mode needed to run in containers
             // Launching chrome has been timing out, some forums suggest disabling proxy settings:
             // https://github.com/karma-runner/karma-chrome-launcher/issues/175#issuecomment-378247457
             customLaunchers: {

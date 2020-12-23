@@ -17,26 +17,13 @@ To begin development on Vireo make a GitHub account and [fork the ni/VireoSDK re
 
 Your fork will be available online at github.com/YOUR_USER_NAME/VireoSDK
 
-## Connect fork to CI servers
+## CI Server
 
-Vireo uses Travis and AppVeyor to build and test the Vireo source code automatically whenever changes are made.
+Vireo uses GitHub Actions to build and test the Vireo source code automatically whenever changes are made.
 You are encouraged to push changes to your fork when you have changes and to make branches for experiments.
 The fork is your playground for development and experimentation.
 
-By default, when you create a new fork the Travis and AppVeyor services are not enabled until you give them permission to build.
-The following describes how to enable the services for your fork:
-
-### Travis CI
-
-1. Go to [Travis-CI](https://travis-ci.org/first_sync) website and login with the github account associated with your Vireo fork
-2. (If this is your first time logging in, you can skip this step) On the left side of the page that appears click on the + sign, right next to My repositories
-3. On the page that appears, click on the repository switch by your fork to enable it
-
-### AppVeyor CI
-
-1. Go to the [AppVeyor](https://www.appveyor.com/) website and log in with the github account associated with your Vireo fork
-2. At the top of the page, click on "add a new project".
-3. On the page that appears, select your fork.
+From GitHub you can look at the Actions tab to see the status of the CI for your branches.
 
 ## Clone fork
 

@@ -319,7 +319,7 @@
                     console.log('\n');
                 }
             }
-            // Make sure to set error code for travis-ci failure
+            // Make sure to set error code for ci failure
             errorCode = 1;
         } else {
             console.log('\n============================================='.green);

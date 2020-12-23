@@ -7,10 +7,7 @@ SPDX-License-Identifier: MIT
 
 [![NPM Version](https://img.shields.io/npm/v/vireo.svg)](https://www.npmjs.com/package/vireo)
 [![Nuget Version](https://img.shields.io/nuget/v/vireo.svg)](https://www.nuget.org/packages/vireo)
-[![Travis Build Status](https://travis-ci.org/ni/VireoSDK.svg)](https://travis-ci.org/ni/VireoSDK)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/ni/VireoSDK?svg=true)](https://ci.appveyor.com/project/vireobot/vireosdk)
-[![Dependencies Status](https://david-dm.org/ni/VireoSDK/status.svg)](https://david-dm.org/ni/VireoSDK)
-[![Development Dependencies Status](https://david-dm.org/ni/VireoSDK/dev-status.svg)](https://david-dm.org/ni/VireoSDK?type=dev)
+[![GitHub Actions Build Status](https://github.com/ni/VireoSDK/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/ni/VireoSDK)
 [![NPM Downloads](https://img.shields.io/npm/dt/vireo.svg)](https://www.npmjs.com/package/vireo)
 
 A compact parallel execution runtime for VIs (virtual instruments) saved in VI assembly format (.via files).
