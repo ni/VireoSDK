@@ -142,10 +142,16 @@ jobs:
         emsdk\emsdk install 1.39.5-fastcomp
         emsdk\emsdk activate 1.39.5-fastcomp
     - run: emsdk\emsdk_env.ps1 && emcc -v
-    - run: |
-        emsdk\emsdk_env.ps1
-        emcc -v
-    - run: emcc -v
+    - run: emsdk\emsdk_env.ps1 && make vjs
+    - run: npm pack
+    - uses: actions/upload-artifact@v2
+      with:
+        name: npm package win build
+        path: ./vireo-*.tgz
+        if-no-files-found: error
+    - run: tzutil /s "Central Standard Time"
+    - run: make testjs
+    - run: npm run test-min
 
   setup:
     runs-on: ubuntu-16.04
