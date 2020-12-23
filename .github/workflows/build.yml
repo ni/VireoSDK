@@ -11,7 +11,7 @@ on:
 
 jobs:
   lint_and_docs:
-    if: 'false'
+    # if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -53,7 +53,7 @@ jobs:
       run: dpl --provider=pages --repo=rajsite/VireoSDK --local_dir=gh-pages --skip_cleanup --name=rajsite --email=rajsite@users.noreply.github.com --github-token=${{ secrets.GHPAGES_TOKEN }}
 
   web:
-    if: 'false'
+    # if: 'false'
     runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
@@ -119,7 +119,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    # Install windows dependencies
+    # Install web-win dependencies
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
@@ -142,6 +142,8 @@ jobs:
         emsdk\emsdk install 1.39.5-fastcomp
         emsdk\emsdk activate 1.39.5-fastcomp
     - run: emsdk\emsdk_env.ps1 && emcc -v
+
+    # Build web-win
     - run: emsdk\emsdk_env.ps1 && make vjs
     - run: npm pack
     - uses: actions/upload-artifact@v2
@@ -149,6 +151,8 @@ jobs:
         name: npm package win build
         path: ./vireo-*.tgz
         if-no-files-found: error
+
+    # Test web-win
     - run: tzutil /s "Central Standard Time"
     - run: make testjs
     - run: npm run test-min
@@ -170,7 +174,7 @@ jobs:
           prerelease: false
 
   windows:
-    if: 'false'
+    # if: 'false'
     needs: setup
     runs-on: windows-2016
     steps:
@@ -229,7 +233,7 @@ jobs:
         nuget push $PACKAGE_PATH -ApiKey ${{secrets.NUGET_TOKEN}} -Source "https://api.nuget.org/v3/index.json"
 
   linux:
-    if: 'false'
+    # if: 'false'
     needs: setup
     runs-on: ubuntu-16.04
     steps:
