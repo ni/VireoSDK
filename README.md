@@ -254,6 +254,7 @@ npm run test
 ```
 
 To debug the karma tests, use the command below which will print a URL to the console. Open the URL on a browser and open the browser's debugging tool:
+
 ```console
 npm run test-manual
 ```
@@ -280,10 +281,13 @@ Vireo tests rely on a locally running instance of the [httpbin](https://httpbin.
    Note: On Windows you can alternatively execute `npm run httpbin-start` to start the httpbin server in a new console window.
 3. With the server running in a new window you can now run the tests which rely on the HTTP client:
     - Running HTTP karma tests
+
     ```console
     npm run test
     ```
+
     - Running HTTP VTR tests
+
     ```console
     make testhttpbin
     ```

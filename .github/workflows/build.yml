@@ -10,7 +10,7 @@ on:
     - 'v*'
 
 jobs:
-  lint-and-docs:
+  lint:
     # if: 'false'
     runs-on: ubuntu-16.04
     timeout-minutes: 25
@@ -30,6 +30,7 @@ jobs:
     # Run lint
     - run: make lint
     - run: npm run lint
+    - run: npm run lint-markdown
 
   web:
     # if: 'false'

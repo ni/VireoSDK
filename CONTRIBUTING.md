@@ -181,43 +181,56 @@ It is encouraged before submission to rebase your changes on top of master and t
 However, if multiple developers are doing development in a branch it requires coordination before rewriting history using rebase.
 
 ### Creating hotfix releases
+
 To create and release hotfixes, annotated git tags are used; no release branches are created and maintained. To create a hotfix release, follow the steps below:
 
 #### Maintainer will create a hotfix branch from the desired tag in ni/VireoSDK
-* Go to https://github.com/ni/VireoSDK in your browser, click the "Branch:master" button and select the "Tags" tab in the pop-up that appears.
+
+* Go to the [VireoSDK GitHub](https://github.com/ni/VireoSDK) in your browser, click the "Branch:master" button and select the "Tags" tab in the pop-up that appears.
 * Choose the tag (say v10.1.7) on top of which you want to create a hotfix. The button should now say something like "Tag:v10.1.7".
 * Click on the "Tag:v10.1.7" button, select 'Branches', and type a new name for the branch (for example, 'hotfix'), hit Enter. This will create a new 'hotfix' branch in ni/VireoSDk from the chosen tag (v10.1.7).
 
 #### Contributor will create a local branch with the desired fixes and do a pull request
+
 * Fetch new branches and tags from remote.
-```console
-git remote update -p
-```
+
+    ```console
+    git remote update -p
+    ```
+
 * Create a local branch (say 'myHotfix') using the same tag as the 'hotfix' ni/VireoSDK branch.
-```console
-git checkout -b myHotfix v10.1.7
-```
+
+    ```console
+    git checkout -b myHotfix v10.1.7
+    ```
+
 * Then pick appropriate commits that should be cherry-picked into the hotfix release.
-```console
-git cherry-pick ec64f3296e5ee858dbe088768f0ff4fb4afad221
-```
+
+    ```console
+    git cherry-pick ec64f3296e5ee858dbe088768f0ff4fb4afad221
+    ```
+
 * **NOTICE**: The selected commits will apply directly, 'git status' will not return pending changes.
 * Submit your branch to your remote repository.
 * Create a PR from your branch 'myHotfix' to 'hotfix' in ni/VireoSDK. Please comment in the PR if this is a straight merge.
 
 #### Maintainer will merge the changes
+
 * Once your PR has been reviewed and approved, the Maintainer will merge your PR into the main hotfix release
 
 #### Maintainer will push a new annotated tag to create the hotfix release
+
 * If this is the first hotfix for the tag, we need to switch to prerelease first.
   * Manually update the package.json file, append '-hotfix' to the version (10.1.7 becomes 10.1.7-hotfix). Save the file.
   * Run 'npm install' to update the package-lock.json
   * Commit just this change with just package.json and package-lock.json updates.
 * Once the package.json is in hotfix configuration, create new hotfix version with the following commands:
-```console
-npm version prerelease -m "%s Bug fix for ScanToString with booleans"
-git push --follow-tags
-```
+
+    ```console
+    npm version prerelease -m "%s Bug fix for ScanToString with booleans"
+    git push --follow-tags
+    ```
+
 * Once the tags are pushed, delete the 'hotfix' branch in ni/VireoSDK
 
 # Testing local Vireo changes
@@ -234,8 +247,8 @@ There are two primary workflows for testing your local Vireo changes in other np
 
 If you have a JavaScript application on your local machine that depends on Vireo you can do the following:
 
-- Checkout / make sure the package.json and package-lock.json are editable
-- In the directory with the package.json file run:
+* Checkout / make sure the package.json and package-lock.json are editable
+* In the directory with the package.json file run:
 
   ```console
   npm install <PATH_TO_VIREO_SDK_DIRECTORY>
@@ -275,6 +288,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
     ```console
     nuget pack VireoSDK.nuspec -properties version="[newversion]"
     ```
+
     replacing `[newversion]` with the version to update to.
 
     This command will generate a `.nupkg` file in the folder the command is run from.
@@ -287,9 +301,11 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
 
         from the ASW root directory, replacing `oldversion` with the existing vireo version and `newversion` with the version you specified in the previous step.
     2. Add this line to the `packageSources` section of the NuGet.config in the root ASW directory:
+
          ```xml
          <add key="Local" value="Source\VI\Tests\Tests.HtmlVI" />
          ```
+
     3. Place the `.nupkg` file created in the previous step into `Source\VI\Tests\Tests.HtmlVI`.
     4. You should now be able to build and run .NET tests that will use your locally created Vireo.
 
@@ -302,6 +318,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
 
 1. Create a [c_cpp_properties.json](https://github.com/Microsoft/vscode-cpptools/blob/master/Documentation/Getting%20started%20with%20IntelliSense%20configuration.md) file for the VSCode C/C++ configuration. A quick shortcut for creating the `c_cpp_properties.json` file is to hit `Ctrl+Shift+P` from inside Visual Studio Code and search for and run the `C/CPP: Edit Configurations...` command.
 2. Add an Emscripten configuration to the c_cpp_properties.json file that uses the `includePath` (**make sure to update the paths to point to your Emscripten installation directory**) and `defines` shown in the following example:
+
     ```json
     {
         "name": "Emscripten",
@@ -338,6 +355,7 @@ Vireo has toggles that can be turned on to aid in debugging a problem. To turn o
 Turn on this toggle to print the name of the actual Vireo instructions being executed
 
 The following VIA program when run
+
 ```text
 define (CheckEqual dv(.VirtualInstrument (
    Locals: c(   // Data Space
@@ -353,6 +371,7 @@ enqueue (CheckEqual)
 ```
 
 Will produce output similar to this in the console:
+
 ```console
 Exec: IsEQInt32
 Exec: Done
@@ -363,6 +382,7 @@ Exec: Done
 Turn on this toggle to print the overloads available for an instruction and the overload being selected as the instruction is being parsed. This is helpful when debugging why Vireo is not properly parsing a new Vireo instruction.
 
 The following VIA program when run
+
 ```text
 define (CheckEqual dv(.VirtualInstrument (
    Locals: c(   // Data Space
@@ -378,6 +398,7 @@ enqueue (CheckEqual)
 ```
 
 Will produce output similar to this in the console:
+
 ```console
 =========================================================
 Finding an appropriate overload for 'IsEQ'

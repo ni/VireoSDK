@@ -38,8 +38,10 @@
     "test-coverage": "karma start karma.coverage.conf.js",
     "test-asmjs": "karma start karma.asmjs.conf.js --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
     "lint": "eslint .",
+    "lint-markdown": "npm run lint-markdown-style && npm run lint-markdown-links",
     "lint-markdown-links": "glob-exec --foreach \"{./*.md,./docs/*.md}\" -- \"npm run markdown-link-check -- {{file}}\"",
     "markdown-link-check": "markdown-link-check",
+    "lint-markdown-style": "markdownlint {./*.md,./docs/*.md}",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",
     "httpbin": "tox",
     "httpbin-start": "start cmd /c npm run httpbin"

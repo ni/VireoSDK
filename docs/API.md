@@ -5,9 +5,9 @@ SPDX-License-Identifier: MIT
 
 # Complex to Polar
 
-ComplexToPolar (complex[in] r[out] theta[out])
+`ComplexToPolar (complex[in] r[out] theta[out])`
 
-## Breaks a complex number into its polar components
+Breaks a complex number into its polar components
 
 | Parameter | Description |
 | --- | --- |
@@ -17,9 +17,9 @@ ComplexToPolar (complex[in] r[out] theta[out])
 
 # Complex to Real/Imaginary
 
-ComplexToReOrIm (complex[in] real[out] imaginary[out])
+`ComplexToReOrIm (complex[in] real[out] imaginary[out])`
 
-## Breaks a complex number into its rectangular components
+Breaks a complex number into its rectangular components
 
 | Parameter | Description |
 | --- | --- |
@@ -29,9 +29,9 @@ ComplexToReOrIm (complex[in] real[out] imaginary[out])
 
 # Conjugate
 
-Conjugate (complex[in] result[out])
+`Conjugate (complex[in] result[out])`
 
-## Produces the complex conjugate of x + iy
+Produces the complex conjugate of x + iy
 
 | Parameter | Description |
 | --- | --- |
@@ -40,9 +40,9 @@ Conjugate (complex[in] result[out])
 
 # Polar to Complex
 
-Polar (r[in] theta[in] complex[out])
+`Polar (r[in] theta[in] complex[out])`
 
-## Creates a complex number from two values in polar notation.
+Creates a complex number from two values in polar notation
 
 | Parameter | Description |
 | --- | --- |
@@ -52,9 +52,9 @@ Polar (r[in] theta[in] complex[out])
 
 # Polar to Real/Imaginary
 
-PolarToReOrIm (r[in] theta[in] real[out] imaginary[out])
+`PolarToReOrIm (r[in] theta[in] real[out] imaginary[out])`
 
-## Converts the polar components of a complex number into its rectangular components.
+Converts the polar components of a complex number into its rectangular components
 
 | Parameter | Description |
 | --- | --- |
@@ -65,9 +65,9 @@ PolarToReOrIm (r[in] theta[in] real[out] imaginary[out])
 
 # Real/Imaginary to Complex
 
-ReOrImToComplex (real[in] imaginary[in] complex[out])
+`ReOrImToComplex (real[in] imaginary[in] complex[out])`
 
-## Creates a complex number from two values in rectangular notation.
+Creates a complex number from two values in rectangular notation
 
 | Parameter | Description |
 | --- | --- |
@@ -77,9 +77,9 @@ ReOrImToComplex (real[in] imaginary[in] complex[out])
 
 # Real/Imaginary to Polar
 
-ReOrImToPolar (real[in] imaginary[in] r[out] theta[out])
+`ReOrImToPolar (real[in] imaginary[in] r[out] theta[out])`
 
-## Converts the rectangular components of a complex number into its polar components
+Converts the rectangular components of a complex number into its polar components
 
 | Parameter | Description |
 | --- | --- |
