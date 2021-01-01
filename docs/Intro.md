@@ -28,7 +28,7 @@ LabVIEW is a graphical language, so one could suggest that the LabVIEW Hello Wor
 When a user develops a program (e.g. a diagram) with LabVIEW, the work is saved as a VirtualInstrument (.vi) file. These files are centered around the elements drawn by the user.  When a VI is run using  the traditional desktop workflow LabVIEW analyzes the high-level diagram and partitions it into sections of code that can be run by the host processor and it determines what memory will be needed for variables. The result of this analysis is directly turned into native code using LLVM for standard CPUs, or turned into VHDL for targeting FPGAs. Since the VI file describes high-level graphical objects, it cannot be directly loaded by Vireo. Instead, to target the Vireo runtime, the result of LabVIEW analysis is captured in a VI assembly file (.via).
 As an assembly file, VIA source is low-level. It has no graphical description elements and it is not commonly written by hand. It includes primitive operations like branching not directly accessible at the graphical diagram level.  Here is a sample program:
 
-```lisp
+```cpp
 define (HelloWorld dv(.VirtualInstrument (
     c(
         e(dv(String 'hello, world') variable1)

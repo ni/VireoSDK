@@ -9,10 +9,9 @@ In the introduction, the VIs seen in the examples were running in a _ExecutionCo
 
 To get  better understanding of how the TypeManager works and how types are defined. Let's look at the examples VIs in a bit more detail; the VI itself is a new type, some parts internal to the VI are as well. When the VI decoder processes the define operation these types will be added to the ExecutionContext's TypeManager. Each step covers a bit more of the grammar VI assembly uses to describe types and data. There is also a [EBNF grammar](ViaEBNF.md) for the VIA text.
 
-```lisp
+```cpp
 // Define a type named "Calc" that is a "VirtualInstrument"
 define (Calc  dv(.VirtualInstrument  (
-    
     // Define a cluster type with 6 elements that makes up the data space used by the VI.   
     c(
         // Each element field in the cluster is a type defiition.
@@ -43,7 +42,7 @@ In addition to the types defined in the example there are several types referenc
 
 All types ultimately describe values that are represented by a block of bits. For simple types like _Int32_ and _UInt32_ the definitions look like this:
 
-```lisp
+```cpp
 // Int32 is a cluster with one element that is a BitBlock of 32 bits
 // in signed 2's complement encoding (SInt).
 define (Int32 c(e(bb(32 SInt))) )
@@ -64,7 +63,7 @@ Some of the primitive types provide more detail about their internals. The type 
 
 Its common to think of an _Equivalence_ as a C union, however, for an Equivalence all members must be the same bit size and it must be valid to view data from any of the views at any time. C unions do not have these restrictions.
 
-```lisp
+```cpp
 // The low level single bit block definition
 define(DoubleAtomic     c(e(bb(64 IEEE754B))) )
 
@@ -89,7 +88,7 @@ Vireo includes built-in definitions for the floating point types _Single_, _Doub
 
 Internal types used in Vireo also have type definitions. Though the details are not going to be covered here, at the heart of a VirtualInstrument is a cluster of fields.
 
-```lisp
+```cpp
 define (VirtualInstrument 
     a(c(                               
         e(.ExecutionContext Context)   

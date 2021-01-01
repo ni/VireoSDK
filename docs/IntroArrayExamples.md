@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 Arrays come in three forms Fixed size, Variable and Bounded. When a variable is defined, any of the forms can be used.
 Input to functions are generally always typed as variable.
 
-```lisp
+```cpp
 define (ArrayDemo, dv(.VirtualInstrument, (
     c(
         e(a(Int32 *)     variableArray1d)
@@ -58,7 +58,7 @@ Bounded arrays specify an maximum size up when defined. In the reference runtime
 
 Zero dimensional arrays are arrays that have no dimensions, not arrays that have a dimension of zero. ZDAs are a bit unique methematically in that they always contain one element while, in comparison arrays with 1 or more dimensions can be empty if one of the dimension sizes is set to 0. ZDA types are not directly used from LabVIEW diagrams but Vireo uses them internally. A key characteristice of ZDAs is that it is possible to detect if the element is holding anything. This makes ZDAs the internal basis for nullable types, LabVIEW variants and objects.  For this reason the IsArray() test is slightly different from checking for Rank() greater than 0.
 
-```lisp
+```cpp
 c(
     e(a(Int32 *)       1DArray)            // IsArray = true;  Rank = 1
     e(a(Int32 * *)     2DArray)            // IsArray = true;  Rank = 2

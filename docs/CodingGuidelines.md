@@ -29,7 +29,7 @@ Context are used for allocation, not malloc() or new(). The new placement operat
 
 - For code formatting guidelines for parentheses and braces the Linux kernel coding style is followed, with one notable exception. Indentation is in steps of 4 spaces, not 8. If it helps, you can consider these “retina tabs”. Linus clearly has a good point on not nesting the code too deeply. Nonetheless, 4 characters leaves additional room for comments and it's our tradition. It allows more room for parallel windows, especially during comparisons.
 
-  <https://www.kernel.org/doc/Documentation/CodingStyle>
+  [Linux kernel coding style](https://www.kernel.org/doc/Documentation/process/coding-style.rst)
 
   Since Vireo is C++ the “//” form of comments is more commonly used. It's common for
   this form to be avoided in C since it was not officially a standard for plain C

@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
 The classic LabVIEW parallelism demo is two loops. It's a core demo because, in LabVIEW, everything is parallel unless there is a data dependency. This model is significantly different from languages where everything is sequential unless threads are explicitly used. That distinction is the difference between a conventional programming language and a system design tool like LabVIEW.
 Since textual languages are read sequentially it is easy to describe sequential tasks. In comparison when you look at things visually the default interpretation is that the things run independently. For example, when you look in the kitchen and see several appliances lined up on the counter the default interpretation is that they work independently; the toaster and blender can both run independent of the other. This short diversion into program philosophy is to note that while VIA files provide a concurrency model that is a bit more abstract than explicit thread creation, it is typically not perceived as intuitive as the graphical representation.
 
-```lisp
+```cpp
 // Parallel.via - Do two things at once
 define (Parallel dv(.VirtualInstrument (
      c(
