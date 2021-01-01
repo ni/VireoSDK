@@ -44,5 +44,3 @@ Context are used for allocation, not malloc() or new(). The new placement operat
 - Some C was used to bootstrap Vireo before LabVIEW could directly target it. When possible covert that C to G. See Rule 1.
 
 - For token constants use #defines for C string literals, not character literals. This helps with token concatenation, and helps pave the way for multibyte UTF-8 code points.
-
-- Doxygen notation is used for documentation generation

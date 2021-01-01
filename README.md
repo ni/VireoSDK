@@ -330,22 +330,6 @@ Here is a simple example that adds the test suite `rpi` with the `RpiTest.via` f
 node ./test.js -n -t rpi
 ```
 
-# Updating Vireo Documentation
-
-We are using [Doxygen](http://www.stack.nl/~dimitri/doxygen/) to generate our documentation. This tool lets us annotate our source code and generate documentation from it. We are currently using version *1.8.6*.
-
-Installers can be found [here](http://www.stack.nl/~dimitri/doxygen/download.html). On Windows use the 64-bit version.
-
-Once Doxygen is installed run the following command from any directory in the repo:
-
-```console
-npm run doxygen
-```
-
-It will find and use the Doxyfile file in the source directory to generate documentation files in the `gh-pages` directory:
-
-The main html file in the `gh-pages` directory is called index.html.
-
 # License and copyright
 
 Copyright (c) 2020 National Instruments

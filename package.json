@@ -37,9 +37,7 @@
     "lint": "eslint .",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",
     "httpbin": "tox",
-    "httpbin-start": "start cmd /c npm run httpbin",
-    "doxygen": "cd source && doxygen",
-    "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages"
+    "httpbin-start": "start cmd /c npm run httpbin"
   },
   "repository": {
     "type": "git",
