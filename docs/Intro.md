@@ -57,10 +57,3 @@ real	0m0.005s
 user	0m0.003s
 sys	0m0.002s
 ~~~
-
-## Next Steps
-* [Introduction](index.html)
-* [Some more simple type examples](md_dox__intro_type_examples.html)
-* [Some array type examples](md_dox__intro_array_examples.html)
-* [VIs with parallel execution](md_dox__intro_parallel_clump_examples.html)
-* [The TypeManager](md_dox__type_manager.html)

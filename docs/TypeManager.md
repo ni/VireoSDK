@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 In the introduction, the VIs seen in the examples were running in a _ExecutionContext_, an object that manages scheduling the execution of clumps of code. A core element of each  ExecutionContext is a TypeManager object that manages all types and data allocations needed during VI execution. TypeManagers can be nested allowing a parent TypeManager to provide types that are used by inherited by child TypeManagers. 
 
 To get  better understanding of how the TypeManager works and how types are defined. Let's look at the examples VIs in a bit more detail; the VI itself is a new type, some parts internal to the VI are as well. When the VI decoder processes the define operation these types will be added to the ExecutionContext's TypeManager. Each step covers a bit more of the grammar VI assembly uses to describe types and data. There is also a 
-[EBNF grammar](md_dox__via_e_b_n_f.html) for the VIA text.
+[EBNF grammar](ViaEBNF.md) for the VIA text.
 
 ~~~
 // Define a type named "Calc" that is a "VirtualInstrument"
@@ -178,17 +178,3 @@ More to come.
 
 ### In summary, the Periodic Table of types.
 The core metaphor used to describe Vireo's collection of types is the periodic table. If you set out to model chemistry you could enumerate core properties for molecules, elements, or atomic primitive elements (proton, neutron, electron). the layer you choose has a tremendous impact on the extensibility of the framework. As an example, if the element level is picked as a base level then definitions are needed for 118 core elements. However if atomic weight becomes relevant to the system then 288 are needed to account for all known [isotopes](http://en.wikipedia.org/wiki/List_of_elements_by_stability_of_isotopes). If instead the core particles are defined and a means for aggregating them, then only a small handful of concepts are needed, and it is easy to dynamically add new ones without adding more C++ code to the core app. Starting with a single bit and ways to aggregate collections of them is the strategy Vireo uses.
-
-## Next Steps
-* [Introduction](index.html)
-* [Some more simple type examples](md_dox__intro_type_examples.html)
-* [Some array type examples](md_dox__intro_array_examples.html)
-* [VIs with parallel execution](md_dox__intro_parallel_clump_examples.html)
-* [The TypeManager](md_dox__type_manager.html)
-
-
-
-
-
-
-

@@ -66,11 +66,3 @@ c(
 
 ### Running out of memory
 Each TypeManger and its corresponding ExecutionContext has a memory threshold, if an array operation would take the total allocation above that limit the allocation fails.
-
-## Next Steps
-* [Introduction](index.html)
-* [Some more simple type examples](md_dox__intro_type_examples.html)
-* [Some array type examples](md_dox__intro_array_examples.html)
-* [VIs with parallel execution](md_dox__intro_parallel_clump_examples.html)
-* [The TypeManager](md_dox__type_manager.html)
-

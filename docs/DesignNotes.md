@@ -1,5 +1,7 @@
+<!--
 Copyright (c) 2020 National Instruments
 SPDX-License-Identifier: MIT
+-->
 
 A log of design decisions and other notes that do nto have a home of their own.
 
