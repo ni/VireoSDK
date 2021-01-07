@@ -7,7 +7,7 @@ SPDX-License-Identifier: MIT
 <!-- markdownlint-disable no-inline-html -->
 <div align="center">
     <div>
-      <img width="605" height="333" src="docs/vireo-logo.png" alt="Vireo logo">
+      <img width="300" height="165" src="docs/vireo-logo.png" alt="Vireo logo">
     </div>
 </div>
 <!-- markdownlint-restore -->
