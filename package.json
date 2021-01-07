@@ -6,6 +6,7 @@
     "colors": "^1.3.3",
     "diff": "^4.0.1",
     "eslint": "^7.0.0",
+    "glob-exec": "^0.1.1",
     "jasmine-core": "^3.4.0",
     "jasmine-expect": "^4.0.1",
     "karma": "^5.0.8",
@@ -17,6 +18,8 @@
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-jasmine-spec-tags": "^1.3.0",
     "karma-verbose-reporter": "^0.0.6",
+    "markdown-link-check": "^3.8.5",
+    "markdownlint-cli": "^0.26.0",
     "puppeteer": "^3.1.0",
     "requirejs": "^2.3.6",
     "rollup": "^2.10.4",
@@ -35,11 +38,13 @@
     "test-coverage": "karma start karma.coverage.conf.js",
     "test-asmjs": "karma start karma.asmjs.conf.js --browsers ChromeHeadlessNoSandbox,FirefoxHeadless",
     "lint": "eslint .",
+    "lint-markdown": "npm run lint-markdown-style && npm run lint-markdown-links",
+    "lint-markdown-links": "glob-exec --foreach \"{./*.md,./docs/*.md}\" -- \"npm run markdown-link-check -- {{file}}\"",
+    "markdown-link-check": "markdown-link-check",
+    "lint-markdown-style": "markdownlint {./*.md,./docs/*.md}",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",
     "httpbin": "tox",
-    "httpbin-start": "start cmd /c npm run httpbin",
-    "doxygen": "cd source && doxygen",
-    "postdoxygen": "shx cp \"Documents/DocumentsRoot/.*\" \"Documents/DocumentsRoot/*\" gh-pages"
+    "httpbin-start": "start cmd /c npm run httpbin"
   },
   "repository": {
     "type": "git",

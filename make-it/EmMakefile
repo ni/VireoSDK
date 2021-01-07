@@ -33,7 +33,7 @@ UTSOURCEDIR=$(VIREO_SDK)/source/unittest
 
 JS_SOURCE_FILES=$(wildcard $(CORESOURCEDIR)/*.js) $(wildcard $(IOSOURCEDIR)/*.js)
 
-.PHONY: clean install help vjs dox
+.PHONY: clean install help vjs
 .DEFAULT_GOAL=help
 
 clean:

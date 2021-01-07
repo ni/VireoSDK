@@ -59,7 +59,7 @@ ANALYSIS_UTILITY_SOURCE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/source/utility
 ANALYSIS_NIFFT_SOURCE_DIRECTORY=$(ANALYSIS_ROOT_DIRECTORY)/source/nifft
  
 ifeq (,$(AAL_ONLY))
-.PHONY: clean install help vjs dox
+.PHONY: clean install help vjs
 .DEFAULT_GOAL=help
  
 clean:

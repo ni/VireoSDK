@@ -3,18 +3,18 @@ Copyright (c) 2020 National Instruments
 SPDX-License-Identifier: MIT
 -->
 
-## EBNF grammar for VIA assembly
+# EBNF grammar for VIA assembly
 
 The VIA grammar is based on simple parentesized lists and are closely related to
 [s-expressions](http://en.wikipedia.org/wiki/S-expressions) used in the LISP programming
-language and many of its derivatives.  The similarity is strongest for [data sets](#DataValue_EBNF) since they can nest arbitrarily deep.
-[VIs](@ref VI_EBNF)  are distictly different though using a common format makes it easier to treat them as data as well
+language and many of its derivatives.  The similarity is strongest for [data sets](#grammar-for-data-values) since they can nest arbitrarily deep.
+[VIs](#grammar-for-a-vi)  are distictly different though using a common format makes it easier to treat them as data as well
 
 For clarity, the following EBNF grammar goes a bit further and defines the core elements for type, data and VI definitions. Note that terminal expressions for core types such as Int32 are not included since they are typically defined using lower level primitives.
 
-### Grammar for types
+## Grammar for types
 
-~~~{.ebnf}
+```EBNF
 type                    := ( named_type 
                              | array 
                              | cluster | bit_cluster | equivalence | param_block 
@@ -24,8 +24,7 @@ type                    := ( named_type
 named_type              := '.'  type_in_dictionary
 
  type_in_dictionary     := token that is a key for a type in the dictionary
-	
-							
+
 array                   := 'a' '(' type dimension* ')'
 
   dimension             := variable_dimension | fixed_dimension | bounded_dimension
@@ -66,23 +65,23 @@ var_type                := 'var' '(' type { data_element } ')'
 
 template_parameters     := '<' type* '>'
 
-~~~
+```
 
-### Grammar for data values {#DataValue_EBNF}
+## Grammar for data values
 
-~~~{.ebnf}
+```EBNF
 data_element             := [ element_name ':'] ( token | data_collection | data_vi )
 
 data_collection          := '(' data_element* ')'
-~~~
+```
 
-### Grammar for a VI expressed as a value {#VI_EBNF}
+## Grammar for a VI
 
-~~~{.ebnf}
-data_vi	                 := '('
-                                data_element*
-                                data_clump*
-                             ')'
+```EBNF
+data_vi                 := '('
+                          data_element*
+                          data_clump*
+                        ')'
 
 data_clump              := 'clump' '(' data_instruction* ')'
 
@@ -91,11 +90,11 @@ data_instruction        := instruction_name '(' instruction_argument* ')'
 instruction_name        := 'Perch' | 'FireCount' | type_name
 
 instruction_argument    := token | wild_card
-~~~
+```
 
-### Grammar rules for low level tokens
+## Grammar rules for low level tokens
 
-~~~
+```EBNF
 whole_number_token      := token that is a legal number >= 0
  
 natural_number_token    := token that is a legal number > 0
@@ -131,4 +130,4 @@ white_space             := ( cr | lf | ht )*
                          // for simplicity, this has not be annotated
                          // in the grammar described above
 
-~~~
+```

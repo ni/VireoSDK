@@ -1,5 +1,9 @@
+<!--
 Copyright (c) 2020 National Instruments
 SPDX-License-Identifier: MIT
+-->
+
+# Design Notes
 
 A log of design decisions and other notes that do nto have a home of their own.
 
@@ -17,20 +21,21 @@ While some obejects are frequently used as a values on the stack or inline in ot
 Most of the documentation for Vireo is in the source or in the dox folder in the source directory as *.md markdown files such as this one. Experiements have been done with wikis and separate word or iWork pages files but the results have never been very satisfactory. Thre have alwasy been tracking chages, making the tools easy to acess while developing tests or code, working ofline as well as online or working from differnet platforms.
 
 9/5/2014 Some key design points to go into deeper.
-    > Queues and lists that are integral to core objecs instead of separate conatainers
-    > Using native tickcount on each platfrom instead of a unit like microseconds on all platfroms
-    > The StringBuffer class, the core of efficient codecs.
-    > EventLogs and Error handling strategies
-    > Namesapces
-    > Avoding new, delete and standard C++ constructors/destructors
-    > Steps left to do for UTF8 support, and why UTF16 is not used.
-    > Build strategies: BuildConfig.h and VireoMerged.cpp" and makefiles
-    > Performance 
-    > Ideas on JIT
-    > Generic functions
-    > Fucntion call validation for generic functions
-    > Array views
-    > Iterators
+
+* Queues and lists that are integral to core objecs instead of separate conatainers
+* Using native tickcount on each platfrom instead of a unit like microseconds on all platfroms
+* The StringBuffer class, the core of efficient codecs.
+* EventLogs and Error handling strategies
+* Namesapces
+* Avoding new, delete and standard C++ constructors/destructors
+* Steps left to do for UTF8 support, and why UTF16 is not used.
+* Build strategies: BuildConfig.h and VireoMerged.cpp" and makefiles
+* Performance
+* Ideas on JIT
+* Generic functions
+* Fucntion call validation for generic functions
+* Array views
+* Iterators
 
 9/1/2014 inline constants
 Basic inline constants have been added. This primarily helps in writing unit test. LabVIEW's via generator does not use this feature. Currently this will only work if the bound function has strick types (e.g. not the generic type "*")

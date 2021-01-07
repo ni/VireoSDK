@@ -196,10 +196,6 @@ lARMv5:
 vjs: $(OUTPUT_DIR)
 	emmake make -f EmMakefile vjs
 
-#========= Build documentation
-dox:
-	cd ../source; doxygen
-
 #========= node.js native module
 node_js:
 	node-gyp configure build
@@ -209,7 +205,6 @@ help:
 	@echo '        "make v32"     to build a 32-bit esh executable'
 	@echo '        "make v64"     to build a 64-bit esh executable'
 	@echo '        "make vjs"     to build a java script version'
-	@echo '        "make dox"     to build documentation'
 	@echo '        "make lARMv5"  to build the libvireo.so library for an ARMv5 target'
 	@echo
 	@echo '        "make install" to install esh to $(PROGRAM_DIR), uses sudo'
