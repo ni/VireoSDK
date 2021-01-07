@@ -7,7 +7,9 @@ SPDX-License-Identifier: MIT
 <!-- markdownlint-disable no-inline-html -->
 <div align="center">
     <div>
-      <img width="300" height="165" src="docs/vireo-logo.png" alt="Vireo logo">
+      <a href="https://github.com/ni/VireoSDK">
+        <img width="300" height="165" src="docs/vireo-logo.png" alt="Vireo logo">
+      </a>
     </div>
 </div>
 <!-- markdownlint-restore -->
