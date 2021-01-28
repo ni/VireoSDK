@@ -113,6 +113,8 @@ Vireo tests rely on a locally running instance of the [httpbin](https://httpbin.
 1. Ensure python (correct version) and pip are available on the path.
 2. From a command line in the `VireoSDK` directory or elsewhere do `pip install tox` to globally install the [tox](http://tox.readthedocs.io/en/latest/) tool.
 
+Note: Windows 10 may include a a copy of python seen by running `which python` resulting in the path: `C:\Users\<USER>\AppData\Local\Microsoft\WindowsApps\python.exe`. Make sure to install a copy of python from `python.org`.
+
 ### Starting the Server
 
 1. Open a command prompt in the `VireoSDK` directory.
