@@ -31,7 +31,10 @@ On all platforms run the following in the `VireoSDK` folder to install JavaScrip
 
 ### Software requirements
 
+- [Python](https://www.python.org/) (>= 2.7.9)
 - emsdk toolchain (see following)
+
+Note: Windows 10 may include a a copy of python seen by running `which python` resulting in the path: `C:\Users\<USER>\AppData\Local\Microsoft\WindowsApps\python.exe`. Make sure to install a copy of python from `python.org`.
 
 ### Installing the emsdk toolchain
 
@@ -39,17 +42,9 @@ The emsdk toolchain is used to cross-compile Vireo to Vireo.js to run in Node.js
 
 1. Create a directory outside of the `VireoSDK` folder to store the emsdk toolchain binaries.
 
-2. Do **ONE** of the following:
-   - download and extract the [latest emsdk](https://github.com/juj/emsdk#downloads) zip distribution
-   - clone the [juj/emsdk](https://github.com/juj/emsdk) GitHub repository
+2. Clone the [juj/emsdk](https://github.com/juj/emsdk) GitHub repository
 
-3. If you download the zip archive you will need to run the following command inside the extracted folder to bring it up to date:
-
-   ```console
-   emsdk update
-   ```
-
-4. From either the extracted folder or the cloned emsdk repository run the following commands:
+3. From the cloned emsdk repository run the following commands:
 
    ```console
    emsdk install 1.39.5-fastcomp
