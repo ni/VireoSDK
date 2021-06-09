@@ -57,8 +57,8 @@ jobs:
         cd emsdk
         git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
     - run: |
-        emsdk/emsdk install 1.39.5-fastcomp
-        emsdk/emsdk activate 1.39.5-fastcomp
+        emsdk/emsdk install 2.0.11
+        emsdk/emsdk activate 2.0.11
     - run: . emsdk/emsdk_env.sh && emcc -v
 
     # Build web
@@ -120,8 +120,8 @@ jobs:
         cd emsdk
         git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
     - run: |
-        emsdk\emsdk install 1.39.5-fastcomp
-        emsdk\emsdk activate 1.39.5-fastcomp
+        emsdk\emsdk install 2.0.11
+        emsdk\emsdk activate 2.0.11
     - run: emsdk\emsdk_env.ps1 && emcc -v
 
     # Build web-windows

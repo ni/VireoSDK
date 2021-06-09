@@ -72,7 +72,7 @@ EMCC= emcc
 EM_OPTFLAG = -O3
 
 ifeq ($(BUILD), debug)
-   EM_OPTFLAG = -g4 -s ASSERTIONS=2 -s SAFE_HEAP=1
+   EM_OPTFLAG = -g -s ASSERTIONS=2 -s SAFE_HEAP=1
 endif
 
 ifeq ($(BUILD), profile)
@@ -92,11 +92,11 @@ ifeq ($(TARGET), asmjs-unknown-emscripten)
 endif
 
 ifeq ($(TARGET), wasm32-unknown-emscripten)
-   TARGET_FLAG = -s WASM=1 -s BINARYEN_TRAP_MODE=js -s ALLOW_MEMORY_GROWTH=1
+   TARGET_FLAG = -s WASM=1 -s ALLOW_MEMORY_GROWTH=1
 endif
 
 # NO_DYNAMIC_EXECUTION=1 Allows Vireo to be used in CSP environments where eval() is forbidden: https://github.com/kripken/emscripten/blob/master/src/settings.js#L563
-EM_OPT = $(EM_OPTFLAGS) $(TARGET_FLAG) -s NO_EXIT_RUNTIME=1 -std=c++14 -fno-exceptions -Werror --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 --minify 0 -s NO_FILESYSTEM=1 -s ABORTING_MALLOC=0
+EM_OPT = $(EM_OPTFLAGS) $(TARGET_FLAG) -std=c++14 -fno-exceptions -Werror --memory-init-file 0 -s NO_DYNAMIC_EXECUTION=1 -s MODULARIZE=1 -s EXPORT_NAME=VireoCreateCoreModule -s EXPORT_ES6=1 -s USE_ES6_IMPORT_META=0 --minify 0 -s NO_FILESYSTEM=1 -s ABORTING_MALLOC=0
 EMFLAGS = -I$(INCDIR) -DkVireoOS_emscripten $(EM_OPT)
 EMLIBRARY = --js-library $(CORESOURCEDIR)/library_coreHelpers.js \
             --js-library $(CORESOURCEDIR)/library_eventHelpers.js \
@@ -111,7 +111,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS="[\
     '_free' \
     ]"
 
-EM_RUNTIME_EXPORTS = -s EXTRA_EXPORTED_RUNTIME_METHODS="[\
+EM_RUNTIME_EXPORTS = -s EXPORTED_RUNTIME_METHODS="[\
 	'lengthBytesUTF8', \
 	'stackAlloc', \
 	'stackSave', \
