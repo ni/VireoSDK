@@ -55,10 +55,10 @@ jobs:
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
-        git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
+        git checkout 77b065ace39e6ab21446e13f92897f956c80476a
     - run: |
-        emsdk/emsdk install 1.39.5-fastcomp
-        emsdk/emsdk activate 1.39.5-fastcomp
+        emsdk/emsdk install 2.0.23
+        emsdk/emsdk activate 2.0.23
     - run: . emsdk/emsdk_env.sh && emcc -v
 
     # Build web
@@ -118,10 +118,10 @@ jobs:
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
-        git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
+        git checkout 77b065ace39e6ab21446e13f92897f956c80476a
     - run: |
-        emsdk\emsdk install 2.0.0
-        emsdk\emsdk activate 2.0.0
+        emsdk\emsdk install 2.0.23
+        emsdk\emsdk activate 2.0.23
     - run: emsdk\emsdk_env.ps1 && emcc -v
 
     # Build web-windows
