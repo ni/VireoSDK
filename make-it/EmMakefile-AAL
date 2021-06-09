@@ -100,8 +100,6 @@ EMLIBRARY= --js-library $(IOSOURCEDIR)/library_canvas2d.js --js-library $(IOSOUR
 EM_WRAP= --pre-js $(CORESOURCEDIR)/vireo.preamble.js --post-js $(CORESOURCEDIR)/vireo.postamble.js
  
 EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
-    "_malloc", \
-    "_free", \
 	"_Vireo_Version", \
 	"_EggShell_Create", \
 	"_EggShell_REPL",\
@@ -116,7 +114,7 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
 	"_Data_WriteString",\
 	"_Data_WriteInt32",\
 	"_Data_WriteUInt32"\
-	]'
+	]' -s RESERVED_FUNCTION_POINTERS=10
  
 EM_BC_FILES = $(OBJS)/VireoMerged.bc\
 	$(OBJS)/TypeAndDataManager.Embind.bc\
