@@ -366,7 +366,7 @@ template <typename TSource, typename TDest>
 TDest ConvertFloatToInt(TSource src)
 {
     TDest dest;
-	TSource maxDestValue = static_cast<TSource>(std::numeric_limits<TDest>::max());
+    TSource maxDestValue = static_cast<TSource>(std::numeric_limits<TDest>::max());
     if (std::isnan(src)) {
         dest = std::numeric_limits<TDest>::max();
     } else if (std::isinf(src)) {

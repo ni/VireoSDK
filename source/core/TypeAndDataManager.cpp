@@ -2637,7 +2637,7 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
                 case 0: value = 0;                              break;
                 case 4: {
                     Single singleVal = RoundToEven(*(Single*)pData);
-					Single intMax = (Single)(std::numeric_limits<IntMax>::max());
+                    Single intMax = (Single)(std::numeric_limits<IntMax>::max());
                     if (singleVal >= intMax)
                         // >= is actually correct here because Int64 max isn't representable as a single and rounds up.
                         value = std::numeric_limits<IntMax>::max();
@@ -2649,7 +2649,7 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
                 }
                 case 8: {
                     Double doubleVal = RoundToEven(*(Double*)pData);
-					Double intMax = (Double)(std::numeric_limits<IntMax>::max());
+                    Double intMax = (Double)(std::numeric_limits<IntMax>::max());
                     if (doubleVal >= intMax)
                         // >= is actually correct here because Int64 max isn't representable as a double and rounds up.
                         value = std::numeric_limits<IntMax>::max();
