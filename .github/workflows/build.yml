@@ -55,7 +55,7 @@ jobs:
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
-        git checkout 77b065ace39e6ab21446e13f92897f956c80476a
+        git checkout f44b84154703d29a946d51ddee08f4e5725a61db
     - run: |
         emsdk/emsdk install 2.0.23
         emsdk/emsdk activate 2.0.23
@@ -118,7 +118,7 @@ jobs:
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
-        git checkout 77b065ace39e6ab21446e13f92897f956c80476a
+        git checkout f44b84154703d29a946d51ddee08f4e5725a61db
     - run: |
         emsdk\emsdk install 2.0.23
         emsdk\emsdk activate 2.0.23
