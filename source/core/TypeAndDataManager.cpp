@@ -2836,6 +2836,7 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
     NIError err = kNIError_Success;
     EncodingEnum encoding = type->BitEncoding();
     Int32 aqSize = type->TopAQSize();
+    IntMax valueInt = (IntMax)value;
     switch (encoding) {
         case kEncoding_IEEE754Binary:
             switch (aqSize) {
@@ -2847,10 +2848,10 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1:  *(Int8*)pData = (Int8)value;      break;
-                case 2:  *(Int16*)pData = (Int16)value;     break;
-                case 4:  *(Int32*)pData = (Int32)value;     break;
-                case 8:  *(Int64*)pData = (Int64)value;     break;
+                case 1:  *(Int8*)pData = (Int8)valueInt;      break;
+                case 2:  *(Int16*)pData = (Int16)valueInt;     break;
+                case 4:  *(Int32*)pData = (Int32)valueInt;     break;
+                case 8:  *(Int64*)pData = (Int64)valueInt;     break;
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
@@ -2863,10 +2864,10 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
         case kEncoding_UInt:
         case kEncoding_Enum:
             switch (aqSize) {
-                case 1:  *(UInt8*)pData = (Int8)value;     break;
-                case 2:  *(UInt16*)pData = (UInt16)value;   break;
-                case 4:  *(UInt32*)pData = (UInt32)value;   break;
-                case 8:  *(UInt64*)pData = (UInt64)value;   break;
+                case 1:  *(UInt8*)pData = (Int8)valueInt;     break;
+                case 2:  *(UInt16*)pData = (UInt16)valueInt;   break;
+                case 4:  *(UInt32*)pData = (UInt32)valueInt;   break;
+                case 8:  *(UInt64*)pData = (UInt64)valueInt;   break;
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
