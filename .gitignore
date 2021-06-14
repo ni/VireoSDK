@@ -44,6 +44,7 @@ Vireo_VS/VireoCommandLine.sln.DotSettings.user
 **.opendb
 **.suo
 .vscode/
+.vs/*
 
 # Other
 c_cpp_properties.json
