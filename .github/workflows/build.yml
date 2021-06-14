@@ -20,10 +20,10 @@ jobs:
     # Install lint dependencies
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.5'
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
 
@@ -42,14 +42,14 @@ jobs:
     # Install web dependencies
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.5'
     - run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - run: nohup python -m httpbin.core --port 64526 --host 0.0.0.0 &
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: |
@@ -103,14 +103,14 @@ jobs:
     # Install web-windows dependencies
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: chocolatey install make -y
     - run: chocolatey install gnuwin32-coreutils.portable -y
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: '3.5'
     - run: |
         python -m pip install --upgrade pip
         pip install tox
@@ -215,7 +215,6 @@ jobs:
       run: |
         $PACKAGE_PATH = (get-item ./*.nupkg).FullName
         nuget push $PACKAGE_PATH -ApiKey ${{secrets.NUGET_TOKEN}} -Source "https://api.nuget.org/v3/index.json"
-
   linux:
     # if: 'false'
     needs: setup
@@ -227,7 +226,7 @@ jobs:
     # Install linux dependencies
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: echo gcc -v

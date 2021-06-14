@@ -2847,9 +2847,9 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1:  *(Int8*)pData = ConvertDoubleToInt<Int8>(value, range);     break;
-                case 2:  *(Int16*)pData = ConvertDoubleToInt<Int16>(value, range);   break;
-                case 4:  *(Int32*)pData = ConvertDoubleToInt<Int32>(value, range);   break;
+                case 1:  *(Int8*)pData = ConvertDoubleToInt<Int8>(value);     break;
+                case 2:  *(Int16*)pData = ConvertDoubleToInt<Int16>(value);   break;
+                case 4:  *(Int32*)pData = ConvertDoubleToInt<Int32>(value);   break;
                 case 8:  *(Int64*)pData = (Int64)value;     break;
                 default: err = kNIError_kCantEncode;        break;
             }
@@ -2863,9 +2863,9 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
         case kEncoding_UInt:
         case kEncoding_Enum:
             switch (aqSize) {
-                case 1:  *(UInt8*)pData = ConvertDoubleToInt<UInt8>(value, range);     break;
-                case 2:  *(UInt16*)pData = ConvertDoubleToInt<UInt16>(value, range);   break;
-                case 4:  *(UInt32*)pData = ConvertDoubleToInt<UInt32>(value, range);   break;
+                case 1:  *(UInt8*)pData = ConvertDoubleToInt<UInt8>(value);     break;
+                case 2:  *(UInt16*)pData = ConvertDoubleToInt<UInt16>(value);   break;
+                case 4:  *(UInt32*)pData = ConvertDoubleToInt<UInt32>(value);   break;
                 case 8:  *(UInt64*)pData = (UInt64)value;   break;
                 default: err = kNIError_kCantEncode;        break;
             }
