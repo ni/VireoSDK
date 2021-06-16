@@ -2453,8 +2453,7 @@ Boolean TypedArrayCore::ResizeDimensions(Int32 rank, IntIndex *dimensionLengths,
     }
 
     // 3. If more actual elements are needed, initialize the new ones (or all of them if requested)
-    // TODO(PaulAustin): honor bOK status.
-    if (!preserveElements) {
+    if (!preserveElements && bOK) {
         ElementType()->InitData(BeginAt(0), newLength);
     } else if ((newLength > originalLength) && !noInit && bOK) {
         ElementType()->InitData(BeginAt(originalLength), (newLength - originalLength));
