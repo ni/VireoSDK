@@ -390,9 +390,9 @@ TDest ConvertDoubleToInt(Double src)
         dest = 0;
     } else if (src < std::numeric_limits<TDest>::min() || src > maxDestValue) {
         IntMax range = IntMax(std::numeric_limits<TDest>::max()) + 1;
-        IntMax modValue = fmod(src , range);
-        IntMax noOfRange = src/range;
-        dest = (noOfRange & 1) ? std::numeric_limits<TDest>::min() + modValue: modValue;
+        IntMax modValue = static_cast<IntMax>(fmod(src, range));
+        IntMax noOfRange = static_cast<IntMax>(src/range);
+        dest = static_cast<TDest>((noOfRange & 1) ? std::numeric_limits<TDest>::min() + modValue: modValue);
     } else {
         dest = (TDest)src;
     }
