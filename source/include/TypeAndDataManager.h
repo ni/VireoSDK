@@ -366,7 +366,7 @@ template <typename TSource, typename TDest>
 TDest ConvertFloatToInt(TSource src)
 {
     TDest dest;
-    TSource maxDestValue = static_cast<TSource>(std::numeric_limits<TDest>::max());
+    const TSource maxDestValue = static_cast<TSource>(std::numeric_limits<TDest>::max());
     if (std::isnan(src)) {
         dest = std::numeric_limits<TDest>::max();
     } else if (std::isinf(src)) {
@@ -386,15 +386,17 @@ TDest ConvertDoubleToInt(Double src)
 {
     TDest dest;
     Double maxDestValue = static_cast<Double>(std::numeric_limits<TDest>::max());
+    TDest minDestValue = std::numeric_limits<TDest>::min();
+
     if (std::isnan(src) || std::isinf(src)) {
         dest = 0;
-    } else if (src < std::numeric_limits<TDest>::min() || src > maxDestValue) {
-        IntMax range = IntMax(std::numeric_limits<TDest>::max()) + 1;
+    } else if (src < minDestValue || src > maxDestValue) {
+        Double range = maxDestValue + 1;
         IntMax modValue = static_cast<IntMax>(fmod(src, range));
         IntMax noOfRange = static_cast<IntMax>(src/range);
-        dest = static_cast<TDest>((noOfRange & 1) ? std::numeric_limits<TDest>::min() + modValue: modValue);
+        dest = static_cast<TDest>((noOfRange & 1) ? minDestValue + modValue: modValue);
     } else {
-        dest = (TDest)src;
+        dest = static_cast<TDest>(src);
     }
     return dest;
 }
