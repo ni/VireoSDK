@@ -382,21 +382,20 @@ TDest ConvertFloatToInt(TSource src)
 }
 
 template <typename TDest>
-TDest ConvertDoubleToInt(Double src)
+TDest ConvertDoubleToInt(Double src, Int32 typeSize, EncodingEnum encoding)
 {
     TDest dest;
-    Double maxDestValue = static_cast<Double>(std::numeric_limits<TDest>::max());
-    TDest minDestValue = std::numeric_limits<TDest>::min();
-
     if (std::isnan(src) || std::isinf(src)) {
         dest = 0;
-    } else if (src < minDestValue || src > maxDestValue) {
-        Double range = maxDestValue + 1;
-        IntMax modValue = static_cast<IntMax>(fmod(src, range));
-        IntMax noOfRange = static_cast<IntMax>(src/range);
-        dest = static_cast<TDest>((noOfRange & 1) ? minDestValue + modValue: modValue);
     } else {
-        dest = static_cast<TDest>(src);
+        // Wrap around conversion as we do in JS .Referred this: https://262.ecma-international.org/6.0/#sec-touint8
+        IntMax totalRange = pow(2, typeSize);
+        IntMax destValue = static_cast<IntMax>(fmod(src, totalRange));
+        IntMax rangeWithoutSignBit = pow(2, typeSize - 1);
+        if(encoding == kEncoding_S2CInt && (destValue >= rangeWithoutSignBit)){
+            destValue = destValue - totalRange;
+        }
+        dest = static_cast<TDest>(destValue);
     }
     return dest;
 }
