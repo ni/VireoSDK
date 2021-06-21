@@ -118,13 +118,12 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
     it('reports error when the Vireo runtime stops execution', async function () {
         const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiLargeAllocationUrl);
         var exception;
-        try{
-            const {rawPrint, rawPrintError} = await runSlicesAsync();
+        try {
+            await runSlicesAsync();
         } catch (ex) {
             exception = ex;
         }
         expect(exception.rawPrint).toMatch(/Failed to perform allocation/);
         expect(exception.rawPrintError).toBeEmptyString();
-        expect(exception.message).toMatch("memory access out of bounds");
     });
 });

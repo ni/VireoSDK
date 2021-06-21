@@ -56,12 +56,6 @@ describe('The Vireo EggShell Double api can', function () {
         expect(readDouble(path)).toMatchIEEE754Number(initialValue);
     };
 
-    // Expected coerced values of Doubles in Vireo should have the same behavior as assignment to typed arrays
-    // This is so a user assigning a double to a typedarray using getTypedArray will see the same effect as writing to a double using writeDouble
-    var expectedCoercedValue = function (TypedArrayConstructor, value) {
-        return (new TypedArrayConstructor([value])[0]);
-    };
-
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
             publicApiMultipleTypesViaUrl
@@ -153,17 +147,11 @@ describe('The Vireo EggShell Double api can', function () {
         });
 
         it('to coerce iee754 special values to memory', function () {
-            testWriteDoubleCoerced('int8MinValue', -128, NaN, expectedCoercedValue(Int8Array, NaN));
-            testWriteDoubleCoerced('int8MinValue', -128, Infinity, expectedCoercedValue(Int8Array, Infinity));
-            testWriteDoubleCoerced('int8MinValue', -128, -Infinity, expectedCoercedValue(Int8Array, -Infinity));
-            testWriteDoubleCoerced('int8MinValue', -128, -0, expectedCoercedValue(Int8Array, -0));
-            testWriteDoubleCoerced('int8MinValue', -128, 0, expectedCoercedValue(Int8Array, 0));
-
-            expect(expectedCoercedValue(Int8Array, NaN)).toBe(0);
-            expect(expectedCoercedValue(Int8Array, Infinity)).toBe(0);
-            expect(expectedCoercedValue(Int8Array, -Infinity)).toBe(0);
-            expect(expectedCoercedValue(Int8Array, -0)).toBe(0);
-            expect(expectedCoercedValue(Int8Array, 0)).toBe(0);
+            testWriteDoubleCoerced('int8MinValue', -128, NaN, 127);
+            testWriteDoubleCoerced('int8MinValue', -128, Infinity, 127);
+            testWriteDoubleCoerced('int8MinValue', -128, -Infinity, -128);
+            testWriteDoubleCoerced('int8MinValue', -128, -0, 0);
+            testWriteDoubleCoerced('int8MinValue', -128, 0, 0);
         });
 
         it('to write different enum values to memory', function () {
