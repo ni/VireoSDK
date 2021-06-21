@@ -381,25 +381,6 @@ TDest ConvertFloatToInt(TSource src)
     return dest;
 }
 
-template <typename TDest>
-TDest ConvertDoubleToInt(Double src, Int32 typeSize, EncodingEnum encoding)
-{
-    TDest dest;
-    if (std::isnan(src) || std::isinf(src)) {
-        dest = 0;
-    } else {
-        // Wrap around conversion as we do in JS .Referred this: https://262.ecma-international.org/6.0/#sec-touint8
-        IntMax totalRange = pow(2, typeSize);
-        IntMax destValue = static_cast<IntMax>(fmod(src, totalRange));
-        IntMax rangeWithoutSignBit = pow(2, typeSize - 1);
-        if(encoding == kEncoding_S2CInt && (destValue >= rangeWithoutSignBit)){
-            destValue = destValue - totalRange;
-        }
-        dest = static_cast<TDest>(destValue);
-    }
-    return dest;
-}
-
 //------------------------------------------------------------
 //! Stack based class to manage a threads active TypeManager.
 class TypeManagerScope
