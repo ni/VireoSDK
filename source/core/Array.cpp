@@ -190,6 +190,7 @@ VIREO_FUNCTION_SIGNATUREV(ArrayFillNDV, ArrayFillNDVParamBlock)
     }
 
     _Param(ArrayOut)->ResizeDimensions(numDimensionInputs, tempDimensionLengths, false);
+
     IntIndex totalLength = _Param(ArrayOut)->Length();
     TypeRef eltType = array->ElementType();
     eltType->MultiCopyData(_ParamPointer(InitialValue), array->RawBegin(), totalLength);
