@@ -23,7 +23,7 @@ jobs:
         python-version: '3.5'
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
 
@@ -49,7 +49,7 @@ jobs:
     - run: nohup python -m httpbin.core --port 64526 --host 0.0.0.0 &
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: |
@@ -103,7 +103,7 @@ jobs:
     # Install web-windows dependencies
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: chocolatey install make -y
@@ -168,7 +168,7 @@ jobs:
     - uses: microsoft/setup-msbuild@v1
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
 
@@ -227,7 +227,7 @@ jobs:
     # Install linux dependencies
     - uses: actions/setup-node@v1
       with:
-        node-version: '14'
+        node-version: '12'
         registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - run: echo gcc -v
