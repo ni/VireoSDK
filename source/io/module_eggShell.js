@@ -469,12 +469,12 @@ var assignEggShell;
             return dimensions;
         };
 
-        // Note: If you are directly writing JavaScript numbers (floating point doubles) to 
+        // Note: If you are directly writing JavaScript numbers (floating point doubles) to
         // integer TypedArray views then be aware that integer TypedArray views will truncate
         // overflowing values as specified in TypedArray conversion operations:
         // https://tc39.es/ecma262/#table-the-typedarray-constructors
         // Vireo requires that overflowing JavaScript numbers written to Vireo integers
-        // are saturated instead of truncated. Make sure to perform Vireo's float-to-int 
+        // are saturated instead of truncated. Make sure to perform Vireo's float-to-int
         // conversion algorithm in JavaScript before directly writing to integer TypeArray views.
         Module.eggShell.readTypedArray = publicAPI.eggShell.readTypedArray = function (valueRef) {
             var TypedArrayConstructor = findCompatibleTypedArrayConstructor(valueRef.typeRef);
