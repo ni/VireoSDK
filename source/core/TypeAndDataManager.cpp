@@ -2637,7 +2637,8 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
                 case 0: value = 0;                              break;
                 case 4: {
                     Single singleVal = RoundToEven(*(Single*)pData);
-                    if (singleVal >= std::numeric_limits<IntMax>::max())
+                    const Single intMax = static_cast<Single>(std::numeric_limits<IntMax>::max());
+                    if (singleVal >= intMax)
                         // >= is actually correct here because Int64 max isn't representable as a single and rounds up.
                         value = std::numeric_limits<IntMax>::max();
                     else if (singleVal <= std::numeric_limits<IntMax>::min())
@@ -2648,7 +2649,8 @@ IntMax ReadIntFromMemory(TypeRef type, void* pData)
                 }
                 case 8: {
                     Double doubleVal = RoundToEven(*(Double*)pData);
-                    if (doubleVal >= std::numeric_limits<IntMax>::max())
+                    const Double intMax = static_cast<Double>(std::numeric_limits<IntMax>::max());
+                    if (doubleVal >= intMax)
                         // >= is actually correct here because Int64 max isn't representable as a double and rounds up.
                         value = std::numeric_limits<IntMax>::max();
                     else if (doubleVal <= std::numeric_limits<IntMax>::min())
@@ -2845,10 +2847,10 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
         case kEncoding_S2CInt:
         case kEncoding_DimInt:
             switch (aqSize) {
-                case 1:  *(Int8*)pData = (Int8)value;      break;
-                case 2:  *(Int16*)pData = (Int16)value;     break;
-                case 4:  *(Int32*)pData = (Int32)value;     break;
-                case 8:  *(Int64*)pData = (Int64)value;     break;
+                case 1:  *(Int8*)pData = ConvertFloatToInt<Double, Int8>(value);     break;
+                case 2:  *(Int16*)pData = ConvertFloatToInt<Double, Int16>(value);   break;
+                case 4:  *(Int32*)pData = ConvertFloatToInt<Double, Int32>(value);   break;
+                case 8:  *(Int64*)pData = ConvertFloatToInt<Double, Int64>(value);   break;
                 default: err = kNIError_kCantEncode;        break;
             }
             break;
@@ -2861,10 +2863,10 @@ NIError WriteDoubleToMemory(TypeRef type, void* pData, const Double value)
         case kEncoding_UInt:
         case kEncoding_Enum:
             switch (aqSize) {
-                case 1:  *(UInt8*)pData = (Int8)value;     break;
-                case 2:  *(UInt16*)pData = (UInt16)value;   break;
-                case 4:  *(UInt32*)pData = (UInt32)value;   break;
-                case 8:  *(UInt64*)pData = (UInt64)value;   break;
+                case 1:  *(UInt8*)pData = ConvertFloatToInt<Double, UInt8>(value);     break;
+                case 2:  *(UInt16*)pData = ConvertFloatToInt<Double, UInt16>(value);   break;
+                case 4:  *(UInt32*)pData = ConvertFloatToInt<Double, UInt32>(value);   break;
+                case 8:  *(UInt64*)pData = ConvertFloatToInt<Double, UInt64>(value);   break;
                 default: err = kNIError_kCantEncode;        break;
             }
             break;

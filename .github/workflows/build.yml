@@ -20,7 +20,7 @@ jobs:
     # Install lint dependencies
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.5'
+        python-version: '3.7'
     - uses: actions/setup-node@v1
       with:
         node-version: '12'
@@ -42,7 +42,7 @@ jobs:
     # Install web dependencies
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.5'
+        python-version: '3.7'
     - run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -55,10 +55,10 @@ jobs:
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
-        git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
+        git checkout tags/2.0.23
     - run: |
-        emsdk/emsdk install 1.39.5-fastcomp
-        emsdk/emsdk activate 1.39.5-fastcomp
+        emsdk/emsdk install 2.0.23
+        emsdk/emsdk activate 2.0.23
     - run: . emsdk/emsdk_env.sh && emcc -v
 
     # Build web
@@ -110,7 +110,7 @@ jobs:
     - run: chocolatey install gnuwin32-coreutils.portable -y
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.5'
+        python-version: '3.7'
     - run: |
         python -m pip install --upgrade pip
         pip install tox
@@ -118,10 +118,10 @@ jobs:
     - run: |
         git clone https://github.com/juj/emsdk.git
         cd emsdk
-        git checkout 369013943283939412fb2807bb0d2ded8ebd5a9e
+        git checkout tags/2.0.23
     - run: |
-        emsdk\emsdk install 1.39.5-fastcomp
-        emsdk\emsdk activate 1.39.5-fastcomp
+        emsdk\emsdk install 2.0.23
+        emsdk\emsdk activate 2.0.23
     - run: emsdk\emsdk_env.ps1 && emcc -v
 
     # Build web-windows
