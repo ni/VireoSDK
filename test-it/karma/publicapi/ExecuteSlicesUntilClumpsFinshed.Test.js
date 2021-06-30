@@ -117,9 +117,13 @@ describe('The Vireo EggShell executeSlicesUntilClumpsFinished api', function () 
 
     it('reports error when the Vireo runtime stops execution', async function () {
         const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, publicApiLargeAllocationUrl);
-
-        const {rawPrint, rawPrintError} = await runSlicesAsync();
-        expect(rawPrint).toMatch(/Failed to perform allocation/);
-        expect(rawPrintError).toBeEmptyString();
+        var exception;
+        try {
+            await runSlicesAsync();
+        } catch (ex) {
+            exception = ex;
+        }
+        expect(exception.rawPrint).toMatch(/Failed to perform allocation/);
+        expect(exception.rawPrintError).toBeEmptyString();
     });
 });
