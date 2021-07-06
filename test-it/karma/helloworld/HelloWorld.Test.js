@@ -31,6 +31,20 @@ describe('Vireo loaded as a global in the browser', function () {
         expect(result).toBe('Hello, sky. I can fly.\n');
     });
 
+    it('can run HelloWorld with debug Instruction', async function () {
+        var vireo = await window.vireoHelpers.createInstance();
+        var viaCode = 'start( VI<( clump( Println("Hello, sky. I can fly.") DebugPoint("Test")) ) > )';
+
+        var result = '';
+        vireo.eggShell.setPrintFunction(function (text) {
+            result += text + '\n';
+        });
+
+        vireo.eggShell.loadVia(viaCode);
+        vireo.eggShell.executeSlicesUntilWait();
+        expect(result).toBe('Hello, sky. I can fly.\n');
+    });
+
     it('throws when running HelloWorld async using a callback', async function () {
         var vireoRef = {
             vireo: await window.vireoHelpers.createInstance()

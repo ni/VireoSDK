@@ -118,22 +118,22 @@ class TDViaParser
     TypeRef ParseLiteral(TypeRef patternType);
     Int32   ParseData(TypeRef type, void* pData);
     Boolean EatJSONPath(SubString* path);
-    NIError ParseREPL();
+    NIError ParseREPL(Boolean isDebuggingEnabled = false);
     TypeRef ParseEnqueue();
     Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth = nullptr);
     static TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
     Int32   ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level);
     Int32   ParseVariantData(VariantDataRef pData);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
-    void    ParseClump(VIClump* viClump, InstructionAllocator* cia);
+    void    ParseClump(VIClump* viClump, InstructionAllocator* cia, Boolean isDebuggingEnabled = false);
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
     VirtualInstrument *CurrentVIScope() const { return _virtualInstrumentScope; }
 
  public:
-    static NIError StaticRepl(TypeManagerRef tm, SubString *replStream);
-    static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
-    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
+    static NIError StaticRepl(TypeManagerRef tm, SubString *replStream, Boolean isDebuggingEnabled = false);
+    static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean isDebuggingEnabled = false);
+    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean isDebuggingEnabled = false);
 
  private:
     TypeRef BadType() const {return _typeManager->BadType();}
