@@ -16,23 +16,23 @@ define (ArrayDemo, dv(.VirtualInstrument, (
         e(a(Int32 *)     variableArray1d)
         e(a(Int32 5)     fixedArray1d)
         e(a(Int32 -5)    boundedArray1d)
-    
+
         // Variable size arrays size to fit initializer list
         e(dv(a(Int32 *) (1 2 3 4))  variableArray1dwithDefaults)
-    
+
         // Extra initializers added as needed
         e(dv(a(Int32 5) (1 2 3 4))  fixedArray1dwithDefaults)
-    
+
         // Size set by number of initializers
         e(dv(a(Int32 -5) (1 2 3 4)) boundedArray1dwithDefaults)
     )
     clump(
-        Print(variableArray1d)
-        Print(fixedArray1d)
-        Print(boundedArray1d)        
-        Print(variableArray1dwithDefaults)
-        Print(fixedArray1dwithDefaults)
-        Print(boundedArray1dwithDefaults)
+        Println(variableArray1d)
+        Println(fixedArray1d)
+        Println(boundedArray1d)        
+        Println(variableArray1dwithDefaults)
+        Println(fixedArray1dwithDefaults)
+        Println(boundedArray1dwithDefaults)
    )
 ) ) )
 enqueue (ArrayDemo)

@@ -26,12 +26,12 @@ define (Calc  dv(.VirtualInstrument  (
 
     // Specify a clump of instructions. Clumps are raw data used in the VIs definition.
     // They are not types.
-    clump(1 
-        // However, the functions they reference are types . 
+    clump(1
+        // However, the functions they reference are types .
         Mul(i j k)   
-        Print(k)
+        Println(k)
         Mul(x y z)
-        Print(k)
+        Println(k)
     )
 ) ) )
 ```
@@ -68,11 +68,11 @@ Its common to think of an _Equivalence_ as a C union, however, for an Equivalenc
 define(DoubleAtomic     c(e(bb(64 IEEE754B))) )
 
 // A definition that is more detailed
-define(DoubleCluster 
+define(DoubleCluster
     // This cluster contains a BitCluster, a packed set of BitBlock fields.
     c(e(bc(
         // Clusters or BitCluster elements can have field names.
-        e(bb(1  Boolean)      sign) 
+        e(bb(1  Boolean)      sign)
         e(bb(11 BiasedInt)   exponent)
         e(bb(52 Q1)          fraction)
     )))
@@ -89,7 +89,7 @@ Vireo includes built-in definitions for the floating point types _Single_, _Doub
 Internal types used in Vireo also have type definitions. Though the details are not going to be covered here, at the heart of a VirtualInstrument is a cluster of fields.
 
 ```cpp
-define (VirtualInstrument 
+define (VirtualInstrument
     a(c(                               
         e(.ExecutionContext Context)   
         e(a(*) Params)             
@@ -125,11 +125,11 @@ The signatures for internal functions are also defined as standard types. The ty
 // The print function takes one parameter, This is the raw parameter block definition
 //
 //            p(i(StaticTypeAndData))
-// 
+//
 // To bind the type to an actual function it will be part of the following:
 
 DEFINE_VIREO_BEGIN(FileSystem)
-    ... 
+    ...
     DEFINE_VIREO_FUNCTION(Print, "p(i(StaticTypeAndData))");
     ...
 DEFINE_VIREO_END()
@@ -150,10 +150,10 @@ DEFINE_VIREO_BEGIN(IEEE754Math)
     DEFINE_VIREO_GENERIC(Mul, ".GenericBinOp", EmitGenericBinOpInstruction);
     ...
     // The reference runtime does not generate cutoms code on the fly, it relies on
-    // predefined primtitves. So the generic Mul function ends up binding to functions 
+    // predefined primtitves. So the generic Mul function ends up binding to functions
     // like the following:
-    DEFINE_VIREO_FUNCTION(MulInt32,     ".BinOpInt32") 
-    DEFINE_VIREO_FUNCTION(MulDouble,    ".BinOpDouble") 
+    DEFINE_VIREO_FUNCTION(MulInt32,     ".BinOpInt32")
+    DEFINE_VIREO_FUNCTION(MulDouble,    ".BinOpDouble")
 
 DEFINE_VIREO_END()
 ```

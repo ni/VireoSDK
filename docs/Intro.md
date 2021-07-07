@@ -34,7 +34,7 @@ define (HelloWorld dv(.VirtualInstrument (
         e(dv(String 'hello, world') variable1)
     )
     clump(1
-        Print(variable1)
+        Println(variable1)
     )
 ) ) )
 enqueue (HelloWorld)

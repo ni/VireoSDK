@@ -18,7 +18,7 @@ define (Parallel dv(.VirtualInstrument (
         e(v(Int32 500)  fiveHundred)
         e(v(String 'Pat you head.') sHead)
         e(v(String 'Rub your tummy.') sTummy)
-    ) 
+    )
     clump(              // Clump 0 (the root clump)
          Trigger(1)     // Trigger Clump #1        
          WaitMilliseconds(fiveHundred)
@@ -28,13 +28,13 @@ define (Parallel dv(.VirtualInstrument (
     )
     clump(              // Clump 1
         Perch(0)        // Labels are scoped to a clump, this is Label 0
-        Print(sHead)
+        Println(sHead)
         WaitMilliseconds(oneThousand)
         Branch(0)       // Branch to Perch 0
-    ) 
+    )
     clump(              // Clump 2
         Perch(0)
-        Print(sTummy)
+        Println(sTummy)
         WaitMilliseconds(oneThousand)
         Branch(0)
     )
