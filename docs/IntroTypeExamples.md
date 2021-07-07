@@ -19,7 +19,7 @@ define (CalcUsingIntegers  dv(.VirtualInstrument  (
     )
     clump(1
         MulInt32(i j k)
-        Print(k)
+        Println(k)
     )
 ) ) )
 
@@ -31,7 +31,7 @@ define (CalcUsingDoubles  dv(.VirtualInstrument  (
     )
     clump(1
         MulDouble(x y z)
-        Print(z)
+        Println(z)
    )
 ) ) )
 
@@ -64,9 +64,9 @@ define (Calc  dv(.VirtualInstrument  (
     )
     clump(1
         Mul(i j k)   // Will resolve to MulInt32 at load time
-        Print(k)
+        Println(k)
         Mul(x y z)    // Will resolve to MulDouble at load time
-        Print(k)
+        Println(k)
    )
 ) ) )
 ```
@@ -74,5 +74,5 @@ define (Calc  dv(.VirtualInstrument  (
 ```console
 $esh Calculate.via
 42
-42.000000 
+42.000000
 ```
