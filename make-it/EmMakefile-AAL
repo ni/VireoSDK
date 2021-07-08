@@ -113,7 +113,9 @@ EM_EXPORTS = -s EXPORTED_FUNCTIONS='[\
 	"_OccurEvent",\
 	"_Data_WriteString",\
 	"_Data_WriteInt32",\
-	"_Data_WriteUInt32"\
+	"_Data_WriteUInt32",\
+	"_EggShell_GetDebugPointState",\
+	"_EggShell_SetDebugPointState"\
 	]' -s RESERVED_FUNCTION_POINTERS=10
  
 EM_BC_FILES = $(OBJS)/VireoMerged.bc\
