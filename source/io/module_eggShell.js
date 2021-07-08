@@ -678,6 +678,14 @@ var assignEggShell;
             return str;
         };
 
+        Module.eggShell.getDebugPointState = publicAPI.eggShell.getDebugPointState = function (objectID) {
+            return Module._EggShell_GetDebugPointState(Module.eggShell.v_userShell, objectID);
+        };
+
+        Module.eggShell.setDebugPointState = publicAPI.eggShell.setDebugPointState = function (objectID, state) {
+            Module._EggShell_GetDebugPointState(Module.eggShell.v_userShell, objectID, state);
+        };
+
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
             if (typeof viaText !== 'string') {
                 throw new Error('Expected viaText to be a string');

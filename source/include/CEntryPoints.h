@@ -57,6 +57,8 @@ VIREO_EXPORT Int32 Data_GetStringLength(StringRef stringObject);
 VIREO_EXPORT void* Data_GetArrayBegin(const void* pData);
 VIREO_EXPORT void Data_GetArrayDimensions(const void* pData, IntIndex dimensionsLengths[]);
 VIREO_EXPORT Int32 Data_GetArrayLength(const void* pData);
+VIREO_EXPORT void EggShell_SetDebugPointState(TypeManagerRef tm, SubString objectID, Boolean state);
+VIREO_EXPORT Boolean EggShell_GetDebugPointState(TypeManagerRef tm, SubString objectID);
 //------------------------------------------------------------
 //! Typeref functions
 VIREO_EXPORT TypeRef TypeManager_Define(TypeManagerRef typeManager, const char* typeName, const char* typeString);
