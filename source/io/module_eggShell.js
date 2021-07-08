@@ -683,7 +683,7 @@ var assignEggShell;
         };
 
         Module.eggShell.setDebugPointState = publicAPI.eggShell.setDebugPointState = function (objectID, state) {
-            Module._EggShell_SetDebugPointState(Module.eggShell.v_userShell, objectID, state);
+            Module._EggShell_GetDebugPointState(Module.eggShell.v_userShell, objectID, state);
         };
 
         Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
