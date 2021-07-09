@@ -56,6 +56,7 @@
     <ClCompile Include="..\source\io\FileIO.cpp" />
     <ClCompile Include="..\source\io\HttpClient.cpp" />
     <ClCompile Include="..\source\io\JavaScriptInvoke.cpp" />
+    <ClCompile Include="..\source\core\DebuggingContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\core\library_coreHelpers.js" />
@@ -106,6 +107,7 @@
     <ClInclude Include="..\source\include\Variants.h" />
     <ClInclude Include="..\source\include\VirtualInstrument.h" />
     <ClInclude Include="..\source\include\Waveform.h" />
+    <ClInclude Include="..\source\include\DebuggingContext.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{113F876C-CB35-4D2F-A3EF-C72215B288F7}</ProjectGuid>

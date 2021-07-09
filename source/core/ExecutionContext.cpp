@@ -298,6 +298,7 @@ ExecutionContext::ExecutionContext()
     _breakoutCount = 0;
     _runningQueueElt = static_cast<VIClump*>(nullptr);
     _timer._observerList = nullptr;
+     DebuggingContext debuggingContext;
 }
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT

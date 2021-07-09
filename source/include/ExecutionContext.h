@@ -14,6 +14,7 @@
 #include "Date.h"
 #include "EventLog.h"
 #include "Synchronization.h"
+#include "DebuggingContext.h"
 
 namespace Vireo
 {
@@ -89,7 +90,6 @@ class ExecutionContext
  private:
     ECONTEXT    VIClumpQueue    _runQueue;         // Clumps ready to run
     ECONTEXT    Int32           _breakoutCount;   // Inner execution loop "breaks out" when this gets to 0
-    std::map<SubString, bool, CompareSubString> _debugPointState;
 
  public:
     ECONTEXT    Timer           _timer;           // TODO(PaulAustin): can be moved out of the execcontext once
@@ -112,7 +112,7 @@ class ExecutionContext
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;    // Element actually running
-
+    ECONTEXT DebuggingContext* debuggingContext;
  public:
     // Method for runtime errors to be routed through.
     ECONTEXT    void            LogEvent(EventLog::EventSeverity severity, ConstCStr message, ...) const;
@@ -127,23 +127,6 @@ class ExecutionContext
     }
     static inline Boolean IsDone(InstructionCore* pInstruction) {
         return pInstruction->_function == (InstructionFunction)Done;
-    }
-    bool GetDebugPointState(SubString objectID)
-    {
-        typedef std::map<SubString, bool>::iterator iterator;
-        iterator it = _debugPointState.find(objectID);
-
-            if (it == _debugPointState.end()) {
-                // error out:  std::cout << "Key-value pair not present in map";
-                return false;
-            } else {
-                return it->second;
-            }
-    }
-
-    void SetDebugPointState(SubString objectID, bool state)
-    {
-        _debugPointState[objectID] = state;
     }
 };
 
