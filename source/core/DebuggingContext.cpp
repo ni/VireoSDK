@@ -4,7 +4,7 @@
 /*! \file
 	\brief helper foe debugging class
  */
-#include "debuggingContext.h"
+#include "DebuggingContext.h"
 
 #if kVireoOS_emscripten
 #include <emscripten.h>
