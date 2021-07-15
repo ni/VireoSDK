@@ -86,6 +86,7 @@ class ExecutionContext
 {
  public:
     ExecutionContext();
+    ~ExecutionContext();
 
  private:
     ECONTEXT    VIClumpQueue    _runQueue;         // Clumps ready to run
