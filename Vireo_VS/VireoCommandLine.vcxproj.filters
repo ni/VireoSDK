@@ -148,6 +148,9 @@
     <ClCompile Include="..\source\core\CloseReference.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\core\DebuggingContext.cpp">
+      <Filter>VireoSource\Core</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\core\DebugPoint.cpp">
       <Filter>VireoSource\Core</Filter>
     </ClCompile>
@@ -284,6 +287,9 @@
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\DebuggingToggles.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\include\DebuggingContext.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\source\include\DebugPoint.h">

@@ -47,12 +47,12 @@ VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices, In
 
 VIREO_EXPORT Boolean EggShell_GetDebugPointState(TypeManagerRef tm, SubString objectID)
 {
-    return tm->TheExecutionContext()->GetDebugPointState(objectID);
+    return tm->TheExecutionContext()->debuggingContext->GetDebugPointState(objectID);
 }
 
 VIREO_EXPORT void EggShell_SetDebugPointState(TypeManagerRef tm, SubString objectID, Boolean state)
 {
-    tm->TheExecutionContext()->SetDebugPointState(objectID, state);
+    tm->TheExecutionContext()->debuggingContext->SetDebugPointState(objectID, state);
 }
 
 //------------------------------------------------------------
