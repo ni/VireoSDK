@@ -87,7 +87,6 @@ class ExecutionContext
  public:
     ExecutionContext();
     ~ExecutionContext();
-
  private:
     ECONTEXT    VIClumpQueue    _runQueue;         // Clumps ready to run
     ECONTEXT    Int32           _breakoutCount;   // Inner execution loop "breaks out" when this gets to 0
