@@ -64,7 +64,6 @@ InstructionCore* VIVM_FASTCALL Done(InstructionCore* _this _PROGMEM)
 
         // Now that copy out has been done, move caller to next instruction.
         callerClump->_savePc = pCallInstruction->Next();
-
         // Now let the Caller proceed
         runningQueueElt->_caller = nullptr;
         callerClump->EnqueueRunQueue();
@@ -298,13 +297,14 @@ ExecutionContext::ExecutionContext()
     _breakoutCount = 0;
     _runningQueueElt = static_cast<VIClump*>(nullptr);
     _timer._observerList = nullptr;
-     debuggingContext = new DebuggingContext();
+     debuggingContext = new DebuggingContext;
 }
 
 ExecutionContext::~ExecutionContext()
 {
     delete debuggingContext;
 }
+
 //------------------------------------------------------------
 #ifdef VIREO_SINGLE_GLOBAL_CONTEXT
     // For smaller targets there may only one for the entire process, or processor

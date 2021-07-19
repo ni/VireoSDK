@@ -233,7 +233,6 @@ class TypeManager
     typedef std::map<SubString, NamedTypeRef, CompareSubString>::iterator  TypeDictionaryIterator;
     std::map<SubString, NamedTypeRef, CompareSubString>  _typeNameDictionary;
     std::map<SubString, TypeRef, CompareSubString>  _typeInstanceDictionary;
-    std::map<SubString, bool, CompareSubString> _debugPointState;
 #else
     typedef DictionaryElt* TypeDictionaryIterator;
     SimpleDictionary    _typeNameDictionary;
@@ -333,23 +332,6 @@ class TypeManager
     NIError WriteValue(SubString* objectName, SubString* path, Double value);
     NIError ReadValue(SubString* objectName, SubString* path, StringRef);
     NIError WriteValue(SubString* objectName, SubString* path, SubString*);
-    bool GetDebugPointState(SubString objectID)
-    {
-        typedef std::map<SubString, bool>::iterator iterator;
-        iterator it = _debugPointState.find(objectID);
-
-            if (it == _debugPointState.end()) {
-                // error out:  std::cout << "Key-value pair not present in map";
-                return false;
-            } else {
-                return it->second;
-            }
-    }
-
-    void SetDebugPointState(SubString objectID, bool state)
-    {
-        _debugPointState[objectID] = state;
-    }
 
 #ifdef VIREO_PERF_COUNTERS
     Int32 _typesShared;
