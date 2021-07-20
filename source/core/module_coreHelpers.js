@@ -18,7 +18,7 @@ var assignCoreHelpers;
 
         // Private Instance Variables (per vireo instance)
         var debugPointSync = function (/* debugPointIdStr*/) {
-            // Dummy noop function user can replace by using eggShell.setdebugNodeSyncFunction
+            // Dummy noop function user can replace by using eggShell.setdebugPointSyncFunction
         };
 
         var CODES = {
