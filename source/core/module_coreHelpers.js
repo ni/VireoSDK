@@ -35,7 +35,7 @@ var assignCoreHelpers;
             var debugPointIdentifierString = Module.eggShell.dataReadString(debugPointIdentifierStringPointer);
             debugPointSync(debugPointIdentifierString);
         };
-        
+
         Module.coreHelpers.jsSystemLogging_WriteMessageUTF8 = function (
             messageTypeRef, messageDataRef,
             severityTypeRef, severityDataRef) {
