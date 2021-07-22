@@ -16,6 +16,11 @@ var assignCoreHelpers;
             // Dummy noop function user can replace by using eggShell.setFPSyncFunction
         };
 
+        // Private Instance Variables (per vireo instance)
+        var debugPointInterrupt = function (/* debugPointIdStr*/) {
+            // Dummy noop function user can replace by using eggShell.setDebugPointInterruptFunction
+        };
+
         var CODES = {
             NO_ERROR: 0
         };
@@ -24,6 +29,11 @@ var assignCoreHelpers;
         Module.coreHelpers.jsExecutionContextFPSync = function (fpStringPointer) {
             var fpString = Module.eggShell.dataReadString(fpStringPointer);
             fpSync(fpString);
+        };
+
+        Module.coreHelpers.jsDebuggingContextDebugPointInterrupt = function (debugPointIdentifierStringPointer) {
+            var debugPointIdentifierString = Module.eggShell.dataReadString(debugPointIdentifierStringPointer);
+            debugPointInterrupt(debugPointIdentifierString);
         };
 
         Module.coreHelpers.jsSystemLogging_WriteMessageUTF8 = function (
@@ -55,6 +65,13 @@ var assignCoreHelpers;
             }
 
             fpSync = fn;
+        };
+
+        publicAPI.coreHelpers.setDebugPointInterruptFunction = function (fn) {
+            if (typeof fn !== 'function') {
+                throw new Error('Probe must be a callable function');
+            }
+            debugPointInterrupt = fn;
         };
 
         // Returns the length of a C string (excluding null terminator)

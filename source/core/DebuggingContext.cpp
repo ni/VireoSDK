@@ -8,6 +8,9 @@
 
 #if kVireoOS_emscripten
 #include <emscripten.h>
+extern "C" {
+    extern void jsDebuggingContextDebugPointInterrupt(StringRef)
+}
 #endif
 
 namespace Vireo {
