@@ -12,9 +12,9 @@ namespace Vireo {
     VIREO_FUNCTION_SIGNATURE1(DebugPoint, StringRef)
     {
         #if kVireoOS_emscripten
-            #if GetDebugPointState(_Param(0))
+            if (GetDebugPointState(_Param(0)) {
                 jsDebuggingContextDebugPointInterrupt(_Param(0));
-            #endif
+            }
         #endif
             return _NextInstruction();
     }
