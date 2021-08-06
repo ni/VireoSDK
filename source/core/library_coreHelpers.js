@@ -9,6 +9,9 @@
         },
         jsSystemLogging_WriteMessageUTF8: function () {
             Module.coreHelpers.jsSystemLogging_WriteMessageUTF8.apply(undefined, arguments);
+        },
+        jsDebuggingContextDebugPointInterrupt: function () {
+            Module.coreHelpers.jsDebuggingContextDebugPointInterrupt.apply(undefined, arguments);
         }
     };
 

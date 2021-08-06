@@ -1,6 +1,8 @@
 // Copyright (c) 2020 National Instruments
 #include "DebugPoint.h"
 #include "TypeDefiner.h"
+#include "DebuggingContext.h"
+#include "ExecutionContext.h"
 
 #if kVireoOS_emscripten
 #include <emscripten.h>
@@ -11,12 +13,12 @@ namespace Vireo {
     // Debug node which will check if breakpoint is set or not
     VIREO_FUNCTION_SIGNATURE1(DebugPoint, StringRef)
     {
-        #if kVireoOS_emscripten
-            if (GetDebugPointState(_Param(0)) {
-                jsDebuggingContextDebugPointInterrupt(_Param(0));
-            }
-        #endif
-            return _NextInstruction();
+        if (THREAD_EXEC()->debuggingContext->GetDebugPointState(_Param(0)->MakeSubStringAlias())) {
+#if kVireoOS_emscripten
+            jsDebuggingContextDebugPointInterrupt(_Param(0));
+#endif
+        }
+        return _NextInstruction();
     }
 
     DEFINE_VIREO_BEGIN(Execution)
