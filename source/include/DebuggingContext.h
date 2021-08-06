@@ -5,10 +5,22 @@
 	\brief Tools to implement a debugging context
  */
 
+#ifndef  _DEBUGGINGCONTEXT_H
+#define _DEBUGGINGCONTEXT_H
+
 #include "TypeAndDataManager.h"
 #include "map"
+
 namespace Vireo
 {
+
+#if kVireoOS_emscripten
+#include <emscripten.h>
+    extern "C" {
+        extern void jsDebuggingContextDebugPointInterrupt(StringRef);
+    }
+#endif
+
 class DebuggingContext
 {
  private:
@@ -31,3 +43,5 @@ class DebuggingContext
     }
 };
 }  // namespace Vireo
+
+#endif // ! _DEBUGGINGCONTEXT_H

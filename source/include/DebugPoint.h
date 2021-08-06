@@ -1,4 +1,7 @@
 // Copyright (c) 2020 National Instruments
+#ifndef  _DEBUGPOINT_H
+#define _DEBUGPOINT_H
+
 namespace Vireo
 {
 //------------------------------------------------------------
@@ -9,3 +12,5 @@ class DebugPoint
     DebugPoint();
 };
 }
+
+#endif // ! _DEBUGPOINT_H

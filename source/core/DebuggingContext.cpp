@@ -6,12 +6,5 @@
  */
 #include "DebuggingContext.h"
 
-#if kVireoOS_emscripten
-#include <emscripten.h>
-extern "C" {
-    extern void jsDebuggingContextDebugPointInterrupt(StringRef)
-}
-#endif
-
 namespace Vireo {
 }  // namespace Vireo
