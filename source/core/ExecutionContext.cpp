@@ -450,6 +450,24 @@ Int32 /*ExecSlicesResult*/ ExecutionContext::ExecuteSlices(Int32 numSlices, Int3
     return reply;
 }
 //------------------------------------------------------------
+void ExecutionContext::ExecuteTillNextStopPoint()
+{
+	int sizeOfQueue = _runQueue.size();
+	while (sizeOfQueue > 0)
+	{
+		VIClump*  clump = _runQueue.Dequeue();
+		InstructionCore* currentInstruction = _runningQueueElt ? _runningQueueElt->_savePc : nullptr;
+		InstructionCore* nextInstruction = nullptr;
+		while (nextInstruction != &_culDeSac) {
+			currentInstruction = nextInstruction ? nextInstruction : currentInstruction;
+			nextInstruction = _PROGMEM_PTR(currentInstruction, _function)(currentInstruction);
+		}
+		clump->_savePc = currentInstruction;
+		_runQueue.Enqueue(clump);
+		sizeOfQueue--;
+	}
+}
+//------------------------------------------------------------
 void ExecutionContext::EnqueueRunQueue(VIClump* elt)
 {
     VIREO_ASSERT((nullptr == elt->_next))

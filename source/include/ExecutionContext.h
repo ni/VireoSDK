@@ -51,6 +51,7 @@ class VIClumpQueue
     Boolean IsEmpty() const { return (this->_head == nullptr); }
     VIClump* Dequeue();
     void Enqueue(VIClump* elt);
+	int size();
 };
 
 enum ExecSlicesResult {
@@ -94,6 +95,7 @@ class ExecutionContext
  public:
     ECONTEXT    Timer           _timer;           // TODO(PaulAustin): can be moved out of the execcontext once
                                                  // instruction can take injected parameters.
+    ECONTEXT    Boolean          _viPaused = false;
 #ifdef VIREO_SUPPORTS_ISR
     ECONTEXT    VIClump*        _triggeredIsrList;  // Elts waiting for something external to wake them up
     ECONTEXT    void            IsrEnqueue(QueueElt* elt);
@@ -110,6 +112,7 @@ class ExecutionContext
     ECONTEXT    InstructionCore* SuspendRunningQueueElt(InstructionCore* nextInClump);
     ECONTEXT    InstructionCore* Stop();
     ECONTEXT    void            ClearBreakout() { _breakoutCount = 0; }
+    ECONTEXT    void            ExecuteTillNextStopPoint();
     ECONTEXT    void            EnqueueRunQueue(VIClump* elt);
     ECONTEXT    VIClump*        _runningQueueElt;    // Element actually running
     ECONTEXT DebuggingContext* debuggingContext;
