@@ -12,7 +12,7 @@ on:
 jobs:
   lint:
     # if: 'false'
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 25
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +34,7 @@ jobs:
 
   web:
     # if: 'false'
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 25
     steps:
     - uses: actions/checkout@v2
@@ -139,7 +139,7 @@ jobs:
     - run: npm run test-min
 
   setup:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 25
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -219,7 +219,7 @@ jobs:
   linux:
     # if: 'false'
     needs: setup
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     timeout-minutes: 25
     steps:
     - uses: actions/checkout@v2
