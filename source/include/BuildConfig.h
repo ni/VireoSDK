@@ -241,6 +241,7 @@
 #define VIREO_ISR_DISABLE
 #define VIREO_ISR_ENABLE
 
+#define DebugPoint_Enabled
 
 #define VIREO_32_BIT_LONGLONGWORD_ALIGNMENT  (!__amd64__ && !_WIN32 && !_WIN64 && !kVireoOS_emscripten)
 

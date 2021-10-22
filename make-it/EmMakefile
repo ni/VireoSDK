@@ -69,7 +69,7 @@ help:
 EMCC= emcc
 
 # release config
-EM_OPTFLAG = -O3
+EM_OPTFLAG = -g -s ASSERTIONS=2 -s SAFE_HEAP=1
 
 ifeq ($(BUILD), debug)
    EM_OPTFLAG = -g -s ASSERTIONS=2 -s SAFE_HEAP=1
@@ -162,7 +162,8 @@ EM_BC_FILES=$(OBJS)/Array.bc\
 	$(OBJS)/DualTypeConversion.bc\
 	$(OBJS)/DualTypeVisitor.bc\
 	$(OBJS)/DualTypeEqual.bc\
-	$(OBJS)/CloseReference.bc
+	$(OBJS)/CloseReference.bc\
+	$(OBJS)/DebugPoint.bc
 
 ifneq (,$(wildcard ./EmMakefile-AAL))
 AAL_ONLY = 1
