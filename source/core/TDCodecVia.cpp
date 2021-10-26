@@ -131,7 +131,7 @@ TypeRef TDViaParser::ParseEnqueue()
     return type;
 }
 //------------------------------------------------------------
-NIError TDViaParser::ParseREPL()
+NIError TDViaParser::ParseREPL(Boolean isDebuggingEnabled)
 {
     if (_string.ComparePrefixCStr("#!")) {
         // Files can start with a shabang if they are used as  script files.
@@ -186,7 +186,7 @@ NIError TDViaParser::ParseREPL()
         RepinLineNumberBase();
     }
 
-    FinalizeModuleLoad(_typeManager, _pLog);
+    FinalizeModuleLoad(_typeManager, _pLog, isDebuggingEnabled);
 
     return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
@@ -1592,7 +1592,7 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     // The clumps code will be loaded once the module is finalized.
 }
 //------------------------------------------------------------
-void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
+void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean isDebuggingEnabled)
 {
     SubString clumpSource = vi->_clumpSource;
 
@@ -1611,7 +1611,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
             EventLog dummyLog(EventLog::DevNull);
             TDViaParser parser(vi->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
-                parser.ParseClump(pClump, &cia);
+                parser.ParseClump(pClump, &cia, isDebuggingEnabled);
             }
 #ifdef VIREO_USING_ASSERTS
             // The first pass should just calculate the size needed. If any allocations occurred then
@@ -1629,7 +1629,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
             // (3) Parse a second time, instructions will be allocated out of the chunk.
             TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
             for (; pClump < pClumpEnd; pClump++) {
-                parser.ParseClump(pClump, &cia);
+                parser.ParseClump(pClump, &cia, isDebuggingEnabled);
             }
         }
 
@@ -1678,7 +1678,7 @@ void TDViaParser::PreParseClump(VIClump* viClump)
     } while (tokenFound);
 }
 //------------------------------------------------------------
-void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
+void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia, Boolean isDebuggingEnabled)
 {
     ClumpParseState state(viClump, cia, _pLog);
     SubString  token;
@@ -1736,6 +1736,13 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!_string.EatChar(')'))
                 return LOG_EVENT(kHardDataError, "')' missing");
             state.MarkPerch(&perchName);
+        } else if (instructionNameToken.CompareCStr("DebugPoint") && !isDebuggingEnabled) {
+            // No -Op
+            if (!_string.EatChar('('))
+                return LOG_EVENT(kHardDataError, "'(' missing");
+            do {
+                _string.ReadSubexpressionToken(&token);
+            } while(token.CompareCStr(")"));
         } else {
             instructionNameToken.TrimQuotedString(tt);
             Boolean keepTrying = state.StartInstruction(&instructionNameToken) != nullptr;
@@ -1850,7 +1857,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
         return LOG_EVENT(kHardDataError, "')' missing");
 }
 //------------------------------------------------------------
-void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
+void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean isDebuggingEnabled)
 {
     static SubString strVIType("VirtualInstrument");
     // Once a module has been loaded sweep through all VIs and
@@ -1871,7 +1878,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
             if (type->HasCustomDefault() && type->IsA(&strVIType)) {
                 TypedArrayCoreRef *pObj = (TypedArrayCoreRef*) type->Begin(kPARead);
                 VirtualInstrument *vi = (VirtualInstrument*) (*pObj)->RawObj();
-                FinalizeVILoad(vi, pLog);
+                FinalizeVILoad(vi, pLog, isDebuggingEnabled);
             }
             type = type->Next();
         }
@@ -1888,7 +1895,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 }
 //------------------------------------------------------------
 //! Create a parser and process all the declarations in the stream.
-NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
+NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream, Boolean isDebuggingEnabled)
 {
     TypeManagerScope scope(tm);
 
@@ -1896,7 +1903,7 @@ NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
     EventLog log(errorLog.Value);
 
     TDViaParser parser(tm, replStream, &log, 1);
-    NIError err = parser.ParseREPL();
+    NIError err = parser.ParseREPL(isDebuggingEnabled);
 
     if (errorLog.Value->Length() > 0) {
         gPlatform.IO.Printf("%.*s", (int)errorLog.Value->Length(), errorLog.Value->Begin());

@@ -152,6 +152,12 @@ VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
     return _NextInstruction();
 }
 
+VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
+{
+    _ParamPointer(ValueType)->SetNeedsUpdate(true);
+    return _NextInstruction();
+}
+
 Boolean TestNeedsUpdate(TypeRef typeRef, Boolean reset) {
     Boolean needsUpdate = typeRef->NeedsUpdate();
     if (needsUpdate && reset)
