@@ -17,7 +17,7 @@ define (MyVI dv(.VirtualInstrument (
         CheckValueNeedsUpdate(c1 needsUpdate)
         Printf("c1 need update: %z\n" needsUpdate)
 
-        WebApp%3A%3ASubVI%2Egviweb(local2)
+        SubVI(local2)
         Printf("MyVI:\n")
         CheckValueNeedsUpdate(local2 needsUpdate)
         Printf("local3 needs update: %z\n" needsUpdate)
@@ -43,7 +43,7 @@ define (SubVI dv(.VirtualInstrument (
         o(dv(.Double 0)dataItem_Sum)
     )
     Locals: c(   // Data Space
-        e(dv(.String 'SubVI.gviweb')local1)
+        e(dv(.String 'SubVI')local1)
         ce(dv(.Double 10)c2)
         ce(dv(.Double -10)c3)
         e(.Double local4)
