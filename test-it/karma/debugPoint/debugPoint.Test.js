@@ -10,8 +10,8 @@ describe('A via file with debug point ', function () {
 
     var vireo;
 
-    var simpleAddNodeViaUrl = fixtures.convertToAbsoluteFromFixturesDir('debugPoint/SimpleAddNode.via');
-    var addNodeWithCaseStructureViaUrl = fixtures.convertToAbsoluteFromFixturesDir('debugPoint/AddNodeWithCaseStructure.via');
+    var simpleAddNodeViaUrl = fixtures.convertToAbsoluteFromFixturesDir('debugpoint/SimpleAddNode.via');
+    var addNodeWithCaseStructureViaUrl = fixtures.convertToAbsoluteFromFixturesDir('debugpoint/AddNodeWithCaseStructure.via');
 
     beforeAll(function (done) {
         fixtures.preloadAbsoluteUrls([
@@ -28,40 +28,23 @@ describe('A via file with debug point ', function () {
         vireo = undefined;
     });
 
-    beforeEach(async function () {
-        // Add functions to exercise JavaScriptInvoke behavior
-        window.NI_ConcatenateValue = function (fieldName, value) {
-            var returnString = fieldName + value;
-            return returnString;
-        };
-    });
-
-    afterEach(function () {
-        // Cleanup functions
-        window.NI_ConcatenateValue = undefined;
-    });
-
-    it('on executing succesfully set the needs update property on corresponding local ', function (done) {
+    it('on executing succesfully set the needs update property on corresponding local ', async function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, simpleAddNodeViaUrl);
         var sumIndicator = vireo.eggShell.findValueRef('MyVI', 'dataItem_Sum');
         expect(vireo.eggShell.testNeedsUpdateAndReset(sumIndicator)).toBeFalse();
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(vireo.eggShell.testNeedsUpdateAndReset(sumIndicator)).toBeTrue();
-            done();
-        });
+        const {rawPrint, rawPrintError} = await runSlicesAsync();
+        expect(rawPrint).toBeEmptyString();
+        expect(rawPrintError).toBeEmptyString();
+        expect(vireo.eggShell.testNeedsUpdateAndReset(sumIndicator)).toBeTrue();
     });
 
-    it('on not executing will not set the needs update property on corresponding local', function (done) {
+    it('on not executing will not set the needs update property on corresponding local', async function () {
         var runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, addNodeWithCaseStructureViaUrl);
         var sumIndicator = vireo.eggShell.findValueRef('MyVI', 'dataItem_Sum');
         expect(vireo.eggShell.testNeedsUpdateAndReset(sumIndicator)).toBeFalse();
-        runSlicesAsync(function (rawPrint, rawPrintError) {
-            expect(rawPrint).toBeEmptyString();
-            expect(rawPrintError).toBeEmptyString();
-            expect(vireo.eggShell.testNeedsUpdateAndReset(sumIndicator)).toBeFalse();
-            done();
-        });
+        const {rawPrint, rawPrintError} = await runSlicesAsync();
+        expect(rawPrint).toBeEmptyString();
+        expect(rawPrintError).toBeEmptyString();
+        expect(vireo.eggShell.testNeedsUpdateAndReset(sumIndicator)).toBeFalse();
     });
 });

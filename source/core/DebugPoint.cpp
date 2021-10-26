@@ -3,10 +3,6 @@
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 
-#if kVireoOS_emscripten
-#include <emscripten.h>
-#endif
-
 #ifdef DebugPoint_Enabled
 namespace Vireo {
     InstructionCore* EmitValueNeedsUpdateForLocals(ClumpParseState* instructionBuilder)
