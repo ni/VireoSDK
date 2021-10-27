@@ -96,7 +96,7 @@
             "tests": [
                 "2HelloWorlds.via",
                 "AddClusterScalar.via",
-                "AddFunctionWithSubVI.via",
+                "DebugPointWithSubVI.via",
                 "AllocatedDataValues.via",
                 "ArrayComparison.via",
                 "ArrayConcatBug.via",
