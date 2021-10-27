@@ -3,7 +3,7 @@
 #include "ExecutionContext.h"
 #include "VirtualInstrument.h"
 
-#ifdef DebugPoint_Enabled
+#ifdef VIREO_DEBUGPOINT
 namespace Vireo {
     InstructionCore* EmitValueNeedsUpdateForLocals(ClumpParseState* instructionBuilder)
     {
@@ -40,4 +40,4 @@ namespace Vireo {
         DEFINE_VIREO_FUNCTION(DebugPoint, "p(i(String))")
         DEFINE_VIREO_END()
 }  // namespace Vireo
-#endif  // DebugPoint_Enabled
+#endif  // VIREO_DEBUGPOINT

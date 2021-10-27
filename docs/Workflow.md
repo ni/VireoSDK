@@ -331,7 +331,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
             "${workspaceFolder}/source/include"
         ],
         "defines": [
-            "kVireoOS_emscripten", "__EMSCRIPTEN__", "VIREO_DEBUG", "VIREO_USING_ASSERTS", "DebugPoint_Enabled"
+            "kVireoOS_emscripten", "__EMSCRIPTEN__", "VIREO_DEBUG", "VIREO_USING_ASSERTS", "VIREO_DEBUGPOINT"
         ],
         "cStandard": "c11",
         "cppStandard": "c++14",
