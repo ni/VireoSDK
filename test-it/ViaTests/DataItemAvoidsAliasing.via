@@ -48,7 +48,7 @@ clump(1
     Printf(" MySubVI:\n")
     CheckValueNeedsUpdate(myInteger bool)
     Copy(-42 myInteger)
-    SetValueNeedsUpdateForTopLevelVI(myInteger)  // should do nothing; daaitem element but not a top-level VI 
+    SetValueNeedsUpdateForTopLevelVI(myInteger)  // should do nothing; dataitem element but not a top-level VI 
     CheckValueNeedsUpdate(myInteger bool)
     Printf("  myInteger needsUpdate %z\n" bool)
     Printf(" End MySubVI\n")
