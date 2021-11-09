@@ -10,11 +10,20 @@ namespace Vireo {
         InstructionCore* setValueNeedsUpdateInstruction = nullptr;
         int argCount = instructionBuilder->_argCount;
 
+        std::vector<TypeRef> localTypes;
+        std::vector<void*> localPointers;
+
         // Initial 2 arguments are not locals
-        for (int argNumber = 2; argNumber < argCount; argNumber++)
+        for (int i = 2; i < argCount; i++)
         {
-            TypeRef typeOfLocal = instructionBuilder->_argTypes[argNumber];
-            void* localAddress = instructionBuilder->_argPointers[argNumber];
+            localTypes.push_back(instructionBuilder->_argTypes[i]);
+            localPointers.push_back(instructionBuilder->_argPointers[i]);
+        }
+
+        for (int argNumber = 0; argNumber < argCount - 2; argNumber++)
+        {
+            TypeRef typeOfLocal = localTypes.at(argNumber);
+            void* localAddress = localPointers.at(argNumber);
             SubString valueHasUpdateToken("SetValueNeedsUpdate");
             instructionBuilder->StartInstruction(&valueHasUpdateToken);
             instructionBuilder->InternalAddArgBack(nullptr, typeOfLocal);

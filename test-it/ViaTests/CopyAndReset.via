@@ -6,7 +6,7 @@ define(CopyAndResetTest dv(.VirtualInstrument (
         e(Boolean needsUpdate)
     )
     clump (1
-        Printf("CopyAndReset on a non-dataitem local (unexpected case)\n")
+        Printf("CopyAndReset on a non-dataitem local\n")
         Printf("Before\n")
         CheckValueNeedsUpdate(source needsUpdate)
         Printf("    needsUpdate = <%z>\n" needsUpdate)
@@ -36,7 +36,7 @@ define(CopyAndResetTestSourceDataItem dv(.VirtualInstrument (
         e(Boolean needsUpdate)
     )
     clump (1
-        Printf("CopyAndReset on a dataitem local (expected use case)\n")
+        Printf("CopyAndReset on a dataitem local\n")
         Printf("Before\n")
         CheckValueNeedsUpdate(source needsUpdate)
         Printf("    needsUpdate = <%z>\n" needsUpdate)
