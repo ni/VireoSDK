@@ -19,6 +19,7 @@
     <ClCompile Include="..\source\core\ControlRef.cpp" />
     <ClCompile Include="..\source\core\DataQueue.cpp" />
     <ClCompile Include="..\source\core\Date.cpp" />
+    <ClCompile Include="..\source\core\DebugPoint.cpp" />
     <ClCompile Include="..\source\core\DualTypeConversion.cpp" />
     <ClCompile Include="..\source\core\EventLog.cpp" />
     <ClCompile Include="..\source\core\Events.cpp" />

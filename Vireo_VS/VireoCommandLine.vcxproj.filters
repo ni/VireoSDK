@@ -283,5 +283,8 @@
     <ClInclude Include="..\source\include\DebuggingToggles.h">
       <Filter>VireoSource\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\include\DebugPoint.h">
+      <Filter>VireoSource\Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

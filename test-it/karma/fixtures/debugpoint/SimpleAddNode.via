@@ -1,0 +1,17 @@
+define (MyVI dv(.VirtualInstrument (
+    Locals: c(   // Data Space
+        e(dv(.String 'MyVI')local0)
+        ce(dv(.Double 0)c1)
+        ce(dv(.Double 0)c2)
+        e(.Double local3)
+        de(dv(.Double 0)dataItem_Sum)
+        e(.Double local5)
+    )
+        clump(1
+        DebugPoint("1;{\:\:VireoDevSystem\:\:Interactive\:\:WebApp\:\:index.gviweb::#12##WebApp;}" c1 c2 )
+        Add(c1 c2 local3)
+        DebugPoint("1;{\:\:VireoDevSystem\:\:Interactive\:\:WebApp\:\:index.gviweb::#6f411aff2725418ba4c936e755f1aa65##WebApp;}" local3)
+        Copy(local3 dataItem_Sum)
+   )
+)))
+enqueue (MyVI)

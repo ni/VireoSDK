@@ -9,7 +9,7 @@ define (MyVI1 dv(.VirtualInstrument (
         CheckValueNeedsUpdate(myDouble bool)
         Printf(" myDouble needsUpdate %z\n" bool)
         Copy(123.0 myDouble)
-        //SetValueNeedsUpdate(myDouble)  // automatically done by preceding Copy
+        //SetValueNeedsUpdateForTopLevelVI(myDouble)  // automatically done by preceding Copy
         CheckValueNeedsUpdate(myDouble bool)  // should be true
         Printf(" myDouble needsUpdate %z\n" bool)
         CheckValueNeedsUpdate(myDouble bool)  // should be false (reset when read above)
@@ -29,7 +29,7 @@ define (MyVI2 dv(.VirtualInstrument (
         CheckValueNeedsUpdate(myDouble bool)
         Printf(" myDouble needsUpdate %z\n" bool)
         Copy(456.0 myDouble)
-        //SetValueNeedsUpdate(myDouble)  // automatically done by preceding Copy
+        //SetValueNeedsUpdateForTopLevelVI(myDouble)  // automatically done by preceding Copy
         CheckValueNeedsUpdate(myDouble bool)  // should be true
         Printf(" myDouble needsUpdate %z\n" bool)
         CheckValueNeedsUpdate(myDouble bool)  // should be false (reset when read above)
@@ -48,7 +48,7 @@ clump(1
     Printf(" MySubVI:\n")
     CheckValueNeedsUpdate(myInteger bool)
     Copy(-42 myInteger)
-    SetValueNeedsUpdate(myInteger)  // should do nothing; daaitem element but not a top-level VI 
+    SetValueNeedsUpdateForTopLevelVI(myInteger)  // should do nothing; dataitem element but not a top-level VI 
     CheckValueNeedsUpdate(myInteger bool)
     Printf("  myInteger needsUpdate %z\n" bool)
     Printf(" End MySubVI\n")

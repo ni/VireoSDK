@@ -1,0 +1,11 @@
+MyVI:
+c1 needsUpdate false
+c1 needsUpdate true
+SubVI:
+local4 needsUpdate false
+local4 needsUpdate true
+MyVI:
+local2 needsUpdate false
+local2 needsUpdate true
+local3 needsUpdate false
+local3 needsUpdate true
