@@ -538,7 +538,7 @@ static inline EventSource GetEventSourceForEventType(EventType eType) {
     if (eType == kEventTypeUserEvent)
         eSource = kEventSourceUserEvent;
     else if (eType >= kEventTypeValueChange)
-        eSource = kEventSourceNXGUIEvent;
+        eSource = kEventSourceUIEvent;
     return eSource;
 }
 

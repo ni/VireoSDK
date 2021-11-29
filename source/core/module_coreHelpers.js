@@ -26,29 +26,6 @@ var assignCoreHelpers;
             fpSync(fpString);
         };
 
-        Module.coreHelpers.jsSystemLogging_WriteMessageUTF8 = function (
-            messageTypeRef, messageDataRef,
-            severityTypeRef, severityDataRef) {
-            var messageValueRef = Module.eggShell.createValueRef(messageTypeRef, messageDataRef);
-            var severityValueRef = Module.eggShell.createValueRef(severityTypeRef, severityDataRef);
-            var message = Module.eggShell.readString(messageValueRef);
-            var severity = Module.eggShell.readDouble(severityValueRef);
-            switch (severity) {
-            case 0:
-                console.error(message);
-                break;
-            case 1:
-                console.warn(message);
-                break;
-            case 2:
-                console.info(message);
-                break;
-            default:
-                console.log(message);
-                break;
-            }
-        };
-
         publicAPI.coreHelpers.setFPSyncFunction = function (fn) {
             if (typeof fn !== 'function') {
                 throw new Error('FPSync must be a callable function');

@@ -18,7 +18,7 @@ enum {  // Event source
     kEventSourceActiveXUserInt,
     kEventSourceDotNetUserInt,
     kEventSourceUserEvent = 25,
-    kEventSourceNXGUIEvent = 1000
+    kEventSourceUIEvent = 1000
 };
 
 enum {
@@ -62,7 +62,7 @@ enum { kNotAnEventControlUID = 0 };
 
 struct EventCommonData {
     // Common fields
-    EventSource eventSource;  // Event source and type are used internally but not visible in Event structure in NXG
+    EventSource eventSource;  // Event source and type are used internally but not visible in Event structure
     EventType eventType;
     UInt32 eventTime;
     UInt32 eventSeqIndex;  // This field is a monotonically increasing event sequence number in actual generated events,

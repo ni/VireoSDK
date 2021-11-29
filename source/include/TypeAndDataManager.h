@@ -569,8 +569,8 @@ class TypeCommon
     Boolean IsDataItem() const { return _isDataItem != 0; }
     //! True (for data items) if value has been written to by Vireo but not read by JS
     Boolean NeedsUpdate() const { return _needsUpdate != 0; }
-    //! Set needsUpdate flag for a data item
-    void SetNeedsUpdate(Boolean b) { if (_isDataItem != 0) _needsUpdate = b?1:0; }
+    //! Set needsUpdate flag
+    void SetNeedsUpdate(Boolean b) { _needsUpdate = b?1:0; }
     //! True if aggregate element is used as an input parameter.
     Boolean IsInputParam() const
     {

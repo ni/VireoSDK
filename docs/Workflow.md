@@ -287,7 +287,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
     replacing `[newversion]` with the version to update to.
 
     This command will generate a `.nupkg` file in the folder the command is run from.
-3. See [installing a nuget package](https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package) for the various ways to install the created package to your .NET application. If you are at NI and working on NXG, follow these steps:
+3. See [installing a nuget package](https://docs.microsoft.com/en-us/nuget/consume-packages/ways-to-install-a-package) for the various ways to install the created package to your .NET application. If you are at NI and working on G Web Development Software, follow these steps:
     1. Run this command:
 
         ```console
@@ -331,7 +331,7 @@ The esh.exe build is packaged as a nuget package to make it consumeable in .NET 
             "${workspaceFolder}/source/include"
         ],
         "defines": [
-            "kVireoOS_emscripten", "__EMSCRIPTEN__", "VIREO_DEBUG", "VIREO_USING_ASSERTS"
+            "kVireoOS_emscripten", "__EMSCRIPTEN__", "VIREO_DEBUG", "VIREO_USING_ASSERTS", "VIREO_DEBUGPOINT"
         ],
         "cStandard": "c11",
         "cppStandard": "c++14",

@@ -112,7 +112,7 @@ InstructionCore* EmitGenericCopyInstruction(ClumpParseState* pInstructionBuilder
         pInstructionBuilder->ReresolveInstruction(&copyOpToken);
         pInstruction = pInstructionBuilder->EmitInstruction();
         if (destType->IsDataItem()) {
-            SubString valueNeedsUpdateToken("SetValueNeedsUpdate");
+            SubString valueNeedsUpdateToken("SetValueNeedsUpdateForTopLevelVI");
             pInstructionBuilder->StartInstruction(&valueNeedsUpdateToken);
             pInstructionBuilder->InternalAddArgBack(nullptr, destType);
             pInstructionBuilder->InternalAddArgBack(destType, pDest);

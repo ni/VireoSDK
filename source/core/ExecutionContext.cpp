@@ -144,11 +144,17 @@ struct SetValueNeedsUpdateParamBlock : InstructionCore
     NEXT_INSTRUCTION_METHOD()
 };
 
-VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
+VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdateForTopLevelVI, SetValueNeedsUpdateParamBlock)
 {
     VirtualInstrument* vi = THREAD_EXEC()->_runningQueueElt->OwningVI();
     if (vi->IsTopLevelVI())
         _ParamPointer(ValueType)->SetNeedsUpdate(true);
+    return _NextInstruction();
+}
+
+VIREO_FUNCTION_SIGNATURET(SetValueNeedsUpdate, SetValueNeedsUpdateParamBlock)
+{
+    _ParamPointer(ValueType)->SetNeedsUpdate(true);
     return _NextInstruction();
 }
 
@@ -478,6 +484,7 @@ void ExecutionContext::IsrEnqueue(QueueElt* elt)
 DEFINE_VIREO_BEGIN(Execution)
     DEFINE_VIREO_REQUIRE(VirtualInstrument)
     DEFINE_VIREO_FUNCTION(FPSync, "p(i(String))")
+    DEFINE_VIREO_FUNCTION(SetValueNeedsUpdateForTopLevelVI, "p(i(StaticTypeAndData value))")
     DEFINE_VIREO_FUNCTION(SetValueNeedsUpdate, "p(i(StaticTypeAndData value))")
     DEFINE_VIREO_FUNCTION(CheckValueNeedsUpdate, "p(i(StaticTypeAndData value) o(Boolean))")
     DEFINE_VIREO_FUNCTION(Trigger, "p(i(Clump))")
