@@ -96,6 +96,7 @@ class TDViaParser
     const Utf8Char* _originalStart;
     VirtualInstrument *_virtualInstrumentScope;  // holds the current (innermost) VI during parsing
     Int32           _lineNumberBase;
+    Boolean _isDebuggingDisabled;
 
  public:
     // Format options also used in ViaFormatter
@@ -112,28 +113,28 @@ class TDViaParser
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase,
                 SubString* format = nullptr, Boolean jsonLVExt = false, Boolean strictJSON = false,
-                Boolean quoteInfNaN = false, Boolean allowJSONNulls = false);
+                Boolean quoteInfNaN = false, Boolean allowJSONNulls = false, Boolean isDebuggingDisabled = false);
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = nullptr);
     TypeRef ParseLiteral(TypeRef patternType);
     Int32   ParseData(TypeRef type, void* pData);
     Boolean EatJSONPath(SubString* path);
-    NIError ParseREPL(Boolean isDebuggingEnabled = false);
+    NIError ParseREPL();
     TypeRef ParseEnqueue();
     Boolean PreParseElements(Int32 rank, ArrayDimensionVector dimensionLengths, Int32 *reachedDepth = nullptr);
     static TokenTraits ReadArrayItem(SubString* input, SubString* token, Boolean topLevel, Boolean suppressInfNaN);
     Int32   ParseArrayData(TypedArrayCoreRef pArray, void* pFirstEltInSlice, Int32 level);
     Int32   ParseVariantData(VariantDataRef pData);
     void    ParseVirtualInstrument(TypeRef viType, void* pData);
-    void    ParseClump(VIClump* viClump, InstructionAllocator* cia, Boolean isDebuggingEnabled = false);
+    void    ParseClump(VIClump* viClump, InstructionAllocator* cia);
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
     VirtualInstrument *CurrentVIScope() const { return _virtualInstrumentScope; }
 
  public:
     static NIError StaticRepl(TypeManagerRef tm, SubString *replStream, Boolean isDebuggingEnabled = false);
-    static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean isDebuggingEnabled = false);
-    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean isDebuggingEnabled = false);
+    static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean isDebuggingDisabled);
+    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean isDebuggingDisabled);
 
  private:
     TypeRef BadType() const {return _typeManager->BadType();}

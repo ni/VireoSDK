@@ -678,7 +678,7 @@ var assignEggShell;
             return str;
         };
 
-        Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText) {
+        Module.eggShell.loadVia = publicAPI.eggShell.loadVia = function (viaText, isDebuggingDisabled) {
             if (typeof viaText !== 'string') {
                 throw new Error('Expected viaText to be a string');
             }
@@ -705,7 +705,11 @@ var assignEggShell;
                 origPrintErr(textErr);
             };
 
-            var result = Module._EggShell_REPL(Module.eggShell.v_userShell, viaTextPointer, viaTextLength);
+            var result = Module._EggShell_REPL(
+                Module.eggShell.v_userShell,
+                viaTextPointer,
+                viaTextLength,
+                (isDebuggingDisabled === undefined || isDebuggingDisabled === null) ? false : isDebuggingDisabled);
             Module._free(viaTextPointer);
             Module.print = origPrint;
             Module.printErr = origPrintErr;
