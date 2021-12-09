@@ -1747,7 +1747,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             SubString skipTokens;
             do {
                 _string.ReadToken(&skipTokens);
-            } while(!skipTokens.CompareCStr(")"));
+            } while (!skipTokens.CompareCStr(")"));
         } else {
             instructionNameToken.TrimQuotedString(tt);
             Boolean keepTrying = state.StartInstruction(&instructionNameToken) != nullptr;
