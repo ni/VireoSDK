@@ -130,11 +130,11 @@ class TDViaParser
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
     VirtualInstrument *CurrentVIScope() const { return _virtualInstrumentScope; }
+    void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
+    void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
 
  public:
     static NIError StaticRepl(TypeManagerRef tm, SubString *replStream, Boolean isDebuggingEnabled = false);
-    static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean isDebuggingDisabled);
-    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean isDebuggingDisabled);
 
  private:
     TypeRef BadType() const {return _typeManager->BadType();}

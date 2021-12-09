@@ -187,7 +187,7 @@ NIError TDViaParser::ParseREPL()
         RepinLineNumberBase();
     }
 
-    FinalizeModuleLoad(_typeManager, _pLog, _isDebuggingDisabled);
+    FinalizeModuleLoad(_typeManager, _pLog);
 
     return _pLog->TotalErrorCount() == 0 ? kNIError_Success : kNIError_kCantDecode;
 }
@@ -1587,13 +1587,13 @@ void TDViaParser::ParseVirtualInstrument(TypeRef viType, void* pData)
     vi->Init(THREAD_TADM(), (Int32)actualClumpCount, paramsType, localsType, eventSpecsType, lineNumberBase, &clumpSource);
 
     if (_loadVIsImmediately) {
-        FinalizeVILoad(vi, _pLog, _isDebuggingDisabled);
+        FinalizeVILoad(vi, _pLog);
     }
     _virtualInstrumentScope = savedVIScope;
     // The clumps code will be loaded once the module is finalized.
 }
 //------------------------------------------------------------
-void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean isDebuggingDisabled)
+void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
 {
     SubString clumpSource = vi->_clumpSource;
 
@@ -1611,7 +1611,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean 
 #endif
             EventLog dummyLog(EventLog::DevNull);
             TDViaParser parser(vi->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase,
-                nullptr, false, false, false, false, isDebuggingDisabled);
+                nullptr, false, false, false, false, _isDebuggingDisabled);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
@@ -1630,7 +1630,7 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog, Boolean 
         {
             // (3) Parse a second time, instructions will be allocated out of the chunk.
             TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase,
-                nullptr, false, false, false, false, isDebuggingDisabled);
+                nullptr, false, false, false, false, _isDebuggingDisabled);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
@@ -1862,7 +1862,7 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
         return LOG_EVENT(kHardDataError, "')' missing");
 }
 //------------------------------------------------------------
-void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean isDebuggingDisabled)
+void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 {
     static SubString strVIType("VirtualInstrument");
     // Once a module has been loaded sweep through all VIs and
@@ -1883,7 +1883,7 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog, Boolean 
             if (type->HasCustomDefault() && type->IsA(&strVIType)) {
                 TypedArrayCoreRef *pObj = (TypedArrayCoreRef*) type->Begin(kPARead);
                 VirtualInstrument *vi = (VirtualInstrument*) (*pObj)->RawObj();
-                FinalizeVILoad(vi, pLog, isDebuggingDisabled);
+                FinalizeVILoad(vi, pLog);
             }
             type = type->Next();
         }
