@@ -271,7 +271,7 @@
         }
 
         try {
-            newResults = cp.execFileSync(exec, [viaPath]).toString();
+            newResults = cp.execFileSync(exec, [viaPath, '--debugging']).toString();
         } catch (e) {
             // If Vireo detects an error it will return non zero
             // and exec will throw an exception, so catch the results.
