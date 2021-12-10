@@ -249,7 +249,7 @@
         });
 
         try {
-            vireo.eggShell.loadVia(viaCode);
+            vireo.eggShell.loadVia(viaCode, {debugging: true});
         } catch (ex) {
             testFinishedCB(testOutput);
             return;
