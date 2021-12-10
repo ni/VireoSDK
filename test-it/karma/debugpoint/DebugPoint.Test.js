@@ -30,7 +30,7 @@ describe('A via file with debug point ', function () {
         });
 
         it('on executing succesfully set the needs update property on corresponding local ', async function () {
-            const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, simpleAddNodeViaUrl);
+            const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, simpleAddNodeViaUrl, {debugging: true});
             const resultLocal = vireo.eggShell.findValueRef('MyVI', 'local3');
             expect(vireo.eggShell.testNeedsUpdateAndReset(resultLocal)).toBeFalse();
             const {rawPrint, rawPrintError} = await runSlicesAsync();
@@ -40,7 +40,7 @@ describe('A via file with debug point ', function () {
         });
 
         it('on not executing will not set the needs update property on corresponding local', async function () {
-            const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, addNodeWithCaseStructureViaUrl);
+            const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, addNodeWithCaseStructureViaUrl, {debugging: true});
             const resultLocal = vireo.eggShell.findValueRef('MyVI', 'local7');
             expect(vireo.eggShell.testNeedsUpdateAndReset(resultLocal)).toBeFalse();
             const {rawPrint, rawPrintError} = await runSlicesAsync();
@@ -67,7 +67,7 @@ describe('A via file with debug point ', function () {
         });
 
         it('on executing succesfully will not set the needs update property on corresponding local ', async function () {
-            const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, simpleAddNodeViaUrl, true);
+            const runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, simpleAddNodeViaUrl);
             const resultLocal = vireo.eggShell.findValueRef('MyVI', 'local3');
             expect(vireo.eggShell.testNeedsUpdateAndReset(resultLocal)).toBeFalse();
             const {rawPrint, rawPrintError} = await runSlicesAsync();

@@ -80,7 +80,7 @@ describe('The Vireo VTR test suite', function () {
                 var vtrText = fixtures.loadAbsoluteUrl(vtrFile);
                 var runSlicesAsync;
                 try {
-                    runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaFile);
+                    runSlicesAsync = vireoRunner.rebootAndLoadVia(vireo, viaFile, {debugging: true});
                 } catch (ex) {
                     expect(ex.message).toMatch(/CantDecode/);
                     expect(ex.rawPrintError).toBeEmptyString();
