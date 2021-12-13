@@ -705,7 +705,7 @@ var assignEggShell;
                 origPrintErr(textErr);
             };
 
-            var debugging = (config === null || config === undefined || typeof config.debugging !== 'boolean') ? false : config.debugging;
+            var debugging = (config && typeof config.debugging === 'boolean') ? config.debugging : false;
             var result = Module._EggShell_REPL(Module.eggShell.v_userShell, viaTextPointer, viaTextLength, debugging);
             Module._free(viaTextPointer);
             Module.print = origPrint;
