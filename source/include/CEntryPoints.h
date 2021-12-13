@@ -26,7 +26,7 @@ typedef enum {
 //! TypeManager functions
 VIREO_EXPORT Int32 Vireo_MaxExecWakeUpTime();
 VIREO_EXPORT void* EggShell_Create(TypeManagerRef parent);
-VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, Int32 length);
+VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, Int32 length, Boolean debugging);
 VIREO_EXPORT Int32 EggShell_ExecuteSlices(TypeManagerRef tm, Int32 numSlices, Int32 millisecondsToRun);
 VIREO_EXPORT TypeRef EggShell_GetTypeList(TypeManagerRef tm);
 VIREO_EXPORT void EggShell_Delete(TypeManagerRef tm);

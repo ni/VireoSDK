@@ -96,6 +96,7 @@ class TDViaParser
     const Utf8Char* _originalStart;
     VirtualInstrument *_virtualInstrumentScope;  // holds the current (innermost) VI during parsing
     Int32           _lineNumberBase;
+    Boolean _debugging;
 
  public:
     // Format options also used in ViaFormatter
@@ -112,7 +113,7 @@ class TDViaParser
 
     TDViaParser(TypeManagerRef typeManager, SubString* typeString, EventLog *pLog, Int32 lineNumberBase,
                 SubString* format = nullptr, Boolean jsonLVExt = false, Boolean strictJSON = false,
-                Boolean quoteInfNaN = false, Boolean allowJSONNulls = false);
+                Boolean quoteInfNaN = false, Boolean allowJSONNulls = false, Boolean debugging = false);
     void    Reset() { _string.AliasAssign(_originalStart, _string.End()); }
     TypeRef ParseType(TypeRef patternType = nullptr);
     TypeRef ParseLiteral(TypeRef patternType);
@@ -129,11 +130,11 @@ class TDViaParser
     void    PreParseClump(VIClump* viClump);
     SubString* TheString() {return &_string;}
     VirtualInstrument *CurrentVIScope() const { return _virtualInstrumentScope; }
+    void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
+    void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
 
  public:
-    static NIError StaticRepl(TypeManagerRef tm, SubString *replStream);
-    static void FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog);
-    static void FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog);
+    static NIError StaticRepl(TypeManagerRef tm, SubString *replStream, Boolean debugging = false);
 
  private:
     TypeRef BadType() const {return _typeManager->BadType();}

@@ -42,16 +42,20 @@ int VIREO_MAIN(int argc, const char * argv[])
     if (argc >= 2) {
         gShells._pRootShell = TypeManager::New(nullptr);
 
+        Boolean debugging = false;
         for (Int32 arg = 1; arg < argc; ++arg) {
             if (strcmp(argv[arg], "-D") == 0) {
                 gShells._pRootShell->DumpPrimitiveDictionary();
-                continue;
+            } else if (strcmp(argv[arg], "--debugging")) {
+                debugging = true;
             }
+        }
 
-            gShells._pUserShell = TypeManager::New(gShells._pRootShell);
-            TypeManagerScope scope(gShells._pUserShell);
+        for (Int32 arg = 1; arg < argc; ++arg) {
             fileName.AliasAssignCStr(argv[arg]);
             if (fileName.Length() && argv[arg][0] != '-') {
+                gShells._pUserShell = TypeManager::New(gShells._pRootShell);
+                TypeManagerScope scope(gShells._pUserShell);
                 // Nested scope so that buffer is cleaned up before userShell continues running.
                 {
                     STACK_VAR(String, fileBuffer);
@@ -62,7 +66,7 @@ int VIREO_MAIN(int argc, const char * argv[])
 
                     SubString fileString = fileBuffer.Value->MakeSubStringAlias();
                     gShells._keepRunning = true;
-                    if (TDViaParser::StaticRepl(gShells._pUserShell, &fileString) != kNIError_Success) {
+                    if (TDViaParser::StaticRepl(gShells._pUserShell, &fileString, debugging) != kNIError_Success) {
                         gShells._keepRunning = false;
                     }
 
@@ -79,9 +83,9 @@ int VIREO_MAIN(int argc, const char * argv[])
                     RunExec();  // deletes TypeManagers on exit
                 }
 #endif
+                LOG_PLATFORM_MEM("Mem after execution")
+                gShells._pUserShell->Delete();
             }
-            LOG_PLATFORM_MEM("Mem after execution")
-            gShells._pUserShell->Delete();
         }
         gShells._pRootShell->Delete();
         LOG_PLATFORM_MEM("Mem after cleanup")

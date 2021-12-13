@@ -5,7 +5,7 @@
     'use strict';
     window.testHelpers = window.testHelpers || {};
 
-    var rebootAndLoadVia = function (vireo, viaAbsolutePath) {
+    var rebootAndLoadVia = function (vireo, viaAbsolutePath, config) {
         // Jasmine Matchers library is not always ready in beforeAll so use jasmine core functions
         expect(typeof viaAbsolutePath).toBe('string');
         expect(viaAbsolutePath).not.toBe('');
@@ -39,7 +39,7 @@
 
         var ex;
         try {
-            vireo.eggShell.loadVia(viaText);
+            vireo.eggShell.loadVia(viaText, config);
         } catch (exIn) {
             ex = addOutputToError(exIn);
             throw ex;

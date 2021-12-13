@@ -40,7 +40,7 @@ namespace Vireo
 //------------------------------------------------------------
 TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, EventLog *pLog,
     Int32 lineNumberBase, SubString* format, Boolean jsonLVExt /*=false*/, Boolean strictJSON /*=false*/,
-    Boolean quoteInfNaN /*= false*/, Boolean allowJSONNulls /*= false*/)
+    Boolean quoteInfNaN /*= false*/, Boolean allowJSONNulls /*= false*/, Boolean debugging /*= false*/)
 {
     _pLog = pLog;
     _typeManager = typeManager;
@@ -48,6 +48,7 @@ TDViaParser::TDViaParser(TypeManagerRef typeManager, SubString *typeString, Even
     _originalStart = typeString->Begin();
     _lineNumberBase = lineNumberBase;
     _loadVIsImmediately = false;
+    _debugging = debugging;
     _options._allowNulls = allowJSONNulls;
     _virtualInstrumentScope = nullptr;
 
@@ -227,7 +228,7 @@ TypeRef TDViaParser::ParseRequire()
             gPlatform.IO.Printf("(Error \"Package <%.*s> empty\")\n", FMT_LEN_BEGIN(&moduleName));
         } else {
             TypeManagerScope scope(newTADM);
-            TDViaParser parser(newTADM, &module, _pLog, CalcCurrentLine());
+            TDViaParser parser(newTADM, &module, _pLog, CalcCurrentLine(), nullptr, false, false, false, false, _debugging);
             parser.ParseREPL();
         }
     }
@@ -263,7 +264,7 @@ TypeRef TDViaParser::ParseContext()
     // Parse the subExpression using the newly created type manager.
     {
         TypeManagerScope scope(newTADM);
-        TDViaParser parser(newTADM, &_string, _pLog, CalcCurrentLine());
+        TDViaParser parser(newTADM, &_string, _pLog, CalcCurrentLine(), nullptr, false, false, false, false, _debugging);
         parser.ParseREPL();
         _string.AliasAssign(parser.TheString());
     }
@@ -1609,7 +1610,8 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
             //  Int32 startingAllocations = vi->TheTypeManager()->_totalAllocations;
 #endif
             EventLog dummyLog(EventLog::DevNull);
-            TDViaParser parser(vi->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase);
+            TDViaParser parser(vi->TheTypeManager(), &clumpSource, &dummyLog, vi->_lineNumberBase,
+                nullptr, false, false, false, false, _debugging);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
@@ -1627,7 +1629,8 @@ void TDViaParser::FinalizeVILoad(VirtualInstrument* vi, EventLog* pLog)
 
         {
             // (3) Parse a second time, instructions will be allocated out of the chunk.
-            TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase);
+            TDViaParser parser(vi->TheTypeManager(), &clumpSource, pLog, vi->_lineNumberBase,
+                nullptr, false, false, false, false, _debugging);
             for (; pClump < pClumpEnd; pClump++) {
                 parser.ParseClump(pClump, &cia);
             }
@@ -1736,6 +1739,15 @@ void TDViaParser::ParseClump(VIClump* viClump, InstructionAllocator* cia)
             if (!_string.EatChar(')'))
                 return LOG_EVENT(kHardDataError, "')' missing");
             state.MarkPerch(&perchName);
+        } else if (instructionNameToken.CompareCStr("DebugPoint") && !_debugging) {
+            // No -Op
+            if (!_string.EatChar('('))
+                return LOG_EVENT(kHardDataError, "'(' missing");
+            // Skip over the DebugPoint arguments
+            SubString skipTokens;
+            do {
+                _string.ReadToken(&skipTokens);
+            } while (!skipTokens.CompareCStr(")"));
         } else {
             instructionNameToken.TrimQuotedString(tt);
             Boolean keepTrying = state.StartInstruction(&instructionNameToken) != nullptr;
@@ -1888,14 +1900,14 @@ void TDViaParser::FinalizeModuleLoad(TypeManagerRef tm, EventLog* pLog)
 }
 //------------------------------------------------------------
 //! Create a parser and process all the declarations in the stream.
-NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream)
+NIError TDViaParser::StaticRepl(TypeManagerRef tm, SubString *replStream, Boolean debugging)
 {
     TypeManagerScope scope(tm);
 
     STACK_VAR(String, errorLog);
     EventLog log(errorLog.Value);
 
-    TDViaParser parser(tm, replStream, &log, 1);
+    TDViaParser parser(tm, replStream, &log, 1, nullptr, false, false, false, false, debugging);
     NIError err = parser.ParseREPL();
 
     if (errorLog.Value->Length() > 0) {

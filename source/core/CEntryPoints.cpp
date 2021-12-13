@@ -28,13 +28,13 @@ VIREO_EXPORT void* EggShell_Create(TypeManagerRef parent)
     return TypeManager::New(parent);
 }
 //------------------------------------------------------------
-VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, Int32 length)
+VIREO_EXPORT NIError EggShell_REPL(TypeManagerRef tm, const Utf8Char* commands, Int32 length, Boolean debugging)
 {
     if (length == -1) {
         length = (Int32)strlen((const char*)commands);
     }
     SubString  input(commands, commands + length);
-    NIError err = TDViaParser::StaticRepl(tm, &input);
+    NIError err = TDViaParser::StaticRepl(tm, &input, debugging);
     return err;
 }
 //------------------------------------------------------------
