@@ -203,7 +203,12 @@ Observer* VIClump::ReserveObservationStatesWithTimeout(Int32 count, PlatformTick
         if (tickCount) {
             TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, tickCount);
         } else {
-            TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, 0x7FFFFFFFFFFFFFFF);
+            if (tickCount == 0) {
+                TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, 0);
+            }
+            else {
+                TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, 0x7FFFFFFFFFFFFFFF);
+            }
         }
         return _observationStates;
     } else {
