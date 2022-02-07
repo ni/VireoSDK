@@ -1,0 +1,6 @@
+Event Structure timeout is = 0ms
+Value of v1 = 3
+Value of v2 = 4
+Value of v3 = v1 + v2
+After timeout
+Value of v3 = 7
