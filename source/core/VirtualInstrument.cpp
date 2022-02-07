@@ -200,7 +200,7 @@ Observer* VIClump::ReserveObservationStatesWithTimeout(Int32 count, PlatformTick
         _observationCount = count;
         _observationStates[0]._clump = this;
         _observationStates[1]._clump = this;
-        if (tickCount >= 0) {
+        if (tickCount) {
             TheExecutionContext()->_timer.InitObservableTimerState(_observationStates, tickCount);
         }
         else {
