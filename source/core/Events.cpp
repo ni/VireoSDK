@@ -1048,14 +1048,11 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
         Int32 &staticCount = eventInfo->eventStructInfo[eventStructIndex].setCount;
 
         UInt32 msTimeout = timeOutPtr ? *timeOutPtr : -1;
-        if (msTimeout == 0) {
-            return arguments->branchTarget;
-        }
         VIClump* clump = THREAD_CLUMP();
         if (!occ.HasOccurred(staticCount, false)) {
             Observer* pObserver = clump->GetObservationStates(2);
             if (!pObserver) {
-                PlatformTickType future = msTimeout > 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
+                PlatformTickType future = msTimeout >= 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
                 pObserver = clump->ReserveObservationStatesWithTimeout(2, future);
                 occ.InsertObserver(pObserver+1, occ.Count()+1);
                 return clump->WaitOnObservableObject(_this);
