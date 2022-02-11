@@ -1052,7 +1052,7 @@ VIREO_FUNCTION_SIGNATUREV(WaitForEventsAndDispatch, WaitForEventsParamBlock)
         if (!occ.HasOccurred(staticCount, false)) {
             Observer* pObserver = clump->GetObservationStates(2);
             if (!pObserver) {
-                PlatformTickType future = msTimeout > 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
+                PlatformTickType future = msTimeout >= 0 ? gPlatform.Timer.MillisecondsFromNowToTickCount(msTimeout) : 0;
                 pObserver = clump->ReserveObservationStatesWithTimeout(2, future);
                 occ.InsertObserver(pObserver+1, occ.Count()+1);
                 return clump->WaitOnObservableObject(_this);

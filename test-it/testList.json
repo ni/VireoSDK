@@ -200,6 +200,8 @@
                 "Equals2DArr.via",
                 "Ethan1.via",
                 "EthanOpts2.via",
+                "EventStructureWith0msTimeout.via",
+                "EventStructureWithPositiveTimeout.via",
                 "ExtraArrayInializers.via",
                 "FixedArrays.via",
                 "FlattenArray.via",
