@@ -535,6 +535,10 @@ var assignHttpClient;
             httpClientManager.setXMLHttpRequestImplementation(fn);
         };
 
+        // Make httpClientManager available as a private API
+        // These are internal APIs subject to change: USE AT YOUR OWN RISK
+        Module.httpClient.httpClientManager = httpClientManager;
+
         // NOTE: All of the Module.js* functions  in this file should be called from Vireo only if there is not an existing error
         // unless otherwise stated in the function below
         Module.httpClient.jsHttpClientOpen = function (
