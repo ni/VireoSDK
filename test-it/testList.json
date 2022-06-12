@@ -110,6 +110,7 @@
                 "ArrayDelete.via",
                 "ArrayDeleteFail.via",
                 "ArrayDeleteFail2.via",
+                "ArrayDeleteMultiDimensionString.via",
                 "ArrayDemo.via",
                 "ArrayFillNDV.via",
                 "ArrayFillNDVFail.via",
