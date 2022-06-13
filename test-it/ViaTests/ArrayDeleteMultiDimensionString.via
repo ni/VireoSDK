@@ -1,7 +1,7 @@
 define (WebApp%3A%3Aindex%2Egviweb dv(.VirtualInstrument (
     Locals: c(   // Data Space
         e(dv(.String 'WebApp::index.gviweb')local0)
-        ce(dv(.Int32 2)c1)
+        ce(dv(.Int32 3)c1)
         ce(dv(.Int32 0)c2)
         e(.Int32 local3)
         e(.Int32 local4)

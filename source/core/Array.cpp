@@ -1201,9 +1201,10 @@ VIREO_FUNCTION_SIGNATURET(ArrayMaxMinInternal, FindArrayMaxMinInstruction)
 }
 // NOLINT(runtime/references)
 static void CopySubArray(AQBlock1* &sourcePtr, AQBlock1* &destinationPtr,  // NOLINT(runtime/references)
-                        const size_t elementsToCopy, TypeRef elementType, TypedArrayCoreRef arrayDest)
+                        const size_t elementsToCopy, TypedArrayCoreRef arraySource, TypedArrayCoreRef arrayDest)
 {
     NIError err = kNIError_Success;
+    TypeRef elementType = arraySource->ElementType();
     if (elementType->IsFlat()) {
         if (elementsToCopy) {
             size_t bytesToCopy = elementsToCopy * elementType->TopAQSize();
@@ -1332,11 +1333,10 @@ VIREO_FUNCTION_SIGNATURE7(ArrayDeleteND, TypedArrayCoreRef, StaticType, void,
             size_t numberOfElementsAfterDeleted = (dimensionSize[dimensionToDelete]
                        - (startIndex + deletedPortionLength)) * numberOfElementsInDeletedDimension;
             Int32 currentDimension;
-            TypeRef elementType = arrayIn->ElementType();
             do {
-                CopySubArray(inputArrayPtr, outputArrayPtr, numberOfElementsBeforeDeleted, elementType, arrayOut);
-                CopySubArray(inputArrayPtr, deletedArrayPtr, numberOfElementsToBeDeleted, elementType, deletedArray);
-                CopySubArray(inputArrayPtr, outputArrayPtr, numberOfElementsAfterDeleted, elementType, arrayOut);
+                CopySubArray(inputArrayPtr, outputArrayPtr, numberOfElementsBeforeDeleted, arrayIn, arrayOut);
+                CopySubArray(inputArrayPtr, deletedArrayPtr, numberOfElementsToBeDeleted, arrayIn, deletedArray);
+                CopySubArray(inputArrayPtr, outputArrayPtr, numberOfElementsAfterDeleted, arrayIn, arrayOut);
                 currentDimension = dimensionToDelete;
                 while (--currentDimension >= 0 && ++index[currentDimension] >= dimensionSize[currentDimension])
                     index[currentDimension] = 0;
