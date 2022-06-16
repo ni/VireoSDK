@@ -1,0 +1,21 @@
+Loop no - 1
+Input 4D Array of String
+(((('a1' 'a2' 'a3' 'a4') ('b1' 'b2' 'b3' 'b4') ('c1' 'c2' 'c3' 'c4') ('d1' 'd2' 'd3' 'd4') ('e1' 'e2' 'e3' 'e4') ('f1' 'f2' 'f3' 'f4') ('g1' 'g2' 'g3' 'g4'))))
+Deleted Array
+((('b1' 'b2' 'b3' 'b4')))
+Output Array
+(((('a1' 'a2' 'a3' 'a4') ('c1' 'c2' 'c3' 'c4') ('d1' 'd2' 'd3' 'd4') ('e1' 'e2' 'e3' 'e4') ('f1' 'f2' 'f3' 'f4') ('g1' 'g2' 'g3' 'g4'))))
+Loop no - 2
+Input 4D Array of String
+(((('a1' 'a2' 'a3' 'a4') ('b1' 'b2' 'b3' 'b4') ('c1' 'c2' 'c3' 'c4') ('d1' 'd2' 'd3' 'd4') ('e1' 'e2' 'e3' 'e4') ('f1' 'f2' 'f3' 'f4') ('g1' 'g2' 'g3' 'g4'))))
+Deleted Array
+((('b1' 'b2' 'b3' 'b4')))
+Output Array
+(((('a1' 'a2' 'a3' 'a4') ('c1' 'c2' 'c3' 'c4') ('d1' 'd2' 'd3' 'd4') ('e1' 'e2' 'e3' 'e4') ('f1' 'f2' 'f3' 'f4') ('g1' 'g2' 'g3' 'g4'))))
+Loop no - 3
+Input 4D Array of String
+(((('a1' 'a2' 'a3' 'a4') ('b1' 'b2' 'b3' 'b4') ('c1' 'c2' 'c3' 'c4') ('d1' 'd2' 'd3' 'd4') ('e1' 'e2' 'e3' 'e4') ('f1' 'f2' 'f3' 'f4') ('g1' 'g2' 'g3' 'g4'))))
+Deleted Array
+((('b1' 'b2' 'b3' 'b4')))
+Output Array
+(((('a1' 'a2' 'a3' 'a4') ('c1' 'c2' 'c3' 'c4') ('d1' 'd2' 'd3' 'd4') ('e1' 'e2' 'e3' 'e4') ('f1' 'f2' 'f3' 'f4') ('g1' 'g2' 'g3' 'g4'))))
