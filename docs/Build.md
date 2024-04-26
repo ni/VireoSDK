@@ -91,8 +91,8 @@ Notice that vireo.js is created in the `dist` folder based on the `BUILD` type. 
 ### Software requirements
 
 - Visual Studio 2022 with C++ support, specifically:
-   - Windows 10 SDK (10.0.20348.0)
-   - MSVC v141 - VS 2017 C++ x64/x86 build tools (v14.16)
+  - Windows 10 SDK (10.0.20348.0)
+  - MSVC v141 - VS 2017 C++ x64/x86 build tools (v14.16)
 
 ### Building Vireo Windows Native
 
