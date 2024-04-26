@@ -5,7 +5,7 @@
 ### Software requirements
 
 - [git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en/) (>=12, latest LTS release recommended)
+- [Node.js](https://nodejs.org/en/) (>=20, latest LTS release recommended)
 - GNU Make and GNU core utilities (see following)
 
 ### Installing GNU Make and GNU core utilities
@@ -31,7 +31,7 @@ On all platforms run the following in the `VireoSDK` folder to install JavaScrip
 
 ### Software requirements
 
-- [Python](https://www.python.org/) (>= 2.7.9)
+- [Python](https://www.python.org/) (>= 3.12)
 - emsdk toolchain (see following)
 
 Note: Windows 10 may include a a copy of python seen by running `which python` resulting in the path: `C:\Users\<USER>\AppData\Local\Microsoft\WindowsApps\python.exe`. Make sure to install a copy of python from `python.org`.
@@ -90,7 +90,9 @@ Notice that vireo.js is created in the `dist` folder based on the `BUILD` type. 
 
 ### Software requirements
 
-- Visual Studio 2013, Visual Studio 2015, or Visual Studio 2017 with C++ support
+- Visual Studio 2022 with C++ support, specifically:
+   - Windows 10 SDK (10.0.20348.0)
+   - MSVC v141 - VS 2017 C++ x64/x86 build tools (v14.16)
 
 ### Building Vireo Windows Native
 
