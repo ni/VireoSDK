@@ -7,7 +7,8 @@
     "diff": "^5.0.0",
     "eslint": "^7.18.0",
     "glob-exec": "^0.1.1",
-    "jasmine-core": "^3.5.0",
+    "jasmine": "3.5.0",
+    "jasmine-core": "3.5.0",
     "jasmine-expect": "^5.0.0",
     "karma": "^5.2.3",
     "karma-chrome-launcher": "^3.1.0",
@@ -44,7 +45,8 @@
     "lint-markdown-style": "markdownlint {./*.md,./docs/*.md}",
     "prehttpbin": "python -V && pip -V && virtualenv --version && tox --version",
     "httpbin": "tox",
-    "httpbin-start": "start cmd /c npm run httpbin"
+    "httpbin-start": "start cmd /c npm run httpbin",
+    "split-wrapper": "cd make-it && node splitVireoWrapper.js"
   },
   "repository": {
     "type": "git",
