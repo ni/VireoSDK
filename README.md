@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 <div align="center">
     <div>
       <a href="https://github.com/ni/VireoSDK">
-        <img width="335" height="326" src="docs/vireo-logo.png" alt="Vireo logo">
+        <img width="300" height="165" src="https://raw.githubusercontent.com/ni/VireoSDK/HEAD/docs/vireo-logo.png" alt="Vireo logo">
       </a>
     </div>
 </div>
