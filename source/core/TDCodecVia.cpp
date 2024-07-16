@@ -1074,6 +1074,21 @@ Boolean TDViaParser::EatJSONItem(SubString* input)
     return true;
 }
 
+bool IsInfinityOrNan(SubString token)
+{
+    bool isInfinityOrNan = false;
+    ConstCStr specialIEEEVals[] = { "infinity", "-infinity", "inf", "-inf", "nan", nullptr};
+    ConstCStr* specValPtr = specialIEEEVals;
+    while (*specValPtr) {
+        if (token.ComparePrefixCStrIgnoreCase(*specValPtr)) {
+            isInfinityOrNan = true;
+            break;
+        }
+        ++specValPtr;
+    }
+    return isInfinityOrNan;
+}
+
 //------------------------------------------------------------
 // ParseData - parse a value from the string based on the type
 // If the text makes sense then kNIError_Success is returned.
@@ -1202,9 +1217,7 @@ Int32 TDViaParser::ParseData(TypeRef type, void* pData)
                 TokenTraits tt = _string.ReadToken(&token, suppressInfNaN);
                 token.TrimQuotedString(tt);
                 Double value = 0.0;
-                Utf8Char leadingChar = token.StringLength() > 0 ? token.Begin()[0] : 0;
-                Boolean isMundane = (tt == TokenTraits_IEEE754 || tt == TokenTraits_Integer) &&
-                    (leadingChar == '.' || leadingChar == '-' || isdigit(leadingChar));  // not inf, nan
+                Boolean isMundane = (tt == TokenTraits_IEEE754 || tt == TokenTraits_Integer) && !IsInfinityOrNan(token);  // not inf, nan
                 Boolean readSuccess = token.ParseDouble(&value, suppressInfNaN, &errCode);
                 if (!readSuccess) {
                     if (_options._allowNulls && tt == TokenTraits_SymbolName && token.CompareCStr("null"))
