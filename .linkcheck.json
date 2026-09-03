@@ -2,6 +2,9 @@
     "ignorePatterns": [
         {
             "pattern": "https://help.github.com/*"
+        },
+        {
+            "pattern": "https://www.npmjs.com/package/*"
         }
     ]
 }

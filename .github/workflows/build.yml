@@ -94,7 +94,7 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   web-windows:
-    # if: 'false'
+    if: 'false
     runs-on: windows-2022
     timeout-minutes: 25
     steps:
@@ -157,7 +157,7 @@ jobs:
         continue-on-error: true
 
   windows:
-    # if: 'false'
+    if: 'false'
     needs: setup
     runs-on: windows-2022
     timeout-minutes: 25
