@@ -16,6 +16,9 @@ SPDX-License-Identifier: MIT
 
 # Vireo
 
+> [!NOTE]
+> Beginning December 1, 2027, G Web Development Software will enter the Limited Support lifecycle phase. [See the forums for more information](https://forums.ni.com/t5/G-Web-Development-Software/G-Web-Development-Software-Compliance-Driven-Lifecycle-Update/td-p/4483530).
+
 [![NPM Version](https://img.shields.io/npm/v/vireo.svg)](https://www.npmjs.com/package/vireo)
 [![Nuget Version](https://img.shields.io/nuget/v/vireo.svg)](https://www.nuget.org/packages/vireo)
 [![GitHub Actions Build Status](https://github.com/ni/VireoSDK/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/ni/VireoSDK)
